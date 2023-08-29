@@ -55,5 +55,5 @@ class Munition:
         pass 
 
     def move_to_target(self):
-        # location updates according to speed and target
+        # location updates according to speed and target in a time step t
         pass

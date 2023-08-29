@@ -6,6 +6,8 @@ REVOLUTIONIZING THE ART OF WAR
 
 # Defining main function
 def main():
+
+    Munition(id=1, speed=10, , pk = .75, damage = 20):
     
     # initialize all bases, assets at bases, and weapons loadout
   
@@ -23,6 +25,9 @@ def main():
             asset killed: 10
             All bases destroyed 100
     '''
+
+    
+    # display output
 
   
 # Using the special variable 
