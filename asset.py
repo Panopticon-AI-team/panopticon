@@ -40,3 +40,42 @@ class Asset:
             self.move(w - x_end, 0)
         if y_end > h:
             self.move(0, h - y_end)
+
+
+class Missile(Asset):
+    def __init__(self, canvas, x, y, target, speed=10):
+        super().__init__(canvas, x, y, color="black", size=5)
+        self.target = target
+        self.speed = speed  # this determines the constant speed of the missile
+
+    def return_target(self):
+        return self.target
+
+    def move_missile(self):
+        # Calculate the difference between missile and target coordinates
+        x1, y1, _, _ = self.canvas.coords(self.id)
+        x2, y2, _, _ = self.canvas.coords(self.target.id)
+        
+        dx = x2 - x1
+        dy = y2 - y1
+        
+        # Calculate the distance using the Pythagorean theorem
+        distance = (dx**2 + dy**2)**0.5
+
+        # Normalize the difference to get the direction
+        if distance == 0:  # To prevent division by zero
+            return False
+        dx /= distance
+        dy /= distance
+        
+        # Move by the fixed step size (speed) in the direction
+        self.move(dx * self.speed, dy * self.speed)
+        
+        # Recalculate the distance after the move
+        x1, y1, _, _ = self.canvas.coords(self.id)
+        distance = ((x2 - x1)**2 + (y2 - y1)**2)**0.5
+        if distance < 10:
+            self.canvas.delete(self.id)
+            return True  # Indicate that missile hit the target
+        
+        return False  # Indicate that missile is still in transit
