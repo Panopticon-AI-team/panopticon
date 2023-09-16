@@ -1,0 +1,181 @@
+{
+    "bases": [
+        {
+            "base_name": "JBPHH",
+            "base_loc_x": "100",
+            "base_loc_y": "200",
+            "health": "100",
+            "base_action_state": "idle",
+            "units": [
+                {
+                    "unit_id": "JBPHH1",
+                    "unit_speed": 50,
+                    "unit_range": 300,
+                    "munitions": [
+                        {
+                            "munition_id": "JBPHH1M1",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "JBPHH1M2",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "JBPHH1M3",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        }
+                    ]
+                },
+                {
+                    "unit_id": "JBPHH2",
+                    "unit_speed": 50,
+                    "unit_range": 300,
+                    "munitions": [
+                        {
+                            "munition_id": "JBPHH2M1",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "JBPHH2M2",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "JBPHH2M3",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "base_name": "JBER",
+            "base_loc_x": "100",
+            "base_loc_y": "200",
+            "health": "100",
+            "base_action_state": "idle",
+            "units": [
+                {
+                    "unit_id": "JBER1",
+                    "unit_speed": 50,
+                    "unit_range": 300,
+                    "munitions": [
+                        {
+                            "munition_id": "JBER1M1",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "JBER1M2",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "JBER1M3",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        }
+                    ]
+                },
+                {
+                    "unit_id": "JBER2",
+                    "unit_speed": 50,
+                    "unit_range": 300,
+                    "munitions": [
+                        {
+                            "munition_id": "JBER2M1",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "JBER2M2",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "JBER2M3",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "base_name": "CN",
+            "base_loc_x": "100",
+            "base_loc_y": "200",
+            "health": "100",
+            "base_action_state": "idle",
+            "units": [
+                {
+                    "unit_id": "CN1",
+                    "unit_speed": 50,
+                    "unit_range": 300,
+                    "munitions": [
+                        {
+                            "munition_id": "CN1M1",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "CN1M2",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "CN1M3",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        }
+                    ]
+                },
+                {
+                    "unit_id": "CN2",
+                    "unit_speed": 50,
+                    "unit_range": 300,
+                    "munitions": [
+                        {
+                            "munition_id": "CN2M1",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "CN2M2",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        },
+                        {
+                            "munition_id": "CN3M3",
+                            "range": "500",
+                            "pk": 1,
+                            "speed": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
