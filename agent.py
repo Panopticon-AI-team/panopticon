@@ -8,18 +8,20 @@ class Agent:
         self.env = env
 
     def choose_action(self, s):
-        game = s.game_state
-        time = game.time
+        time = s.time
         if time == 0:
             # take an arbitrary action to test
-            action = Action("JBER", "launch", "JBER1", "MoveTo", "CN")
+            action = Action("JBER", "launch", "JBER1", "moveTo", "CN")
+            action1 = Action("JBER", "idle", "JBER1", "moveTo", "CN")
 
-        return action
+        actions = (action, action1)
+        return actions
 
     def learn(self, s, a, reward, s_prime):
         self.qtable.update(s, a, reward, s_prime, self.alpha, self.gamma)
 
 
+# basically like a struct for actions
 class Action:
     def __init__(self, base_chosen, base_action, unit_chosen, unit_action, unit_target):
         self.base_chosen = base_chosen
@@ -27,3 +29,13 @@ class Action:
         self.unit_chosen = unit_chosen
         self.unit_action = unit_action  # what the unit chosen will do
         self.unit_target = unit_target  # the object of the unit's action
+
+    def __str__(self):
+        str = (
+            f"Base Chosen: {self.base_chosen}\n"
+            f"Base Action: {self.base_action}\n"
+            f"Unit Chosen: {self.unit_chosen}\n"
+            f"Unit Action: {self.unit_action}\n"
+            f"Unit Target: {self.unit_target}"
+        )
+        return str

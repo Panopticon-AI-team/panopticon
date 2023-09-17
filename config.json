@@ -2,8 +2,8 @@
     "bases": [
         {
             "base_name": "JBPHH",
-            "base_loc_x": "100",
-            "base_loc_y": "200",
+            "base_loc_x": 100,
+            "base_loc_y": 200,
             "health": "100",
             "base_action_state": "idle",
             "units": [
@@ -61,8 +61,8 @@
         },
         {
             "base_name": "JBER",
-            "base_loc_x": "100",
-            "base_loc_y": "200",
+            "base_loc_x": 200,
+            "base_loc_y": 200,
             "health": "100",
             "base_action_state": "idle",
             "units": [
@@ -120,8 +120,8 @@
         },
         {
             "base_name": "CN",
-            "base_loc_x": "100",
-            "base_loc_y": "200",
+            "base_loc_x": 400,
+            "base_loc_y": 400,
             "health": "100",
             "base_action_state": "idle",
             "units": [

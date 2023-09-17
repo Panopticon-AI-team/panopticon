@@ -2,6 +2,8 @@
 lists all the classes and stuff. this is an important file
 """
 import json
+import math
+import copy
 
 
 class Munition:
@@ -23,6 +25,8 @@ class Unit:
         self.speed = unit_json["unit_speed"]
         self.range = unit_json["unit_range"]
         self.munitions_ls = []
+        self.target = None
+        self.state = None
 
         munitions_json_ls = unit_json["munitions"]
         for munition_json in munitions_json_ls:
@@ -31,6 +35,36 @@ class Unit:
 
     def get_munitions(self):
         return self.munitions_ls
+
+    def compute_deltas(self, x1, y1, x2, y2, s):
+        # Vector from (x1, y1) to (x2, y2)
+        v = (x2 - x1, y2 - y1)
+
+        # Magnitude of V
+        mag_v = math.sqrt(v[0] ** 2 + v[1] ** 2)
+
+        # Handle the case when the two points are the same
+        if mag_v == 0:
+            return (0, 0)
+
+        # Vector U with magnitude s pointing in the same direction as V
+        dx, dy = (s * v[0] / mag_v, s * v[1] / mag_v)
+
+        return dx, dy
+
+    def handle_action(self, action):
+        self.action = action.unit_action
+        self.target = action.unit_target
+
+        if self.action == "moveTo":
+            x1, y1 = self.unit_loc_x, self.unit_loc_y
+            x2, y2 = self.target.get_loc()
+            dx, dy = self.compute_deltas(x1, y1, x2, y2, self.speed)
+
+            self.unit_loc_x = self.unit_loc_x + dx
+            self.unit_loc_y = self.unit_loc_y + dy
+        else:
+            print("some other action was selected, not implemented yet")
 
 
 class Base:
@@ -50,6 +84,22 @@ class Base:
     def get_units(self):
         return self.units_ls
 
+    def get_loc(self):
+        return self.base_loc_x, self.base_loc_y
+
+    def get_base_name(self):
+        return self.base_name
+
+    def handle_action(self, action):
+        chosen_unit = action.unit_chosen
+
+        for unit in self.units_ls:
+            if unit.unit_id == chosen_unit:
+                unit.handle_action(action)
+                return unit
+            else:
+                print("unit not found")
+
 
 class GameState:
     def __init__(self, config):
@@ -58,7 +108,6 @@ class GameState:
         self.bases_ls = []
         self.units_ls = []
         self.munitions_ls = []
-        self.time = 0
 
         # initialize everything
         for base_json in bases_json_ls:
@@ -83,15 +132,33 @@ class GameState:
         for munition in self.munitions_ls:
             print(munition.munition_id)
 
+    def print_unit_coordinates(self):
+        for unit in self.units_ls:
+            print(f"The unit {unit.unit_id} is at {unit.unit_loc_x} {unit.unit_loc_y}")
+
     def get_bases(self):
         return self.bases_ls
 
-    def get_named_base(self, name):
+    def get_named_base(self, base_chosen_name):
+        print("the base chosen is " + base_chosen_name)
         for base in self.bases_ls:
-            if base.base_name == name:
+            print(base.get_base_name())
+            # if it equals a name of the base in the list
+            if base.get_base_name() == base_chosen_name:
+                print("found the base")
                 return base
-            else:
-                print("base not found")
+
+                # print("base not found")
+
+    def handle_action(self, action):
+        # preprocessing for actions to get base/tgt objects, relies on other fun
+        print(action)
+        action.base_chosen = self.get_named_base(action.base_chosen)
+        action.unit_target = self.get_named_base(action.unit_target)
+
+        # go further into the action tree
+
+        action.base_chosen.handle_action(action)
 
         """
         unit_ls = self.get_units() # gets all units from the bases 
@@ -111,17 +178,29 @@ class Environment:
 
         self.game_state = GameState(config)
         self.game_state.print_status()
+        self.time = 0
         print("hi")
 
     def reset(self):
         pass
         # return initial_state
 
-    def step(self, action):
-        base = action.base_chosen
+    def step(self, actions):
+        # action pre-processing steps
+        action, action1 = actions
 
-        chosen_base = self.game_state.get_named_base(base)
-        print(chosen_base.base_name)
+        print("taking actions")
+        self.game_state.print_unit_coordinates()
+
+        self.game_state.handle_action(action)
+        self.game_state.print_unit_coordinates()
+        self.game_state.handle_action(copy.deepcopy(action1))
+        self.game_state.print_unit_coordinates()
+        self.game_state.handle_action(copy.deepcopy(action1))
+        self.game_state.print_unit_coordinates()
+        print("action handled...?")
+
+        self.time = self.time + 1
 
         # so we go into the actions and make them happen. For example,
 

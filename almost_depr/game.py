@@ -6,7 +6,7 @@ It won't allow you to have states and actions, so we can't use it
 import tkinter as tk
 from PIL import Image, ImageTk
 import random
-from asset import Asset, Missile
+from almost_depr.asset import Asset, Missile
 
 
 class MovingAssets:
