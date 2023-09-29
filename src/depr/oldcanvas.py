@@ -79,5 +79,5 @@ class MovingDots:
 
 
 root = tk.Tk()
-app = MovingDots(root, "./map.jpg")
+app = MovingDots(root, "./resources/map.jpg")
 root.mainloop()

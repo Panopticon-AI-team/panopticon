@@ -180,7 +180,7 @@ class MovingAssets:
 
 def main():
     root = tk.Tk()
-    app = MovingAssets(root, "./world-map.gif", 1200, 715)
+    app = MovingAssets(root, "./resources/world-map.gif", 1200, 715)
     root.mainloop()
 
 

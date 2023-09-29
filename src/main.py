@@ -15,7 +15,7 @@ class Game:
         self.agent1 = Agent(self.env)
 
         self.root = tk.Tk()
-        app = Canvas(self.root, "./world-map.gif")
+        app = Canvas(self.root, "./resources/world-map.gif")
 
         self.root.mainloop()
         # self.agent2 = Agent(....)
