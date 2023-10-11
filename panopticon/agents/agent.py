@@ -1,10 +1,10 @@
 """
 This is the agent, and it is being used. right now the action is just hardcoded for testing
 """
-from actionhandler import Action
+from panopticon.environments.panopticon_env.actionhandler import Action
 
 
-class Agent:
+class PanopticonAgent:
     def __init__(self, env):
         self.env = env
 

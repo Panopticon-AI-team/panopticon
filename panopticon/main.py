@@ -2,9 +2,9 @@
 This is the main game file
 """
 
-from agent import Agent
-from environment import Environment
-from canvas import Canvas
+from panopticon.agents.agent import PanopticonAgent
+from panopticon.environments.panopticon_env.environment import Environment
+from panopticon.environments.panopticon_env.canvas import Canvas
 import tkinter as tk
 import json
 
@@ -12,10 +12,10 @@ import json
 class Game:
     def __init__(self, config_path):
         self.env = Environment(config_path)
-        self.agent1 = Agent(self.env)
+        self.agent1 = PanopticonAgent(self.env)
 
         self.root = tk.Tk()
-        app = Canvas(self.root, "./resources/world-map.gif")
+        app = Canvas(self.root, "./panopticon/environments/resources/world-map.gif")
 
         self.root.mainloop()
         # self.agent2 = Agent(....)
@@ -39,7 +39,7 @@ class Game:
 
 def main():
     # Initialize game
-    config_path = "./config.json"
+    config_path = "./panopticon/config.json"
     game = Game(config_path)
 
     # Train for a specified number of rounds
