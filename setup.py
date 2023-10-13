@@ -20,7 +20,7 @@ setup(
         'panopticon.environments.utilities',        
         'panopticon.tests',
         'panopticon.tests.utilities',        
-        'panopticon.training'
+        'panopticon.training',
         'panopticon.training.utilities',        
     ],
 )
