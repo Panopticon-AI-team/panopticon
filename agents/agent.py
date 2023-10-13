@@ -1,7 +1,7 @@
 """
 This is the agent, and it is being used. right now the action is just hardcoded for testing
 """
-from panopticon.environments.panopticon_env.actionhandler import Action
+from environments.panopticon_env.actionhandler import Action
 
 
 class PanopticonAgent:

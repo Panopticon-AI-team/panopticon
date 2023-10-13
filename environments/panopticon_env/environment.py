@@ -4,10 +4,10 @@ lists all the classes and stuff. this is an important file
 import json
 import math
 import copy
-from panopticon.environments.panopticon_env.actionhandler import ActionHandler
-from panopticon.environments.panopticon_env.statesummarizer import StateSummarizer
+from environments.panopticon_env.actionhandler import ActionHandler
+from environments.panopticon_env.statesummarizer import StateSummarizer
 import tkinter as tk
-from panopticon.environments.panopticon_env.canvas import Canvas
+from environments.panopticon_env.canvas import Canvas
 
 
 class Munition:
