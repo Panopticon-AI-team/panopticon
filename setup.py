@@ -15,6 +15,7 @@ setup(
     packages=[
         'panopticon.agents',
         'panopticon.agents.utilities',
+        'panopticon.environments',
         'panopticon.environments.panopticon_env',
         'panopticon.environments.utilities',        
         'panopticon.tests',
