@@ -13,14 +13,15 @@ setup(
     keywords='panopticon-ai reinforcement learning',
     url='https://github.com/orgulous/panopticon',
     packages=[
-        'agents',
-        'agents.utilities',
-        'environments',
-        'environments.panopticon_env',
-        'environments.utilities',        
-        'tests',
-        'tests.utilities',        
-        'training',
-        'training.utilities',        
+        'panopticon',
+        'panopticon.agents',
+        'panopticon.environments',
+        'panopticon.environments.panopticon_env',     
+        'panopticon.tests',
+        'panopticon.training',
+        'panopticon.utilities'    
+    ],
+    install_requires=[
+        'Pillow',
     ],
 )
