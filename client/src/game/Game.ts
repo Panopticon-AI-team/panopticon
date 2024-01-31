@@ -27,18 +27,17 @@ export default class Game {
     }
 
     moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {
-        const numberOfWaypoints = 20;
+        const numberOfWaypoints = 5;
         const aircraft = this.currentScenario.getAircraft(aircraftId);
         if (aircraft) {
             aircraft.route = [];
             aircraft.heading = getBearingBetweenTwoPoints(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude);
             const totalDistance = getDistanceBetweenTwoPoints(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude);
-            for (let waypointIndex = 0; waypointIndex < numberOfWaypoints; waypointIndex++) {
-                const distance = totalDistance * (waypointIndex / numberOfWaypoints);
-                const newWaypoint = getTerminalCoordinatesFromDistanceAndBearing(aircraft.latitude, aircraft.longitude, distance, aircraft.heading);
-                aircraft.route.push(newWaypoint);
-                // console.log(`Waypoint ${waypointIndex}: ${newWaypoint[0]}, ${newWaypoint[1]}`);
-            }
+            // for (let waypointIndex = 0; waypointIndex < numberOfWaypoints; waypointIndex++) {
+            //     const distance = totalDistance * (waypointIndex / numberOfWaypoints);
+            //     const newWaypoint = getTerminalCoordinatesFromDistanceAndBearing(aircraft.latitude, aircraft.longitude, distance, aircraft.heading);
+            //     aircraft.route.push(newWaypoint);
+            // }
             aircraft.latitude = newLatitude;
             aircraft.longitude = newLongitude;
         }

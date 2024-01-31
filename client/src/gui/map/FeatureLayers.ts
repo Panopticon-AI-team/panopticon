@@ -13,12 +13,12 @@ import { fromLonLat } from 'ol/proj';
 
 import Aircraft from '../../game/Aircraft';
 import Facility from '../../game/Facility';
+import Base from '../../game/Base';
 import { toRadians } from "../../utils/utils";
 
 import FlightIconSvg from '../assets/flight_black_24dp.svg';
 import RadarIconSvg from '../assets/radar_black_24dp.svg';
-import FlightTakeoffSvg from '../assets/flight_takeoff_black_24dp.svg'
-import Base from '../../game/Base';
+import FlightTakeoffSvg from '../assets/flight_takeoff_black_24dp.svg';
 
 const aircraftStyle = function(feature: FeatureLike) {
   return new Style({

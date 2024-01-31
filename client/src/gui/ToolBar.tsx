@@ -1,6 +1,11 @@
 import React from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import { ReactComponent as FlightIcon } from './assets/flight_black_24dp.svg';
+import { ReactComponent as RadarIcon } from './assets/radar_black_24dp.svg';
+import { ReactComponent as FlightTakeoffIcon } from './assets/flight_takeoff_black_24dp.svg';
 
 interface ToolBarProps {
     addAircraftOnClick: () => void;
@@ -13,11 +18,11 @@ interface ToolBarProps {
 export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addBaseOnClick, playOnClick, pauseOnClick }: Readonly<ToolBarProps>) {
   return (
     <Stack spacing={2} direction="row">
-      <Button variant="contained" color="success" onClick={playOnClick}>PLAY</Button>
-      <Button variant="contained" color="error" onClick={pauseOnClick}>PAUSE</Button>
-      <Button variant="contained" onClick={addAircraftOnClick}>Add aircraft</Button>
-      <Button variant="contained" onClick={addBaseOnClick}>Add base</Button>
-      <Button variant="contained" onClick={addFacilityOnClick}>Add SAM</Button>
+      <Button variant="contained" color="success" onClick={playOnClick} startIcon={<PlayArrowIcon/>}>PLAY</Button>
+      <Button variant="contained" color="error" onClick={pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
+      <Button variant="contained" onClick={addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
+      <Button variant="contained" onClick={addBaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add base</Button>
+      <Button variant="contained" onClick={addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
     </Stack>
   );
 }

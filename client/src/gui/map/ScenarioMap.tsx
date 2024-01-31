@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import { Pixel } from "ol/pixel";
-import { Map as OlMap } from "ol";
+import { Feature, Map as OlMap } from "ol";
 import View from "ol/View";
 import { fromLonLat, toLonLat } from "ol/proj";
 
@@ -10,7 +10,6 @@ import { AircraftLayer, BaseLayer, FacilityLayer, RangeLayer } from "./FeatureLa
 import BaseMapLayers from "./MapLayers";
 import Game from "../../game/Game";
 import ToolBar from "../ToolBar";
-import { delay } from "../../utils/utils";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -25,7 +24,7 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
   const facilityLayer = new FacilityLayer();
   const rangeLayer = new RangeLayer();
   const basesLayer = new BaseLayer();
-  let prevSelectedFeature = '';
+  let prevSelectedFeatureId = '';
   let addingAircraft = false;
   let addingFacility = false;
   let addingBase = false;
@@ -50,8 +49,18 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
   }, []);
 
   theMap.on('click', function(event) {
-    const currentSelectedFeature = getSelectedFeatureId(theMap.getEventPixel(event.originalEvent))
-    if (prevSelectedFeature === '' && currentSelectedFeature === '') {
+    const currentSelectedFeatures = getSelectedFeatures(theMap.getEventPixel(event.originalEvent));
+    if (prevSelectedFeatureId) {
+      moveAircraft(prevSelectedFeatureId, event.coordinate);
+      aircraftLayer.refresh(game.currentScenario.aircraft);
+      prevSelectedFeatureId = '';
+    } else if (currentSelectedFeatures.length === 1) {
+      const currentSelectedFeatureId = currentSelectedFeatures[0].getProperties()?.id;
+      const currentSelectedFeatureType = currentSelectedFeatures[0].getProperties()?.type;
+      if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') prevSelectedFeatureId = currentSelectedFeatureId;
+    } else if (currentSelectedFeatures.length > 1) {
+      // pass
+    } else {
       if (addingAircraft) {
         addAircraft(event.coordinate);
         aircraftLayer.refresh(game.currentScenario.aircraft);
@@ -66,11 +75,7 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
         basesLayer.refresh(game.currentScenario.bases);
         addingBase = false;
       }
-    } else if (prevSelectedFeature !== '' && currentSelectedFeature === '') {
-      moveAircraft(prevSelectedFeature, event.coordinate);
-      aircraftLayer.refresh(game.currentScenario.aircraft);
     }
-    prevSelectedFeature = currentSelectedFeature;
   });
 
   // theMap.getViewport().addEventListener('contextmenu', function (evt) {
@@ -78,14 +83,12 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
   //   console.log(theMap.getEventPixel(evt));
   // });
 
-  function getSelectedFeatureId(pixel: Pixel): string {
-    const potentialSelectedFeatures: string[] = [];
+  function getSelectedFeatures(pixel: Pixel): Feature[] {
+    const selectedFeatures: Feature[] = [];
     theMap.forEachFeatureAtPixel(pixel, function (feature) {
-      const featureId = feature.getProperties().id;
-      if (featureId.length > 0) potentialSelectedFeatures.push(featureId)
+      selectedFeatures.push(feature as Feature);
     })
-    if (potentialSelectedFeatures.length == 1) return potentialSelectedFeatures[0];
-    return '';
+    return selectedFeatures;
   }
 
   function setAddingAircraft() {
@@ -142,9 +145,7 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
     // if (aircraft) {
     //   aircraft.route.forEach((waypoint) => {
     //     addAircraft(fromLonLat(waypoint));
-    //     // await delay(1000);
     //   })
-    //   aircraftLayer.refresh(game.currentScenario.aircraft);
     // }
   }
 

@@ -1,3 +1,5 @@
+import { EARTH_RADIUS } from "./constants";
+
 // Converts from degrees to radians.
 export function toRadians(degrees: number): number {
     return degrees * Math.PI / 180;
@@ -19,17 +21,30 @@ export function getBearingBetweenTwoPoints(startLat: number, startLng: number, d
         Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
     let brng = Math.atan2(y, x);
     brng = toDegrees(brng);
-    return (brng + 360) % 360;
+    brng = (brng + 360) % 360;
+    // console.log("Bearing: ", brng);
+    return brng;
 }
 
-export function getDistanceBetweenTwoPoints(lat1: number, lon1: number, lat2: number, lon2: number) {
-    return Math.acos(Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1))*6371
+export function getDistanceBetweenTwoPoints(startLat: number, startLng: number, destLat: number, destLng: number) {
+    const φ1 = toRadians(startLat); // φ, λ in radians
+    const φ2 = toRadians(destLat);
+    const Δφ = toRadians(destLat-startLat);
+    const Δλ = toRadians(destLng-startLng);
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    const d = EARTH_RADIUS * c; // in kilometres
+
+    // console.log("Distance: ", d);
+    return d;
 }
 
 export function getTerminalCoordinatesFromDistanceAndBearing(startLat: number, startLng: number, distance: number, bearing: number) {
     const bearing_rad = (bearing*Math.PI)/180;
-
-    const EARTH_RADIUS = 6378.137;
 
     const init_lat = toRadians(startLat);
     const init_lon = toRadians(startLng);
