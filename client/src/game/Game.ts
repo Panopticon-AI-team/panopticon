@@ -14,6 +14,7 @@ export default class Game {
     addingAircraft: boolean = false;
     addingBase: boolean = false;
     addingFacility: boolean = false;
+    selectedUnitId: string = '';
 
     constructor(currentScenario: Scenario) {
         this.currentScenario = currentScenario;

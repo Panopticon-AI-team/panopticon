@@ -19,7 +19,6 @@ interface ScenarioMapProps {
 
 export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMapProps>) {
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
-  const [prevSelectedFeatureId, setPrevSelectedFeatureId] = useState('');
 
   const mapId = useRef(null);
   const baseMapLayers = new BaseMapLayers();
@@ -54,14 +53,14 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
 
   function handleMapClick(event: MapBrowserEvent<any>) {
     const currentSelectedFeatures = getSelectedFeatures(theMap.getEventPixel(event.originalEvent));
-    if (prevSelectedFeatureId) {
-      moveAircraft(prevSelectedFeatureId, event.coordinate);
+    if (game.selectedUnitId) {
+      moveAircraft(game.selectedUnitId, event.coordinate);
       aircraftLayer.refresh(game.currentScenario.aircraft);
-      setPrevSelectedFeatureId('');
+      game.selectedUnitId = '';
     } else if (currentSelectedFeatures.length === 1) {
       const currentSelectedFeatureId = currentSelectedFeatures[0].getProperties()?.id;
       const currentSelectedFeatureType = currentSelectedFeatures[0].getProperties()?.type;
-      if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') setPrevSelectedFeatureId(currentSelectedFeatureId);
+      if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') game.selectedUnitId = currentSelectedFeatureId;
     } else if (currentSelectedFeatures.length > 1) {
       // pass
     } else {
