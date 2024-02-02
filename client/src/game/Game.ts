@@ -4,12 +4,16 @@ import Aircraft from "./Aircraft";
 import Facility from "./Facility";
 import Scenario from "./Scenario";
 
-import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing } from "../utils/utils";
+import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing, delay } from "../utils/utils";
 import Base from "./Base";
 
 export default class Game {
     currentScenario: Scenario;
     currentSideName: string | undefined;
+    scenarioPaused: boolean = true;
+    addingAircraft: boolean = false;
+    addingBase: boolean = false;
+    addingFacility: boolean = false;
 
     constructor(currentScenario: Scenario) {
         this.currentScenario = currentScenario;
@@ -65,4 +69,15 @@ export default class Game {
         this.currentScenario.bases.push(base);
     }
 
+    async startScenario(callbackFunction: () => void) {
+        while (!this.scenarioPaused) {
+            this.currentScenario.currentTime += 1;
+            callbackFunction();
+            await delay(1000);
+        }
+    }
+
+    pauseScenario() {
+        this.scenarioPaused = true;
+    }
 }

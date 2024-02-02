@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import { Pixel } from "ol/pixel";
-import { Feature, Map as OlMap } from "ol";
+import { Feature, MapBrowserEvent, Map as OlMap } from "ol";
 import View from "ol/View";
 import { fromLonLat, toLonLat } from "ol/proj";
 
@@ -18,18 +18,15 @@ interface ScenarioMapProps {
 }
 
 export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMapProps>) {
+  const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
+  const [prevSelectedFeatureId, setPrevSelectedFeatureId] = useState('');
+
   const mapId = useRef(null);
   const baseMapLayers = new BaseMapLayers();
   const aircraftLayer = new AircraftLayer();
   const facilityLayer = new FacilityLayer();
   const rangeLayer = new RangeLayer();
   const basesLayer = new BaseLayer();
-  let prevSelectedFeatureId = '';
-  let addingAircraft = false;
-  let addingFacility = false;
-  let addingBase = false;
-  let gamePlaying = false;
-  let gamePaused = true;
 
   const theMap = new OlMap({
     layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, rangeLayer.layer, basesLayer.layer],
@@ -48,40 +45,47 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
     }
   }, []);
 
-  theMap.on('click', function(event) {
-    const currentSelectedFeatures = getSelectedFeatures(theMap.getEventPixel(event.originalEvent));
-    if (prevSelectedFeatureId) {
-      moveAircraft(prevSelectedFeatureId, event.coordinate);
-      aircraftLayer.refresh(game.currentScenario.aircraft);
-      prevSelectedFeatureId = '';
-    } else if (currentSelectedFeatures.length === 1) {
-      const currentSelectedFeatureId = currentSelectedFeatures[0].getProperties()?.id;
-      const currentSelectedFeatureType = currentSelectedFeatures[0].getProperties()?.type;
-      if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') prevSelectedFeatureId = currentSelectedFeatureId;
-    } else if (currentSelectedFeatures.length > 1) {
-      // pass
-    } else {
-      if (addingAircraft) {
-        addAircraft(event.coordinate);
-        aircraftLayer.refresh(game.currentScenario.aircraft);
-        addingAircraft = false;
-      } else if (addingFacility) {
-        addFacility(event.coordinate);
-        facilityLayer.refresh(game.currentScenario.facilities);
-        rangeLayer.refresh(game.currentScenario.facilities);
-        addingFacility = false;
-      } else if (addingBase) {
-        addBase(event.coordinate);
-        basesLayer.refresh(game.currentScenario.bases);
-        addingBase = false;
-      }
-    }
-  });
+  theMap.on('click', (event) => handleMapClick(event));
 
   // theMap.getViewport().addEventListener('contextmenu', function (evt) {
   //   evt.preventDefault();
   //   console.log(theMap.getEventPixel(evt));
   // });
+
+  function handleMapClick(event: MapBrowserEvent<any>) {
+    const currentSelectedFeatures = getSelectedFeatures(theMap.getEventPixel(event.originalEvent));
+    if (prevSelectedFeatureId) {
+      moveAircraft(prevSelectedFeatureId, event.coordinate);
+      aircraftLayer.refresh(game.currentScenario.aircraft);
+      setPrevSelectedFeatureId('');
+    } else if (currentSelectedFeatures.length === 1) {
+      const currentSelectedFeatureId = currentSelectedFeatures[0].getProperties()?.id;
+      const currentSelectedFeatureType = currentSelectedFeatures[0].getProperties()?.type;
+      if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') setPrevSelectedFeatureId(currentSelectedFeatureId);
+    } else if (currentSelectedFeatures.length > 1) {
+      // pass
+    } else {
+      handleAddUnit(event.coordinate);
+    }
+    event.preventDefault(); // avoid bubbling 
+  }
+
+  function handleAddUnit(coordinates: number[]) {
+    if (game.addingAircraft) {
+      addAircraft(coordinates);
+      aircraftLayer.refresh(game.currentScenario.aircraft);
+      game.addingAircraft = false;
+    } else if (game.addingFacility) {
+      addFacility(coordinates);
+      facilityLayer.refresh(game.currentScenario.facilities);
+      rangeLayer.refresh(game.currentScenario.facilities);
+      game.addingFacility = false;
+    } else if (game.addingBase) {
+      addBase(coordinates);
+      basesLayer.refresh(game.currentScenario.bases);
+      game.addingBase = false;
+    }
+  }
 
   function getSelectedFeatures(pixel: Pixel): Feature[] {
     const selectedFeatures: Feature[] = [];
@@ -92,23 +96,30 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
   }
 
   function setAddingAircraft() {
-    addingAircraft = !addingAircraft;
+    game.addingAircraft = !game.addingAircraft;
+    game.addingFacility = false;
+    game.addingBase = false;
   }
 
   function setAddingFacility() {
-    addingFacility = !addingFacility;
+    game.addingFacility = !game.addingFacility;
+    game.addingAircraft = false;
+    game.addingBase = false;
   }
 
   function setAddingBase() {
-    addingBase = !addingBase;
+    game.addingBase = !game.addingBase;
+    game.addingAircraft = false;
+    game.addingFacility = false;
   }
 
   function setGamePlaying() {
-    gamePlaying = !gamePlaying;
+    game.scenarioPaused = false;
+    game.startScenario(() => {setCurrentScenarioTime(game.currentScenario.currentTime);});
   }
 
   function setGamePaused() {
-    gamePaused = !gamePaused;
+    game.pauseScenario();
   }
 
   function addAircraft(coordinates: number[]) {
@@ -151,7 +162,7 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
 
   return (
     <div>
-      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addBaseOnClick={setAddingBase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused}></ToolBar>
+      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addBaseOnClick={setAddingBase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} scenarioCurrentTime={currentScenarioTime}></ToolBar>
       <div ref={mapId} className='map'></div>
     </div>
   );

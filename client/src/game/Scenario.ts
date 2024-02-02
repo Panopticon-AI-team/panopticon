@@ -7,6 +7,7 @@ export default class Scenario {
     id: string;
     name: string;
     startTime: number;
+    currentTime: number;
     duration: number;
     sides: Side[];
     timeCompression: number;
@@ -18,6 +19,7 @@ export default class Scenario {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
+        this.currentTime = startTime;
         this.duration = duration;
         this.sides = sides;
         this.timeCompression = 1;
