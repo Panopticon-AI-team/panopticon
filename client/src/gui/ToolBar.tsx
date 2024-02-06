@@ -7,6 +7,7 @@ import { ReactComponent as FlightIcon } from './assets/flight_black_24dp.svg';
 import { ReactComponent as RadarIcon } from './assets/radar_black_24dp.svg';
 import { ReactComponent as FlightTakeoffIcon } from './assets/flight_takeoff_black_24dp.svg';
 import Chip from '@mui/material/Chip';
+import { unixToLocalTime } from '../utils/utils';
 
 interface ToolBarProps {
     addAircraftOnClick: () => void;
@@ -25,7 +26,7 @@ export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addBas
       <Button variant="contained" onClick={addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
       <Button variant="contained" onClick={addBaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add base</Button>
       <Button variant="contained" onClick={addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
-      <Chip label={"Current time: " + scenarioCurrentTime.toString()} />
+      <Chip label={"Current time: " + unixToLocalTime(scenarioCurrentTime)} />
     </Stack>
   );
 }

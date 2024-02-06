@@ -32,19 +32,21 @@ export default class Game {
     }
 
     moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {
-        const numberOfWaypoints = 5;
+        const numberOfWaypoints = 100;
         const aircraft = this.currentScenario.getAircraft(aircraftId);
         if (aircraft) {
             aircraft.route = [];
+            aircraft.route.push([aircraft.latitude, aircraft.longitude]);
             aircraft.heading = getBearingBetweenTwoPoints(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude);
             const totalDistance = getDistanceBetweenTwoPoints(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude);
-            // for (let waypointIndex = 0; waypointIndex < numberOfWaypoints; waypointIndex++) {
-            //     const distance = totalDistance * (waypointIndex / numberOfWaypoints);
-            //     const newWaypoint = getTerminalCoordinatesFromDistanceAndBearing(aircraft.latitude, aircraft.longitude, distance, aircraft.heading);
-            //     aircraft.route.push(newWaypoint);
-            // }
-            aircraft.latitude = newLatitude;
-            aircraft.longitude = newLongitude;
+            const legDistance = totalDistance / numberOfWaypoints;
+
+            for (let waypointIndex = 1; waypointIndex < numberOfWaypoints; waypointIndex++) {
+                const newWaypoint = getTerminalCoordinatesFromDistanceAndBearing(aircraft.route[waypointIndex - 1][0], aircraft.route[waypointIndex - 1][1], legDistance, aircraft.heading);
+                aircraft.route.push(newWaypoint);
+            }
+
+            aircraft.route.push([newLatitude, newLongitude]);
         }
     }
 
@@ -70,10 +72,21 @@ export default class Game {
         this.currentScenario.bases.push(base);
     }
 
-    async startScenario(callbackFunction: () => void) {
+    async startScenario(callbackFunction1: () => void, callbackFunction2: () => void) {
         while (!this.scenarioPaused) {
             this.currentScenario.currentTime += 1;
-            callbackFunction();
+            this.currentScenario.aircraft.forEach((aircraft) => {
+                const route = aircraft.route;
+                if (route.length > 0) {
+                    const nextWaypoint = route[0];
+                    aircraft.latitude = nextWaypoint[0];
+                    aircraft.longitude = nextWaypoint[1];
+                    aircraft.route.shift();
+                }
+                console.log(route.length)
+            });
+            callbackFunction1();
+            callbackFunction2();
             await delay(1000);
         }
     }

@@ -16,7 +16,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <ScenarioMap center={[0, 0]} zoom={3} game={theGame}></ScenarioMap>   
+      <ScenarioMap center={[0, 0]} zoom={5} game={theGame}></ScenarioMap>   
     </div>
   );
 }

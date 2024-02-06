@@ -23,9 +23,9 @@ import FlightTakeoffSvg from '../assets/flight_takeoff_black_24dp.svg';
 const aircraftStyle = function(feature: FeatureLike) {
   return new Style({
     image: new Icon({
-      opacity: 1,
+      opacity: feature.getProperties().selected ? 1 : 1,
       src: FlightIconSvg,
-      rotation: toRadians(-(feature.getProperties().heading - 90)),
+      rotation: toRadians(feature.getProperties().heading),
     }),
   })
 }
@@ -67,7 +67,7 @@ export class AircraftLayer {
     aircraft.forEach((aircraft) => {
       const feature = new Feature({
         type: 'aircraft',
-        geometry: new Point(fromLonLat([aircraft.latitude, aircraft.longitude])),
+        geometry: new Point(fromLonLat([aircraft.longitude, aircraft.latitude])),
         id: aircraft.id,
         name: aircraft.name,
         heading: aircraft.heading,

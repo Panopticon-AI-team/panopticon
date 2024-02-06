@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Pixel } from "ol/pixel";
 import { Feature, MapBrowserEvent, Map as OlMap } from "ol";
 import View from "ol/View";
-import { fromLonLat, toLonLat } from "ol/proj";
+import { toLonLat } from "ol/proj";
 
 import "../styles/ScenarioMap.css";
 import { AircraftLayer, BaseLayer, FacilityLayer, RangeLayer } from "./FeatureLayers";
@@ -60,13 +60,17 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
     } else if (currentSelectedFeatures.length === 1) {
       const currentSelectedFeatureId = currentSelectedFeatures[0].getProperties()?.id;
       const currentSelectedFeatureType = currentSelectedFeatures[0].getProperties()?.type;
-      if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') game.selectedUnitId = currentSelectedFeatureId;
+      if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') {
+        game.selectedUnitId = currentSelectedFeatureId;
+        const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);
+        if (aircraft) aircraft.selected = true;
+        aircraftLayer.refresh(game.currentScenario.aircraft);
+      }
     } else if (currentSelectedFeatures.length > 1) {
       // pass
     } else {
       handleAddUnit(event.coordinate);
     }
-    event.preventDefault(); // avoid bubbling 
   }
 
   function handleAddUnit(coordinates: number[]) {
@@ -114,7 +118,7 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
 
   function setGamePlaying() {
     game.scenarioPaused = false;
-    game.startScenario(() => {setCurrentScenarioTime(game.currentScenario.currentTime);});
+    game.startScenario(() => {setCurrentScenarioTime(game.currentScenario.currentTime);}, () => {aircraftLayer.refresh(game.currentScenario.aircraft);});
   }
 
   function setGamePaused() {
@@ -125,8 +129,8 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
     coordinates = toLonLat(coordinates);
     const aircraftName = 'Dummy';
     const className = 'F-16C';
-    const latitude = coordinates[0];
-    const longitude = coordinates[1];
+    const latitude = coordinates[1];
+    const longitude = coordinates[0];
     game.addAircraft(aircraftName, className, latitude, longitude);
   }
 
@@ -149,14 +153,8 @@ export default function ScenarioMap({ zoom, center, game }: Readonly<ScenarioMap
   }
 
   function moveAircraft(aircraftId: string, coordinates: number[]) {
-    coordinates = toLonLat(coordinates);
-    game.moveAircraft(aircraftId, coordinates[0], coordinates[1]);
-    // const aircraft = game.currentScenario.getAircraft(aircraftId);
-    // if (aircraft) {
-    //   aircraft.route.forEach((waypoint) => {
-    //     addAircraft(fromLonLat(waypoint));
-    //   })
-    // }
+    coordinates = toLonLat(coordinates, 'EPSG:3857');
+    game.moveAircraft(aircraftId, coordinates[1], coordinates[0]);
   }
 
   return (

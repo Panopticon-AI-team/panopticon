@@ -1,4 +1,4 @@
-import { EARTH_RADIUS } from "./constants";
+import { EARTH_RADIUS_KM } from "./constants";
 
 // Converts from degrees to radians.
 export function toRadians(degrees: number): number {
@@ -22,7 +22,7 @@ export function getBearingBetweenTwoPoints(startLat: number, startLng: number, d
     let brng = Math.atan2(y, x);
     brng = toDegrees(brng);
     brng = (brng + 360) % 360;
-    // console.log("Bearing: ", brng);
+
     return brng;
 }
 
@@ -37,25 +37,44 @@ export function getDistanceBetweenTwoPoints(startLat: number, startLng: number, 
             Math.sin(Δλ/2) * Math.sin(Δλ/2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-    const d = EARTH_RADIUS * c; // in kilometres
+    const d = EARTH_RADIUS_KM * c; // in kilometres
 
-    // console.log("Distance: ", d);
     return d;
 }
 
 export function getTerminalCoordinatesFromDistanceAndBearing(startLat: number, startLng: number, distance: number, bearing: number) {
-    const bearing_rad = (bearing*Math.PI)/180;
+    const bearing_rad = toRadians(bearing);
 
     const init_lat = toRadians(startLat);
     const init_lon = toRadians(startLng);
 
-    const final_lat = toDegrees(Math.asin( Math.sin(init_lat)*Math.cos(distance/EARTH_RADIUS) + Math.cos(init_lat)*Math.sin(distance/EARTH_RADIUS)*Math.cos(bearing_rad)));
+    const final_lat = toDegrees(Math.asin( Math.sin(init_lat)*Math.cos(distance/EARTH_RADIUS_KM) + Math.cos(init_lat)*Math.sin(distance/EARTH_RADIUS_KM)*Math.cos(bearing_rad)));
 
-    const final_lon = toDegrees(init_lon + Math.atan2(Math.sin(bearing_rad)*Math.sin(distance/EARTH_RADIUS)*Math.cos(init_lat), Math.cos(distance/EARTH_RADIUS)-Math.sin(init_lat)*Math.sin(final_lat)));
+    const final_lon = toDegrees(init_lon + Math.atan2(Math.sin(bearing_rad)*Math.sin(distance/EARTH_RADIUS_KM)*Math.cos(init_lat), Math.cos(distance/EARTH_RADIUS_KM)-Math.sin(init_lat)*Math.sin(final_lat)));
 
     return [final_lat, final_lon]; 
 }
 
 export function delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
+}
+
+export function unixToLocalTime(unixTime: number) {
+    // Create a new JavaScript Date object based on the timestamp
+    // multiplied by 1000 so that the argument is in milliseconds, not seconds
+    const date = new Date(unixTime * 1000);
+
+    // Hours part from the timestamp
+    const hours = date.getHours();
+
+    // Minutes part from the timestamp
+    const minutes = "0" + date.getMinutes();
+
+    // Seconds part from the timestamp
+    const seconds = "0" + date.getSeconds();
+
+    // Will display time in 10:30:23 format
+    const formattedTime = hours + ':' + minutes.substring(minutes.length-2) + ':' + seconds.substring(seconds.length-2);
+
+    return formattedTime;
 }
