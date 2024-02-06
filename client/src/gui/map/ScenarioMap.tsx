@@ -77,6 +77,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   function handleSelectSingleFeature(feature: Feature) {
     const currentSelectedFeatureId = feature.getProperties()?.id;
     const currentSelectedFeatureType = feature.getProperties()?.type;
+    const currentSelectedFeatureSideName = feature.getProperties()?.sideName;
+    
+    if (currentSelectedFeatureSideName && currentSelectedFeatureSideName !== game.currentSideName) return;
+
     if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') {
       game.selectedUnitId = game.selectedUnitId === '' ? currentSelectedFeatureId : '';
       const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);

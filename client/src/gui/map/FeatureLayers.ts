@@ -80,6 +80,7 @@ export class AircraftLayer {
         name: aircraft.name,
         heading: aircraft.heading,
         selected: aircraft.selected,
+        sideName: aircraft.sideName,
         sideColor: aircraft.sideColor,
       });
       this.layerSource.addFeature(feature);
@@ -111,6 +112,7 @@ export class FacilityLayer {
         geometry: new Point(fromLonLat([facility.longitude, facility.latitude], this.projection)),
         id: facility.id,
         name: facility.name,
+        sideName: facility.sideName,
         sideColor: facility.sideColor,
       });
       this.layerSource.addFeature(feature);
@@ -178,6 +180,7 @@ export class BaseLayer {
         geometry: new Point(fromLonLat([base.longitude, base.latitude], this.projection)),
         id: base.id,
         name: base.name,
+        sideName: base.sideName,
         sideColor: base.sideColor,
       });
       this.layerSource.addFeature(feature);
