@@ -29,6 +29,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection ?? defaultProjection));
   const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection ?? defaultProjection));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
+  const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
   
   const map = new OlMap({
     layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, rangeLayer.layer, basesLayer.layer],
@@ -105,7 +106,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const selectedFeatures: Feature[] = [];
     theMap.forEachFeatureAtPixel(pixel, function (feature) {
       selectedFeatures.push(feature as Feature);
-    })
+    }, {hitTolerance: 5,})
     return selectedFeatures;
   }
 
@@ -180,9 +181,14 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     game.moveAircraft(aircraftId, destinationLatitude, destinationLongitude);
   }
 
+  function switchCurrentSide() {
+    game.switchCurrentSide();
+    setCurrentSideName(game.currentSideName);
+  }
+
   return (
     <div>
-      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addBaseOnClick={setAddingBase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} scenarioCurrentTime={currentScenarioTime}></ToolBar>
+      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addBaseOnClick={setAddingBase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName}></ToolBar>
       <div ref={mapId} className='map'></div>
     </div>
   );

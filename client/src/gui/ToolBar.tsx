@@ -15,10 +15,12 @@ interface ToolBarProps {
     addBaseOnClick: () => void;
     playOnClick: () => void;
     pauseOnClick: () => void;
+    switchCurrentSideOnClick: () => void;
     scenarioCurrentTime: number;
+    scenarioCurrentSideName: string;
 }
 
-export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addBaseOnClick, playOnClick, pauseOnClick, scenarioCurrentTime }: Readonly<ToolBarProps>) {
+export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addBaseOnClick, playOnClick, pauseOnClick, switchCurrentSideOnClick, scenarioCurrentTime, scenarioCurrentSideName }: Readonly<ToolBarProps>) {
   return (
     <Stack spacing={2} direction="row">
       <Button variant="contained" color="success" onClick={playOnClick} startIcon={<PlayArrowIcon/>}>PLAY</Button>
@@ -26,6 +28,7 @@ export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addBas
       <Button variant="contained" onClick={addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
       <Button variant="contained" onClick={addBaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add base</Button>
       <Button variant="contained" onClick={addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
+      <Button variant="contained" onClick={switchCurrentSideOnClick}>Current side: {scenarioCurrentSideName}</Button>
       <Chip label={"Current time: " + unixToLocalTime(scenarioCurrentTime)} />
     </Stack>
   );

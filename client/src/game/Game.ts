@@ -9,7 +9,7 @@ import Base from "./Base";
 
 export default class Game {
     currentScenario: Scenario;
-    currentSideName: string | undefined;
+    currentSideName: string = '';
     scenarioPaused: boolean = true;
     addingAircraft: boolean = false;
     addingBase: boolean = false;
@@ -71,6 +71,15 @@ export default class Game {
             }
 
             aircraft.route.push([newLatitude, newLongitude]);
+        }
+    }
+
+    switchCurrentSide() {
+        for (let i = 0; i < this.currentScenario.sides.length; i++) {
+            if (this.currentScenario.sides[i].name === this.currentSideName) {
+                this.currentSideName = this.currentScenario.sides[(i + 1) % this.currentScenario.sides.length].name;
+                break;
+            }
         }
     }
 
