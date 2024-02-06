@@ -1,5 +1,5 @@
 import Feature, { FeatureLike } from 'ol/Feature.js';
-import { Circle, Geometry, Polygon } from "ol/geom";
+import { Circle, Geometry } from "ol/geom";
 import Point from 'ol/geom/Point.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import VectorSource from 'ol/source/Vector.js';
@@ -9,7 +9,7 @@ import {
   Fill,
   Stroke,
 } from 'ol/style.js';
-import { fromLonLat } from 'ol/proj';
+import { Projection, fromLonLat } from 'ol/proj';
 
 import Aircraft from '../../game/Aircraft';
 import Facility from '../../game/Facility';
@@ -19,6 +19,7 @@ import { toRadians } from "../../utils/utils";
 import FlightIconSvg from '../assets/flight_black_24dp.svg';
 import RadarIconSvg from '../assets/radar_black_24dp.svg';
 import FlightTakeoffSvg from '../assets/flight_takeoff_black_24dp.svg';
+import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../../utils/constants';
 
 const aircraftStyle = function(feature: FeatureLike) {
   return new Style({
@@ -51,8 +52,9 @@ const baseStyle = function(feature: FeatureLike) {
 export class AircraftLayer {
   layerSource: VectorSource;
   layer: VectorLayer<VectorSource<Geometry>>;
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor() {
+  constructor(projection: Projection) {
     this.layerSource = new VectorSource({
       features: []
     });
@@ -60,6 +62,7 @@ export class AircraftLayer {
       source: this.layerSource,
       style: (feature) => aircraftStyle(feature),
     });
+    this.projection = projection;
   };
 
   refresh(aircraft: Aircraft[]) {
@@ -67,7 +70,7 @@ export class AircraftLayer {
     aircraft.forEach((aircraft) => {
       const feature = new Feature({
         type: 'aircraft',
-        geometry: new Point(fromLonLat([aircraft.longitude, aircraft.latitude])),
+        geometry: new Point(fromLonLat([aircraft.longitude, aircraft.latitude], this.projection)),
         id: aircraft.id,
         name: aircraft.name,
         heading: aircraft.heading,
@@ -80,8 +83,9 @@ export class AircraftLayer {
 export class FacilityLayer {
   layerSource: VectorSource;
   layer: VectorLayer<VectorSource<Geometry>>;
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor() {
+  constructor(projection: Projection) {
     this.layerSource = new VectorSource({
       features: []
     });
@@ -89,6 +93,7 @@ export class FacilityLayer {
       source: this.layerSource,
       style: (feature) => facilityStyle(feature),
     });
+    if (projection) this.projection = projection;
   };
 
   refresh(facilities: Facility[]) {
@@ -96,7 +101,7 @@ export class FacilityLayer {
     facilities.forEach((facility) => {
       const feature = new Feature({
         type: 'facility',
-        geometry: new Point(fromLonLat([facility.latitude, facility.longitude])),
+        geometry: new Point(fromLonLat([facility.longitude, facility.latitude], this.projection)),
         id: facility.id,
         name: facility.name,
       });
@@ -108,8 +113,9 @@ export class FacilityLayer {
 export class RangeLayer {
   layerSource: VectorSource;
   layer: VectorLayer<VectorSource<Geometry>>;
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor() {
+  constructor(projection: Projection) {
     this.layerSource = new VectorSource({
       features: []
     });
@@ -127,13 +133,14 @@ export class RangeLayer {
         })
       ]
     });
+    if (projection) this.projection = projection;
   };
 
   refresh(entities: (Aircraft | Facility)[]) {
     this.layerSource.clear();
     entities.forEach((entity) => {
-      const coordinatesLatLon = fromLonLat([entity.latitude, entity.longitude]);
-      const rangeRing = new Feature(new Circle(coordinatesLatLon, entity.range * 1852));
+      const coordinatesLatLon = fromLonLat([entity.longitude, entity.latitude], this.projection);
+      const rangeRing = new Feature(new Circle(coordinatesLatLon, entity.range * NAUTICAL_MILES_TO_METERS));
       this.layerSource.addFeature(rangeRing);
     });
   }
@@ -142,8 +149,9 @@ export class RangeLayer {
 export class BaseLayer {
   layerSource: VectorSource;
   layer: VectorLayer<VectorSource<Geometry>>;
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor() {
+  constructor(projection: Projection) {
     this.layerSource = new VectorSource({
       features: []
     });
@@ -151,6 +159,7 @@ export class BaseLayer {
       source: this.layerSource,
       style: (feature) => baseStyle(feature),
     });
+    if (projection) this.projection = projection;
   };
 
   refresh(bases: Base[]) {
@@ -158,7 +167,7 @@ export class BaseLayer {
     bases.forEach((base) => {
       const feature = new Feature({
         type: 'base',
-        geometry: new Point(fromLonLat([base.latitude, base.longitude])),
+        geometry: new Point(fromLonLat([base.longitude, base.latitude], this.projection)),
         id: base.id,
         name: base.name,
       });

@@ -31,6 +31,28 @@ export default class Game {
         this.currentScenario.aircraft.push(aircraft);
     }
 
+    addBase(baseName: string, className: string, latitude: number, longitude: number) {
+        if (!this.currentSideName) {
+            return;
+        }
+        const base = new Base(uuidv4(), baseName, this.currentSideName, className);
+        base.latitude = latitude;
+        base.longitude = longitude;
+
+        this.currentScenario.bases.push(base);
+    }
+
+    addFacility(facilityName: string, className: string, latitude: number, longitude: number) {
+        if (!this.currentSideName) {
+            return;
+        }
+        const facility = new Facility(uuidv4(), facilityName, this.currentSideName, className);
+        facility.latitude = latitude;
+        facility.longitude = longitude;
+
+        this.currentScenario.facilities.push(facility);
+    }
+
     moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {
         const numberOfWaypoints = 100;
         const aircraft = this.currentScenario.getAircraft(aircraftId);
@@ -48,28 +70,6 @@ export default class Game {
 
             aircraft.route.push([newLatitude, newLongitude]);
         }
-    }
-
-    addFacility(facilityName: string, className: string, latitude: number, longitude: number) {
-        if (!this.currentSideName) {
-            return;
-        }
-        const facility = new Facility(uuidv4(), facilityName, this.currentSideName, className);
-        facility.latitude = latitude;
-        facility.longitude = longitude;
-
-        this.currentScenario.facilities.push(facility);
-    }
-
-    addBase(baseName: string, className: string, latitude: number, longitude: number) {
-        if (!this.currentSideName) {
-            return;
-        }
-        const base = new Base(uuidv4(), baseName, this.currentSideName, className);
-        base.latitude = latitude;
-        base.longitude = longitude;
-
-        this.currentScenario.bases.push(base);
     }
 
     async startScenario(callbackFunction1: () => void, callbackFunction2: () => void) {

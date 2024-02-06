@@ -1,36 +1,31 @@
 import { EARTH_RADIUS_KM } from "./constants";
 
-// Converts from degrees to radians.
 export function toRadians(degrees: number): number {
     return degrees * Math.PI / 180;
 };
 
-// Converts from radians to degrees.
 function toDegrees(radians: number): number {
     return radians * 180 / Math.PI;
 }
 
-export function getBearingBetweenTwoPoints(startLat: number, startLng: number, destLat: number, destLng: number): number {
-    startLat = toRadians(startLat);
-    startLng = toRadians(startLng);
-    destLat = toRadians(destLat);
-    destLng = toRadians(destLng);
+export function getBearingBetweenTwoPoints(startLatitude: number, startLongitude: number, destinationLatitude: number, destinationLongitude: number): number {
+    startLatitude = toRadians(startLatitude);
+    startLongitude = toRadians(startLongitude);
+    destinationLatitude = toRadians(destinationLatitude);
+    destinationLongitude = toRadians(destinationLongitude);
 
-    const y = Math.sin(destLng - startLng) * Math.cos(destLat);
-    const x = Math.cos(startLat) * Math.sin(destLat) -
-        Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
-    let brng = Math.atan2(y, x);
-    brng = toDegrees(brng);
-    brng = (brng + 360) % 360;
+    const y = Math.sin(destinationLongitude - startLongitude) * Math.cos(destinationLatitude);
+    const x = Math.cos(startLatitude) * Math.sin(destinationLatitude) - Math.sin(startLatitude) * Math.cos(destinationLatitude) * Math.cos(destinationLongitude - startLongitude);
+    const bearing = (toDegrees(Math.atan2(y, x)) + 360) % 360;
 
-    return brng;
+    return bearing;
 }
 
-export function getDistanceBetweenTwoPoints(startLat: number, startLng: number, destLat: number, destLng: number) {
-    const φ1 = toRadians(startLat); // φ, λ in radians
-    const φ2 = toRadians(destLat);
-    const Δφ = toRadians(destLat-startLat);
-    const Δλ = toRadians(destLng-startLng);
+export function getDistanceBetweenTwoPoints(startLatitude: number, startLongitude: number, destinationLatitude: number, destinationLongitude: number): number {
+    const φ1 = toRadians(startLatitude);
+    const φ2 = toRadians(destinationLatitude);
+    const Δφ = toRadians(destinationLatitude-startLatitude);
+    const Δλ = toRadians(destinationLongitude-startLongitude);
 
     const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
             Math.cos(φ1) * Math.cos(φ2) *
@@ -42,27 +37,27 @@ export function getDistanceBetweenTwoPoints(startLat: number, startLng: number, 
     return d;
 }
 
-export function getTerminalCoordinatesFromDistanceAndBearing(startLat: number, startLng: number, distance: number, bearing: number) {
-    const bearing_rad = toRadians(bearing);
+export function getTerminalCoordinatesFromDistanceAndBearing(startLatitude: number, startLongitude: number, distance: number, bearing: number): number[] {
+    const bearingInRadians = toRadians(bearing);
 
-    const init_lat = toRadians(startLat);
-    const init_lon = toRadians(startLng);
+    const initialLatitude = toRadians(startLatitude);
+    const initialLongitude = toRadians(startLongitude);
 
-    const final_lat = toDegrees(Math.asin( Math.sin(init_lat)*Math.cos(distance/EARTH_RADIUS_KM) + Math.cos(init_lat)*Math.sin(distance/EARTH_RADIUS_KM)*Math.cos(bearing_rad)));
+    const finalLatitude = toDegrees(Math.asin(Math.sin(initialLatitude)*Math.cos(distance/EARTH_RADIUS_KM) + Math.cos(initialLatitude)*Math.sin(distance/EARTH_RADIUS_KM)*Math.cos(bearingInRadians)));
 
-    const final_lon = toDegrees(init_lon + Math.atan2(Math.sin(bearing_rad)*Math.sin(distance/EARTH_RADIUS_KM)*Math.cos(init_lat), Math.cos(distance/EARTH_RADIUS_KM)-Math.sin(init_lat)*Math.sin(final_lat)));
+    const finalLongitude = toDegrees(initialLongitude + Math.atan2(Math.sin(bearingInRadians)*Math.sin(distance/EARTH_RADIUS_KM)*Math.cos(initialLatitude), Math.cos(distance/EARTH_RADIUS_KM)-Math.sin(initialLatitude)*Math.sin(finalLatitude)));
 
-    return [final_lat, final_lon]; 
+    return [finalLatitude, finalLongitude]; 
 }
 
 export function delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
 }
 
-export function unixToLocalTime(unixTime: number) {
+export function unixToLocalTime(unixTimestamp: number): string {
     // Create a new JavaScript Date object based on the timestamp
     // multiplied by 1000 so that the argument is in milliseconds, not seconds
-    const date = new Date(unixTime * 1000);
+    const date = new Date(unixTimestamp * 1000);
 
     // Hours part from the timestamp
     const hours = date.getHours();
