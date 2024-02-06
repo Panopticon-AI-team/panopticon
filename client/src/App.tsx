@@ -14,7 +14,9 @@ import { DEFAULT_OL_PROJECTION_CODE } from "./utils/constants";
 
 export default function App() {
   const sideBlue = new Side(uuidv4(), 'BLUE');
+  sideBlue.sideColor = 'blue';
   const sideRed = new Side(uuidv4(), 'RED');
+  sideRed.sideColor = 'red';
   const currentScenario = new Scenario(uuidv4(), 'Test Scenario', 1699073110, 14400, [sideBlue, sideRed]);
   const theGame = new Game(currentScenario);
   theGame.currentSideName = sideBlue.name;

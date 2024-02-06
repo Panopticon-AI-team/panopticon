@@ -4,7 +4,7 @@ import Aircraft from "./Aircraft";
 import Facility from "./Facility";
 import Scenario from "./Scenario";
 
-import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing, delay } from "../utils/utils";
+import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing } from "../utils/utils";
 import Base from "./Base";
 
 export default class Game {
@@ -27,6 +27,7 @@ export default class Game {
         const aircraft = new Aircraft(uuidv4(), aircraftName, this.currentSideName, className);
         aircraft.latitude = latitude;
         aircraft.longitude = longitude;
+        aircraft.sideColor = this.currentScenario.getSideColor(this.currentSideName);
 
         this.currentScenario.aircraft.push(aircraft);
     }
@@ -38,6 +39,7 @@ export default class Game {
         const base = new Base(uuidv4(), baseName, this.currentSideName, className);
         base.latitude = latitude;
         base.longitude = longitude;
+        base.sideColor = this.currentScenario.getSideColor(this.currentSideName);
 
         this.currentScenario.bases.push(base);
     }
@@ -49,6 +51,7 @@ export default class Game {
         const facility = new Facility(uuidv4(), facilityName, this.currentSideName, className);
         facility.latitude = latitude;
         facility.longitude = longitude;
+        facility.sideColor = this.currentScenario.getSideColor(this.currentSideName);
 
         this.currentScenario.facilities.push(facility);
     }
@@ -57,8 +60,7 @@ export default class Game {
         const numberOfWaypoints = 100;
         const aircraft = this.currentScenario.getAircraft(aircraftId);
         if (aircraft) {
-            aircraft.route = [];
-            aircraft.route.push([aircraft.latitude, aircraft.longitude]);
+            aircraft.route = [[aircraft.latitude, aircraft.longitude]];
             aircraft.heading = getBearingBetweenTwoPoints(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude);
             const totalDistance = getDistanceBetweenTwoPoints(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude);
             const legDistance = totalDistance / numberOfWaypoints;
@@ -72,26 +74,39 @@ export default class Game {
         }
     }
 
-    async startScenario(callbackFunction1: () => void, callbackFunction2: () => void) {
-        while (!this.scenarioPaused) {
-            this.currentScenario.currentTime += 1;
-            this.currentScenario.aircraft.forEach((aircraft) => {
-                const route = aircraft.route;
-                if (route.length > 0) {
-                    const nextWaypoint = route[0];
-                    aircraft.latitude = nextWaypoint[0];
-                    aircraft.longitude = nextWaypoint[1];
-                    aircraft.route.shift();
-                }
-                console.log(route.length)
-            });
-            callbackFunction1();
-            callbackFunction2();
-            await delay(1000);
-        }
+    _get_observation(): Scenario {
+        return this.currentScenario;
     }
 
-    pauseScenario() {
-        this.scenarioPaused = true;
+    _get_info() {
+        return null;
+    }
+
+    step(): [Scenario, number, boolean, boolean, any] {
+        this.currentScenario.currentTime += 1;
+        this.currentScenario.aircraft.forEach((aircraft) => {
+            const route = aircraft.route;
+            if (route.length > 0) {
+                const nextWaypoint = route[0];
+                aircraft.latitude = nextWaypoint[0];
+                aircraft.longitude = nextWaypoint[1];
+                aircraft.route.shift();
+            }
+        });
+
+        const terminated = false;
+        const truncated = this.checkGameEnded();
+        const reward = 0;
+        const observation = this._get_observation();
+        const info = this._get_info();
+        return [observation, reward, terminated, truncated, info];
+    }
+
+    reset() {
+
+    }
+
+    checkGameEnded(): boolean {
+        return false;
     }
 }

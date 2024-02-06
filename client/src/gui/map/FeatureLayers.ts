@@ -24,9 +24,10 @@ import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../../util
 const aircraftStyle = function(feature: FeatureLike) {
   return new Style({
     image: new Icon({
-      opacity: feature.getProperties().selected ? 1 : 1,
+      opacity: feature.getProperties().selected ? 1 : 0.5,
       src: FlightIconSvg,
       rotation: toRadians(feature.getProperties().heading),
+      color: feature.getProperties().sideColor,
     }),
   })
 }
@@ -36,6 +37,7 @@ const facilityStyle = function(feature: FeatureLike) {
     image: new Icon({
       opacity: 1,
       src: RadarIconSvg,
+      color: feature.getProperties().sideColor,
     }),
   })
 }
@@ -45,6 +47,7 @@ const baseStyle = function(feature: FeatureLike) {
     image: new Icon({
       opacity: 1,
       src: FlightTakeoffSvg,
+      color: feature.getProperties().sideColor,
     }),
   })
 }
@@ -60,7 +63,9 @@ export class AircraftLayer {
     });
     this.layer = new VectorLayer({
       source: this.layerSource,
-      style: (feature) => aircraftStyle(feature),
+      style: function(feature) {
+        return aircraftStyle(feature);
+      },
     });
     this.projection = projection;
   };
@@ -74,6 +79,8 @@ export class AircraftLayer {
         id: aircraft.id,
         name: aircraft.name,
         heading: aircraft.heading,
+        selected: aircraft.selected,
+        sideColor: aircraft.sideColor,
       });
       this.layerSource.addFeature(feature);
     });
@@ -104,6 +111,7 @@ export class FacilityLayer {
         geometry: new Point(fromLonLat([facility.longitude, facility.latitude], this.projection)),
         id: facility.id,
         name: facility.name,
+        sideColor: facility.sideColor,
       });
       this.layerSource.addFeature(feature);
     });
@@ -170,6 +178,7 @@ export class BaseLayer {
         geometry: new Point(fromLonLat([base.longitude, base.latitude], this.projection)),
         id: base.id,
         name: base.name,
+        sideColor: base.sideColor,
       });
       this.layerSource.addFeature(feature);
     });

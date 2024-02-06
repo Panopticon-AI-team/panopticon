@@ -12,6 +12,7 @@ export default class Aircraft {
     range: number = 100; // NM -- currently default -- need to reference from database
     route: number[][] = [];
     selected: boolean = false;
+    sideColor: string = 'black';
 
     constructor(id: string, name: string, sideName: string, className: string) {
         this.id = id;

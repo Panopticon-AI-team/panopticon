@@ -11,6 +11,7 @@ import BaseMapLayers from "./MapLayers";
 import Game from "../../game/Game";
 import ToolBar from "../ToolBar";
 import { DEFAULT_OL_PROJECTION_CODE } from "../../utils/constants";
+import { delay } from "../../utils/utils";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -19,18 +20,17 @@ interface ScenarioMapProps {
   projection: Projection | null;
 }
 
-export default function ScenarioMap({ zoom, center, game, projection }: Readonly<ScenarioMapProps>) {
-  const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
-
+export default function ScenarioMap({ zoom, center, game, projection }: Readonly<ScenarioMapProps>) {  
   const mapId = useRef(null);
   const defaultProjection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
   const baseMapLayers = new BaseMapLayers(projection ?? defaultProjection);
-  const aircraftLayer = new AircraftLayer(projection ?? defaultProjection);
-  const facilityLayer = new FacilityLayer(projection ?? defaultProjection);
-  const rangeLayer = new RangeLayer(projection ?? defaultProjection);
-  const basesLayer = new BaseLayer(projection ?? defaultProjection);
-
-  const theMap = new OlMap({
+  const [aircraftLayer, setAircraftLayer] = useState(new AircraftLayer(projection ?? defaultProjection));
+  const [basesLayer, setBasesLayer] = useState(new BaseLayer(projection ?? defaultProjection));
+  const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection ?? defaultProjection));
+  const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection ?? defaultProjection));
+  const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
+  
+  const map = new OlMap({
     layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, rangeLayer.layer, basesLayer.layer],
     view: new View({
       center: center,
@@ -38,6 +38,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       projection: projection ?? defaultProjection,
     }),
   });
+  const [theMap, setTheMap] = useState(map);
 
   useEffect(() => {
     theMap.setTarget(mapId.current!);
@@ -57,8 +58,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   function handleMapClick(event: MapBrowserEvent<any>) {
     const featuresAtPixel = getFeaturesAtPixel(theMap.getEventPixel(event.originalEvent));
-    if (game.selectedUnitId) {
+    if (game.selectedUnitId && featuresAtPixel.length === 0) {
       moveAircraft(game.selectedUnitId, event.coordinate);
+      const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
+      if (aircraft) aircraft.selected = !aircraft.selected;
       aircraftLayer.refresh(game.currentScenario.aircraft);
       game.selectedUnitId = '';
     } else if (featuresAtPixel.length === 1) {
@@ -74,7 +77,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const currentSelectedFeatureId = feature.getProperties()?.id;
     const currentSelectedFeatureType = feature.getProperties()?.type;
     if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') {
-      game.selectedUnitId = currentSelectedFeatureId;
+      game.selectedUnitId = game.selectedUnitId === '' ? currentSelectedFeatureId : '';
+      const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);
+      if (aircraft) aircraft.selected = !aircraft.selected;
+      aircraftLayer.refresh(game.currentScenario.aircraft);
     }
   }
 
@@ -121,13 +127,23 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     game.addingFacility = false;
   }
 
-  function setGamePlaying() {
+  async function setGamePlaying() {
     game.scenarioPaused = false;
-    game.startScenario(() => {setCurrentScenarioTime(game.currentScenario.currentTime);}, () => {aircraftLayer.refresh(game.currentScenario.aircraft);});
+    let gameEnded = game.checkGameEnded();
+    while (!game.scenarioPaused && !gameEnded) {
+      const [observation, reward, terminated, truncated, info] = game.step();
+
+      setCurrentScenarioTime(observation.currentTime);
+      aircraftLayer.refresh(observation.aircraft);
+
+      gameEnded = terminated || truncated;
+
+      await delay(1000);
+    }
   }
 
   function setGamePaused() {
-    game.pauseScenario();
+    game.scenarioPaused = true;
   }
 
   function addAircraft(coordinates: number[]) {

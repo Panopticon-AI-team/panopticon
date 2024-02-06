@@ -29,6 +29,14 @@ export default class Scenario {
         return this.sides.find((side) => side.name === sideName);
     }
 
+    getSideColor(sideName: string): string {
+        const side = this.getSide(sideName);
+        if (side) {
+            return side.sideColor;
+        }
+        return 'black';
+    }
+
     getAircraft(aircraftId: string): Aircraft | undefined {
         return this.aircraft.find((aircraft) => aircraft.id === aircraftId);
     }
