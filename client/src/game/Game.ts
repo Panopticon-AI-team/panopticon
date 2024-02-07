@@ -6,6 +6,7 @@ import Scenario from "./Scenario";
 
 import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing } from "../utils/utils";
 import Base from "./Base";
+import Side from "./Side";
 
 export default class Game {
     currentScenario: Scenario;
@@ -57,7 +58,7 @@ export default class Game {
     }
 
     moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {
-        const numberOfWaypoints = 100;
+        const numberOfWaypoints = 50;
         const aircraft = this.currentScenario.getAircraft(aircraftId);
         if (aircraft) {
             aircraft.route = [[aircraft.latitude, aircraft.longitude]];
@@ -83,11 +84,60 @@ export default class Game {
         }
     }
 
-    _get_observation(): Scenario {
+    exportCurrentScenario(): string {
+        const exportObject = {
+            "currentScenario": this.currentScenario,
+            "currentSideName": this.currentSideName,
+            "selectedUnitId": this.selectedUnitId,
+        }
+        return JSON.stringify(exportObject);
+    }
+
+    loadScenario(scenarioString: string) {
+        const importObject = JSON.parse(scenarioString);
+        this.currentSideName = importObject.currentSideName;
+        this.selectedUnitId = importObject.selectedUnitId;
+
+        const savedScenario = importObject.currentScenario;
+        const savedSides = savedScenario.sides.map((side: any) => {
+            const newSide = new Side(side.id, side.name);
+            newSide.totalScore = side.totalScore;
+            newSide.sideColor = side.sideColor;
+            return newSide;
+        });
+        const loadedScenario = new Scenario(savedScenario.id, savedScenario.name, savedScenario.startTime, savedScenario.duration, savedSides);
+        this.currentScenario = loadedScenario;
+        savedScenario.aircraft.forEach((aircraft: any) => {
+            const newAircraft = new Aircraft(aircraft.id, aircraft.name, aircraft.sideName, aircraft.className);
+            newAircraft.latitude = aircraft.latitude;
+            newAircraft.longitude = aircraft.longitude;
+            newAircraft.heading = aircraft.heading;
+            newAircraft.route = aircraft.route;
+            newAircraft.sideColor = aircraft.sideColor;
+            loadedScenario.aircraft.push(newAircraft);
+        });
+        savedScenario.bases.forEach((base: any) => {
+            const newBase = new Base(base.id, base.name, base.sideName, base.className);
+            newBase.latitude = base.latitude;
+            newBase.longitude = base.longitude;
+            newBase.sideColor = base.sideColor;
+            loadedScenario.bases.push(newBase);
+        });
+        savedScenario.facilities.forEach((facility: any) => {
+            const newFacility = new Facility(facility.id, facility.name, facility.sideName, facility.className);
+            newFacility.latitude = facility.latitude;
+            newFacility.longitude = facility.longitude;
+            newFacility.sideColor = facility.sideColor;
+            loadedScenario.facilities.push(newFacility);
+        });
+        console.log("Loaded scenario: ", loadedScenario);
+    }
+
+    _getObservation(): Scenario {
         return this.currentScenario;
     }
 
-    _get_info() {
+    _getInfo() {
         return null;
     }
 
@@ -106,8 +156,8 @@ export default class Game {
         const terminated = false;
         const truncated = this.checkGameEnded();
         const reward = 0;
-        const observation = this._get_observation();
-        const info = this._get_info();
+        const observation = this._getObservation();
+        const info = this._getInfo();
         return [observation, reward, terminated, truncated, info];
     }
 
@@ -118,4 +168,5 @@ export default class Game {
     checkGameEnded(): boolean {
         return false;
     }
+
 }

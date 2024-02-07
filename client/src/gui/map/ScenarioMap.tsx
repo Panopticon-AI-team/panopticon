@@ -190,9 +190,16 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     setCurrentSideName(game.currentSideName);
   }
 
+  function refreshAllLayers() {
+    aircraftLayer.refresh(game.currentScenario.aircraft);
+    facilityLayer.refresh(game.currentScenario.facilities);
+    rangeLayer.refresh(game.currentScenario.facilities);
+    basesLayer.refresh(game.currentScenario.bases);
+  }
+
   return (
     <div>
-      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addBaseOnClick={setAddingBase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName}></ToolBar>
+      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addBaseOnClick={setAddingBase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
       <div ref={mapId} className='map'></div>
     </div>
   );
