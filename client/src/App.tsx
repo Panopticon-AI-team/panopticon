@@ -11,7 +11,7 @@ import Side from './game/Side';
 import Scenario from './game/Scenario';
 import Game from './game/Game';
 import { DEFAULT_OL_PROJECTION_CODE } from "./utils/constants";
-import defaultScenarioJson from './data/panopticon_scenario_38aa7dfb-fde7-49cb-88aa-92c9a7586057.json';
+import defaultScenarioJson from './scenarios/default_scenario.json';
 
 export default function App() {
   const sideBlue = new Side(uuidv4(), 'BLUE');
