@@ -28,6 +28,14 @@ interface ToolBarProps {
 
 export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addBaseOnClick, playOnClick, pauseOnClick, switchCurrentSideOnClick, refreshAllLayers, scenarioCurrentTime, scenarioCurrentSideName, game }: Readonly<ToolBarProps>) {
 
+  const toolbarStyle = {
+    backgroundColor: "#282c34",
+  }
+
+  const currentTimeChipStyle = {
+    backgroundColor: "white",
+  }
+
   const exportScenario = () => {
     const exportObject = game.exportCurrentScenario();
     const exportName = "panopticon_scenario_" + uuidv4();
@@ -59,14 +67,14 @@ export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addBas
   }
 
   return (
-    <Stack spacing={2} direction="row">
+    <Stack spacing={2} direction="row" style={toolbarStyle}>
+      <Chip label={"Current time: " + unixToLocalTime(scenarioCurrentTime)} style={currentTimeChipStyle} />
       <Button variant="contained" color="success" onClick={playOnClick} startIcon={<PlayArrowIcon/>}>PLAY</Button>
       <Button variant="contained" color="error" onClick={pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
+      <Button variant="contained" onClick={switchCurrentSideOnClick}>Current side: {scenarioCurrentSideName}</Button>
       <Button variant="contained" onClick={addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
       <Button variant="contained" onClick={addBaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add base</Button>
       <Button variant="contained" onClick={addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
-      <Button variant="contained" onClick={switchCurrentSideOnClick}>Current side: {scenarioCurrentSideName}</Button>
-      <Chip label={"Current time: " + unixToLocalTime(scenarioCurrentTime)} />
       <Button variant="contained" onClick={exportScenario} startIcon={<DownloadIcon/>}>EXPORT SCENARIO</Button>
       <Button variant="contained" onClick={loadScenario} startIcon={<CloudUploadIcon/>}>LOAD SCENARIO</Button>
     </Stack>

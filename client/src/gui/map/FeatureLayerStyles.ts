@@ -16,7 +16,7 @@ import FlightTakeoffSvg from '../assets/flight_takeoff_black_24dp.svg';
 export const aircraftStyle = function(feature: FeatureLike) {
   return new Style({
     image: new Icon({
-      opacity: feature.getProperties().selected ? 1 : 0.5,
+      opacity: feature.getProperties().selected ? 0.5 : 1,
       src: FlightIconSvg,
       rotation: toRadians(feature.getProperties().heading),
       color: feature.getProperties().sideColor,
