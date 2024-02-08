@@ -38,6 +38,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       zoom: zoom,
       projection: projection ?? defaultProjection,
     }),
+    controls: [],
   });
   const [theMap, setTheMap] = useState(map);
 
