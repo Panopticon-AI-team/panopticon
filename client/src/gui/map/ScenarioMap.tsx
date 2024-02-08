@@ -6,7 +6,7 @@ import View from "ol/View";
 import { Projection, toLonLat } from "ol/proj";
 
 import "../styles/ScenarioMap.css";
-import { AircraftLayer, BaseLayer, FacilityLayer, RangeLayer } from "./FeatureLayers";
+import { AircraftLayer, BasesLayer, FacilityLayer, RangeLayer } from "./FeatureLayers";
 import BaseMapLayers from "./MapLayers";
 import Game from "../../game/Game";
 import ToolBar from "../ToolBar";
@@ -25,7 +25,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const defaultProjection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
   const baseMapLayers = new BaseMapLayers(projection ?? defaultProjection);
   const [aircraftLayer, setAircraftLayer] = useState(new AircraftLayer(projection ?? defaultProjection));
-  const [basesLayer, setBasesLayer] = useState(new BaseLayer(projection ?? defaultProjection));
+  const [basesLayer, setBasesLayer] = useState(new BasesLayer(projection ?? defaultProjection));
   const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection ?? defaultProjection));
   const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection ?? defaultProjection));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
