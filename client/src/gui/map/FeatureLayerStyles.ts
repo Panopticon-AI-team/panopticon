@@ -63,3 +63,17 @@ export const rangeStyle = function(feature: FeatureLike) {
     })
   })
 }
+
+export const aircraftRouteStyle = function(feature: FeatureLike) {
+    const styles = [
+      // linestring
+      new Style({
+        stroke: new Stroke({
+          color: 'rgba(0, 0, 0, 0.5)',
+          width: 1.5,
+        }),
+      }),
+    ];
+  
+    return styles;
+}

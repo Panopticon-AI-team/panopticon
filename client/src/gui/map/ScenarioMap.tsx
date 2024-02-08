@@ -6,7 +6,7 @@ import View from "ol/View";
 import { Projection, toLonLat } from "ol/proj";
 
 import "../styles/ScenarioMap.css";
-import { AircraftLayer, BasesLayer, FacilityLayer, RangeLayer } from "./FeatureLayers";
+import { AircraftLayer, AircraftRouteLayer, BasesLayer, FacilityLayer, RangeLayer } from "./FeatureLayers";
 import BaseMapLayers from "./MapLayers";
 import Game from "../../game/Game";
 import ToolBar from "../ToolBar";
@@ -28,11 +28,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const [basesLayer, setBasesLayer] = useState(new BasesLayer(projection ?? defaultProjection));
   const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection ?? defaultProjection));
   const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection ?? defaultProjection));
+  const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection ?? defaultProjection));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
   
   const map = new OlMap({
-    layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, rangeLayer.layer, basesLayer.layer],
+    layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, basesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer],
     view: new View({
       center: center,
       zoom: zoom,
@@ -166,6 +167,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
       setCurrentScenarioTime(observation.currentTime);
       aircraftLayer.refresh(observation.aircraft);
+      aircraftRouteLayer.refresh(observation.aircraft);
 
       gameEnded = terminated || truncated;
 
@@ -209,6 +211,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const destinationLatitude = coordinates[1];
     const destinationLongitude = coordinates[0];
     game.moveAircraft(aircraftId, destinationLatitude, destinationLongitude);
+    aircraftRouteLayer.refresh(game.currentScenario.aircraft);
   }
 
   function switchCurrentSide() {
@@ -219,8 +222,9 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   function refreshAllLayers() {
     aircraftLayer.refresh(game.currentScenario.aircraft);
     facilityLayer.refresh(game.currentScenario.facilities);
-    rangeLayer.refresh(game.currentScenario.facilities);
     basesLayer.refresh(game.currentScenario.bases);
+    rangeLayer.refresh(game.currentScenario.facilities);
+    aircraftRouteLayer.refresh(game.currentScenario.aircraft);
   }
 
   return (

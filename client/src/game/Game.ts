@@ -130,7 +130,6 @@ export default class Game {
             newFacility.sideColor = facility.sideColor;
             loadedScenario.facilities.push(newFacility);
         });
-        console.log("Loaded scenario: ", loadedScenario);
     }
 
     _getObservation(): Scenario {

@@ -1,5 +1,5 @@
 import Feature, { FeatureLike } from 'ol/Feature.js';
-import { Circle, Geometry } from "ol/geom";
+import { Circle, Geometry, LineString } from "ol/geom";
 import Point from 'ol/geom/Point.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import VectorSource from 'ol/source/Vector.js';
@@ -10,14 +10,14 @@ import Aircraft from '../../game/Aircraft';
 import Facility from '../../game/Facility';
 import Base from '../../game/Base';
 import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../../utils/constants';
-import { aircraftStyle, basesStyle, facilityStyle, rangeStyle } from './FeatureLayerStyles';
+import { aircraftRouteStyle, aircraftStyle, basesStyle, facilityStyle, rangeStyle } from './FeatureLayerStyles';
 
 class FeatureLayer {
   layerSource: VectorSource;
   layer: VectorLayer<VectorSource<Geometry>>;
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor(projection: Projection, styleFunction: (feature: FeatureLike) => Style) {
+  constructor(projection: Projection, styleFunction: (feature: FeatureLike) => Style | Style[]) {
     this.layerSource = new VectorSource({
       features: []
     });
@@ -36,9 +36,9 @@ export class AircraftLayer extends FeatureLayer {
     super(projection, aircraftStyle);
   }
 
-  refresh(aircraft: Aircraft[]) {
+  refresh(aircraftList: Aircraft[]) {
     this.layerSource.clear();
-    aircraft.forEach((aircraft) => {
+    aircraftList.forEach((aircraft) => {
       const feature = new Feature({
         type: 'aircraft',
         geometry: new Point(fromLonLat([aircraft.longitude, aircraft.latitude], this.projection)),
@@ -77,6 +77,29 @@ export class FacilityLayer extends FeatureLayer {
   }
 }
 
+export class BasesLayer extends FeatureLayer {
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
+
+  constructor(projection: Projection) {
+    super(projection, basesStyle);
+  }
+
+  refresh(bases: Base[]) {
+    this.layerSource.clear();
+    bases.forEach((base) => {
+      const feature = new Feature({
+        type: 'base',
+        geometry: new Point(fromLonLat([base.longitude, base.latitude], this.projection)),
+        id: base.id,
+        name: base.name,
+        sideName: base.sideName,
+        sideColor: base.sideColor,
+      });
+      this.layerSource.addFeature(feature);
+    });
+  }
+}
+
 export class RangeLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
@@ -97,25 +120,28 @@ export class RangeLayer extends FeatureLayer {
   }
 }
 
-export class BasesLayer extends FeatureLayer {
+export class AircraftRouteLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
   constructor(projection: Projection) {
-    super(projection, basesStyle);
+    super(projection, aircraftRouteStyle);
   }
 
-  refresh(bases: Base[]) {
+  refresh(aircraftList: Aircraft[]) {
     this.layerSource.clear();
-    bases.forEach((base) => {
-      const feature = new Feature({
-        type: 'base',
-        geometry: new Point(fromLonLat([base.longitude, base.latitude], this.projection)),
-        id: base.id,
-        name: base.name,
-        sideName: base.sideName,
-        sideColor: base.sideColor,
-      });
-      this.layerSource.addFeature(feature);
+    aircraftList.forEach((aircraft) => {
+      if (aircraft.route.length > 1) {
+        const aircraftLocation = fromLonLat([aircraft.longitude, aircraft.latitude], this.projection);
+        const destinationLatitude = aircraft.route[aircraft.route.length - 1][0];
+        const destinationLongitude = aircraft.route[aircraft.route.length - 1][1];
+        const destinationLocation = fromLonLat([destinationLongitude, destinationLatitude], this.projection);
+        const aircraftRoute = new Feature({
+          type: 'aircraftRoute',
+          geometry: new LineString([aircraftLocation, destinationLocation]),
+          sideColor: aircraft.sideColor,
+        });
+        this.layerSource.addFeature(aircraftRoute);
+      }
     });
   }
 }
