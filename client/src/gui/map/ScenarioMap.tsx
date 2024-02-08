@@ -59,20 +59,44 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   //   console.log(theMap.getEventPixel(evt));
   // });
 
-  function handleMapClick(event: MapBrowserEvent<any>) {
+  function getMapClickContext(event: MapBrowserEvent<any>): string {
+    let context = '';
     const featuresAtPixel = getFeaturesAtPixel(theMap.getEventPixel(event.originalEvent));
-    if (game.selectedUnitId && featuresAtPixel.length === 0) {
-      moveAircraft(game.selectedUnitId, event.coordinate);
-      const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
-      if (aircraft) aircraft.selected = !aircraft.selected;
-      aircraftLayer.refresh(game.currentScenario.aircraft);
-      game.selectedUnitId = '';
+    if (game.selectedUnitId && featuresAtPixel.length === 0){
+      context = 'moveAircraft';
     } else if (featuresAtPixel.length === 1) {
-      handleSelectSingleFeature(featuresAtPixel[0]);
+      context = 'selectSingleFeature';
     } else if (featuresAtPixel.length > 1) {
-      // pass, need to deconflict when there are more than 1 feature at the same pixel
+      context = 'selectMultipleFeatures';
     } else {
-      handleAddUnit(event.coordinate);
+      context = 'addUnit';
+    }
+    return context
+  }
+
+  function handleMapClick(event: MapBrowserEvent<any>) {
+    const mapClickContext = getMapClickContext(event);
+    const featuresAtPixel = getFeaturesAtPixel(theMap.getEventPixel(event.originalEvent));
+    switch (mapClickContext) {
+      case 'moveAircraft': {
+        moveAircraft(game.selectedUnitId, event.coordinate);
+        const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
+        if (aircraft) aircraft.selected = !aircraft.selected;
+        aircraftLayer.refresh(game.currentScenario.aircraft);
+        game.selectedUnitId = '';
+        break;
+      }
+      case 'selectSingleFeature':
+        handleSelectSingleFeature(featuresAtPixel[0]);
+        break;
+      case 'selectMultipleFeatures':
+        // pass, need to deconflict when there are more than 1 feature at the same pixel
+        break;
+      case 'addUnit':
+        handleAddUnit(event.coordinate);
+        break;
+      case 'default':
+        break;
     }
   }
 
