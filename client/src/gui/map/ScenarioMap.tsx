@@ -44,6 +44,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   useEffect(() => {
     theMap.setTarget(mapId.current!);
+    refreshAllLayers();
     
     return () => {
       if (!theMap) return;
