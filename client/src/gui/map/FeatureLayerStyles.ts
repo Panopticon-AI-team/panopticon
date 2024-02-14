@@ -5,13 +5,14 @@ import {
   Fill,
   Stroke,
 } from 'ol/style.js';
-import { asArray} from 'ol/color';
 
-import { colorNameToHex, toRadians } from "../../utils/utils";
+import { colorNameToColorArray, toRadians } from "../../utils/utils";
 
 import FlightIconSvg from '../assets/flight_black_24dp.svg';
 import RadarIconSvg from '../assets/radar_black_24dp.svg';
 import FlightTakeoffSvg from '../assets/flight_takeoff_black_24dp.svg';
+import ChevronRightSvg from '../assets/chevron_right_black_24dp.svg';
+import { LineString, Point } from 'ol/geom';
 
 export const aircraftStyle = function(feature: FeatureLike) {
   return new Style({
@@ -45,14 +46,7 @@ export const basesStyle = function(feature: FeatureLike) {
 }
 
 export const rangeStyle = function(feature: FeatureLike) {
-  const colorHexCode = colorNameToHex(feature.getProperties().sideColor);
-  let colorArray;
-  if (colorHexCode) {
-    colorArray = asArray(colorHexCode);
-    colorArray = colorArray.slice();
-    colorArray[3] = 0.1;  // change the alpha of the color
-  }
-
+  const colorArray = colorNameToColorArray(feature.getProperties().sideColor, 0.1);
   return new Style({
     stroke: new Stroke({
       color: feature.getProperties().sideColor,
@@ -65,15 +59,34 @@ export const rangeStyle = function(feature: FeatureLike) {
 }
 
 export const aircraftRouteStyle = function(feature: FeatureLike) {
+  const colorArray = colorNameToColorArray(feature.getProperties().sideColor, 0.5);
     const styles = [
-      // linestring
       new Style({
         stroke: new Stroke({
-          color: 'rgba(0, 0, 0, 0.5)',
+          color: colorArray ?? 'rgba(0, 0, 0, 0.5)',
           width: 1.5,
         }),
       }),
     ];
+
+    const lineString = feature.getGeometry() as LineString
+    lineString.forEachSegment(function (start, end) {
+      const dx = end[0] - start[0];
+      const dy = end[1] - start[1];
+      const rotation = Math.atan2(dy, dx);
+      styles.push(
+        new Style({
+          geometry: new Point(end),
+          image: new Icon({
+            src: ChevronRightSvg,
+            anchor: [0.75, 0.5],
+            rotateWithView: true,
+            rotation: -rotation,
+            color: feature.getProperties().sideColor,
+          }),
+        })
+      );
+    })
   
     return styles;
 }

@@ -1,4 +1,5 @@
 import { EARTH_RADIUS_KM } from "./constants";
+import { asArray} from 'ol/color';
 
 export function toRadians(degrees: number): number {
     return degrees * Math.PI / 180;
@@ -74,7 +75,7 @@ export function unixToLocalTime(unixTimestamp: number): string {
     return formattedTime;
 }
 
-export function colorNameToHex(color: string): string {
+function colorNameToHex(color: string): string {
     const colors = {"aliceblue":"#f0f8ff","antiquewhite":"#faebd7","aqua":"#00ffff","aquamarine":"#7fffd4","azure":"#f0ffff",
     "beige":"#f5f5dc","bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd","blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a","burlywood":"#deb887",
     "cadetblue":"#5f9ea0","chartreuse":"#7fff00","chocolate":"#d2691e","coral":"#ff7f50","cornflowerblue":"#6495ed","cornsilk":"#fff8dc","crimson":"#dc143c","cyan":"#00ffff",
@@ -105,4 +106,15 @@ export function colorNameToHex(color: string): string {
         return colors[colorLowercase as keyof typeof colors];
 
     return '';
+}
+
+export function colorNameToColorArray(color: string, alpha: number = 1): number[] | undefined {
+    const colorHexCode = colorNameToHex(color);
+    if (colorHexCode) {
+        let colorArray;
+        colorArray = asArray(colorHexCode);
+        colorArray = colorArray.slice();
+        colorArray[3] = alpha;
+        return colorArray;
+    }
 }
