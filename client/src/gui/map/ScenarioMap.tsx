@@ -16,6 +16,7 @@ import { delay } from "../../utils/utils";
 import AirbaseCard from "./AirbaseCard";
 import MultipleFeatureSelector from "./MultipleFeatureSelector";
 import { Geometry } from "ol/geom";
+import FacilityCard from "./FacilityCard";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -48,6 +49,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     top: 0,
     left: 0,
     airbaseId: '',
+  });
+  const [openFacilityCard, setOpenFacilityCard] = useState({
+    open: false,
+    top: 0,
+    left: 0,
+    facilityId: '',
   });
   const [openMultipleFeatureSelector, setOpenMultipleFeatureSelector] = useState<IOpenMultipleFeatureSelector>({
     open: false,
@@ -148,6 +155,16 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
           top: airbasePixels[1],
           left: airbasePixels[0],
           airbaseId: currentSelectedFeatureId,
+        });
+      } else if (currentSelectedFeatureType === 'facility' && game.currentScenario.getFacility(currentSelectedFeatureId)) {
+        const facilityGeometry = feature.getGeometry() as Point
+        const facilityCoordinate = facilityGeometry.getCoordinates()
+        const facilityPixels = theMap.getPixelFromCoordinate(facilityCoordinate)
+        setOpenFacilityCard({
+          open: true,
+          top: facilityPixels[1],
+          left: facilityPixels[0],
+          facilityId: currentSelectedFeatureId,
         });
       }
     }
@@ -269,6 +286,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     airbasesLayer.refresh(game.currentScenario.airbases);
   }
 
+  function removeFacility(facilityId: string) {
+    game.removeFacility(facilityId);
+    facilityLayer.refresh(game.currentScenario.facilities);
+    rangeLayer.refresh(game.currentScenario.facilities);
+  }
+
   function moveAircraft(aircraftId: string, coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const destinationLatitude = coordinates[1];
@@ -311,6 +334,15 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
           handleCloseOnMap={() => {setOpenAirbaseCard({open: false, top: 0, left: 0, airbaseId: ''})}}
         />
       }
+      {openFacilityCard.open &&
+        <FacilityCard 
+          facility={game.currentScenario.getFacility(openFacilityCard.facilityId)!} 
+          handleDeleteFacility={removeFacility} 
+          anchorPositionTop={openFacilityCard.top} 
+          anchorPositionLeft={openFacilityCard.left} 
+          handleCloseOnMap={() => {setOpenFacilityCard({open: false, top: 0, left: 0, facilityId: ''})}}
+        />
+      }      
       {openMultipleFeatureSelector.open &&
         <MultipleFeatureSelector 
           features={openMultipleFeatureSelector.features}
