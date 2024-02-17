@@ -103,13 +103,13 @@ export default class Game {
     }
 
     checkWeaponDestroyedTarget(weapon: Weapon, target: Aircraft | Facility): boolean {
+        this.currentScenario.weapons = this.currentScenario.weapons.filter((currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id);
         if (randomFloat() <= weapon.lethality) {
             if (target instanceof Aircraft) {
                 this.currentScenario.aircraft = this.currentScenario.aircraft.filter((currentScenarioAircraft) => currentScenarioAircraft.id !== target.id);
             } else if (target instanceof Facility) {
                 this.currentScenario.facilities = this.currentScenario.facilities.filter((currentScenarioFacility) => currentScenarioFacility.id !== target.id)
             }
-            this.currentScenario.weapons = this.currentScenario.weapons.filter((currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id);
             return true
         }
         return false
@@ -121,8 +121,8 @@ export default class Game {
         missile.longitude = origin.longitude;
         missile.sideColor = this.currentScenario.getSideColor(origin.sideName);
         missile.targetId = target.id;
-        missile.lethality = 0.3
-        missile.route = generateRoute(missile.latitude, missile.longitude, target.latitude, target.longitude, this.numberOfWaypoints / 10);
+        missile.lethality = 0.25
+        missile.route = generateRoute(missile.latitude, missile.longitude, target.latitude, target.longitude, 5);
         missile.heading = getBearingBetweenTwoPoints(missile.latitude, missile.longitude, target.latitude, target.longitude);
 
         this.currentScenario.weapons.push(missile);
@@ -134,12 +134,9 @@ export default class Game {
             const weaponRoute = weapon.route;
             if (weaponRoute.length > 0) {
                 const nextWaypoint = weaponRoute[0];
-                weapon.latitude = nextWaypoint[0];
-                weapon.longitude = nextWaypoint[1];
-                weapon.route.shift();
+                weapon.route = generateRoute(nextWaypoint[0], nextWaypoint[1], target.latitude, target.longitude, weaponRoute.length > 0 ? weaponRoute.length - 1 : 0);
+                weapon.heading = getBearingBetweenTwoPoints(weapon.latitude, weapon.longitude, target.latitude, target.longitude);
             }
-            weapon.route = generateRoute(weapon.latitude, weapon.longitude, target.latitude, target.longitude, this.numberOfWaypoints / 10);
-            weapon.heading = getBearingBetweenTwoPoints(weapon.latitude, weapon.longitude, target.latitude, target.longitude);
         }
     }
 
@@ -213,19 +210,31 @@ export default class Game {
         this.currentScenario.currentTime += 1;
 
         this.currentScenario.facilities.forEach((facility) => {
+            let anyAircraftWithinRange = false;
             this.currentScenario.aircraft.forEach((aircraft) => {
                 if (facility.sideName !== aircraft.sideName) {
                     if (this.checkIfAircraftIsWithinFacilityThreatRange(aircraft, facility)) {
                         if (!facility.fired) {
                             this.launchMissile(facility, aircraft)
                             facility.fired = true
-                        } else {
-                            this.weaponTrackTarget(this.currentScenario.weapons[this.currentScenario.weapons.length - 1])
-                            this.checkWeaponDestroyedTarget(this.currentScenario.weapons[this.currentScenario.weapons.length - 1], aircraft)
+                        } else if (this.currentScenario.weapons.length > 0) {
+                            const currentWeapon = this.currentScenario.weapons[this.currentScenario.weapons.length - 1]
+                            if (currentWeapon.route.length === 2) {
+                                if (!this.checkWeaponDestroyedTarget(currentWeapon, aircraft)) {
+                                    facility.fired = false
+                                }
+                            } else {
+                                this.weaponTrackTarget(currentWeapon)
+                            }
                         }
+                        anyAircraftWithinRange = true
                     }
                 }
             })
+            if (facility.fired && !anyAircraftWithinRange) {
+                this.currentScenario.weapons = []
+                facility.fired = false
+            }
         })
 
         this.currentScenario.weapons.forEach((weapon) => {
