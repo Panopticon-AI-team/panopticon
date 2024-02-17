@@ -14,12 +14,21 @@ import ToolBar from "../ToolBar";
 import { DEFAULT_OL_PROJECTION_CODE } from "../../utils/constants";
 import { delay } from "../../utils/utils";
 import AirbaseCard from "./AirbaseCard";
+import MultipleFeatureSelector from "./MultipleFeatureSelector";
+import { Geometry } from "ol/geom";
 
 interface ScenarioMapProps {
   zoom: number;
   center: number[];
   game: Game;
   projection: Projection | null;
+}
+
+interface IOpenMultipleFeatureSelector {
+  open: boolean;
+  top: number;
+  left: number;
+  features: Feature<Geometry>[];
 }
 
 export default function ScenarioMap({ zoom, center, game, projection }: Readonly<ScenarioMapProps>) {  
@@ -39,6 +48,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     top: 0,
     left: 0,
     airbaseId: '',
+  });
+  const [openMultipleFeatureSelector, setOpenMultipleFeatureSelector] = useState<IOpenMultipleFeatureSelector>({
+    open: false,
+    top: 0,
+    left: 0,
+    features: [],
   });
   
   const map = new OlMap({
@@ -139,7 +154,16 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   }
 
   function handleSelectMultipleFeatures(features: Feature[]) {
-
+    if (features.length < 2) return
+    const singleFeatureGeometry = features[0].getGeometry() as Point
+    const singleFeatureCoordinates = singleFeatureGeometry.getCoordinates()
+    const singleFeaturePixels = theMap.getPixelFromCoordinate(singleFeatureCoordinates)
+    setOpenMultipleFeatureSelector({
+      open: true,
+      top: singleFeaturePixels[1],
+      left: singleFeaturePixels[0],
+      features: features,
+    })
   }
 
   function handleAddUnit(coordinates: number[]) {
@@ -285,6 +309,15 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
           anchorPositionTop={openAirbaseCard.top} 
           anchorPositionLeft={openAirbaseCard.left} 
           handleCloseOnMap={() => {setOpenAirbaseCard({open: false, top: 0, left: 0, airbaseId: ''})}}
+        />
+      }
+      {openMultipleFeatureSelector.open &&
+        <MultipleFeatureSelector 
+          features={openMultipleFeatureSelector.features}
+          handleSelectSingleFeature={handleSelectSingleFeature}
+          anchorPositionTop={openMultipleFeatureSelector.top} 
+          anchorPositionLeft={openMultipleFeatureSelector.left} 
+          handleCloseOnMap={() => {setOpenMultipleFeatureSelector({open: false, top: 0, left: 0, features: []})}}
         />
       }
     </div>

@@ -9,17 +9,17 @@ import Airbase from "../../game/Airbase";
 import FeaturePopup from "./FeaturePopup";
 import DeleteIcon from '@mui/icons-material/Delete';
 
-interface AirbaseCards {
+interface AirbaseCardProps {
     airbase: Airbase,
     handleAddAircraft: (airbaseId: string) => void;
     handleLaunchAircraft: (airbaseId: string) => void;
-    handleCloseOnMap: () => void;
     handleDeleteAirbase: (airbaseId: string) => void;
+    handleCloseOnMap: () => void;
     anchorPositionTop: number;
     anchorPositionLeft: number;
 }
   
-export default function AirbaseCard({ airbase, handleAddAircraft, handleLaunchAircraft, handleCloseOnMap, handleDeleteAirbase, anchorPositionTop, anchorPositionLeft }: Readonly<AirbaseCards>) {
+export default function AirbaseCard({ airbase, handleAddAircraft, handleLaunchAircraft, handleDeleteAirbase, handleCloseOnMap, anchorPositionTop, anchorPositionLeft }: Readonly<AirbaseCardProps>) {
     const [aircraftCount, setAircraftCount] = useState(airbase.aircraft.length);
 
     const _handleAddAircraft = () => {
