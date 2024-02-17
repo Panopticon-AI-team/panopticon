@@ -5,6 +5,10 @@ import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 import FeaturePopup from "./FeaturePopup";
 import Stack from '@mui/material/Stack';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { ReactComponent as FlightIcon } from '../assets/flight_black_24dp.svg';
+import { ReactComponent as RadarIcon } from '../assets/radar_black_24dp.svg';
+import { ReactComponent as FlightTakeoffIcon } from '../assets/flight_takeoff_black_24dp.svg';
 
 import { Geometry } from "ol/geom";
 import { Feature } from "ol";
@@ -26,9 +30,33 @@ export default function MultipleFeatureSelector({ features, handleSelectSingleFe
         handleCloseOnMap()
     }
 
+    const getFeatureIcon = (featureType: string) => {
+        switch (featureType) {
+            case "airbase":
+                return <FlightTakeoffIcon/>
+            case "facility":
+                return <RadarIcon/>
+            case "aircraft":
+                return <FlightIcon/>
+            default:
+                return <HelpOutlineIcon/>
+        }
+    }
+
     const featureButtons = [];
     for (const feature of features) {
-        featureButtons.push(<Button variant="contained" size="small" onClick={_handleSelectFeature} key={feature.getProperties()?.id} id={feature.getProperties()?.id}>{feature.getProperties()?.name}</Button>);
+        featureButtons.push(
+            <Button 
+                variant="contained" 
+                size="small" 
+                onClick={_handleSelectFeature} 
+                key={feature.getProperties()?.id} 
+                id={feature.getProperties()?.id}
+                startIcon={getFeatureIcon(feature.getProperties()?.type)}
+            >
+                {feature.getProperties()?.name}
+            </Button>
+        );
     }
 
     const multipleFeatureSelector = (
