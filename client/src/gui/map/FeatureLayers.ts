@@ -8,9 +8,9 @@ import { Style } from 'ol/style';
 
 import Aircraft from '../../game/Aircraft';
 import Facility from '../../game/Facility';
-import Base from '../../game/Base';
+import Airbase from '../../game/Airbase';
 import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../../utils/constants';
-import { aircraftRouteStyle, aircraftStyle, basesStyle, facilityStyle, rangeStyle } from './FeatureLayerStyles';
+import { aircraftRouteStyle, aircraftStyle, airbasesStyle, facilityStyle, rangeStyle } from './FeatureLayerStyles';
 
 class FeatureLayer {
   layerSource: VectorSource;
@@ -77,23 +77,23 @@ export class FacilityLayer extends FeatureLayer {
   }
 }
 
-export class BasesLayer extends FeatureLayer {
+export class AirbasesLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
   constructor(projection: Projection) {
-    super(projection, basesStyle);
+    super(projection, airbasesStyle);
   }
 
-  refresh(bases: Base[]) {
+  refresh(airbases: Airbase[]) {
     this.layerSource.clear();
-    bases.forEach((base) => {
+    airbases.forEach((airbase) => {
       const feature = new Feature({
-        type: 'base',
-        geometry: new Point(fromLonLat([base.longitude, base.latitude], this.projection)),
-        id: base.id,
-        name: base.name,
-        sideName: base.sideName,
-        sideColor: base.sideColor,
+        type: 'airbase',
+        geometry: new Point(fromLonLat([airbase.longitude, airbase.latitude], this.projection)),
+        id: airbase.id,
+        name: airbase.name,
+        sideName: airbase.sideName,
+        sideColor: airbase.sideColor,
       });
       this.layerSource.addFeature(feature);
     });

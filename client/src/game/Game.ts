@@ -5,7 +5,7 @@ import Facility from "./Facility";
 import Scenario from "./Scenario";
 
 import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing } from "../utils/utils";
-import Base from "./Base";
+import Airbase from "./Airbase";
 import Side from "./Side";
 
 export default class Game {
@@ -13,7 +13,7 @@ export default class Game {
     currentSideName: string = '';
     scenarioPaused: boolean = true;
     addingAircraft: boolean = false;
-    addingBase: boolean = false;
+    addingAirbase: boolean = false;
     addingFacility: boolean = false;
     selectedUnitId: string = '';
 
@@ -33,16 +33,30 @@ export default class Game {
         this.currentScenario.aircraft.push(aircraft);
     }
 
-    addBase(baseName: string, className: string, latitude: number, longitude: number) {
+    addAircraftToAirbase(aircraftName: string, className: string, airbaseId: string) {
         if (!this.currentSideName) {
             return;
         }
-        const base = new Base(uuidv4(), baseName, this.currentSideName, className);
-        base.latitude = latitude;
-        base.longitude = longitude;
-        base.sideColor = this.currentScenario.getSideColor(this.currentSideName);
+        const airbase = this.currentScenario.getAirbase(airbaseId);
+        if (airbase) {
+            const aircraft = new Aircraft(uuidv4(), aircraftName, this.currentSideName, className);
+            aircraft.latitude = airbase.latitude - 0.5;
+            aircraft.longitude = airbase.longitude - 0.5;
+            aircraft.sideColor = this.currentScenario.getSideColor(this.currentSideName);
+            airbase.aircraft.push(aircraft);
+        }
+    }
 
-        this.currentScenario.bases.push(base);
+    addAirbase(airbaseName: string, className: string, latitude: number, longitude: number) {
+        if (!this.currentSideName) {
+            return;
+        }
+        const airbase = new Airbase(uuidv4(), airbaseName, this.currentSideName, className);
+        airbase.latitude = latitude;
+        airbase.longitude = longitude;
+        airbase.sideColor = this.currentScenario.getSideColor(this.currentSideName);
+
+        this.currentScenario.airbases.push(airbase);
     }
 
     addFacility(facilityName: string, className: string, latitude: number, longitude: number) {
@@ -72,6 +86,17 @@ export default class Game {
             }
 
             aircraft.route.push([newLatitude, newLongitude]);
+        }
+    }
+
+    launchAircraftFromAirbase(airbaseId: string) {
+        if (!this.currentSideName) {
+            return;
+        }
+        const airbase = this.currentScenario.getAirbase(airbaseId);
+        if (airbase && airbase.aircraft.length > 0) {
+            const aircraft = airbase.aircraft.pop()
+            if (aircraft) this.currentScenario.aircraft.push(aircraft);
         }
     }
 
@@ -116,12 +141,13 @@ export default class Game {
             newAircraft.sideColor = aircraft.sideColor;
             loadedScenario.aircraft.push(newAircraft);
         });
-        savedScenario.bases.forEach((base: any) => {
-            const newBase = new Base(base.id, base.name, base.sideName, base.className);
-            newBase.latitude = base.latitude;
-            newBase.longitude = base.longitude;
-            newBase.sideColor = base.sideColor;
-            loadedScenario.bases.push(newBase);
+        savedScenario.airbases.forEach((airbase: any) => {
+            const newAirbase = new Airbase(airbase.id, airbase.name, airbase.sideName, airbase.className);
+            newAirbase.latitude = airbase.latitude;
+            newAirbase.longitude = airbase.longitude;
+            newAirbase.sideColor = airbase.sideColor;
+            newAirbase.aircraft = airbase.aircraft ?? [];
+            loadedScenario.airbases.push(newAirbase);
         });
         savedScenario.facilities.forEach((facility: any) => {
             const newFacility = new Facility(facility.id, facility.name, facility.sideName, facility.className);

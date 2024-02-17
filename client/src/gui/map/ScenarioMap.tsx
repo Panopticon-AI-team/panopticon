@@ -4,14 +4,16 @@ import { Pixel } from "ol/pixel";
 import { Feature, MapBrowserEvent, Map as OlMap } from "ol";
 import View from "ol/View";
 import { Projection, toLonLat } from "ol/proj";
+import Point from 'ol/geom/Point.js';
 
 import "../styles/ScenarioMap.css";
-import { AircraftLayer, AircraftRouteLayer, BasesLayer, FacilityLayer, RangeLayer } from "./FeatureLayers";
+import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeLayer } from "./FeatureLayers";
 import BaseMapLayers from "./MapLayers";
 import Game from "../../game/Game";
 import ToolBar from "../ToolBar";
 import { DEFAULT_OL_PROJECTION_CODE } from "../../utils/constants";
 import { delay } from "../../utils/utils";
+import { createAirbaseCard } from "./MapFeatureCard";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -25,15 +27,21 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const defaultProjection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
   const baseMapLayers = new BaseMapLayers(projection ?? defaultProjection);
   const [aircraftLayer, setAircraftLayer] = useState(new AircraftLayer(projection ?? defaultProjection));
-  const [basesLayer, setBasesLayer] = useState(new BasesLayer(projection ?? defaultProjection));
+  const [airbasesLayer, setAirbasesLayer] = useState(new AirbasesLayer(projection ?? defaultProjection));
   const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection ?? defaultProjection));
   const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection ?? defaultProjection));
   const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection ?? defaultProjection));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
+  const [openAirbaseCard, setOpenAirbaseCard] = useState({
+    open: false,
+    top: 0,
+    left: 0,
+    baseId: '',
+  });
   
   const map = new OlMap({
-    layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, basesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer],
+    layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, airbasesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer],
     view: new View({
       center: center,
       zoom: zoom,
@@ -61,7 +69,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   // });
 
   function getMapClickContext(event: MapBrowserEvent<any>): string {
-    let context = '';
+    let context = 'default';
     const featuresAtPixel = getFeaturesAtPixel(theMap.getEventPixel(event.originalEvent));
     if (game.selectedUnitId && featuresAtPixel.length === 0){
       context = 'moveAircraft';
@@ -69,7 +77,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       context = 'selectSingleFeature';
     } else if (featuresAtPixel.length > 1) {
       context = 'selectMultipleFeatures';
-    } else {
+    } else if (game.addingAircraft || game.addingFacility || game.addingAirbase) {
       context = 'addUnit';
     }
     return context
@@ -108,12 +116,25 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     
     if (currentSelectedFeatureSideName && currentSelectedFeatureSideName !== game.currentSideName) return;
 
-    if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') {
-      game.selectedUnitId = game.selectedUnitId === '' ? currentSelectedFeatureId : '';
-      const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);
-      if (aircraft) aircraft.selected = !aircraft.selected;
-      aircraftLayer.refresh(game.currentScenario.aircraft);
+    if (currentSelectedFeatureId) {
+      if (currentSelectedFeatureType === 'aircraft') {
+        game.selectedUnitId = game.selectedUnitId === '' ? currentSelectedFeatureId : '';
+        const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);
+        if (aircraft) aircraft.selected = !aircraft.selected;
+        aircraftLayer.refresh(game.currentScenario.aircraft);
+      } else if (currentSelectedFeatureType === 'airbase') {
+        const airbaseGeometry = feature.getGeometry() as Point
+        const airbaseCoordinate = airbaseGeometry.getCoordinates()
+        const airbasePixels = theMap.getPixelFromCoordinate(airbaseCoordinate)
+        setOpenAirbaseCard({
+          open: true,
+          top: airbasePixels[1],
+          left: airbasePixels[0],
+          baseId: currentSelectedFeatureId,
+        });
+      }
     }
+
   }
 
   function handleAddUnit(coordinates: number[]) {
@@ -126,10 +147,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       facilityLayer.refresh(game.currentScenario.facilities);
       rangeLayer.refresh(game.currentScenario.facilities);
       game.addingFacility = false;
-    } else if (game.addingBase) {
-      addBase(coordinates);
-      basesLayer.refresh(game.currentScenario.bases);
-      game.addingBase = false;
+    } else if (game.addingAirbase) {
+      addAirbase(coordinates);
+      airbasesLayer.refresh(game.currentScenario.airbases);
+      game.addingAirbase = false;
     }
   }
 
@@ -144,17 +165,17 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   function setAddingAircraft() {
     game.addingAircraft = !game.addingAircraft;
     game.addingFacility = false;
-    game.addingBase = false;
+    game.addingAirbase = false;
   }
 
   function setAddingFacility() {
     game.addingFacility = !game.addingFacility;
     game.addingAircraft = false;
-    game.addingBase = false;
+    game.addingAirbase = false;
   }
 
-  function setAddingBase() {
-    game.addingBase = !game.addingBase;
+  function setAddingAirbase() {
+    game.addingAirbase = !game.addingAirbase;
     game.addingAircraft = false;
     game.addingFacility = false;
   }
@@ -188,6 +209,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     game.addAircraft(aircraftName, className, latitude, longitude);
   }
 
+  function addAircraftToAirbase(airbaseId: string) {
+    const aircraftName = 'Dummy';
+    const className = 'F-16C';
+    game.addAircraftToAirbase(aircraftName, className, airbaseId);
+  }
+
   function addFacility(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const facilityName = 'Threat';
@@ -197,13 +224,13 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     game.addFacility(facilityName, className, latitude, longitude);
   }
 
-  function addBase(coordinates: number[]) {
+  function addAirbase(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const baseName = 'Floridistan';
+    const airbaseName = 'Floridistan';
     const className = 'Airfield';
     const latitude = coordinates[1];
     const longitude = coordinates[0];
-    game.addBase(baseName, className, latitude, longitude);
+    game.addAirbase(airbaseName, className, latitude, longitude);
   }
 
   function moveAircraft(aircraftId: string, coordinates: number[]) {
@@ -214,6 +241,11 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     aircraftRouteLayer.refresh(game.currentScenario.aircraft);
   }
 
+  function launchAircraft(airbaseId: string) {
+    game.launchAircraftFromAirbase(airbaseId)
+    aircraftLayer.refresh(game.currentScenario.aircraft)
+  }
+
   function switchCurrentSide() {
     game.switchCurrentSide();
     setCurrentSideName(game.currentSideName);
@@ -222,15 +254,16 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   function refreshAllLayers() {
     aircraftLayer.refresh(game.currentScenario.aircraft);
     facilityLayer.refresh(game.currentScenario.facilities);
-    basesLayer.refresh(game.currentScenario.bases);
+    airbasesLayer.refresh(game.currentScenario.airbases);
     rangeLayer.refresh(game.currentScenario.facilities);
     aircraftRouteLayer.refresh(game.currentScenario.aircraft);
   }
 
   return (
     <div>
-      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addBaseOnClick={setAddingBase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
+      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addAirbaseOnClick={setAddingAirbase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
       <div ref={mapId} className='map'></div>
+      {openAirbaseCard.open && createAirbaseCard(openAirbaseCard.top, openAirbaseCard.left, addAircraftToAirbase, launchAircraft, () => {setOpenAirbaseCard({open: false, top: 0, left: 0, baseId: ''})}, game.currentScenario.getAirbase(openAirbaseCard.baseId))}
     </div>
   );
 };

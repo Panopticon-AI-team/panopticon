@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 interface ToolBarProps {
     addAircraftOnClick: () => void;
     addFacilityOnClick: () => void;
-    addBaseOnClick: () => void;
+    addAirbaseOnClick: () => void;
     playOnClick: () => void;
     pauseOnClick: () => void;
     switchCurrentSideOnClick: () => void;
@@ -26,7 +26,7 @@ interface ToolBarProps {
     game: Game;
 }
 
-export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addBaseOnClick, playOnClick, pauseOnClick, switchCurrentSideOnClick, refreshAllLayers, scenarioCurrentTime, scenarioCurrentSideName, game }: Readonly<ToolBarProps>) {
+export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAirbaseOnClick, playOnClick, pauseOnClick, switchCurrentSideOnClick, refreshAllLayers, scenarioCurrentTime, scenarioCurrentSideName, game }: Readonly<ToolBarProps>) {
 
   const toolbarStyle = {
     backgroundColor: "#282c34",
@@ -73,7 +73,7 @@ export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addBas
       <Button variant="contained" color="error" onClick={pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
       <Button variant="contained" onClick={switchCurrentSideOnClick}>Current side: {scenarioCurrentSideName}</Button>
       <Button variant="contained" onClick={addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
-      <Button variant="contained" onClick={addBaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add base</Button>
+      <Button variant="contained" onClick={addAirbaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add airbase</Button>
       <Button variant="contained" onClick={addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
       <Button variant="contained" onClick={exportScenario} startIcon={<DownloadIcon/>}>EXPORT SCENARIO</Button>
       <Button variant="contained" onClick={loadScenario} startIcon={<CloudUploadIcon/>}>LOAD SCENARIO</Button>
