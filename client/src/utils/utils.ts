@@ -118,3 +118,7 @@ export function colorNameToColorArray(color: string, alpha: number = 1): number[
         return colorArray;
     }
 }
+
+export function randomFloat(min: number= 0, max: number = 1): number {
+    return (Math.random() * (max - min) + min);
+}
