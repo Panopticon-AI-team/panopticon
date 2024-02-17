@@ -18,6 +18,8 @@ interface FacilityCardProps {
 }
   
 export default function FacilityCard({ facility, handleDeleteFacility, handleCloseOnMap, anchorPositionTop, anchorPositionLeft }: Readonly<FacilityCardProps>) {
+    const [weaponCount, setWeaponCount] = useState(facility.getTotalWeaponQuantity());
+
     const _handleDeleteFacility = () => {
         handleCloseOnMap();
         handleDeleteFacility(facility.id);
@@ -28,6 +30,7 @@ export default function FacilityCard({ facility, handleDeleteFacility, handleClo
         <Card variant="outlined" sx={{ backgroundColor: "#282c34", color: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
             <CardContent>
                 <Typography variant="h5" component="div">{facility.name}</Typography>
+                <Typography variant="body2">Weapons: {weaponCount}</Typography>
             </CardContent>
             <CardActions>
                 <Button variant="contained" color="error" size="small" onClick={_handleDeleteFacility} startIcon={<DeleteIcon/>}>DELETE</Button>
