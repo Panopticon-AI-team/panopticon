@@ -1,168 +1,147 @@
 import Feature, { FeatureLike } from 'ol/Feature.js';
-import { Circle, Geometry, Polygon } from "ol/geom";
+import { Circle, Geometry, LineString } from "ol/geom";
 import Point from 'ol/geom/Point.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import VectorSource from 'ol/source/Vector.js';
-import {
-  Style,
-  Icon,
-  Fill,
-  Stroke,
-} from 'ol/style.js';
-import { fromLonLat } from 'ol/proj';
+import { Projection, fromLonLat } from 'ol/proj';
+import { Style } from 'ol/style';
 
 import Aircraft from '../../game/Aircraft';
 import Facility from '../../game/Facility';
 import Base from '../../game/Base';
-import { toRadians } from "../../utils/utils";
+import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../../utils/constants';
+import { aircraftRouteStyle, aircraftStyle, basesStyle, facilityStyle, rangeStyle } from './FeatureLayerStyles';
 
-import FlightIconSvg from '../assets/flight_black_24dp.svg';
-import RadarIconSvg from '../assets/radar_black_24dp.svg';
-import FlightTakeoffSvg from '../assets/flight_takeoff_black_24dp.svg';
-
-const aircraftStyle = function(feature: FeatureLike) {
-  return new Style({
-    image: new Icon({
-      opacity: feature.getProperties().selected ? 1 : 1,
-      src: FlightIconSvg,
-      rotation: toRadians(feature.getProperties().heading),
-    }),
-  })
-}
-
-const facilityStyle = function(feature: FeatureLike) {
-  return new Style({
-    image: new Icon({
-      opacity: 1,
-      src: RadarIconSvg,
-    }),
-  })
-}
-
-const baseStyle = function(feature: FeatureLike) {
-  return new Style({
-    image: new Icon({
-      opacity: 1,
-      src: FlightTakeoffSvg,
-    }),
-  })
-}
-
-export class AircraftLayer {
+class FeatureLayer {
   layerSource: VectorSource;
   layer: VectorLayer<VectorSource<Geometry>>;
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor() {
+  constructor(projection: Projection, styleFunction: (feature: FeatureLike) => Style | Style[]) {
     this.layerSource = new VectorSource({
       features: []
     });
     this.layer = new VectorLayer({
       source: this.layerSource,
-      style: (feature) => aircraftStyle(feature),
+      style: styleFunction,
     });
+    this.projection = projection;
   };
+}
 
-  refresh(aircraft: Aircraft[]) {
+export class AircraftLayer extends FeatureLayer {
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
+
+  constructor(projection: Projection) {
+    super(projection, aircraftStyle);
+  }
+
+  refresh(aircraftList: Aircraft[]) {
     this.layerSource.clear();
-    aircraft.forEach((aircraft) => {
+    aircraftList.forEach((aircraft) => {
       const feature = new Feature({
         type: 'aircraft',
-        geometry: new Point(fromLonLat([aircraft.longitude, aircraft.latitude])),
+        geometry: new Point(fromLonLat([aircraft.longitude, aircraft.latitude], this.projection)),
         id: aircraft.id,
         name: aircraft.name,
         heading: aircraft.heading,
+        selected: aircraft.selected,
+        sideName: aircraft.sideName,
+        sideColor: aircraft.sideColor,
       });
       this.layerSource.addFeature(feature);
     });
   }
 }
 
-export class FacilityLayer {
-  layerSource: VectorSource;
-  layer: VectorLayer<VectorSource<Geometry>>;
+export class FacilityLayer extends FeatureLayer {
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor() {
-    this.layerSource = new VectorSource({
-      features: []
-    });
-    this.layer = new VectorLayer({
-      source: this.layerSource,
-      style: (feature) => facilityStyle(feature),
-    });
-  };
+  constructor(projection: Projection) {
+    super(projection, facilityStyle);
+  }
 
   refresh(facilities: Facility[]) {
     this.layerSource.clear();
     facilities.forEach((facility) => {
       const feature = new Feature({
         type: 'facility',
-        geometry: new Point(fromLonLat([facility.latitude, facility.longitude])),
+        geometry: new Point(fromLonLat([facility.longitude, facility.latitude], this.projection)),
         id: facility.id,
         name: facility.name,
+        sideName: facility.sideName,
+        sideColor: facility.sideColor,
       });
       this.layerSource.addFeature(feature);
     });
   }
 }
 
-export class RangeLayer {
-  layerSource: VectorSource;
-  layer: VectorLayer<VectorSource<Geometry>>;
+export class BasesLayer extends FeatureLayer {
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor() {
-    this.layerSource = new VectorSource({
-      features: []
-    });
-    this.layer = new VectorLayer({
-      source: this.layerSource,
-      style: [
-        new Style({
-          stroke: new Stroke({
-            color: 'red',
-            width: 3
-          }),
-          fill: new Fill({
-            color: 'rgba(255, 0, 0, 0.1)'
-          })
-        })
-      ]
-    });
-  };
-
-  refresh(entities: (Aircraft | Facility)[]) {
-    this.layerSource.clear();
-    entities.forEach((entity) => {
-      const coordinatesLatLon = fromLonLat([entity.latitude, entity.longitude]);
-      const rangeRing = new Feature(new Circle(coordinatesLatLon, entity.range * 1852));
-      this.layerSource.addFeature(rangeRing);
-    });
+  constructor(projection: Projection) {
+    super(projection, basesStyle);
   }
-}
-
-export class BaseLayer {
-  layerSource: VectorSource;
-  layer: VectorLayer<VectorSource<Geometry>>;
-
-  constructor() {
-    this.layerSource = new VectorSource({
-      features: []
-    });
-    this.layer = new VectorLayer({
-      source: this.layerSource,
-      style: (feature) => baseStyle(feature),
-    });
-  };
 
   refresh(bases: Base[]) {
     this.layerSource.clear();
     bases.forEach((base) => {
       const feature = new Feature({
         type: 'base',
-        geometry: new Point(fromLonLat([base.latitude, base.longitude])),
+        geometry: new Point(fromLonLat([base.longitude, base.latitude], this.projection)),
         id: base.id,
         name: base.name,
+        sideName: base.sideName,
+        sideColor: base.sideColor,
       });
       this.layerSource.addFeature(feature);
+    });
+  }
+}
+
+export class RangeLayer extends FeatureLayer {
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
+
+  constructor(projection: Projection) {
+    super(projection, rangeStyle);
+  }
+
+  refresh(entities: (Aircraft | Facility)[]) {
+    this.layerSource.clear();
+    entities.forEach((entity) => {
+      const rangeRing = new Feature({
+        type: 'rangeRing',
+        geometry: new Circle(fromLonLat([entity.longitude, entity.latitude], this.projection), entity.range * NAUTICAL_MILES_TO_METERS),
+        sideColor: entity.sideColor,
+      });
+      this.layerSource.addFeature(rangeRing);
+    });
+  }
+}
+
+export class AircraftRouteLayer extends FeatureLayer {
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
+
+  constructor(projection: Projection) {
+    super(projection, aircraftRouteStyle);
+  }
+
+  refresh(aircraftList: Aircraft[]) {
+    this.layerSource.clear();
+    aircraftList.forEach((aircraft) => {
+      if (aircraft.route.length > 1) {
+        const aircraftLocation = fromLonLat([aircraft.longitude, aircraft.latitude], this.projection);
+        const destinationLatitude = aircraft.route[aircraft.route.length - 1][0];
+        const destinationLongitude = aircraft.route[aircraft.route.length - 1][1];
+        const destinationLocation = fromLonLat([destinationLongitude, destinationLatitude], this.projection);
+        const aircraftRoute = new Feature({
+          type: 'aircraftRoute',
+          geometry: new LineString([aircraftLocation, destinationLocation]),
+          sideColor: aircraft.sideColor,
+        });
+        this.layerSource.addFeature(aircraftRoute);
+      }
     });
   }
 }

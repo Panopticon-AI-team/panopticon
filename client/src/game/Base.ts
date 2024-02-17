@@ -6,6 +6,7 @@ export default class Base {
     latitude: number = 0.0;
     longitude: number = 0.0;
     altitude: number = 0.0; // FT ASL -- currently default -- need to reference from database
+    sideColor: string = 'black';
 
     constructor(id: string, name: string, sideName: string, className: string) {
         this.id = id;
