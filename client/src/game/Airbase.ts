@@ -1,4 +1,4 @@
-export default class Base {
+export default class Airbase {
     id: string;
     name: string;
     sideName: string;

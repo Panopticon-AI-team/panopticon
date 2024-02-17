@@ -1,5 +1,5 @@
 import Aircraft from "./Aircraft";
-import Base from "./Base";
+import Airbase from "./Airbase";
 import Facility from "./Facility";
 import Side from "./Side";
 
@@ -13,7 +13,7 @@ export default class Scenario {
     timeCompression: number;
     aircraft: Aircraft[] = [];
     facilities: Facility[] = [];
-    bases: Base[] = []
+    airbases: Airbase[] = []
 
     constructor(id: string, name: string, startTime: number, duration: number, sides: Side[]) {  
         this.id = id;
@@ -45,8 +45,8 @@ export default class Scenario {
         return this.facilities.find((facility) => facility.id === facilityId);
     }
 
-    getBase(baseId: string): Base | undefined {
-        return this.bases.find((base) => base.id === baseId);
+    getAirbase(airbaseId: string): Airbase | undefined {
+        return this.airbases.find((airbase) => airbase.id === airbaseId);
     }
 
 }

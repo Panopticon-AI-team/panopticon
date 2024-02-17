@@ -35,7 +35,7 @@ export const facilityStyle = function(feature: FeatureLike) {
   })
 }
 
-export const basesStyle = function(feature: FeatureLike) {
+export const airbasesStyle = function(feature: FeatureLike) {
   return new Style({
     image: new Icon({
       opacity: 1,
