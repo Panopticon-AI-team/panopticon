@@ -12,6 +12,7 @@ import FlightIconSvg from '../assets/flight_black_24dp.svg';
 import RadarIconSvg from '../assets/radar_black_24dp.svg';
 import FlightTakeoffSvg from '../assets/flight_takeoff_black_24dp.svg';
 import ChevronRightSvg from '../assets/chevron_right_black_24dp.svg';
+import WeaponSvg from '../assets/keyboard_double_arrow_up_black_24dp.svg';
 import { LineString, Point } from 'ol/geom';
 
 export const aircraftStyle = function(feature: FeatureLike) {
@@ -89,4 +90,14 @@ export const aircraftRouteStyle = function(feature: FeatureLike) {
     })
   
     return styles;
+}
+
+export const weaponStyle = function(feature: FeatureLike) {
+  return new Style({
+    image: new Icon({
+      src: WeaponSvg,
+      rotation: toRadians(feature.getProperties().heading),
+      color: feature.getProperties().sideColor,
+    }),
+  })
 }

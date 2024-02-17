@@ -2,6 +2,7 @@ import Aircraft from "./Aircraft";
 import Airbase from "./Airbase";
 import Facility from "./Facility";
 import Side from "./Side";
+import Weapon from "./Weapon";
 
 export default class Scenario {
     id: string;
@@ -14,6 +15,7 @@ export default class Scenario {
     aircraft: Aircraft[] = [];
     facilities: Facility[] = [];
     airbases: Airbase[] = []
+    weapons: Weapon[] = []
 
     constructor(id: string, name: string, startTime: number, duration: number, sides: Side[]) {  
         this.id = id;
@@ -47,6 +49,10 @@ export default class Scenario {
 
     getAirbase(airbaseId: string): Airbase | undefined {
         return this.airbases.find((airbase) => airbase.id === airbaseId);
+    }
+
+    getWeapon(weaponId: string): Weapon | undefined {
+        return this.weapons.find((weapon) => weapon.id === weaponId);
     }
 
 }

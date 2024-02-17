@@ -7,7 +7,7 @@ import { Projection, toLonLat } from "ol/proj";
 import Point from 'ol/geom/Point.js';
 
 import "../styles/ScenarioMap.css";
-import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeLayer } from "./FeatureLayers";
+import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeLayer, WeaponLayer } from "./FeatureLayers";
 import BaseMapLayers from "./MapLayers";
 import Game from "../../game/Game";
 import ToolBar from "../ToolBar";
@@ -31,6 +31,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection ?? defaultProjection));
   const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection ?? defaultProjection));
   const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection ?? defaultProjection));
+  const [weaponLayer, setWeaponLayer] = useState(new WeaponLayer(projection ?? defaultProjection));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
   const [openAirbaseCard, setOpenAirbaseCard] = useState({
@@ -41,7 +42,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   });
   
   const map = new OlMap({
-    layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, airbasesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer],
+    layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, airbasesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer, weaponLayer.layer],
     view: new View({
       center: center,
       zoom: zoom,
@@ -189,6 +190,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       setCurrentScenarioTime(observation.currentTime);
       aircraftLayer.refresh(observation.aircraft);
       aircraftRouteLayer.refresh(observation.aircraft);
+      weaponLayer.refresh(observation.weapons);
 
       gameEnded = terminated || truncated;
 
@@ -257,6 +259,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     airbasesLayer.refresh(game.currentScenario.airbases);
     rangeLayer.refresh(game.currentScenario.facilities);
     aircraftRouteLayer.refresh(game.currentScenario.aircraft);
+    weaponLayer.refresh(game.currentScenario.weapons);
   }
 
   return (
