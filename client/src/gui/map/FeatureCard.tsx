@@ -1,7 +1,7 @@
 import React from "react";
 
 import AirbaseCard from "./AirbaseCard"
-import BasicPopover from "./MapPopup"
+import FeaturePopup from "./FeaturePopup"
 import Airbase from "../../game/Airbase";
 
 export function createAirbaseCard(anchorPositionTop: number, anchorPositionLeft: number, handleAddAircraft: (airbaseId: string) => void, handleLaunchAircraft: (airbaseId: string) => void, handleCloseOnMap: () => void, airbase?: Airbase) {
@@ -10,6 +10,6 @@ export function createAirbaseCard(anchorPositionTop: number, anchorPositionLeft:
         <AirbaseCard airbase={airbase!} handleAddAircraftProp={() => {handleAddAircraft(airbaseId)}} handleLaunchAircraftProp={() => {handleLaunchAircraft(airbaseId)}}/>
     )
     return (
-        <BasicPopover anchorPositionTop={anchorPositionTop} anchorPositionLeft={anchorPositionLeft} content={airspaceCard} handleCloseOnMap={handleCloseOnMap}></BasicPopover>
+        <FeaturePopup anchorPositionTop={anchorPositionTop} anchorPositionLeft={anchorPositionLeft} content={airspaceCard} handleCloseOnMap={handleCloseOnMap}></FeaturePopup>
     )
 }

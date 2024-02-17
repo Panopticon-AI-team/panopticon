@@ -8,12 +8,12 @@ import Point from 'ol/geom/Point.js';
 
 import "../styles/ScenarioMap.css";
 import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeLayer, WeaponLayer } from "./FeatureLayers";
-import BaseMapLayers from "./MapLayers";
+import BaseMapLayers from "./BaseMapLayers";
 import Game from "../../game/Game";
 import ToolBar from "../ToolBar";
 import { DEFAULT_OL_PROJECTION_CODE } from "../../utils/constants";
 import { delay } from "../../utils/utils";
-import { createAirbaseCard } from "./MapFeatureCard";
+import { createAirbaseCard } from "./FeatureCard";
 
 interface ScenarioMapProps {
   zoom: number;
