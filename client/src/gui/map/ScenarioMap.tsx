@@ -101,6 +101,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         break;
       case 'selectMultipleFeatures':
         // pass, need to deconflict when there are more than 1 feature at the same pixel
+        handleSelectMultipleFeatures(featuresAtPixel)
         break;
       case 'addUnit':
         handleAddUnit(event.coordinate);
@@ -135,6 +136,9 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         });
       }
     }
+  }
+
+  function handleSelectMultipleFeatures(features: Feature[]) {
 
   }
 
@@ -153,8 +157,9 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   function getFeaturesAtPixel(pixel: Pixel): Feature[] {
     const selectedFeatures: Feature[] = [];
+    const excludedFeatureTypes = ['rangeRing', 'aircraftRoute'];
     theMap.forEachFeatureAtPixel(pixel, function (feature) {
-      selectedFeatures.push(feature as Feature);
+      if (!excludedFeatureTypes.includes(feature.getProperties()?.type)) selectedFeatures.push(feature as Feature);
     }, {hitTolerance: 5,})
     return selectedFeatures;
   }
