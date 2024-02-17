@@ -264,6 +264,16 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     }
   }
 
+  function stepGameOnce() {
+    game.scenarioPaused = true;
+    const [observation, reward, terminated, truncated, info] = game.step();
+
+    setCurrentScenarioTime(observation.currentTime);
+    aircraftLayer.refresh(observation.aircraft);
+    aircraftRouteLayer.refresh(observation.aircraft);
+    weaponLayer.refresh(observation.weapons);
+  }
+
   function setGamePaused() {
     game.scenarioPaused = true;
   }
@@ -351,7 +361,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   return (
     <div>
-      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addAirbaseOnClick={setAddingAirbase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
+      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addAirbaseOnClick={setAddingAirbase} playOnClick={setGamePlaying} stepOnClick={stepGameOnce} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
       <div ref={mapId} className='map'></div>
       {openAirbaseCard.open &&
         <AirbaseCard 

@@ -5,6 +5,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import DownloadIcon from '@mui/icons-material/Download';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import RedoIcon from '@mui/icons-material/Redo';
 import { ReactComponent as FlightIcon } from './assets/flight_black_24dp.svg';
 import { ReactComponent as RadarIcon } from './assets/radar_black_24dp.svg';
 import { ReactComponent as FlightTakeoffIcon } from './assets/flight_takeoff_black_24dp.svg';
@@ -18,6 +19,7 @@ interface ToolBarProps {
     addFacilityOnClick: () => void;
     addAirbaseOnClick: () => void;
     playOnClick: () => void;
+    stepOnClick: () => void;
     pauseOnClick: () => void;
     switchCurrentSideOnClick: () => void;
     refreshAllLayers: () => void;
@@ -26,7 +28,7 @@ interface ToolBarProps {
     game: Game;
 }
 
-export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAirbaseOnClick, playOnClick, pauseOnClick, switchCurrentSideOnClick, refreshAllLayers, scenarioCurrentTime, scenarioCurrentSideName, game }: Readonly<ToolBarProps>) {
+export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAirbaseOnClick, playOnClick, stepOnClick, pauseOnClick, switchCurrentSideOnClick, refreshAllLayers, scenarioCurrentTime, scenarioCurrentSideName, game }: Readonly<ToolBarProps>) {
 
   const toolbarStyle = {
     backgroundColor: "#282c34",
@@ -70,6 +72,7 @@ export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAir
     <Stack spacing={2} direction="row" style={toolbarStyle}>
       <Chip label={"Current time: " + unixToLocalTime(scenarioCurrentTime)} style={currentTimeChipStyle} />
       <Button variant="contained" color="success" onClick={playOnClick} startIcon={<PlayArrowIcon/>}>PLAY</Button>
+      <Button variant="contained" onClick={stepOnClick} startIcon={<RedoIcon/>}>STEP</Button>
       <Button variant="contained" color="error" onClick={pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
       <Button variant="contained" onClick={switchCurrentSideOnClick}>Current side: {scenarioCurrentSideName}</Button>
       <Button variant="contained" onClick={addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
