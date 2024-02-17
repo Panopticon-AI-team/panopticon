@@ -1,3 +1,5 @@
+import Weapon from "./Weapon";
+
 export default class Facility {
     id: string;
     name: string;
@@ -8,7 +10,7 @@ export default class Facility {
     altitude: number = 0.0; // FT ASL -- currently default -- need to reference from database
     range: number = 250; // NM -- currently default -- need to reference from database
     sideColor: string = 'black';
-    fired: boolean = false;
+    weapons: Weapon[] = [];
 
     constructor(id: string, name: string, sideName: string, className: string) {
         this.id = id;

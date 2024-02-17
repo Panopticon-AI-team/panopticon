@@ -14,6 +14,8 @@ export default class Weapon {
     sideColor: string = 'black';
     targetId: string = '';
     lethality: number = 0.0; // currently default -- need to reference from database
+    maxQuantity: number = 0;
+    currentQuantity: number = 0;
 
     constructor(id: string, name: string, sideName: string, className: string) {
         this.id = id;

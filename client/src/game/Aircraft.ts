@@ -1,3 +1,5 @@
+import Weapon from "./Weapon";
+
 export default class Aircraft {
     id: string;
     name: string;
@@ -13,6 +15,7 @@ export default class Aircraft {
     route: number[][] = [];
     selected: boolean = false;
     sideColor: string = 'black';
+    weapons: Weapon[] = [];
 
     constructor(id: string, name: string, sideName: string, className: string) {
         this.id = id;
