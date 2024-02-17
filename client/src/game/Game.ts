@@ -1,10 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
 
+import { Circle } from "ol/geom";
+import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../utils/constants';
+import { Projection, fromLonLat } from "ol/proj";
+
 import Aircraft from "./Aircraft";
 import Facility from "./Facility";
 import Scenario from "./Scenario";
 
-import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing } from "../utils/utils";
+import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing, randomFloat } from "../utils/utils";
 import Airbase from "./Airbase";
 import Side from "./Side";
 
@@ -67,6 +71,7 @@ export default class Game {
         facility.latitude = latitude;
         facility.longitude = longitude;
         facility.sideColor = this.currentScenario.getSideColor(this.currentSideName);
+        facility.lethality = 0.75
 
         this.currentScenario.facilities.push(facility);
     }
@@ -98,6 +103,16 @@ export default class Game {
             const aircraft = airbase.aircraft.pop()
             if (aircraft) this.currentScenario.aircraft.push(aircraft);
         }
+    }
+
+    checkIfAircraftIsWithinFacilityThreatRange(aircraft: Aircraft, facility: Facility): boolean {
+        const projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE})
+        const facilityRangeGeometry = new Circle(fromLonLat([facility.longitude, facility.latitude], projection), facility.range * NAUTICAL_MILES_TO_METERS)
+        return facilityRangeGeometry.intersectsCoordinate(fromLonLat([aircraft.longitude, aircraft.latitude], projection))
+    }
+
+    checkFacilityDestroyedAircraft(lethality: number): boolean {
+        return randomFloat() <= lethality
     }
 
     switchCurrentSide() {
@@ -154,6 +169,7 @@ export default class Game {
             newFacility.latitude = facility.latitude;
             newFacility.longitude = facility.longitude;
             newFacility.sideColor = facility.sideColor;
+            newFacility.lethality = facility.lethality ?? 0.75;
             loadedScenario.facilities.push(newFacility);
         });
     }
@@ -168,6 +184,17 @@ export default class Game {
 
     step(): [Scenario, number, boolean, boolean, any] {
         this.currentScenario.currentTime += 1;
+
+        this.currentScenario.facilities.forEach((facility) => {
+            this.currentScenario.aircraft.forEach((aircraft) => {
+                if (facility.sideName !== aircraft.sideName) {
+                    if (this.checkIfAircraftIsWithinFacilityThreatRange(aircraft, facility) && this.checkFacilityDestroyedAircraft(facility.lethality)) {
+                        this.currentScenario.aircraft = this.currentScenario.aircraft.filter((currentScenarioAircraft) => currentScenarioAircraft.id !== aircraft.id);
+                    }
+                }
+            })
+        })
+
         this.currentScenario.aircraft.forEach((aircraft) => {
             const route = aircraft.route;
             if (route.length > 0) {
