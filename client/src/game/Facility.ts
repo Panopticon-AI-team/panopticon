@@ -8,7 +8,7 @@ export default class Facility {
     altitude: number = 0.0; // FT ASL -- currently default -- need to reference from database
     range: number = 250; // NM -- currently default -- need to reference from database
     sideColor: string = 'black';
-    lethality: number = 0.0; // currently default -- need to reference from database
+    fired: boolean = false;
 
     constructor(id: string, name: string, sideName: string, className: string) {
         this.id = id;

@@ -122,3 +122,19 @@ export function colorNameToColorArray(color: string, alpha: number = 1): number[
 export function randomFloat(min: number= 0, max: number = 1): number {
     return (Math.random() * (max - min) + min);
 }
+
+export function generateRoute(originLatitude: number, originLongitude: number, destinationLatitude: number, destinationLongitude: number, numberOfWaypoints: number): number[][] {
+    const route: number[][] = [[originLatitude, originLongitude]];
+
+    const heading = getBearingBetweenTwoPoints(originLatitude, originLongitude, destinationLatitude, destinationLongitude);
+    const totalDistance = getDistanceBetweenTwoPoints(originLatitude, originLongitude, destinationLatitude, destinationLongitude);
+    const legDistance = totalDistance / numberOfWaypoints;
+
+    for (let waypointIndex = 1; waypointIndex < numberOfWaypoints; waypointIndex++) {
+        const newWaypoint = getTerminalCoordinatesFromDistanceAndBearing(route[waypointIndex - 1][0], route[waypointIndex - 1][1], legDistance, heading);
+        route.push(newWaypoint);
+    }
+
+    route.push([destinationLatitude, destinationLongitude]);
+    return route
+}
