@@ -13,7 +13,7 @@ import Game from "../../game/Game";
 import ToolBar from "../ToolBar";
 import { DEFAULT_OL_PROJECTION_CODE } from "../../utils/constants";
 import { delay } from "../../utils/utils";
-import { createAirbaseCard } from "./FeatureCard";
+import AirbaseCard from "./AirbaseCard";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -38,7 +38,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     open: false,
     top: 0,
     left: 0,
-    baseId: '',
+    airbaseId: '',
   });
   
   const map = new OlMap({
@@ -123,7 +123,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);
         if (aircraft) aircraft.selected = !aircraft.selected;
         aircraftLayer.refresh(game.currentScenario.aircraft);
-      } else if (currentSelectedFeatureType === 'airbase') {
+      } else if (currentSelectedFeatureType === 'airbase' && game.currentScenario.getAirbase(currentSelectedFeatureId)) {
         const airbaseGeometry = feature.getGeometry() as Point
         const airbaseCoordinate = airbaseGeometry.getCoordinates()
         const airbasePixels = theMap.getPixelFromCoordinate(airbaseCoordinate)
@@ -131,7 +131,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
           open: true,
           top: airbasePixels[1],
           left: airbasePixels[0],
-          baseId: currentSelectedFeatureId,
+          airbaseId: currentSelectedFeatureId,
         });
       }
     }
@@ -141,16 +141,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   function handleAddUnit(coordinates: number[]) {
     if (game.addingAircraft) {
       addAircraft(coordinates);
-      aircraftLayer.refresh(game.currentScenario.aircraft);
       game.addingAircraft = false;
     } else if (game.addingFacility) {
       addFacility(coordinates);
-      facilityLayer.refresh(game.currentScenario.facilities);
-      rangeLayer.refresh(game.currentScenario.facilities);
       game.addingFacility = false;
     } else if (game.addingAirbase) {
       addAirbase(coordinates);
-      airbasesLayer.refresh(game.currentScenario.airbases);
       game.addingAirbase = false;
     }
   }
@@ -209,6 +205,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const latitude = coordinates[1];
     const longitude = coordinates[0];
     game.addAircraft(aircraftName, className, latitude, longitude);
+    aircraftLayer.refresh(game.currentScenario.aircraft)
   }
 
   function addAircraftToAirbase(airbaseId: string) {
@@ -224,6 +221,8 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const latitude = coordinates[1];
     const longitude = coordinates[0];
     game.addFacility(facilityName, className, latitude, longitude);
+    facilityLayer.refresh(game.currentScenario.facilities);
+    rangeLayer.refresh(game.currentScenario.facilities);
   }
 
   function addAirbase(coordinates: number[]) {
@@ -233,6 +232,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const latitude = coordinates[1];
     const longitude = coordinates[0];
     game.addAirbase(airbaseName, className, latitude, longitude);
+    airbasesLayer.refresh(game.currentScenario.airbases);
+  }
+
+  function removeAirbase(airbaseId: string) {
+    game.removeAirbase(airbaseId);
+    airbasesLayer.refresh(game.currentScenario.airbases);
   }
 
   function moveAircraft(aircraftId: string, coordinates: number[]) {
@@ -266,7 +271,17 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     <div>
       <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addAirbaseOnClick={setAddingAirbase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
       <div ref={mapId} className='map'></div>
-      {openAirbaseCard.open && createAirbaseCard(openAirbaseCard.top, openAirbaseCard.left, addAircraftToAirbase, launchAircraft, () => {setOpenAirbaseCard({open: false, top: 0, left: 0, baseId: ''})}, game.currentScenario.getAirbase(openAirbaseCard.baseId))}
+      {openAirbaseCard.open &&
+        <AirbaseCard 
+          airbase={game.currentScenario.getAirbase(openAirbaseCard.airbaseId)!} 
+          handleAddAircraft={addAircraftToAirbase} 
+          handleLaunchAircraft={launchAircraft}
+          handleDeleteAirbase={removeAirbase} 
+          anchorPositionTop={openAirbaseCard.top} 
+          anchorPositionLeft={openAirbaseCard.left} 
+          handleCloseOnMap={() => {setOpenAirbaseCard({open: false, top: 0, left: 0, airbaseId: ''})}}
+        />
+      }
     </div>
   );
 };

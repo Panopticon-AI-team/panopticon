@@ -67,6 +67,10 @@ export default class Game {
         this.currentScenario.airbases.push(airbase);
     }
 
+    removeAirbase(airbaseId: string) {
+        this.currentScenario.airbases = this.currentScenario.airbases.filter((airbase) => airbase.id !== airbaseId);
+    }
+
     addFacility(facilityName: string, className: string, latitude: number, longitude: number) {
         if (!this.currentSideName) {
             return;
