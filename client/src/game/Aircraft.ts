@@ -24,4 +24,12 @@ export default class Aircraft {
         this.className = className;
     }
 
+    getTotalWeaponQuantity(): number {
+        let sum = 0;
+        this.weapons.forEach(weapon => {
+            sum += weapon.currentQuantity;
+        });
+        return sum;
+    }
+
 }

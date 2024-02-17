@@ -17,6 +17,7 @@ import AirbaseCard from "./AirbaseCard";
 import MultipleFeatureSelector from "./MultipleFeatureSelector";
 import { Geometry } from "ol/geom";
 import FacilityCard from "./FacilityCard";
+import AircraftCard from "./AircraftCard";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -44,6 +45,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const [weaponLayer, setWeaponLayer] = useState(new WeaponLayer(projection ?? defaultProjection));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
+  const [openAircraftCard, setOpenAircraftCard] = useState({
+    open: false,
+    top: 0,
+    left: 0,
+    aircraftId: '',
+  });
   const [openAirbaseCard, setOpenAirbaseCard] = useState({
     open: false,
     top: 0,
@@ -141,11 +148,21 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     if (currentSelectedFeatureSideName && currentSelectedFeatureSideName !== game.currentSideName) return;
 
     if (currentSelectedFeatureId) {
-      if (currentSelectedFeatureType === 'aircraft') {
-        game.selectedUnitId = game.selectedUnitId === '' ? currentSelectedFeatureId : '';
+      if (currentSelectedFeatureType === 'aircraft' && game.currentScenario.getAircraft(currentSelectedFeatureId)) {
+        game.selectedUnitId = '';
         const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);
-        if (aircraft) aircraft.selected = !aircraft.selected;
+        if (aircraft) aircraft.selected = false;
         aircraftLayer.refresh(game.currentScenario.aircraft);
+
+        const aircraftGeometry = feature.getGeometry() as Point
+        const aircraftCoordinate = aircraftGeometry.getCoordinates()
+        const aircraftPixels = theMap.getPixelFromCoordinate(aircraftCoordinate)
+        setOpenAircraftCard({
+          open: true,
+          top: aircraftPixels[1],
+          left: aircraftPixels[0],
+          aircraftId: currentSelectedFeatureId,
+        });
       } else if (currentSelectedFeatureType === 'airbase' && game.currentScenario.getAirbase(currentSelectedFeatureId)) {
         const airbaseGeometry = feature.getGeometry() as Point
         const airbaseCoordinate = airbaseGeometry.getCoordinates()
@@ -168,6 +185,13 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         });
       }
     }
+  }
+
+  function queueAircraftForMovement(aircraftId: string) {
+    game.selectedUnitId = aircraftId
+    const aircraft = game.currentScenario.getAircraft(aircraftId);
+    if (aircraft) aircraft.selected = true
+    aircraftLayer.refresh(game.currentScenario.aircraft);
   }
 
   function handleSelectMultipleFeatures(features: Feature[]) {
@@ -292,6 +316,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     rangeLayer.refresh(game.currentScenario.facilities);
   }
 
+  function removeAircraft(aircraftId: string) {
+    game.removeAircraft(aircraftId);
+    aircraftLayer.refresh(game.currentScenario.aircraft);
+    aircraftRouteLayer.refresh(game.currentScenario.aircraft);
+  }
+
   function moveAircraft(aircraftId: string, coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const destinationLatitude = coordinates[1];
@@ -342,7 +372,17 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
           anchorPositionLeft={openFacilityCard.left} 
           handleCloseOnMap={() => {setOpenFacilityCard({open: false, top: 0, left: 0, facilityId: ''})}}
         />
-      }      
+      }
+      {openAircraftCard.open &&
+        <AircraftCard 
+          aircraft={game.currentScenario.getAircraft(openAircraftCard.aircraftId)!} 
+          handleDeleteAircraft={removeAircraft} 
+          handleMoveAircraft={queueAircraftForMovement}
+          anchorPositionTop={openAircraftCard.top} 
+          anchorPositionLeft={openAircraftCard.left} 
+          handleCloseOnMap={() => {setOpenAircraftCard({open: false, top: 0, left: 0, aircraftId: ''})}}
+        />
+      }        
       {openMultipleFeatureSelector.open &&
         <MultipleFeatureSelector 
           features={openMultipleFeatureSelector.features}
