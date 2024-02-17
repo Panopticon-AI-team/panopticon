@@ -27,10 +27,15 @@ export default function FacilityCard({ facility, handleDeleteFacility, handleClo
 
     const facilityCard = (
         <Box sx={{ minWidth: 150 }}>
-        <Card variant="outlined" sx={{ backgroundColor: "#282c34", color: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+        <Card variant="outlined" sx={{ backgroundColor: "#282c34", color: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "left"}}>
             <CardContent>
                 <Typography variant="h5" component="div">{facility.name}</Typography>
-                <Typography variant="body2">Weapons: {weaponCount}</Typography>
+                <Typography variant="h6">Type: {facility.className}</Typography>
+                <Typography variant="h6">Coordinates: {facility.latitude.toFixed(2)}, {facility.longitude.toFixed(2)}</Typography>
+                <Typography variant="h6">Altitude: {facility.altitude.toFixed(2)} FT</Typography>
+                <Typography variant="h6">Range: {facility.range.toFixed(0)} NM</Typography>
+                <Typography variant="h6">Side: {facility.sideName}</Typography>
+                <Typography variant="h6">Weapon Quantity: {weaponCount}</Typography>
             </CardContent>
             <CardActions>
                 <Button variant="contained" color="error" size="small" onClick={_handleDeleteFacility} startIcon={<DeleteIcon/>}>DELETE</Button>

@@ -39,10 +39,13 @@ export default function AirbaseCard({ airbase, handleAddAircraft, handleLaunchAi
 
     const airbaseCard = (
         <Box sx={{ minWidth: 150 }}>
-        <Card variant="outlined" sx={{ backgroundColor: "#282c34", color: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+        <Card variant="outlined" sx={{ backgroundColor: "#282c34", color: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "left"}}>
             <CardContent>
                 <Typography variant="h5" component="div">{airbase.name}</Typography>
-                <Typography variant="body2">Aircraft: {aircraftCount}</Typography>
+                <Typography variant="h6">Coordinates: {airbase.latitude.toFixed(2)}, {airbase.longitude.toFixed(2)}</Typography>
+                <Typography variant="h6">Altitude: {airbase.altitude.toFixed(2)} FT</Typography>
+                <Typography variant="h6">Side: {airbase.sideName}</Typography>
+                <Typography variant="h6">Aircraft Quantity: {aircraftCount}</Typography>
             </CardContent>
             <CardActions>
                 <Button variant="contained" size="small" onClick={_handleAddAircraft}>Add aicraft</Button>

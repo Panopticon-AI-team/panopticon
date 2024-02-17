@@ -34,10 +34,17 @@ export default function AircraftCard({ aircraft, handleDeleteAircraft, handleMov
 
     const aircraftCard = (
         <Box sx={{ minWidth: 150 }}>
-        <Card variant="outlined" sx={{ backgroundColor: "#282c34", color: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+        <Card variant="outlined" sx={{ backgroundColor: "#282c34", color: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "left"}}>
             <CardContent>
                 <Typography variant="h5" component="div">{aircraft.name}</Typography>
-                <Typography variant="body2">Weapons: {weaponCount}</Typography>
+                <Typography variant="h6">Type: {aircraft.className}</Typography>
+                <Typography variant="h6">Coordinates: {aircraft.latitude.toFixed(2)}, {aircraft.longitude.toFixed(2)}</Typography>
+                <Typography variant="h6">Altitude: {aircraft.altitude.toFixed(2)} FT</Typography>
+                <Typography variant="h6">Heading: {aircraft.heading.toFixed(2)}</Typography>
+                <Typography variant="h6">Speed: {aircraft.speed.toFixed(0)} KTS</Typography>
+                <Typography variant="h6">Fuel: {aircraft.fuel.toFixed(2)}</Typography>
+                <Typography variant="h6">Side: {aircraft.sideName}</Typography>
+                <Typography variant="h6">Weapon Quantity: {weaponCount}</Typography>
             </CardContent>
             <CardActions>
                 <Button variant="contained" size="small" onClick={_handleMoveAircraft} startIcon={<PinDropIcon/>}>MOVE</Button>
