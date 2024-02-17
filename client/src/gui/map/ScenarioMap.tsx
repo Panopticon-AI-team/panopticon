@@ -4,6 +4,7 @@ import { Pixel } from "ol/pixel";
 import { Feature, MapBrowserEvent, Map as OlMap } from "ol";
 import View from "ol/View";
 import { Projection, toLonLat } from "ol/proj";
+import Point from 'ol/geom/Point.js';
 
 import "../styles/ScenarioMap.css";
 import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeLayer } from "./FeatureLayers";
@@ -12,6 +13,7 @@ import Game from "../../game/Game";
 import ToolBar from "../ToolBar";
 import { DEFAULT_OL_PROJECTION_CODE } from "../../utils/constants";
 import { delay } from "../../utils/utils";
+import { createAirbaseCard } from "./MapFeatureCard";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -31,6 +33,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection ?? defaultProjection));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
+  const [openAirbaseCard, setOpenAirbaseCard] = useState({
+    open: false,
+    top: 0,
+    left: 0,
+    baseId: '',
+  });
   
   const map = new OlMap({
     layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, airbasesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer],
@@ -61,7 +69,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   // });
 
   function getMapClickContext(event: MapBrowserEvent<any>): string {
-    let context = '';
+    let context = 'default';
     const featuresAtPixel = getFeaturesAtPixel(theMap.getEventPixel(event.originalEvent));
     if (game.selectedUnitId && featuresAtPixel.length === 0){
       context = 'moveAircraft';
@@ -69,7 +77,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       context = 'selectSingleFeature';
     } else if (featuresAtPixel.length > 1) {
       context = 'selectMultipleFeatures';
-    } else {
+    } else if (game.addingAircraft || game.addingFacility || game.addingAirbase) {
       context = 'addUnit';
     }
     return context
@@ -108,12 +116,25 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     
     if (currentSelectedFeatureSideName && currentSelectedFeatureSideName !== game.currentSideName) return;
 
-    if (currentSelectedFeatureId && currentSelectedFeatureType === 'aircraft') {
-      game.selectedUnitId = game.selectedUnitId === '' ? currentSelectedFeatureId : '';
-      const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);
-      if (aircraft) aircraft.selected = !aircraft.selected;
-      aircraftLayer.refresh(game.currentScenario.aircraft);
+    if (currentSelectedFeatureId) {
+      if (currentSelectedFeatureType === 'aircraft') {
+        game.selectedUnitId = game.selectedUnitId === '' ? currentSelectedFeatureId : '';
+        const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);
+        if (aircraft) aircraft.selected = !aircraft.selected;
+        aircraftLayer.refresh(game.currentScenario.aircraft);
+      } else if (currentSelectedFeatureType === 'airbase') {
+        const airbaseGeometry = feature.getGeometry() as Point
+        const airbaseCoordinate = airbaseGeometry.getCoordinates()
+        const airbasePixels = theMap.getPixelFromCoordinate(airbaseCoordinate)
+        setOpenAirbaseCard({
+          open: true,
+          top: airbasePixels[1],
+          left: airbasePixels[0],
+          baseId: currentSelectedFeatureId,
+        });
+      }
     }
+
   }
 
   function handleAddUnit(coordinates: number[]) {
@@ -188,6 +209,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     game.addAircraft(aircraftName, className, latitude, longitude);
   }
 
+  function addAircraftToAirbase(airbaseId: string) {
+    const aircraftName = 'Dummy';
+    const className = 'F-16C';
+    game.addAircraftToAirbase(aircraftName, className, airbaseId);
+  }
+
   function addFacility(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const facilityName = 'Threat';
@@ -214,6 +241,11 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     aircraftRouteLayer.refresh(game.currentScenario.aircraft);
   }
 
+  function launchAircraft(airbaseId: string) {
+    game.launchAircraftFromAirbase(airbaseId)
+    aircraftLayer.refresh(game.currentScenario.aircraft)
+  }
+
   function switchCurrentSide() {
     game.switchCurrentSide();
     setCurrentSideName(game.currentSideName);
@@ -231,6 +263,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     <div>
       <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addAirbaseOnClick={setAddingAirbase} playOnClick={setGamePlaying} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
       <div ref={mapId} className='map'></div>
+      {openAirbaseCard.open && createAirbaseCard(openAirbaseCard.top, openAirbaseCard.left, addAircraftToAirbase, launchAircraft, () => {setOpenAirbaseCard({open: false, top: 0, left: 0, baseId: ''})}, game.currentScenario.getAirbase(openAirbaseCard.baseId))}
     </div>
   );
 };

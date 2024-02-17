@@ -1,3 +1,5 @@
+import Aircraft from "./Aircraft";
+
 export default class Airbase {
     id: string;
     name: string;
@@ -7,6 +9,7 @@ export default class Airbase {
     longitude: number = 0.0;
     altitude: number = 0.0; // FT ASL -- currently default -- need to reference from database
     sideColor: string = 'black';
+    aircraft: Aircraft[] = [];
 
     constructor(id: string, name: string, sideName: string, className: string) {
         this.id = id;
