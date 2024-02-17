@@ -24,7 +24,7 @@ export default function App() {
   theGame.currentSideName = sideBlue.name;
   const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
   const defaultScenarioZoom = [0, 0]
-  const SCSScenarioZoom = [130.78675023228317, 28.14934438063878]
+  const SCSScenarioZoom = [130.78675023228317, 26.54934438063878]
 
   theGame.loadScenario(JSON.stringify(SCSScenarioJson)); // loads default scenario for easier testing
 

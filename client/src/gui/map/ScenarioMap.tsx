@@ -265,7 +265,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   }
 
   function stepGameOnce() {
-    game.scenarioPaused = true;
+    setGamePaused()
     const [observation, reward, terminated, truncated, info] = game.step();
 
     setCurrentScenarioTime(observation.currentTime);
