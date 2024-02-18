@@ -4,14 +4,14 @@ import { Circle } from "ol/geom";
 import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../utils/constants';
 import { Projection, fromLonLat } from "ol/proj";
 
-import Aircraft from "./Aircraft";
-import Facility from "./Facility";
+import Aircraft from "./units/Aircraft";
+import Facility from "./units/Facility";
 import Scenario from "./Scenario";
 
 import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing, randomFloat, generateRoute } from "../utils/utils";
-import Airbase from "./Airbase";
+import Airbase from "./units/Airbase";
 import Side from "./Side";
-import Weapon from "./Weapon";
+import Weapon from "./units/Weapon";
 
 export default class Game {
     currentScenario: Scenario;

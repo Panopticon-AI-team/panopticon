@@ -6,12 +6,12 @@ import VectorSource from 'ol/source/Vector.js';
 import { Projection, fromLonLat } from 'ol/proj';
 import { Style } from 'ol/style';
 
-import Aircraft from '../../game/Aircraft';
-import Facility from '../../game/Facility';
-import Airbase from '../../game/Airbase';
-import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../../utils/constants';
+import Aircraft from '../../../game/units/Aircraft';
+import Facility from '../../../game/units/Facility';
+import Airbase from '../../../game/units/Airbase';
+import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../../../utils/constants';
 import { aircraftRouteStyle, aircraftStyle, airbasesStyle, facilityStyle, rangeStyle, weaponStyle } from './FeatureLayerStyles';
-import Weapon from '../../game/Weapon';
+import Weapon from '../../../game/units/Weapon';
 
 class FeatureLayer {
   layerSource: VectorSource;

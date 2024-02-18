@@ -7,17 +7,17 @@ import { Projection, toLonLat } from "ol/proj";
 import Point from 'ol/geom/Point.js';
 
 import "../styles/ScenarioMap.css";
-import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeLayer, WeaponLayer } from "./FeatureLayers";
-import BaseMapLayers from "./BaseMapLayers";
+import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeLayer, WeaponLayer } from "./mapLayers/FeatureLayers";
+import BaseMapLayers from "./mapLayers/BaseMapLayers";
 import Game from "../../game/Game";
-import ToolBar from "../ToolBar";
+import ToolBar from "./ToolBar";
 import { DEFAULT_OL_PROJECTION_CODE } from "../../utils/constants";
 import { delay } from "../../utils/utils";
-import AirbaseCard from "./AirbaseCard";
+import AirbaseCard from "./featureCards/AirbaseCard";
 import MultipleFeatureSelector from "./MultipleFeatureSelector";
 import { Geometry } from "ol/geom";
-import FacilityCard from "./FacilityCard";
-import AircraftCard from "./AircraftCard";
+import FacilityCard from "./featureCards/FacilityCard";
+import AircraftCard from "./featureCards/AircraftCard";
 
 interface ScenarioMapProps {
   zoom: number;

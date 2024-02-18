@@ -1,8 +1,8 @@
-import Aircraft from "./Aircraft";
-import Airbase from "./Airbase";
-import Facility from "./Facility";
+import Aircraft from "./units/Aircraft";
+import Airbase from "./units/Airbase";
+import Facility from "./units/Facility";
 import Side from "./Side";
-import Weapon from "./Weapon";
+import Weapon from "./units/Weapon";
 
 export default class Scenario {
     id: string;

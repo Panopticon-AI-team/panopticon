@@ -6,12 +6,12 @@ import PauseIcon from '@mui/icons-material/Pause';
 import DownloadIcon from '@mui/icons-material/Download';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import RedoIcon from '@mui/icons-material/Redo';
-import { ReactComponent as FlightIcon } from './assets/flight_black_24dp.svg';
-import { ReactComponent as RadarIcon } from './assets/radar_black_24dp.svg';
-import { ReactComponent as FlightTakeoffIcon } from './assets/flight_takeoff_black_24dp.svg';
+import { ReactComponent as FlightIcon } from '../assets/flight_black_24dp.svg';
+import { ReactComponent as RadarIcon } from '../assets/radar_black_24dp.svg';
+import { ReactComponent as FlightTakeoffIcon } from '../assets/flight_takeoff_black_24dp.svg';
 import Chip from '@mui/material/Chip';
-import { unixToLocalTime } from '../utils/utils';
-import Game from '../game/Game';
+import { unixToLocalTime } from '../../utils/utils';
+import Game from '../../game/Game';
 import { v4 as uuidv4 } from "uuid";
 
 interface ToolBarProps {

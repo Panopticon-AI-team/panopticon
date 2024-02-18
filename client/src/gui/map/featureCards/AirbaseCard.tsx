@@ -5,9 +5,11 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Airbase from "../../game/Airbase";
-import FeaturePopup from "./FeaturePopup";
+import Airbase from "../../../game/units/Airbase";
+import FeaturePopup from "../FeaturePopup";
 import DeleteIcon from '@mui/icons-material/Delete';
+import Stack from '@mui/material/Stack';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface AirbaseCardProps {
     airbase: Airbase,
@@ -47,10 +49,13 @@ export default function AirbaseCard({ airbase, handleAddAircraft, handleLaunchAi
                 <Typography variant="h6">Side: {airbase.sideName}</Typography>
                 <Typography variant="h6">Aircraft Quantity: {aircraftCount}</Typography>
             </CardContent>
-            <CardActions>
-                <Button variant="contained" size="small" onClick={_handleAddAircraft}>Add aicraft</Button>
-                <Button variant="contained" size="small" onClick={_handleLaunchAircraft}>Launch aicraft</Button>
-                <Button variant="contained" color="error" size="small" onClick={_handleDeleteAirbase} startIcon={<DeleteIcon/>}>DELETE</Button>
+            <CardActions sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+                <Stack spacing={1} direction="row">
+                    <Button variant="contained" size="small" onClick={_handleAddAircraft}>Add aicraft</Button>
+                    <Button variant="contained" size="small" onClick={_handleLaunchAircraft}>Launch aicraft</Button>
+                    <Button variant="contained" size="small" onClick={_handleDeleteAirbase} startIcon={<EditIcon/>}>EDIT</Button>
+                    <Button variant="contained" color="error" size="small" onClick={_handleDeleteAirbase} startIcon={<DeleteIcon/>}>DELETE</Button>
+                </Stack>
             </CardActions>
         </Card>
         </Box>

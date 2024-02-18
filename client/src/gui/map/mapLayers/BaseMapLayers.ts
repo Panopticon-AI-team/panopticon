@@ -1,7 +1,7 @@
 import TileLayer from 'ol/layer/Tile.js';
 import { Projection } from 'ol/proj';
 import OSM from 'ol/source/OSM.js';
-import { DEFAULT_OL_PROJECTION_CODE } from '../../utils/constants';
+import { DEFAULT_OL_PROJECTION_CODE } from '../../../utils/constants';
 
 const osmLayer = new TileLayer({source: new OSM()});
 
