@@ -1,14 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 
-import { Circle } from "ol/geom";
-import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../utils/constants';
-import { Projection, fromLonLat } from "ol/proj";
-
 import Aircraft from "./units/Aircraft";
 import Facility from "./units/Facility";
 import Scenario from "./Scenario";
 
-import { getBearingBetweenTwoPoints, randomFloat, generateRoute } from "../utils/utils";
+import { getBearingBetweenTwoPoints, generateRoute } from "../utils/utils";
+import { checkIfAircraftIsWithinFacilityThreatRange, weaponEndgame, launchWeapon, weaponTrackTarget } from "./engine/weaponEngagement";
 import Airbase from "./units/Airbase";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
@@ -176,68 +173,6 @@ export default class Game {
         }
     }
 
-    checkIfAircraftIsWithinFacilityThreatRange(aircraft: Aircraft, facility: Facility): boolean {
-        const projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE})
-        const facilityRangeGeometry = new Circle(fromLonLat([facility.longitude, facility.latitude], projection), facility.range * NAUTICAL_MILES_TO_METERS)
-        return facilityRangeGeometry.intersectsCoordinate(fromLonLat([aircraft.longitude, aircraft.latitude], projection))
-    }
-
-    weaponEndgame(weapon: Weapon, target: Aircraft | Facility): boolean {
-        this.currentScenario.weapons = this.currentScenario.weapons.filter((currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id);
-        if (randomFloat() <= weapon.lethality) {
-            if (target instanceof Aircraft) {
-                this.currentScenario.aircraft = this.currentScenario.aircraft.filter((currentScenarioAircraft) => currentScenarioAircraft.id !== target.id);
-            } else if (target instanceof Facility) {
-                this.currentScenario.facilities = this.currentScenario.facilities.filter((currentScenarioFacility) => currentScenarioFacility.id !== target.id)
-            }
-            return true
-        }
-        return false
-    }
-
-    launchWeapon(origin: Aircraft | Facility, target: Aircraft | Facility) {
-        if (origin.weapons.length === 0) return
-
-        const numberOfWaypoints = 5
-        const weaponPrototype = origin.weapons[0]
-        const newWeapon = new Weapon({
-            id: uuidv4(), 
-            name: weaponPrototype.name, 
-            sideName: origin.sideName, 
-            className: weaponPrototype.className,
-            latitude: weaponPrototype.latitude,
-            longitude: weaponPrototype.longitude,
-            altitude: weaponPrototype.altitude,
-            heading: getBearingBetweenTwoPoints(origin.latitude, origin.longitude, target.latitude, target.longitude),
-            speed: weaponPrototype.speed,
-            fuel: weaponPrototype.fuel,
-            range: weaponPrototype.range,
-            route: generateRoute(origin.latitude, origin.longitude, target.latitude, target.longitude, numberOfWaypoints),
-            sideColor: this.currentScenario.getSideColor(weaponPrototype.sideName),
-            targetId: target.id,
-            lethality: weaponPrototype.lethality,
-            maxQuantity: weaponPrototype.maxQuantity,
-            currentQuantity: weaponPrototype.currentQuantity,
-        });
-        this.currentScenario.weapons.push(newWeapon);
-        origin.weapons[0].currentQuantity -= 1
-        if (origin.weapons[0].currentQuantity < 1) origin.weapons.shift()
-    }
-
-    weaponTrackTarget(weapon: Weapon) {
-        const target = this.currentScenario.getAircraft(weapon.targetId) ?? this.currentScenario.getFacility(weapon.targetId);
-        if (target) {
-            const weaponRoute = weapon.route;
-            if (weaponRoute.length > 0) {
-                const nextWaypoint = weaponRoute[0];
-                weapon.route = generateRoute(nextWaypoint[0], nextWaypoint[1], target.latitude, target.longitude, weaponRoute.length > 0 ? weaponRoute.length - 1 : 0);
-                weapon.heading = getBearingBetweenTwoPoints(weapon.latitude, weapon.longitude, target.latitude, target.longitude);
-            }
-        } else {
-            this.currentScenario.weapons = this.currentScenario.weapons.filter((currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id)
-        }
-    }
-
     switchCurrentSide() {
         for (let i = 0; i < this.currentScenario.sides.length; i++) {
             if (this.currentScenario.sides[i].name === this.currentSideName) {
@@ -355,22 +290,14 @@ export default class Game {
         this.currentScenario = loadedScenario;
     }
 
-    _getObservation(): Scenario {
-        return this.currentScenario;
-    }
-
-    _getInfo() {
-        return null;
-    }
-
-    step(): [Scenario, number, boolean, boolean, any] {
+    updateGameState() {
         this.currentScenario.currentTime += 1;
 
         this.currentScenario.facilities.forEach((facility) => {
             this.currentScenario.aircraft.forEach((aircraft) => {
                 if (facility.sideName !== aircraft.sideName) {
-                    if (this.checkIfAircraftIsWithinFacilityThreatRange(aircraft, facility)) {
-                        this.launchWeapon(facility, aircraft)
+                    if (checkIfAircraftIsWithinFacilityThreatRange(aircraft, facility)) {
+                        launchWeapon(this.currentScenario, facility, aircraft)
                     }
                 }
             })
@@ -379,9 +306,9 @@ export default class Game {
         this.currentScenario.weapons.forEach((weapon) => {
             if (weapon.route.length === 2) {
                 const target = this.currentScenario.getAircraft(weapon.targetId) ?? this.currentScenario.getFacility(weapon.targetId);
-                if (target) this.weaponEndgame(weapon, target)
+                if (target) weaponEndgame(this.currentScenario,weapon, target)
             } else {
-                this.weaponTrackTarget(weapon)
+                weaponTrackTarget(this.currentScenario, weapon)
             }
 
             const route = weapon.route;
@@ -402,7 +329,18 @@ export default class Game {
                 aircraft.route.shift();
             }
         });
+    }
 
+    _getObservation(): Scenario {
+        return this.currentScenario;
+    }
+
+    _getInfo() {
+        return null;
+    }
+
+    step(): [Scenario, number, boolean, boolean, any] {
+        this.updateGameState();
         const terminated = false;
         const truncated = this.checkGameEnded();
         const reward = 0;
