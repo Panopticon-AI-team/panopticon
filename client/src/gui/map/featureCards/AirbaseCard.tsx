@@ -50,11 +50,15 @@ export default function AirbaseCard({ airbase, handleAddAircraft, handleLaunchAi
                 <Typography variant="h6">Aircraft Quantity: {aircraftCount}</Typography>
             </CardContent>
             <CardActions sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
-                <Stack spacing={1} direction="row">
-                    <Button variant="contained" size="small" onClick={_handleAddAircraft}>Add aicraft</Button>
-                    <Button variant="contained" size="small" onClick={_handleLaunchAircraft}>Launch aicraft</Button>
-                    <Button variant="contained" size="small" onClick={_handleDeleteAirbase} startIcon={<EditIcon/>}>EDIT</Button>
-                    <Button variant="contained" color="error" size="small" onClick={_handleDeleteAirbase} startIcon={<DeleteIcon/>}>DELETE</Button>
+                <Stack spacing={1} direction="column">
+                    <Stack spacing={1} direction="row">
+                        <Button variant="contained" size="small" onClick={_handleAddAircraft}>Add aicraft</Button>
+                        <Button variant="contained" size="small" onClick={_handleLaunchAircraft}>Launch aicraft</Button>
+                    </Stack>
+                    <Stack spacing={1} direction="row">
+                        <Button variant="contained" size="small" onClick={_handleDeleteAirbase} startIcon={<EditIcon/>}>EDIT</Button>
+                        <Button variant="contained" color="error" size="small" onClick={_handleDeleteAirbase} startIcon={<DeleteIcon/>}>DELETE</Button>
+                    </Stack>
                 </Stack>
             </CardActions>
         </Card>

@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import Facility from "../../../game/units/Facility";
 import FeaturePopup from "../FeaturePopup";
 import DeleteIcon from '@mui/icons-material/Delete';
+import Stack from '@mui/material/Stack';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface FacilityCardProps {
     facility: Facility,
@@ -38,7 +40,14 @@ export default function FacilityCard({ facility, handleDeleteFacility, handleClo
                 <Typography variant="h6">Weapon Quantity: {weaponCount}</Typography>
             </CardContent>
             <CardActions>
-                <Button variant="contained" color="error" size="small" onClick={_handleDeleteFacility} startIcon={<DeleteIcon/>}>DELETE</Button>
+                <Stack spacing={1} direction="column">
+                    <Stack spacing={1} direction="row">
+                    </Stack>
+                    <Stack spacing={1} direction="row">
+                        <Button variant="contained" size="small" onClick={_handleDeleteFacility} startIcon={<EditIcon/>}>EDIT</Button>
+                        <Button variant="contained" color="error" size="small" onClick={_handleDeleteFacility} startIcon={<DeleteIcon/>}>DELETE</Button>
+                    </Stack>
+                </Stack>
             </CardActions>
         </Card>
         </Box>
