@@ -15,22 +15,34 @@ import defaultScenarioJson from './scenarios/default_scenario.json';
 import SCSScenarioJson from './scenarios/SCS.json';
 
 export default function App() {
-  const sideBlue = new Side(uuidv4(), 'BLUE');
-  sideBlue.sideColor = 'blue';
-  const sideRed = new Side(uuidv4(), 'RED');
-  sideRed.sideColor = 'red';
-  const currentScenario = new Scenario(uuidv4(), 'Test Scenario', 1699073110, 14400, [sideBlue, sideRed]);
+  const sideBlue = new Side({
+    id: uuidv4(),
+    name: 'BLUE',
+    sideColor: 'blue'
+  });
+  const sideRed = new Side({
+    id: uuidv4(),
+    name: 'RED',
+    sideColor: 'red'
+  });
+  const currentScenario = new Scenario({
+    id: uuidv4(),
+    name: 'Test Scenario',
+    startTime: 1699073110,
+    currentTime: 1699073110,
+    duration: 14400,
+    sides: [sideBlue, sideRed],
+    timeCompression: 1
+  });
   const theGame = new Game(currentScenario);
   theGame.currentSideName = sideBlue.name;
   const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
-  const defaultScenarioZoom = [0, 0]
-  const SCSScenarioZoom = [130.78675023228317, 26.54934438063878]
 
   theGame.loadScenario(JSON.stringify(SCSScenarioJson)); // loads default scenario for easier testing
 
   return (
     <div className="App">
-      <ScenarioMap center={transform(SCSScenarioZoom, 'EPSG:4326', DEFAULT_OL_PROJECTION_CODE)} zoom={5.5} game={theGame} projection={projection}></ScenarioMap>   
+      <ScenarioMap center={transform(theGame.mapView.defaultCenter, 'EPSG:4326', DEFAULT_OL_PROJECTION_CODE)} zoom={theGame.mapView.defaultZoom} game={theGame} projection={projection}></ScenarioMap>   
     </div>
   );
 }

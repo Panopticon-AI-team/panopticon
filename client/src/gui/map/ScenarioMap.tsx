@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Pixel } from "ol/pixel";
 import { Feature, MapBrowserEvent, Map as OlMap } from "ol";
 import View from "ol/View";
-import { Projection, toLonLat } from "ol/proj";
+import { Projection, toLonLat, transform } from "ol/proj";
 import Point from 'ol/geom/Point.js';
 
 import "../styles/ScenarioMap.css";
@@ -359,9 +359,14 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     weaponLayer.refresh(game.currentScenario.weapons);
   }
 
+  function updateMapView(center: number[], zoom: number) {
+    theMap.getView().setCenter(transform(center, 'EPSG:4326', DEFAULT_OL_PROJECTION_CODE));
+    theMap.getView().setZoom(zoom);
+  }
+
   return (
     <div>
-      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addAirbaseOnClick={setAddingAirbase} playOnClick={setGamePlaying} stepOnClick={stepGameOnce} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
+      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addAirbaseOnClick={setAddingAirbase} playOnClick={setGamePlaying} stepOnClick={stepGameOnce} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} updateMapView={updateMapView} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
       <div ref={mapId} className='map'></div>
       {openAirbaseCard.open &&
         <AirbaseCard 

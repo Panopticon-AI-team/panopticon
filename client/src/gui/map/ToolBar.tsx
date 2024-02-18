@@ -23,12 +23,13 @@ interface ToolBarProps {
     pauseOnClick: () => void;
     switchCurrentSideOnClick: () => void;
     refreshAllLayers: () => void;
+    updateMapView: (center: number[], zoom: number) => void;
     scenarioCurrentTime: number;
     scenarioCurrentSideName: string;
     game: Game;
 }
 
-export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAirbaseOnClick, playOnClick, stepOnClick, pauseOnClick, switchCurrentSideOnClick, refreshAllLayers, scenarioCurrentTime, scenarioCurrentSideName, game }: Readonly<ToolBarProps>) {
+export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAirbaseOnClick, playOnClick, stepOnClick, pauseOnClick, switchCurrentSideOnClick, refreshAllLayers, updateMapView, scenarioCurrentTime, scenarioCurrentSideName, game }: Readonly<ToolBarProps>) {
 
   const toolbarStyle = {
     backgroundColor: "#282c34",
@@ -61,6 +62,7 @@ export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAir
         reader.readAsText(file, "UTF-8");
         reader.onload = (readerEvent) => {
           game.loadScenario(readerEvent.target?.result as string);
+          updateMapView(game.mapView.defaultCenter, game.mapView.defaultZoom);
           refreshAllLayers();
         }
       }
