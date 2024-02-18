@@ -366,7 +366,20 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   return (
     <div>
-      <ToolBar addAircraftOnClick={setAddingAircraft} addFacilityOnClick={setAddingFacility} addAirbaseOnClick={setAddingAirbase} playOnClick={setGamePlaying} stepOnClick={stepGameOnce} pauseOnClick={setGamePaused} switchCurrentSideOnClick={switchCurrentSide} refreshAllLayers={refreshAllLayers} updateMapView={updateMapView} scenarioCurrentTime={currentScenarioTime} scenarioCurrentSideName={currentSideName} game={game}></ToolBar>
+      <ToolBar 
+        addAircraftOnClick={setAddingAircraft} 
+        addFacilityOnClick={setAddingFacility} 
+        addAirbaseOnClick={setAddingAirbase} 
+        playOnClick={setGamePlaying} 
+        stepOnClick={stepGameOnce} 
+        pauseOnClick={setGamePaused} 
+        switchCurrentSideOnClick={switchCurrentSide} 
+        refreshAllLayers={refreshAllLayers} 
+        updateMapView={updateMapView} 
+        scenarioCurrentTime={currentScenarioTime} 
+        scenarioCurrentSideName={currentSideName} 
+        game={game}
+      />
       <div ref={mapId} className='map'></div>
       {openAirbaseCard.open &&
         <AirbaseCard 

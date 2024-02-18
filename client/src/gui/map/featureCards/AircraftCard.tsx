@@ -47,7 +47,7 @@ export default function AircraftCard({ aircraft, handleDeleteAircraft, handleMov
                 <Typography variant="h6">Weapon Quantity: {weaponCount}</Typography>
             </CardContent>
             <CardActions>
-                <Button variant="contained" size="small" onClick={_handleMoveAircraft} startIcon={<PinDropIcon/>}>MOVE</Button>
+                <Button variant="contained" size="small" onClick={_handleMoveAircraft} startIcon={<PinDropIcon/>}>PLOT COURSE</Button>
                 <Button variant="contained" color="error" size="small" onClick={_handleDeleteAircraft} startIcon={<DeleteIcon/>}>DELETE</Button>
             </CardActions>
         </Card>
