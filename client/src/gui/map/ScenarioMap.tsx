@@ -406,6 +406,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     theMap.getView().setZoom(zoom);
   }
 
+  function updateAircraft(aircraftId: string, aircraftName: string, aircraftClassName: string, aircraftWeaponQuantity: number) {
+    game.currentScenario.updateAircraft(aircraftId, aircraftName, aircraftClassName, aircraftWeaponQuantity)
+  }
+
   return (
     <div>
       <ToolBar 
@@ -452,6 +456,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
           handleDeleteAircraft={removeAircraft} 
           handleMoveAircraft={queueAircraftForMovement}
           handleAircraftAttack={handleAircraftAttack}
+          handleEditAircraft={updateAircraft}
           anchorPositionTop={openAircraftCard.top} 
           anchorPositionLeft={openAircraftCard.left} 
           handleCloseOnMap={() => {setOpenAircraftCard({open: false, top: 0, left: 0, aircraftId: ''})}}
