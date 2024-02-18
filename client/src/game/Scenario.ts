@@ -39,19 +39,19 @@ export default class Scenario {
         return 'black';
     }
 
-    getAircraft(aircraftId: string): Aircraft | undefined {
+    getAircraft(aircraftId: string | null): Aircraft | undefined {
         return this.aircraft.find((aircraft) => aircraft.id === aircraftId);
     }
 
-    getFacility(facilityId: string): Facility | undefined {
+    getFacility(facilityId: string | null): Facility | undefined {
         return this.facilities.find((facility) => facility.id === facilityId);
     }
 
-    getAirbase(airbaseId: string): Airbase | undefined {
+    getAirbase(airbaseId: string | null): Airbase | undefined {
         return this.airbases.find((airbase) => airbase.id === airbaseId);
     }
 
-    getWeapon(weaponId: string): Weapon | undefined {
+    getWeapon(weaponId: string | null): Weapon | undefined {
         return this.weapons.find((weapon) => weapon.id === weaponId);
     }
 

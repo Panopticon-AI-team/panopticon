@@ -8,7 +8,7 @@ import Aircraft from "./units/Aircraft";
 import Facility from "./units/Facility";
 import Scenario from "./Scenario";
 
-import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getTerminalCoordinatesFromDistanceAndBearing, randomFloat, generateRoute } from "../utils/utils";
+import { getBearingBetweenTwoPoints, randomFloat, generateRoute } from "../utils/utils";
 import Airbase from "./units/Airbase";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
@@ -31,12 +31,21 @@ export default class Game {
         if (!this.currentSideName) {
             return;
         }
-        const aircraft = new Aircraft(uuidv4(), aircraftName, this.currentSideName, className);
-        aircraft.latitude = latitude;
-        aircraft.longitude = longitude;
-        aircraft.sideColor = this.currentScenario.getSideColor(this.currentSideName);
-        aircraft.weapons = [this.getSampleWeapon(aircraft, 10, 0.25)];
-
+        const aircraft = new Aircraft({
+            id: uuidv4(), 
+            name: aircraftName, 
+            sideName: this.currentSideName, 
+            className: className,
+            latitude: latitude,
+            longitude: longitude,
+            altitude: 10000.0,
+            heading: 90.0,
+            speed: 150.0,
+            fuel: 10000.0,
+            range: 100,
+            sideColor: this.currentScenario.getSideColor(this.currentSideName),
+            weapons: [this.getSampleWeapon(10, 0.25)],
+        });
         this.currentScenario.aircraft.push(aircraft);
     }
 
@@ -46,11 +55,21 @@ export default class Game {
         }
         const airbase = this.currentScenario.getAirbase(airbaseId);
         if (airbase) {
-            const aircraft = new Aircraft(uuidv4(), aircraftName, this.currentSideName, className);
-            aircraft.latitude = airbase.latitude - 0.5;
-            aircraft.longitude = airbase.longitude - 0.5;
-            aircraft.sideColor = this.currentScenario.getSideColor(this.currentSideName);
-            aircraft.weapons = [this.getSampleWeapon(aircraft, 10, 0.25)];
+            const aircraft = new Aircraft({
+                id: uuidv4(), 
+                name: aircraftName, 
+                sideName: this.currentSideName, 
+                className: className,
+                latitude: airbase.latitude - 0.5, 
+                longitude: airbase.longitude - 0.5,
+                altitude: 10000.0,
+                heading: 90.0,
+                speed: 150.0,
+                fuel: 10000.0,
+                range: 100,
+                sideColor: this.currentScenario.getSideColor(this.currentSideName),
+                weapons: [this.getSampleWeapon(10, 0.25)],
+            });
             airbase.aircraft.push(aircraft);
         }
     }
@@ -59,11 +78,16 @@ export default class Game {
         if (!this.currentSideName) {
             return;
         }
-        const airbase = new Airbase(uuidv4(), airbaseName, this.currentSideName, className);
-        airbase.latitude = latitude;
-        airbase.longitude = longitude;
-        airbase.sideColor = this.currentScenario.getSideColor(this.currentSideName);
-
+        const airbase = new Airbase({
+            id: uuidv4(), 
+            name: airbaseName, 
+            sideName: this.currentSideName, 
+            className: className,
+            latitude: latitude,
+            longitude: longitude,
+            altitude: 0.0,
+            sideColor: this.currentScenario.getSideColor(this.currentSideName),
+        });
         this.currentScenario.airbases.push(airbase);
     }
 
@@ -87,18 +111,29 @@ export default class Game {
         facility.latitude = latitude;
         facility.longitude = longitude;
         facility.sideColor = this.currentScenario.getSideColor(this.currentSideName);
-        facility.weapons = [this.getSampleWeapon(facility, 30, 0.1)];
+        facility.weapons = [this.getSampleWeapon(30, 0.1, facility.sideName)];
         this.currentScenario.facilities.push(facility);
     }
 
-    getSampleWeapon(host: Aircraft | Facility, quantity: number, lethality: number) {
-        const weapon = new Weapon(uuidv4(), 'Sample Weapon', host.sideName, 'Sample Weapon');
-        weapon.currentQuantity = quantity;
-        weapon.maxQuantity = quantity;
-        weapon.latitude = host.latitude;
-        weapon.longitude = host.longitude;
-        weapon.sideColor = this.currentScenario.getSideColor(host.sideName);
-        weapon.lethality = lethality
+    getSampleWeapon(quantity: number, lethality: number, sideName: string = this.currentSideName) {
+        const weapon = new Weapon({
+            id: uuidv4(), 
+            name: 'Sample Weapon', 
+            sideName: sideName, 
+            className: 'Sample Weapon',
+            latitude: 0.0,
+            longitude: 0.0,
+            altitude: 10000.0,
+            heading: 90.0,
+            speed: 150.0,
+            fuel: 10000.0,
+            range: 100,
+            sideColor: this.currentScenario.getSideColor(sideName),
+            targetId: null,
+            lethality: lethality,
+            maxQuantity: quantity,
+            currentQuantity: quantity,
+        });
         return weapon;
     }
 
@@ -143,18 +178,27 @@ export default class Game {
     launchWeapon(origin: Aircraft | Facility, target: Aircraft | Facility) {
         if (origin.weapons.length === 0) return
 
+        const numberOfWaypoints = 5
         const weaponPrototype = origin.weapons[0]
-        const newWeapon = new Weapon(uuidv4(), weaponPrototype.name, origin.sideName, weaponPrototype.className);
-        newWeapon.targetId = target.id;
-        newWeapon.currentQuantity = weaponPrototype.currentQuantity;
-        newWeapon.maxQuantity = weaponPrototype.maxQuantity;
-        newWeapon.latitude = weaponPrototype.latitude;
-        newWeapon.longitude = weaponPrototype.longitude;
-        newWeapon.sideColor = this.currentScenario.getSideColor(weaponPrototype.sideName);
-        newWeapon.lethality = weaponPrototype.lethality
-        newWeapon.route = generateRoute(origin.latitude, origin.longitude, target.latitude, target.longitude, 5);
-        newWeapon.heading = getBearingBetweenTwoPoints(origin.latitude, origin.longitude, target.latitude, target.longitude);
-
+        const newWeapon = new Weapon({
+            id: uuidv4(), 
+            name: weaponPrototype.name, 
+            sideName: origin.sideName, 
+            className: weaponPrototype.className,
+            latitude: weaponPrototype.latitude,
+            longitude: weaponPrototype.longitude,
+            altitude: weaponPrototype.altitude,
+            heading: getBearingBetweenTwoPoints(origin.latitude, origin.longitude, target.latitude, target.longitude),
+            speed: weaponPrototype.speed,
+            fuel: weaponPrototype.fuel,
+            range: weaponPrototype.range,
+            route: generateRoute(origin.latitude, origin.longitude, target.latitude, target.longitude, numberOfWaypoints),
+            sideColor: this.currentScenario.getSideColor(weaponPrototype.sideName),
+            targetId: target.id,
+            lethality: weaponPrototype.lethality,
+            maxQuantity: weaponPrototype.maxQuantity,
+            currentQuantity: weaponPrototype.currentQuantity,
+        });
         this.currentScenario.weapons.push(newWeapon);
         origin.weapons[0].currentQuantity -= 1
         if (origin.weapons[0].currentQuantity < 1) origin.weapons.shift()
@@ -207,30 +251,58 @@ export default class Game {
         const loadedScenario = new Scenario(savedScenario.id, savedScenario.name, savedScenario.startTime, savedScenario.duration, savedSides);
         this.currentScenario = loadedScenario;
         savedScenario.aircraft.forEach((aircraft: any) => {
-            const newAircraft = new Aircraft(aircraft.id, aircraft.name, aircraft.sideName, aircraft.className);
-            newAircraft.latitude = aircraft.latitude;
-            newAircraft.longitude = aircraft.longitude;
-            newAircraft.heading = aircraft.heading;
-            newAircraft.route = aircraft.route;
-            newAircraft.sideColor = aircraft.sideColor;
-            newAircraft.weapons = aircraft.weapons ?? [this.getSampleWeapon(aircraft, 10, 0.25)];
+            const newAircraft = new Aircraft({
+                id: aircraft.id, 
+                name: aircraft.name, 
+                sideName: aircraft.sideName, 
+                className: aircraft.className,
+                latitude: aircraft.latitude,
+                longitude: aircraft.longitude,
+                altitude: aircraft.altitude,
+                heading: aircraft.heading,
+                speed: aircraft.speed,
+                fuel: aircraft.fuel,
+                range: aircraft.range,
+                route: aircraft.route,
+                selected: aircraft.selected,
+                sideColor: aircraft.sideColor,
+                weapons: aircraft.weapons ?? [this.getSampleWeapon(10, 0.25, aircraft.sideName)],
+            });
             loadedScenario.aircraft.push(newAircraft);
         });
         savedScenario.airbases.forEach((airbase: any) => {
-            const newAirbase = new Airbase(airbase.id, airbase.name, airbase.sideName, airbase.className);
-            newAirbase.latitude = airbase.latitude;
-            newAirbase.longitude = airbase.longitude;
-            newAirbase.sideColor = airbase.sideColor;
+            const airbaseAircraft: Aircraft[] = []
             airbase.aircraft.forEach((aircraft: any) => {
-                const newAircraft = new Aircraft(aircraft.id, aircraft.name, aircraft.sideName, aircraft.className);
-                newAircraft.latitude = aircraft.latitude;
-                newAircraft.longitude = aircraft.longitude;
-                newAircraft.heading = aircraft.heading;
-                newAircraft.route = aircraft.route;
-                newAircraft.sideColor = aircraft.sideColor;
-                newAircraft.weapons = aircraft.weapons ?? [this.getSampleWeapon(aircraft, 10, 0.25)];
-                newAirbase.aircraft.push(newAircraft);
+                const newAircraft = new Aircraft({
+                    id: aircraft.id, 
+                    name: aircraft.name, 
+                    sideName: aircraft.sideName, 
+                    className: aircraft.className,
+                    latitude: aircraft.latitude,
+                    longitude: aircraft.longitude,
+                    altitude: aircraft.altitude,
+                    heading: aircraft.heading,
+                    speed: aircraft.speed,
+                    fuel: aircraft.fuel,
+                    range: aircraft.range,
+                    route: aircraft.route,
+                    selected: aircraft.selected,
+                    sideColor: aircraft.sideColor,
+                    weapons: aircraft.weapons ?? [this.getSampleWeapon(10, 0.25, aircraft.sideName)],
+                });
+                airbaseAircraft.push(newAircraft);
             })
+            const newAirbase = new Airbase({
+                id: airbase.id, 
+                name: airbase.name, 
+                sideName: airbase.sideName, 
+                className: airbase.className,
+                latitude: airbase.latitude,
+                longitude: airbase.longitude,
+                altitude: airbase.altitude,
+                sideColor: airbase.sideColor,
+                aircraft: airbaseAircraft,
+            });
             loadedScenario.airbases.push(newAirbase);
         });
         savedScenario.facilities.forEach((facility: any) => {
@@ -238,7 +310,7 @@ export default class Game {
             newFacility.latitude = facility.latitude;
             newFacility.longitude = facility.longitude;
             newFacility.sideColor = facility.sideColor;
-            newFacility.weapons = facility.weapons ?? [this.getSampleWeapon(facility, 100, 0.1)];
+            newFacility.weapons = facility.weapons ?? [this.getSampleWeapon(100, 0.1, facility.sideName)];
             loadedScenario.facilities.push(newFacility);
         });
     }
