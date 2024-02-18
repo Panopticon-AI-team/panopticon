@@ -351,7 +351,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     setCurrentSideName(game.currentSideName);
   }
 
-  function updateScenarioTimeCompression() {
+  function toggleScenarioTimeCompression() {
     game.switchScenarioTimeCompression();
     setCurrentScenarioTimeCompression(game.currentScenario.timeCompression);
   }
@@ -379,10 +379,11 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         playOnClick={setGamePlaying} 
         stepOnClick={stepGameOnce} 
         pauseOnClick={setGamePaused}
-        updateScenarioTimeCompressionOnClick={updateScenarioTimeCompression}
+        toggleScenarioTimeCompressionOnClick={toggleScenarioTimeCompression}
         switchCurrentSideOnClick={switchCurrentSide} 
         refreshAllLayers={refreshAllLayers} 
-        updateMapView={updateMapView} 
+        updateMapView={updateMapView}
+        updateScenarioTimeCompression={setCurrentScenarioTimeCompression}
         scenarioCurrentTime={currentScenarioTime}
         scenarioTimeCompression={currentScenarioTimeCompression} 
         scenarioCurrentSideName={currentSideName} 

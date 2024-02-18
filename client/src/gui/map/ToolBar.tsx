@@ -21,10 +21,11 @@ interface ToolBarProps {
     playOnClick: () => void;
     stepOnClick: () => void;
     pauseOnClick: () => void;
-    updateScenarioTimeCompressionOnClick: () => void;
+    toggleScenarioTimeCompressionOnClick: () => void;
     switchCurrentSideOnClick: () => void;
     refreshAllLayers: () => void;
     updateMapView: (center: number[], zoom: number) => void;
+    updateScenarioTimeCompression: (scenarioTimeCompression: number) => void;
     scenarioCurrentTime: number;
     scenarioTimeCompression: number;
     scenarioCurrentSideName: string;
@@ -42,6 +43,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
   }
 
   const exportScenario = () => {
+    props.pauseOnClick()
     const exportObject = props.game.exportCurrentScenario();
     const exportName = "panopticon_scenario_" + uuidv4();
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(exportObject);
@@ -54,6 +56,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
   }
 
   const loadScenario = () => {
+    props.pauseOnClick()
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
@@ -65,6 +68,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
         reader.onload = (readerEvent) => {
           props.game.loadScenario(readerEvent.target?.result as string);
           props.updateMapView(props.game.mapView.defaultCenter, props.game.mapView.defaultZoom);
+          props.updateScenarioTimeCompression(props.game.currentScenario.timeCompression)
           props.refreshAllLayers();
         }
       }
@@ -75,7 +79,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
   return (
     <Stack spacing={2} direction="row" style={toolbarStyle}>
       <Chip label={"Current time: " + unixToLocalTime(props.scenarioCurrentTime)} style={currentTimeChipStyle} />
-      <Button variant="contained" onClick={props.updateScenarioTimeCompressionOnClick}>Game Speed: {props.scenarioTimeCompression}X</Button>
+      <Button variant="contained" onClick={props.toggleScenarioTimeCompressionOnClick}>Game Speed: {props.scenarioTimeCompression}X</Button>
       <Button variant="contained" color="success" onClick={props.playOnClick} startIcon={<PlayArrowIcon/>}>PLAY</Button>
       <Button variant="contained" color="error" onClick={props.pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
       <Button variant="contained" onClick={props.stepOnClick} startIcon={<RedoIcon/>}>STEP</Button>
