@@ -13,7 +13,20 @@ import Airbase from "./units/Airbase";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
 
+interface IMapView {
+    defaultCenter: number[];
+    currentCameraCenter: number[];
+    defaultZoom: number;
+    currentCameraZoom: number;
+}
+
 export default class Game {
+    mapView: IMapView = {
+        defaultCenter: [0, 0],
+        currentCameraCenter: [0, 0],
+        defaultZoom: 0,
+        currentCameraZoom: 0,
+    }
     currentScenario: Scenario;
     currentSideName: string = '';
     scenarioPaused: boolean = true;
@@ -107,11 +120,18 @@ export default class Game {
         if (!this.currentSideName) {
             return;
         }
-        const facility = new Facility(uuidv4(), facilityName, this.currentSideName, className);
-        facility.latitude = latitude;
-        facility.longitude = longitude;
-        facility.sideColor = this.currentScenario.getSideColor(this.currentSideName);
-        facility.weapons = [this.getSampleWeapon(30, 0.1, facility.sideName)];
+        const facility = new Facility({
+            id: uuidv4(), 
+            name: facilityName, 
+            sideName: this.currentSideName, 
+            className: className,
+            latitude: latitude,
+            longitude: longitude,
+            altitude: 0.0,
+            range: 250,
+            sideColor: this.currentScenario.getSideColor(this.currentSideName),
+            weapons: [this.getSampleWeapon(30, 0.1)],
+        });
         this.currentScenario.facilities.push(facility);
     }
 
@@ -232,6 +252,7 @@ export default class Game {
             "currentScenario": this.currentScenario,
             "currentSideName": this.currentSideName,
             "selectedUnitId": this.selectedUnitId,
+            "mapView": this.mapView,
         }
         return JSON.stringify(exportObject);
     }
@@ -240,16 +261,27 @@ export default class Game {
         const importObject = JSON.parse(scenarioString);
         this.currentSideName = importObject.currentSideName;
         this.selectedUnitId = importObject.selectedUnitId;
+        this.mapView = importObject.mapView;
 
         const savedScenario = importObject.currentScenario;
         const savedSides = savedScenario.sides.map((side: any) => {
-            const newSide = new Side(side.id, side.name);
-            newSide.totalScore = side.totalScore;
-            newSide.sideColor = side.sideColor;
+            const newSide = new Side({
+                id: side.id,
+                name: side.name,
+                totalScore: side.totalScore,
+                sideColor: side.sideColor,
+            });
             return newSide;
         });
-        const loadedScenario = new Scenario(savedScenario.id, savedScenario.name, savedScenario.startTime, savedScenario.duration, savedSides);
-        this.currentScenario = loadedScenario;
+        const loadedScenario = new Scenario({
+            id: savedScenario.id,
+            name: savedScenario.name,
+            startTime: savedScenario.startTime,
+            currentTime: savedScenario.currentTime,
+            duration: savedScenario.duration,
+            sides: savedSides,
+            timeCompression: savedScenario.timeCompression,
+        });
         savedScenario.aircraft.forEach((aircraft: any) => {
             const newAircraft = new Aircraft({
                 id: aircraft.id, 
@@ -306,13 +338,21 @@ export default class Game {
             loadedScenario.airbases.push(newAirbase);
         });
         savedScenario.facilities.forEach((facility: any) => {
-            const newFacility = new Facility(facility.id, facility.name, facility.sideName, facility.className);
-            newFacility.latitude = facility.latitude;
-            newFacility.longitude = facility.longitude;
-            newFacility.sideColor = facility.sideColor;
-            newFacility.weapons = facility.weapons ?? [this.getSampleWeapon(100, 0.1, facility.sideName)];
+            const newFacility = new Facility({
+                id: facility.id, 
+                name: facility.name, 
+                sideName: facility.sideName, 
+                className: facility.className,
+                latitude: facility.latitude,
+                longitude: facility.longitude,
+                altitude: facility.altitude,
+                range: facility.range,
+                sideColor: facility.sideColor,
+                weapons: facility.weapons ?? [this.getSampleWeapon(30, 0.1, facility.sideName)],
+            });
             loadedScenario.facilities.push(newFacility);
         });
+        this.currentScenario = loadedScenario;
     }
 
     _getObservation(): Scenario {

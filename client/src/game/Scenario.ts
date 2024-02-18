@@ -4,6 +4,20 @@ import Facility from "./units/Facility";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
 
+interface IScenario {
+    id: string;
+    name: string;
+    startTime: number;
+    currentTime?: number;
+    duration: number;
+    sides: Side[];
+    timeCompression?: number;
+    aircraft?: Aircraft[];
+    facilities?: Facility[];
+    airbases?: Airbase[];
+    weapons?: Weapon[];
+}
+
 export default class Scenario {
     id: string;
     name: string;
@@ -12,19 +26,23 @@ export default class Scenario {
     duration: number;
     sides: Side[];
     timeCompression: number;
-    aircraft: Aircraft[] = [];
-    facilities: Facility[] = [];
-    airbases: Airbase[] = []
-    weapons: Weapon[] = []
+    aircraft: Aircraft[];
+    facilities: Facility[];
+    airbases: Airbase[]
+    weapons: Weapon[]
 
-    constructor(id: string, name: string, startTime: number, duration: number, sides: Side[]) {  
-        this.id = id;
-        this.name = name;
-        this.startTime = startTime;
-        this.currentTime = startTime;
-        this.duration = duration;
-        this.sides = sides;
-        this.timeCompression = 1;
+    constructor(parameters: IScenario) {  
+        this.id = parameters.id;
+        this.name = parameters.name;
+        this.startTime = parameters.startTime;
+        this.currentTime = parameters.currentTime ?? parameters.startTime;
+        this.duration = parameters.duration;
+        this.sides = parameters.sides;
+        this.timeCompression = parameters.timeCompression ?? 1;
+        this.aircraft = parameters.aircraft ?? [];
+        this.facilities = parameters.facilities ?? [];
+        this.airbases = parameters.airbases ?? [];
+        this.weapons = parameters.weapons ?? [];
     }
 
     getSide(sideName: string): Side | undefined {
