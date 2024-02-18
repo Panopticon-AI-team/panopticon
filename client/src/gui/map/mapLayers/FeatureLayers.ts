@@ -57,6 +57,7 @@ export class AircraftLayer extends FeatureLayer {
 
 export class FacilityLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
+  featureCount: number = 0
 
   constructor(projection: Projection) {
     super(projection, facilityStyle);
@@ -75,11 +76,13 @@ export class FacilityLayer extends FeatureLayer {
       });
       this.layerSource.addFeature(feature);
     });
+    this.featureCount = facilities.length
   }
 }
 
 export class AirbasesLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
+  featureCount: number = 0
 
   constructor(projection: Projection) {
     super(projection, airbasesStyle);
@@ -98,6 +101,7 @@ export class AirbasesLayer extends FeatureLayer {
       });
       this.layerSource.addFeature(feature);
     });
+    this.featureCount = airbases.length
   }
 }
 

@@ -104,6 +104,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const featuresAtPixel = getFeaturesAtPixel(theMap.getEventPixel(event.originalEvent));
     if (game.selectedUnitId && featuresAtPixel.length === 0){
       context = 'moveAircraft';
+    } else if (game.selectingTarget && game.currentAttackerId && featuresAtPixel.length === 1) {
+      context = 'aircraftSelectedAttackTarget'
+    } else if (game.selectingTarget && game.currentAttackerId && featuresAtPixel.length === 0) {
+      context = 'aircraftCancelledAttack'      
     } else if (featuresAtPixel.length === 1) {
       context = 'selectSingleFeature';
     } else if (featuresAtPixel.length > 1) {
@@ -125,6 +129,19 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         aircraftLayer.refresh(game.currentScenario.aircraft);
         game.selectedUnitId = '';
         break;
+      }
+      case 'aircraftSelectedAttackTarget': {
+        const targetFeature = featuresAtPixel[0]
+        const targetId = targetFeature.getProperties()?.id
+        game.handleAircraftAttack(game.currentAttackerId, targetId)
+        game.selectingTarget = false
+        game.currentAttackerId = ''
+        break
+      }
+      case 'aircraftCancelledAttack': {
+        game.selectingTarget = false
+        game.currentAttackerId = ''
+        break
       }
       case 'selectSingleFeature':
         handleSelectSingleFeature(featuresAtPixel[0]);
@@ -258,6 +275,13 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       aircraftLayer.refresh(observation.aircraft);
       aircraftRouteLayer.refresh(observation.aircraft);
       weaponLayer.refresh(observation.weapons);
+      if (facilityLayer.featureCount !== observation.facilities.length) {
+        facilityLayer.refresh(observation.facilities);
+        rangeLayer.refresh(observation.facilities);
+      }
+      if (airbasesLayer.featureCount !== observation.airbases.length) {
+        airbasesLayer.refresh(observation.airbases);
+      }
 
       gameEnded = terminated || truncated;
 
@@ -273,6 +297,13 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     aircraftLayer.refresh(observation.aircraft);
     aircraftRouteLayer.refresh(observation.aircraft);
     weaponLayer.refresh(observation.weapons);
+    if (facilityLayer.featureCount !== observation.facilities.length) {
+      facilityLayer.refresh(observation.facilities);
+      rangeLayer.refresh(observation.facilities);
+    }
+    if (airbasesLayer.featureCount !== observation.airbases.length) {
+      airbasesLayer.refresh(observation.airbases);
+    }
   }
 
   function setGamePaused() {
@@ -346,6 +377,11 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     aircraftLayer.refresh(game.currentScenario.aircraft)
   }
 
+  function handleAircraftAttack(aircraftId: string) {
+    game.selectingTarget = true
+    game.currentAttackerId = aircraftId
+  }
+
   function switchCurrentSide() {
     game.switchCurrentSide();
     setCurrentSideName(game.currentSideName);
@@ -415,6 +451,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
           aircraft={game.currentScenario.getAircraft(openAircraftCard.aircraftId)!} 
           handleDeleteAircraft={removeAircraft} 
           handleMoveAircraft={queueAircraftForMovement}
+          handleAircraftAttack={handleAircraftAttack}
           anchorPositionTop={openAircraftCard.top} 
           anchorPositionLeft={openAircraftCard.left} 
           handleCloseOnMap={() => {setOpenAircraftCard({open: false, top: 0, left: 0, aircraftId: ''})}}

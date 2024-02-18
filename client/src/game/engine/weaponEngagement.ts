@@ -7,6 +7,7 @@ import { Circle } from "ol/geom"
 import Scenario from "../Scenario"
 import Weapon from "../units/Weapon"
 import { generateRoute, getBearingBetweenTwoPoints, randomFloat } from "../../utils/utils"
+import Airbase from "../units/Airbase";
 
 export function checkIfAircraftIsWithinFacilityThreatRange(aircraft: Aircraft, facility: Facility): boolean {
     const projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE})
@@ -14,7 +15,7 @@ export function checkIfAircraftIsWithinFacilityThreatRange(aircraft: Aircraft, f
     return facilityRangeGeometry.intersectsCoordinate(fromLonLat([aircraft.longitude, aircraft.latitude], projection))
 }
 
-export function weaponEndgame(currentScenario: Scenario, weapon: Weapon, target: Aircraft | Facility | Weapon): boolean {
+export function weaponEndgame(currentScenario: Scenario, weapon: Weapon, target: Aircraft | Facility | Weapon | Airbase): boolean {
     currentScenario.weapons = currentScenario.weapons.filter((currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id);
     if (randomFloat() <= weapon.lethality) {
         if (target instanceof Aircraft) {
@@ -23,13 +24,15 @@ export function weaponEndgame(currentScenario: Scenario, weapon: Weapon, target:
             currentScenario.facilities = currentScenario.facilities.filter((currentScenarioFacility) => currentScenarioFacility.id !== target.id)
         } else if (target instanceof Weapon) {
             currentScenario.weapons = currentScenario.weapons.filter((currentScenarioWeapon) => currentScenarioWeapon.id !== target.id)
+        } else if (target instanceof Airbase) {
+            currentScenario.airbases = currentScenario.airbases.filter((currentScenarioAirbase) => currentScenarioAirbase.id !== target.id)
         }
         return true
     }
     return false
 }
 
-export function launchWeapon(currentScenario: Scenario, origin: Aircraft | Facility, target: Aircraft | Facility | Weapon) {
+export function launchWeapon(currentScenario: Scenario, origin: Aircraft | Facility, target: Aircraft | Facility | Weapon | Airbase) {
     if (origin.weapons.length === 0) return
 
     const numberOfWaypoints = 10
@@ -59,7 +62,7 @@ export function launchWeapon(currentScenario: Scenario, origin: Aircraft | Facil
 }
 
 export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
-    const target = currentScenario.getAircraft(weapon.targetId) ?? currentScenario.getFacility(weapon.targetId) ?? currentScenario.getWeapon(weapon.targetId);
+    const target = currentScenario.getAircraft(weapon.targetId) ?? currentScenario.getFacility(weapon.targetId) ?? currentScenario.getWeapon(weapon.targetId) ?? currentScenario.getAirbase(weapon.targetId);
     if (target) {
         const weaponRoute = weapon.route;
         if (weapon.route.length === 2) {

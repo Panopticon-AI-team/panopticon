@@ -31,6 +31,8 @@ export default class Game {
     addingAircraft: boolean = false;
     addingAirbase: boolean = false;
     addingFacility: boolean = false;
+    selectingTarget: boolean = false;
+    currentAttackerId: string = '';
     selectedUnitId: string = '';
     numberOfWaypoints: number = 50;
 
@@ -171,6 +173,14 @@ export default class Game {
         if (airbase && airbase.aircraft.length > 0) {
             const aircraft = airbase.aircraft.pop()
             if (aircraft) this.currentScenario.aircraft.push(aircraft);
+        }
+    }
+
+    handleAircraftAttack(aircraftId: string, targetId: string) {
+        const target = this.currentScenario.getAircraft(targetId) ?? this.currentScenario.getFacility(targetId) ?? this.currentScenario.getWeapon(targetId) ?? this.currentScenario.getAirbase(targetId);
+        const aircraft = this.currentScenario.getAircraft(aircraftId)
+        if (target && aircraft && target?.sideName !== aircraft?.sideName) {
+            launchWeapon(this.currentScenario, aircraft, target)
         }
     }
 
