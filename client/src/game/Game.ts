@@ -9,6 +9,7 @@ import { checkIfAircraftIsWithinFacilityThreatRange, weaponEndgame, launchWeapon
 import Airbase from "./units/Airbase";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
+import { GAME_SPEED_DELAY_MS } from "../utils/constants";
 
 interface IMapView {
     defaultCenter: number[];
@@ -177,6 +178,16 @@ export default class Game {
         for (let i = 0; i < this.currentScenario.sides.length; i++) {
             if (this.currentScenario.sides[i].name === this.currentSideName) {
                 this.currentSideName = this.currentScenario.sides[(i + 1) % this.currentScenario.sides.length].name;
+                break;
+            }
+        }
+    }
+
+    switchScenarioTimeCompression() {
+        const timeCompressions = Object.keys(GAME_SPEED_DELAY_MS).map((speed) => parseInt(speed));
+        for (let i = 0; i < timeCompressions.length; i++) {
+            if (this.currentScenario.timeCompression === timeCompressions[i]) {
+                this.currentScenario.timeCompression = timeCompressions[(i + 1) % timeCompressions.length];
                 break;
             }
         }

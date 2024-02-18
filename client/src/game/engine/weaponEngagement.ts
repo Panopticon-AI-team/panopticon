@@ -32,7 +32,7 @@ export function weaponEndgame(currentScenario: Scenario, weapon: Weapon, target:
 export function launchWeapon(currentScenario: Scenario, origin: Aircraft | Facility, target: Aircraft | Facility | Weapon) {
     if (origin.weapons.length === 0) return
 
-    const numberOfWaypoints = 5
+    const numberOfWaypoints = 10
     const weaponPrototype = origin.weapons[0]
     const newWeapon = new Weapon({
         id: uuidv4(), 

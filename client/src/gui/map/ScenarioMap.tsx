@@ -11,7 +11,7 @@ import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeL
 import BaseMapLayers from "./mapLayers/BaseMapLayers";
 import Game from "../../game/Game";
 import ToolBar from "./ToolBar";
-import { DEFAULT_OL_PROJECTION_CODE } from "../../utils/constants";
+import { DEFAULT_OL_PROJECTION_CODE, GAME_SPEED_DELAY_MS } from "../../utils/constants";
 import { delay } from "../../utils/utils";
 import AirbaseCard from "./featureCards/AirbaseCard";
 import MultipleFeatureSelector from "./MultipleFeatureSelector";
@@ -44,6 +44,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection ?? defaultProjection));
   const [weaponLayer, setWeaponLayer] = useState(new WeaponLayer(projection ?? defaultProjection));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
+  const [currentScenarioTimeCompression, setCurrentScenarioTimeCompression] = useState(game.currentScenario.timeCompression);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
   const [openAircraftCard, setOpenAircraftCard] = useState({
     open: false,
@@ -260,7 +261,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
       gameEnded = terminated || truncated;
 
-      await delay(1000);
+      await delay(GAME_SPEED_DELAY_MS[game.currentScenario.timeCompression]);
     }
   }
 
@@ -350,6 +351,11 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     setCurrentSideName(game.currentSideName);
   }
 
+  function updateScenarioTimeCompression() {
+    game.switchScenarioTimeCompression();
+    setCurrentScenarioTimeCompression(game.currentScenario.timeCompression);
+  }
+
   function refreshAllLayers() {
     aircraftLayer.refresh(game.currentScenario.aircraft);
     facilityLayer.refresh(game.currentScenario.facilities);
@@ -372,11 +378,13 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         addAirbaseOnClick={setAddingAirbase} 
         playOnClick={setGamePlaying} 
         stepOnClick={stepGameOnce} 
-        pauseOnClick={setGamePaused} 
+        pauseOnClick={setGamePaused}
+        updateScenarioTimeCompressionOnClick={updateScenarioTimeCompression}
         switchCurrentSideOnClick={switchCurrentSide} 
         refreshAllLayers={refreshAllLayers} 
         updateMapView={updateMapView} 
-        scenarioCurrentTime={currentScenarioTime} 
+        scenarioCurrentTime={currentScenarioTime}
+        scenarioTimeCompression={currentScenarioTimeCompression} 
         scenarioCurrentSideName={currentSideName} 
         game={game}
       />

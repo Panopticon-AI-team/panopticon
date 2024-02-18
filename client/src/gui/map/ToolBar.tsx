@@ -21,15 +21,17 @@ interface ToolBarProps {
     playOnClick: () => void;
     stepOnClick: () => void;
     pauseOnClick: () => void;
+    updateScenarioTimeCompressionOnClick: () => void;
     switchCurrentSideOnClick: () => void;
     refreshAllLayers: () => void;
     updateMapView: (center: number[], zoom: number) => void;
     scenarioCurrentTime: number;
+    scenarioTimeCompression: number;
     scenarioCurrentSideName: string;
     game: Game;
 }
 
-export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAirbaseOnClick, playOnClick, stepOnClick, pauseOnClick, switchCurrentSideOnClick, refreshAllLayers, updateMapView, scenarioCurrentTime, scenarioCurrentSideName, game }: Readonly<ToolBarProps>) {
+export default function ToolBar(props: Readonly<ToolBarProps>) {
 
   const toolbarStyle = {
     backgroundColor: "#282c34",
@@ -40,7 +42,7 @@ export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAir
   }
 
   const exportScenario = () => {
-    const exportObject = game.exportCurrentScenario();
+    const exportObject = props.game.exportCurrentScenario();
     const exportName = "panopticon_scenario_" + uuidv4();
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(exportObject);
     const downloadAnchorNode = document.createElement('a');
@@ -61,9 +63,9 @@ export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAir
         const reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = (readerEvent) => {
-          game.loadScenario(readerEvent.target?.result as string);
-          updateMapView(game.mapView.defaultCenter, game.mapView.defaultZoom);
-          refreshAllLayers();
+          props.game.loadScenario(readerEvent.target?.result as string);
+          props.updateMapView(props.game.mapView.defaultCenter, props.game.mapView.defaultZoom);
+          props.refreshAllLayers();
         }
       }
     }
@@ -72,14 +74,15 @@ export default function ToolBar({ addAircraftOnClick, addFacilityOnClick, addAir
 
   return (
     <Stack spacing={2} direction="row" style={toolbarStyle}>
-      <Chip label={"Current time: " + unixToLocalTime(scenarioCurrentTime)} style={currentTimeChipStyle} />
-      <Button variant="contained" color="success" onClick={playOnClick} startIcon={<PlayArrowIcon/>}>PLAY</Button>
-      <Button variant="contained" onClick={stepOnClick} startIcon={<RedoIcon/>}>STEP</Button>
-      <Button variant="contained" color="error" onClick={pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
-      <Button variant="contained" onClick={switchCurrentSideOnClick}>Current side: {scenarioCurrentSideName}</Button>
-      <Button variant="contained" onClick={addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
-      <Button variant="contained" onClick={addAirbaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add airbase</Button>
-      <Button variant="contained" onClick={addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
+      <Chip label={"Current time: " + unixToLocalTime(props.scenarioCurrentTime)} style={currentTimeChipStyle} />
+      <Button variant="contained" onClick={props.updateScenarioTimeCompressionOnClick}>Game Speed: {props.scenarioTimeCompression}X</Button>
+      <Button variant="contained" color="success" onClick={props.playOnClick} startIcon={<PlayArrowIcon/>}>PLAY</Button>
+      <Button variant="contained" color="error" onClick={props.pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
+      <Button variant="contained" onClick={props.stepOnClick} startIcon={<RedoIcon/>}>STEP</Button>
+      <Button variant="contained" onClick={props.switchCurrentSideOnClick}>Current side: {props.scenarioCurrentSideName}</Button>
+      <Button variant="contained" onClick={props.addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
+      <Button variant="contained" onClick={props.addAirbaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add airbase</Button>
+      <Button variant="contained" onClick={props.addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
       <Button variant="contained" onClick={exportScenario} startIcon={<DownloadIcon/>}>EXPORT SCENARIO</Button>
       <Button variant="contained" onClick={loadScenario} startIcon={<CloudUploadIcon/>}>LOAD SCENARIO</Button>
     </Stack>
