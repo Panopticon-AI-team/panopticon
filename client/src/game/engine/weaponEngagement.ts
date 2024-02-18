@@ -58,11 +58,13 @@ export function launchWeapon(currentScenario: Scenario, origin: Aircraft | Facil
     if (origin.weapons[0].currentQuantity < 1) origin.weapons.shift()
 }
 
-export function weaponTrackTarget(currentScenario: Scenario, weapon: Weapon) {
+export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
     const target = currentScenario.getAircraft(weapon.targetId) ?? currentScenario.getFacility(weapon.targetId) ?? currentScenario.getWeapon(weapon.targetId);
     if (target) {
         const weaponRoute = weapon.route;
-        if (weaponRoute.length > 0) {
+        if (weapon.route.length === 2) {
+            weaponEndgame(currentScenario, weapon, target)
+        } else if (weaponRoute.length > 0) {
             const nextWaypoint = weaponRoute[0];
             weapon.route = generateRoute(nextWaypoint[0], nextWaypoint[1], target.latitude, target.longitude, weaponRoute.length > 0 ? weaponRoute.length - 1 : 0);
             weapon.heading = getBearingBetweenTwoPoints(weapon.latitude, weapon.longitude, target.latitude, target.longitude);

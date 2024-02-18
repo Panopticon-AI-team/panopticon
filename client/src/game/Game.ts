@@ -5,7 +5,7 @@ import Facility from "./units/Facility";
 import Scenario from "./Scenario";
 
 import { getBearingBetweenTwoPoints, generateRoute } from "../utils/utils";
-import { checkIfAircraftIsWithinFacilityThreatRange, weaponEndgame, launchWeapon, weaponTrackTarget } from "./engine/weaponEngagement";
+import { checkIfAircraftIsWithinFacilityThreatRange, launchWeapon, weaponEngagement } from "./engine/weaponEngagement";
 import Airbase from "./units/Airbase";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
@@ -301,9 +301,7 @@ export default class Game {
         this.currentScenario = loadedScenario;
     }
 
-    updateGameState() {
-        this.currentScenario.currentTime += 1;
-
+    facilityAutoDefense() {
         this.currentScenario.facilities.forEach((facility) => {
             this.currentScenario.aircraft.forEach((aircraft) => {
                 if (facility.sideName !== aircraft.sideName) {
@@ -313,15 +311,15 @@ export default class Game {
                 }
             })
         })
+    }
+
+    updateGameState() {
+        this.currentScenario.currentTime += 1;
+
+        this.facilityAutoDefense()
 
         this.currentScenario.weapons.forEach((weapon) => {
-            if (weapon.route.length === 2) {
-                const target = this.currentScenario.getAircraft(weapon.targetId) ?? this.currentScenario.getFacility(weapon.targetId);
-                if (target) weaponEndgame(this.currentScenario,weapon, target)
-            } else {
-                weaponTrackTarget(this.currentScenario, weapon)
-            }
-
+            weaponEngagement(this.currentScenario, weapon)
             const route = weapon.route;
             if (route.length > 0) {
                 const nextWaypoint = route[0];
