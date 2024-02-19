@@ -40,7 +40,7 @@ export default class Game {
         this.currentScenario = currentScenario;
     }
 
-    addAircraft(aircraftName: string, className: string, latitude: number, longitude: number) {
+    addAircraft(aircraftName: string, className: string, latitude: number, longitude: number): Aircraft | undefined {
         if (!this.currentSideName) {
             return;
         }
@@ -60,6 +60,7 @@ export default class Game {
             weapons: [this.getSampleWeapon(10, 0.25)],
         });
         this.currentScenario.aircraft.push(aircraft);
+        return aircraft
     }
 
     addAircraftToAirbase(aircraftName: string, className: string, airbaseId: string) {
@@ -102,6 +103,7 @@ export default class Game {
             sideColor: this.currentScenario.getSideColor(this.currentSideName),
         });
         this.currentScenario.airbases.push(airbase);
+        return airbase
     }
 
     removeAirbase(airbaseId: string) {
@@ -133,6 +135,7 @@ export default class Game {
             weapons: [this.getSampleWeapon(30, 0.1)],
         });
         this.currentScenario.facilities.push(facility);
+        return facility
     }
 
     getSampleWeapon(quantity: number, lethality: number, sideName: string = this.currentSideName) {
@@ -162,6 +165,7 @@ export default class Game {
         if (aircraft) {
             aircraft.route = generateRoute(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude, this.numberOfWaypoints);
             aircraft.heading = getBearingBetweenTwoPoints(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude);
+            return aircraft
         }
     }
 
@@ -172,7 +176,10 @@ export default class Game {
         const airbase = this.currentScenario.getAirbase(airbaseId);
         if (airbase && airbase.aircraft.length > 0) {
             const aircraft = airbase.aircraft.pop()
-            if (aircraft) this.currentScenario.aircraft.push(aircraft);
+            if (aircraft) {
+                this.currentScenario.aircraft.push(aircraft);
+                return aircraft
+            }
         }
     }
 

@@ -37,13 +37,13 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const mapId = useRef(null);
   const defaultProjection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
   const baseMapLayers = new BaseMapLayers(projection ?? defaultProjection);
-  const [aircraftLayer, setAircraftLayer] = useState(new AircraftLayer(projection ?? defaultProjection, 1));
+  const [aircraftLayer, setAircraftLayer] = useState(new AircraftLayer(projection ?? defaultProjection, 3));
   const [airbasesLayer, setAirbasesLayer] = useState(new AirbasesLayer(projection ?? defaultProjection, 1));
   const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection ?? defaultProjection, 1));
   const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection ?? defaultProjection));
   const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection ?? defaultProjection));
-  const [weaponLayer, setWeaponLayer] = useState(new WeaponLayer(projection ?? defaultProjection, 1));
-  const [featureLabelLayer, setFeatureLabelLayer] = useState(new FeatureLabelLayer(projection ?? defaultProjection, 2));
+  const [weaponLayer, setWeaponLayer] = useState(new WeaponLayer(projection ?? defaultProjection, 2));
+  const [featureLabelLayer, setFeatureLabelLayer] = useState(new FeatureLabelLayer(projection ?? defaultProjection, 4));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
   const [currentScenarioTimeCompression, setCurrentScenarioTimeCompression] = useState(game.currentScenario.timeCompression);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
@@ -127,8 +127,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       case 'moveAircraft': {
         moveAircraft(game.selectedUnitId, event.coordinate);
         const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
-        if (aircraft) aircraft.selected = !aircraft.selected;
-        aircraftLayer.refresh(game.currentScenario.aircraft);
+        if (aircraft) {
+          aircraft.selected = !aircraft.selected;
+          aircraftLayer.updateAircraftFeature(aircraft.id, aircraft.selected, aircraft.heading)
+        }
         game.selectedUnitId = '';
         break;
       }
@@ -171,9 +173,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       if (currentSelectedFeatureType === 'aircraft' && game.currentScenario.getAircraft(currentSelectedFeatureId)) {
         game.selectedUnitId = '';
         const aircraft = game.currentScenario.getAircraft(currentSelectedFeatureId);
-        if (aircraft) aircraft.selected = false;
-        aircraftLayer.refresh(game.currentScenario.aircraft);
-
+        if (aircraft) {
+          aircraft.selected = false;
+          aircraftLayer.updateAircraftFeature(aircraft.id, aircraft.selected, aircraft.heading)
+        }
         const aircraftGeometry = feature.getGeometry() as Point
         const aircraftCoordinate = aircraftGeometry.getCoordinates()
         const aircraftPixels = theMap.getPixelFromCoordinate(aircraftCoordinate)
@@ -210,8 +213,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   function queueAircraftForMovement(aircraftId: string) {
     game.selectedUnitId = aircraftId
     const aircraft = game.currentScenario.getAircraft(aircraftId);
-    if (aircraft) aircraft.selected = true
-    aircraftLayer.refresh(game.currentScenario.aircraft);
+    if (aircraft) {
+      aircraft.selected = true
+      aircraftLayer.updateAircraftFeature(aircraft.id, aircraft.selected, aircraft.heading)
+    }
   }
 
   function handleSelectMultipleFeatures(features: Feature[]) {
@@ -271,20 +276,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     game.scenarioPaused = false;
     let gameEnded = game.checkGameEnded();
     while (!game.scenarioPaused && !gameEnded) {
-      const [observation, reward, terminated, truncated, info] = game.step();
-
-      setCurrentScenarioTime(observation.currentTime);
-      aircraftLayer.refresh(observation.aircraft);
-      aircraftRouteLayer.refresh(observation.aircraft);
-      weaponLayer.refresh(observation.weapons);
-      if (facilityLayer.featureCount !== observation.facilities.length) {
-        facilityLayer.refresh(observation.facilities);
-        rangeLayer.refresh(observation.facilities);
-      }
-      if (airbasesLayer.featureCount !== observation.airbases.length) {
-        airbasesLayer.refresh(observation.airbases);
-      }
-      if (featureLabelVisible) refreshFeatureLabelLayer()
+      const [observation, reward, terminated, truncated, info] = stepGameOnce();
 
       gameEnded = terminated || truncated;
 
@@ -293,21 +285,25 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   }
 
   function stepGameOnce() {
-    setGamePaused()
     const [observation, reward, terminated, truncated, info] = game.step();
 
     setCurrentScenarioTime(observation.currentTime);
+
     aircraftLayer.refresh(observation.aircraft);
     aircraftRouteLayer.refresh(observation.aircraft);
     weaponLayer.refresh(observation.weapons);
+    if (featureLabelVisible) featureLabelLayer.refreshSubset(observation.aircraft, 'aircraft')
     if (facilityLayer.featureCount !== observation.facilities.length) {
       facilityLayer.refresh(observation.facilities);
       rangeLayer.refresh(observation.facilities);
+      if (featureLabelVisible) featureLabelLayer.refreshSubset(observation.facilities, 'facility')
     }
     if (airbasesLayer.featureCount !== observation.airbases.length) {
       airbasesLayer.refresh(observation.airbases);
+      if (featureLabelVisible) featureLabelLayer.refreshSubset(observation.airbases, 'airbase')
     }
-    if (featureLabelVisible) refreshFeatureLabelLayer()
+
+    return [observation, reward, terminated, truncated, info]
   }
 
   function setGamePaused() {
@@ -320,9 +316,11 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const className = 'F-22A';
     const latitude = coordinates[1];
     const longitude = coordinates[0];
-    game.addAircraft(aircraftName, className, latitude, longitude);
-    aircraftLayer.refresh(game.currentScenario.aircraft)
-    if (featureLabelVisible) refreshFeatureLabelLayer()
+    const newAircraft = game.addAircraft(aircraftName, className, latitude, longitude);
+    if (newAircraft) {
+      aircraftLayer.addAircraftFeature(newAircraft)
+      if (featureLabelVisible) featureLabelLayer.addFeatureLabelFeature(newAircraft)
+    }
   }
 
   function addAircraftToAirbase(airbaseId: string) {
@@ -337,10 +335,12 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const className = 'SA-20';
     const latitude = coordinates[1];
     const longitude = coordinates[0];
-    game.addFacility(facilityName, className, latitude, longitude);
-    facilityLayer.refresh(game.currentScenario.facilities);
-    rangeLayer.refresh(game.currentScenario.facilities);
-    if (featureLabelVisible) refreshFeatureLabelLayer()
+    const newFacility = game.addFacility(facilityName, className, latitude, longitude);
+    if (newFacility) {
+      facilityLayer.addFacilityFeature(newFacility);
+      rangeLayer.addRangeFeature(newFacility);
+      if (featureLabelVisible) featureLabelLayer.addFeatureLabelFeature(newFacility)
+    }
   }
 
   function addAirbase(coordinates: number[]) {
@@ -349,43 +349,47 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const className = 'Airfield';
     const latitude = coordinates[1];
     const longitude = coordinates[0];
-    game.addAirbase(airbaseName, className, latitude, longitude);
-    airbasesLayer.refresh(game.currentScenario.airbases);
-    if (featureLabelVisible) refreshFeatureLabelLayer()
+    const newAirbase = game.addAirbase(airbaseName, className, latitude, longitude);
+    if (newAirbase) {
+      airbasesLayer.addAirbaseFeature(newAirbase);
+      if (featureLabelVisible) featureLabelLayer.addFeatureLabelFeature(newAirbase)
+    }
   }
 
   function removeAirbase(airbaseId: string) {
     game.removeAirbase(airbaseId);
-    airbasesLayer.refresh(game.currentScenario.airbases);
-    if (featureLabelVisible) refreshFeatureLabelLayer()
+    airbasesLayer.removeFeatureById(airbaseId);
+    if (featureLabelVisible) featureLabelLayer.removeFeatureById(airbaseId)
   }
 
   function removeFacility(facilityId: string) {
     game.removeFacility(facilityId);
-    facilityLayer.refresh(game.currentScenario.facilities);
-    rangeLayer.refresh(game.currentScenario.facilities);
-    if (featureLabelVisible) refreshFeatureLabelLayer()
+    facilityLayer.removeFeatureById(facilityId);
+    rangeLayer.removeFeatureById(facilityId);
+    if (featureLabelVisible) featureLabelLayer.removeFeatureById(facilityId)
   }
 
   function removeAircraft(aircraftId: string) {
     game.removeAircraft(aircraftId);
-    aircraftLayer.refresh(game.currentScenario.aircraft);
-    aircraftRouteLayer.refresh(game.currentScenario.aircraft);
-    if (featureLabelVisible) refreshFeatureLabelLayer()
+    aircraftLayer.removeFeatureById(aircraftId);
+    aircraftRouteLayer.removeFeatureById(aircraftId);
+    if (featureLabelVisible) featureLabelLayer.removeFeatureById(aircraftId)
   }
 
   function moveAircraft(aircraftId: string, coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const destinationLatitude = coordinates[1];
     const destinationLongitude = coordinates[0];
-    game.moveAircraft(aircraftId, destinationLatitude, destinationLongitude);
-    aircraftRouteLayer.refresh(game.currentScenario.aircraft);
+    const aircraftQueuedForMovement = game.moveAircraft(aircraftId, destinationLatitude, destinationLongitude);
+    if (aircraftQueuedForMovement) aircraftRouteLayer.addAircraftRouteFeature(aircraftQueuedForMovement);
   }
 
   function launchAircraft(airbaseId: string) {
-    game.launchAircraftFromAirbase(airbaseId)
-    aircraftLayer.refresh(game.currentScenario.aircraft)
-    if (featureLabelVisible) refreshFeatureLabelLayer()
+    const launchedAircraft = game.launchAircraftFromAirbase(airbaseId)
+    if (launchedAircraft) {
+      aircraftLayer.addAircraftFeature(launchedAircraft)
+      if (featureLabelVisible) featureLabelLayer.addFeatureLabelFeature(launchedAircraft)
+    }
   }
 
   function handleAircraftAttack(aircraftId: string) {
@@ -432,7 +436,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   function updateFacility(facilityId: string, facilityName: string, facilityClassName: string, facilityRange: number, facilityWeaponQuantity: number) {
     game.currentScenario.updateFacility(facilityId, facilityName, facilityClassName, facilityRange, facilityWeaponQuantity)
-    rangeLayer.refresh(game.currentScenario.facilities);
+    rangeLayer.updateRangeFeature(facilityId, facilityRange);
   }
 
   function toggleFeatureLabelVisibility(on: boolean) {
@@ -452,7 +456,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         addFacilityOnClick={setAddingFacility} 
         addAirbaseOnClick={setAddingAirbase} 
         playOnClick={setGamePlaying} 
-        stepOnClick={stepGameOnce} 
+        stepOnClick={() => {setGamePaused(); stepGameOnce()}} 
         pauseOnClick={setGamePaused}
         toggleScenarioTimeCompressionOnClick={toggleScenarioTimeCompression}
         switchCurrentSideOnClick={switchCurrentSide} 
