@@ -29,7 +29,12 @@ interface AircraftCardProps {
   
 export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     const [editing, setEditing] = useState(false);
-    const [aircraftEditData, setAircraftEditData] = useState({
+    const [aircraftTempEditData, setAircraftTempEditData] = useState({
+        name: props.aircraft.name,
+        className: props.aircraft.className,
+        weaponQuantity: props.aircraft.getTotalWeaponQuantity()
+    })
+    const [updatedAircraftData, setUpdatedAircraftData] = useState({
         name: props.aircraft.name,
         className: props.aircraft.className,
         weaponQuantity: props.aircraft.getTotalWeaponQuantity()
@@ -55,23 +60,24 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     }
 
     const handleSaveEditedAircraft = () => {
-        props.handleEditAircraft(props.aircraft.id, aircraftEditData.name, aircraftEditData.className, aircraftEditData.weaponQuantity)
+        props.handleEditAircraft(props.aircraft.id, aircraftTempEditData.name, aircraftTempEditData.className, aircraftTempEditData.weaponQuantity)
+        setUpdatedAircraftData(aircraftTempEditData);
         toggleEditAircraft();
     }
 
     const _handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         switch (event.target.id) {
             case "aircraft-name-text-field": {
-                setAircraftEditData({...aircraftEditData, name: event.target.value})
+                setAircraftTempEditData({...aircraftTempEditData, name: event.target.value})
                 break;
             }
             case "aircraft-type-text-field": {
-                setAircraftEditData({...aircraftEditData, className: event.target.value})
+                setAircraftTempEditData({...aircraftTempEditData, className: event.target.value})
                 break;
             }
             case "aircraft-weapon-quantity-text-field": {
                 const newWeaponCount = parseInt(event.target.value)
-                if (newWeaponCount) setAircraftEditData({...aircraftEditData, weaponQuantity: newWeaponCount})
+                if (newWeaponCount) setAircraftTempEditData({...aircraftTempEditData, weaponQuantity: newWeaponCount})
                 break;
             }
             case "default": {
@@ -82,15 +88,15 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
 
     const aircraftDataContent = (
         <>
-            <Typography variant="h5" component="div">{aircraftEditData.name}</Typography>
-            <Typography variant="h6">Type: {aircraftEditData.className}</Typography>
+            <Typography variant="h5" component="div">{updatedAircraftData.name}</Typography>
+            <Typography variant="h6">Type: {updatedAircraftData.className}</Typography>
             <Typography variant="h6">Coordinates: {props.aircraft.latitude.toFixed(2)}, {props.aircraft.longitude.toFixed(2)}</Typography>
             <Typography variant="h6">Altitude: {props.aircraft.altitude.toFixed(2)} FT</Typography>
             <Typography variant="h6">Heading: {props.aircraft.heading.toFixed(2)}</Typography>
             <Typography variant="h6">Speed: {props.aircraft.speed.toFixed(0)} KTS</Typography>
             <Typography variant="h6">Fuel: {props.aircraft.fuel.toFixed(2)}</Typography>
             <Typography variant="h6">Side: {props.aircraft.sideName}</Typography>
-            <Typography variant="h6">Weapon Quantity: {aircraftEditData.weaponQuantity}</Typography>
+            <Typography variant="h6">Weapon Quantity: {updatedAircraftData.weaponQuantity}</Typography>
         </>
     )
 
@@ -109,9 +115,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             <form>
                 <Stack spacing={1} direction="column">
                     <Typography variant="h5" component="div">EDIT AIRCRAFT</Typography>
-                    <TextField id="aircraft-name-text-field" label="Name" placeholder={aircraftEditData.name} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
-                    <TextField id="aircraft-type-text-field" label="Type" placeholder={aircraftEditData.className} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
-                    <TextField id="aircraft-weapon-quantity-text-field" label="Weapon Quantity" placeholder={aircraftEditData.weaponQuantity.toString()} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-name-text-field" label="Name" placeholder={updatedAircraftData.name} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-type-text-field" label="Type" placeholder={updatedAircraftData.className} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-weapon-quantity-text-field" label="Weapon Quantity" placeholder={updatedAircraftData.weaponQuantity.toString()} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
                 </Stack>
             </form>
         )
