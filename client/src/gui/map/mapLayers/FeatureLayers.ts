@@ -222,6 +222,11 @@ export class AircraftRouteLayer extends FeatureLayer {
 
   addAircraftRouteFeature(aircraft: Aircraft) {
     if (aircraft.route.length > 0) {
+      const previousFeature = this.findFeatureByKey('id', aircraft.id);
+      if (previousFeature) {
+        this.layerSource.removeFeature(previousFeature);
+        this.featureCount -= 1
+      }
       this.layerSource.addFeature(this.createAircraftRouteFeature(aircraft));
       this.featureCount += 1
     }
