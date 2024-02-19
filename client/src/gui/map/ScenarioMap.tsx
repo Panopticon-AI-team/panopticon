@@ -12,7 +12,7 @@ import BaseMapLayers from "./mapLayers/BaseMapLayers";
 import Game from "../../game/Game";
 import ToolBar from "./ToolBar";
 import { DEFAULT_OL_PROJECTION_CODE, GAME_SPEED_DELAY_MS } from "../../utils/constants";
-import { delay } from "../../utils/utils";
+import { delay, randomInt } from "../../utils/utils";
 import AirbaseCard from "./featureCards/AirbaseCard";
 import MultipleFeatureSelector from "./MultipleFeatureSelector";
 import { Geometry } from "ol/geom";
@@ -312,8 +312,8 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   function addAircraft(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const aircraftName = 'Dummy';
-    const className = 'F-16C';
+    const aircraftName = 'Raptor #' + randomInt(1, 5000).toString();
+    const className = 'F-22A';
     const latitude = coordinates[1];
     const longitude = coordinates[0];
     game.addAircraft(aircraftName, className, latitude, longitude);
@@ -321,14 +321,14 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   }
 
   function addAircraftToAirbase(airbaseId: string) {
-    const aircraftName = 'Dummy';
-    const className = 'F-16C';
+    const aircraftName = 'Raptor #' + randomInt(1, 5000).toString();
+    const className = 'F-22A';
     game.addAircraftToAirbase(aircraftName, className, airbaseId);
   }
 
   function addFacility(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const facilityName = 'Threat';
+    const facilityName = 'SA-20 #' + randomInt(1, 5000).toString();
     const className = 'SA-20';
     const latitude = coordinates[1];
     const longitude = coordinates[0];
@@ -339,7 +339,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   function addAirbase(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const airbaseName = 'Floridistan';
+    const airbaseName = 'Floridistan AFB #' + randomInt(1, 5000).toString();
     const className = 'Airfield';
     const latitude = coordinates[1];
     const longitude = coordinates[0];

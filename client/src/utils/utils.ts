@@ -119,8 +119,12 @@ export function colorNameToColorArray(color: string, alpha: number = 1): number[
     }
 }
 
-export function randomFloat(min: number= 0, max: number = 1): number {
+export function randomFloat(min: number=0, max: number=1): number {
     return (Math.random() * (max - min) + min);
+}
+
+export function randomInt(min: number=0, max: number=100): number {
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 export function generateRoute(originLatitude: number, originLongitude: number, destinationLatitude: number, destinationLongitude: number, numberOfWaypoints: number): number[][] {
