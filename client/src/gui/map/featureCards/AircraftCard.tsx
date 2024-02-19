@@ -109,9 +109,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             <form>
                 <Stack spacing={1} direction="column">
                     <Typography variant="h5" component="div">EDIT AIRCRAFT</Typography>
-                    <TextField autoComplete='off' id="aircraft-name-text-field" label="Name" placeholder={props.aircraft.name} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
-                    <TextField autoComplete='off' id="aircraft-type-text-field" label="Type" placeholder={props.aircraft.className} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
-                    <TextField autoComplete='off' id="aircraft-weapon-quantity-text-field" label="Weapon Quantity" placeholder={props.aircraft.getTotalWeaponQuantity().toString()} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-name-text-field" label="Name" placeholder={props.aircraft.name} defaultValue={props.aircraft.name} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-type-text-field" label="Type" placeholder={props.aircraft.className} defaultValue={props.aircraft.className} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-weapon-quantity-text-field" label="Weapon Quantity" placeholder={props.aircraft.getTotalWeaponQuantity().toString()} defaultValue={props.aircraft.getTotalWeaponQuantity().toString()} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
                 </Stack>
             </form>
         )
