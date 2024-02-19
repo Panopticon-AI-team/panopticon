@@ -34,11 +34,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         className: props.aircraft.className,
         weaponQuantity: props.aircraft.getTotalWeaponQuantity()
     })
-    const [updatedAircraftData, setUpdatedAircraftData] = useState({
-        name: props.aircraft.name,
-        className: props.aircraft.className,
-        weaponQuantity: props.aircraft.getTotalWeaponQuantity()
-    })
 
     const _handleDeleteAircraft = () => {
         props.handleCloseOnMap();
@@ -61,7 +56,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
 
     const handleSaveEditedAircraft = () => {
         props.handleEditAircraft(props.aircraft.id, aircraftTempEditData.name, aircraftTempEditData.className, aircraftTempEditData.weaponQuantity)
-        setUpdatedAircraftData(aircraftTempEditData);
         toggleEditAircraft();
     }
 
@@ -88,15 +82,15 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
 
     const aircraftDataContent = (
         <>
-            <Typography variant="h5" component="div">{updatedAircraftData.name}</Typography>
-            <Typography variant="h6">Type: {updatedAircraftData.className}</Typography>
+            <Typography variant="h5" component="div">{props.aircraft.name}</Typography>
+            <Typography variant="h6">Type: {props.aircraft.className}</Typography>
             <Typography variant="h6">Coordinates: {props.aircraft.latitude.toFixed(2)}, {props.aircraft.longitude.toFixed(2)}</Typography>
             <Typography variant="h6">Altitude: {props.aircraft.altitude.toFixed(2)} FT</Typography>
             <Typography variant="h6">Heading: {props.aircraft.heading.toFixed(2)}</Typography>
             <Typography variant="h6">Speed: {props.aircraft.speed.toFixed(0)} KTS</Typography>
             <Typography variant="h6">Fuel: {props.aircraft.fuel.toFixed(2)}</Typography>
             <Typography variant="h6">Side: {props.aircraft.sideName}</Typography>
-            <Typography variant="h6">Weapon Quantity: {updatedAircraftData.weaponQuantity}</Typography>
+            <Typography variant="h6">Weapon Quantity: {props.aircraft.getTotalWeaponQuantity()}</Typography>
         </>
     )
 
@@ -115,9 +109,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             <form>
                 <Stack spacing={1} direction="column">
                     <Typography variant="h5" component="div">EDIT AIRCRAFT</Typography>
-                    <TextField autoComplete='off' id="aircraft-name-text-field" label="Name" placeholder={updatedAircraftData.name} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
-                    <TextField autoComplete='off' id="aircraft-type-text-field" label="Type" placeholder={updatedAircraftData.className} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
-                    <TextField autoComplete='off' id="aircraft-weapon-quantity-text-field" label="Weapon Quantity" placeholder={updatedAircraftData.weaponQuantity.toString()} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-name-text-field" label="Name" placeholder={props.aircraft.name} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-type-text-field" label="Type" placeholder={props.aircraft.className} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-weapon-quantity-text-field" label="Weapon Quantity" placeholder={props.aircraft.getTotalWeaponQuantity().toString()} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
                 </Stack>
             </form>
         )

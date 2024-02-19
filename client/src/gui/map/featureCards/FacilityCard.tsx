@@ -20,8 +20,6 @@ interface FacilityCardProps {
 }
   
 export default function FacilityCard({ facility, handleDeleteFacility, handleCloseOnMap, anchorPositionTop, anchorPositionLeft }: Readonly<FacilityCardProps>) {
-    const [weaponCount, setWeaponCount] = useState(facility.getTotalWeaponQuantity());
-
     const _handleDeleteFacility = () => {
         handleCloseOnMap();
         handleDeleteFacility(facility.id);
@@ -37,7 +35,7 @@ export default function FacilityCard({ facility, handleDeleteFacility, handleClo
                 <Typography variant="h6">Altitude: {facility.altitude.toFixed(2)} FT</Typography>
                 <Typography variant="h6">Range: {facility.range.toFixed(0)} NM</Typography>
                 <Typography variant="h6">Side: {facility.sideName}</Typography>
-                <Typography variant="h6">Weapon Quantity: {weaponCount}</Typography>
+                <Typography variant="h6">Weapon Quantity: {facility.getTotalWeaponQuantity()}</Typography>
             </CardContent>
             <CardActions>
                 <Stack spacing={1} direction="column">
