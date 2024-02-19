@@ -4,6 +4,7 @@ import {
   Icon,
   Fill,
   Stroke,
+  Text,
 } from 'ol/style.js';
 
 import { colorNameToColorArray, toRadians } from "../../../utils/utils";
@@ -99,5 +100,23 @@ export const weaponStyle = function(feature: FeatureLike) {
       rotation: toRadians(feature.getProperties().heading),
       color: feature.getProperties().sideColor,
     }),
+  })
+}
+
+export const featureLabelStyle = function(feature: FeatureLike) {
+  return new Style({
+    text: new Text({
+      font: '18px Calibri',
+      text: feature.getProperties().name,
+      placement: 'point',
+      fill: new Fill({
+        color: feature.getProperties().sideColor
+      }),
+      stroke: new Stroke({
+        color: '#000',
+        width: 1
+      }),
+      offsetY: 20
+    })
   })
 }

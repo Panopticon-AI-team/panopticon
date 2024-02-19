@@ -10,7 +10,7 @@ import Aircraft from '../../../game/units/Aircraft';
 import Facility from '../../../game/units/Facility';
 import Airbase from '../../../game/units/Airbase';
 import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../../../utils/constants';
-import { aircraftRouteStyle, aircraftStyle, airbasesStyle, facilityStyle, rangeStyle, weaponStyle } from './FeatureLayerStyles';
+import { aircraftRouteStyle, aircraftStyle, airbasesStyle, facilityStyle, rangeStyle, weaponStyle, featureLabelStyle } from './FeatureLayerStyles';
 import Weapon from '../../../game/units/Weapon';
 
 class FeatureLayer {
@@ -171,6 +171,27 @@ export class WeaponLayer extends FeatureLayer {
         sideColor: weapon.sideColor,
       });
       this.layerSource.addFeature(feature);
+    });
+  }
+}
+
+export class FeatureLabelLayer extends FeatureLayer {
+  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
+
+  constructor(projection: Projection) {
+    super(projection, featureLabelStyle);
+  }
+
+  refresh(entities: (Aircraft | Facility | Airbase)[]) {
+    this.layerSource.clear();
+    entities.forEach((entity) => {
+      const featureLabel = new Feature({
+        type: 'featureLabel',
+        name: entity.name,
+        geometry: new Point(fromLonLat([entity.longitude, entity.latitude], this.projection)),
+        sideColor: entity.sideColor,
+      });
+      this.layerSource.addFeature(featureLabel);
     });
   }
 }

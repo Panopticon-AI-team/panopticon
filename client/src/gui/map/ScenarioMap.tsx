@@ -7,7 +7,7 @@ import { Projection, toLonLat, transform } from "ol/proj";
 import Point from 'ol/geom/Point.js';
 
 import "../styles/ScenarioMap.css";
-import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeLayer, WeaponLayer } from "./mapLayers/FeatureLayers";
+import { AircraftLayer, AircraftRouteLayer, AirbasesLayer, FacilityLayer, RangeLayer, WeaponLayer, FeatureLabelLayer } from "./mapLayers/FeatureLayers";
 import BaseMapLayers from "./mapLayers/BaseMapLayers";
 import Game from "../../game/Game";
 import ToolBar from "./ToolBar";
@@ -43,6 +43,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection ?? defaultProjection));
   const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection ?? defaultProjection));
   const [weaponLayer, setWeaponLayer] = useState(new WeaponLayer(projection ?? defaultProjection));
+  const [featureLabelLayer, setFeatureLabelLayer] = useState(new FeatureLabelLayer(projection ?? defaultProjection));
   const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
   const [currentScenarioTimeCompression, setCurrentScenarioTimeCompression] = useState(game.currentScenario.timeCompression);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
@@ -70,9 +71,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     left: 0,
     features: [],
   });
+  const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   
   const map = new OlMap({
-    layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, airbasesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer, weaponLayer.layer],
+    layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, airbasesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer, weaponLayer.layer, featureLabelLayer.layer],
     view: new View({
       center: center,
       zoom: zoom,
@@ -282,6 +284,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       if (airbasesLayer.featureCount !== observation.airbases.length) {
         airbasesLayer.refresh(observation.airbases);
       }
+      if (featureLabelVisible) refreshFeatureLabelLayer()
 
       gameEnded = terminated || truncated;
 
@@ -304,6 +307,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     if (airbasesLayer.featureCount !== observation.airbases.length) {
       airbasesLayer.refresh(observation.airbases);
     }
+    if (featureLabelVisible) refreshFeatureLabelLayer()
   }
 
   function setGamePaused() {
@@ -318,6 +322,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const longitude = coordinates[0];
     game.addAircraft(aircraftName, className, latitude, longitude);
     aircraftLayer.refresh(game.currentScenario.aircraft)
+    if (featureLabelVisible) refreshFeatureLabelLayer()
   }
 
   function addAircraftToAirbase(airbaseId: string) {
@@ -335,6 +340,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     game.addFacility(facilityName, className, latitude, longitude);
     facilityLayer.refresh(game.currentScenario.facilities);
     rangeLayer.refresh(game.currentScenario.facilities);
+    if (featureLabelVisible) refreshFeatureLabelLayer()
   }
 
   function addAirbase(coordinates: number[]) {
@@ -345,23 +351,27 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const longitude = coordinates[0];
     game.addAirbase(airbaseName, className, latitude, longitude);
     airbasesLayer.refresh(game.currentScenario.airbases);
+    if (featureLabelVisible) refreshFeatureLabelLayer()
   }
 
   function removeAirbase(airbaseId: string) {
     game.removeAirbase(airbaseId);
     airbasesLayer.refresh(game.currentScenario.airbases);
+    if (featureLabelVisible) refreshFeatureLabelLayer()
   }
 
   function removeFacility(facilityId: string) {
     game.removeFacility(facilityId);
     facilityLayer.refresh(game.currentScenario.facilities);
     rangeLayer.refresh(game.currentScenario.facilities);
+    if (featureLabelVisible) refreshFeatureLabelLayer()
   }
 
   function removeAircraft(aircraftId: string) {
     game.removeAircraft(aircraftId);
     aircraftLayer.refresh(game.currentScenario.aircraft);
     aircraftRouteLayer.refresh(game.currentScenario.aircraft);
+    if (featureLabelVisible) refreshFeatureLabelLayer()
   }
 
   function moveAircraft(aircraftId: string, coordinates: number[]) {
@@ -375,6 +385,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   function launchAircraft(airbaseId: string) {
     game.launchAircraftFromAirbase(airbaseId)
     aircraftLayer.refresh(game.currentScenario.aircraft)
+    if (featureLabelVisible) refreshFeatureLabelLayer()
   }
 
   function handleAircraftAttack(aircraftId: string) {
@@ -399,6 +410,15 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     rangeLayer.refresh(game.currentScenario.facilities);
     aircraftRouteLayer.refresh(game.currentScenario.aircraft);
     weaponLayer.refresh(game.currentScenario.weapons);
+    if (featureLabelVisible) refreshFeatureLabelLayer()
+  }
+
+  function refreshFeatureLabelLayer() {
+    featureLabelLayer.refresh([
+      ...game.currentScenario.aircraft,
+      ...game.currentScenario.facilities,
+      ...game.currentScenario.airbases,
+    ]);
   }
 
   function updateMapView(center: number[], zoom: number) {
@@ -413,6 +433,16 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   function updateFacility(facilityId: string, facilityName: string, facilityClassName: string, facilityRange: number, facilityWeaponQuantity: number) {
     game.currentScenario.updateFacility(facilityId, facilityName, facilityClassName, facilityRange, facilityWeaponQuantity)
     rangeLayer.refresh(game.currentScenario.facilities);
+  }
+
+  function toggleFeatureLabelVisibility(on: boolean) {
+    setFeatureLabelVisible(on);
+    if (on)  {
+      refreshFeatureLabelLayer()
+      featureLabelLayer.layer.setVisible(true);
+    } else {
+      featureLabelLayer.layer.setVisible(false);
+    }
   }
 
   return (
@@ -433,6 +463,8 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         scenarioTimeCompression={currentScenarioTimeCompression} 
         scenarioCurrentSideName={currentSideName} 
         game={game}
+        featureLabelVisibility={featureLabelVisible}
+        toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
       />
       <div ref={mapId} className='map'></div>
       {openAirbaseCard.open &&

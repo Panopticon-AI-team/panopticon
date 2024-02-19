@@ -13,6 +13,8 @@ import Chip from '@mui/material/Chip';
 import { unixToLocalTime } from '../../utils/utils';
 import Game from '../../game/Game';
 import { v4 as uuidv4 } from "uuid";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 interface ToolBarProps {
     addAircraftOnClick: () => void;
@@ -30,6 +32,8 @@ interface ToolBarProps {
     scenarioTimeCompression: number;
     scenarioCurrentSideName: string;
     game: Game;
+    featureLabelVisibility: boolean;
+    toggleFeatureLabelVisibility: (featureLabelVisibility: boolean) => void;
 }
 
 export default function ToolBar(props: Readonly<ToolBarProps>) {
@@ -89,6 +93,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
       <Button variant="contained" onClick={props.addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
       <Button variant="contained" onClick={exportScenario} startIcon={<DownloadIcon/>}>EXPORT SCENARIO</Button>
       <Button variant="contained" onClick={loadScenario} startIcon={<CloudUploadIcon/>}>LOAD SCENARIO</Button>
+      <Button variant="contained" onClick={() => {props.toggleFeatureLabelVisibility(!props.featureLabelVisibility)}} startIcon={props.featureLabelVisibility ? <VisibilityIcon/> : <VisibilityOffIcon/>}>{"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}</Button>
     </Stack>
   );
 }
