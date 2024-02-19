@@ -247,7 +247,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   function getFeaturesAtPixel(pixel: Pixel): Feature[] {
     const selectedFeatures: Feature[] = [];
-    const excludedFeatureTypes = ['rangeRing', 'aircraftRoute'];
+    const excludedFeatureTypes = ['rangeRing', 'aircraftRoute', 'weapon', 'aircraftFeatureLabel', 'facilityFeatureLabel', 'airbaseFeatureLabel'];
     theMap.forEachFeatureAtPixel(pixel, function (feature) {
       if (!excludedFeatureTypes.includes(feature.getProperties()?.type)) selectedFeatures.push(feature as Feature);
     }, {hitTolerance: 5,})
