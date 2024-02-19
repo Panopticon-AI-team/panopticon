@@ -430,8 +430,8 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     theMap.getView().setZoom(zoom);
   }
 
-  function updateAircraft(aircraftId: string, aircraftName: string, aircraftClassName: string, aircraftWeaponQuantity: number) {
-    game.currentScenario.updateAircraft(aircraftId, aircraftName, aircraftClassName, aircraftWeaponQuantity)
+  function updateAircraft(aircraftId: string, aircraftName: string, aircraftClassName: string, aircraftSpeed: number, aircraftWeaponQuantity: number) {
+    game.currentScenario.updateAircraft(aircraftId, aircraftName, aircraftClassName, aircraftSpeed, aircraftWeaponQuantity)
     featureLabelLayer.updateFeatureLabelFeature(aircraftId, aircraftName);
   }
 

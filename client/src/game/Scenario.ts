@@ -73,11 +73,12 @@ export default class Scenario {
         return this.weapons.find((weapon) => weapon.id === weaponId);
     }
 
-    updateAircraft(aircraftId: string, aircraftName: string, aircraftClassName: string, aircraftWeaponQuantity: number) {
+    updateAircraft(aircraftId: string, aircraftName: string, aircraftClassName: string, aircraftSpeed: number, aircraftWeaponQuantity: number) {
         const aircraft = this.getAircraft(aircraftId);
         if (aircraft) {
             aircraft.name = aircraftName;
             aircraft.className = aircraftClassName;
+            aircraft.speed = aircraftSpeed;
             aircraft.weapons.forEach((weapon) => {
                 weapon.currentQuantity = aircraftWeaponQuantity;
             })

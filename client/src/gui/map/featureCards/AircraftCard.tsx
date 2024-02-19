@@ -21,7 +21,7 @@ interface AircraftCardProps {
     handleDeleteAircraft: (aircraftId: string) => void;
     handleMoveAircraft: (aircraftId: string) => void;
     handleAircraftAttack: (aircraftId: string) => void;
-    handleEditAircraft: (aircraftId: string, aircraftName: string, aircraftClassName: string, aircraftWeaponQuantity: number) => void;
+    handleEditAircraft: (aircraftId: string, aircraftName: string, aircraftClassName: string, aircraftSpeed: number, aircraftWeaponQuantity: number) => void;
     handleCloseOnMap: () => void;
     anchorPositionTop: number;
     anchorPositionLeft: number;
@@ -32,6 +32,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     const [tempEditData, setTempEditData] = useState({
         name: props.aircraft.name,
         className: props.aircraft.className,
+        speed: props.aircraft.speed,
         weaponQuantity: props.aircraft.getTotalWeaponQuantity()
     })
 
@@ -55,7 +56,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     }
 
     const handleSaveEditedAircraft = () => {
-        props.handleEditAircraft(props.aircraft.id, tempEditData.name, tempEditData.className, tempEditData.weaponQuantity)
+        props.handleEditAircraft(props.aircraft.id, tempEditData.name, tempEditData.className, tempEditData.speed, tempEditData.weaponQuantity)
         toggleEdit();
     }
 
@@ -67,6 +68,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             }
             case "aircraft-type-text-field": {
                 setTempEditData({...tempEditData, className: event.target.value})
+                break;
+            }
+            case "aircraft-speed-text-field": {
+                const newSpeed = parseInt(event.target.value)
+                if (newSpeed) setTempEditData({...tempEditData, speed: newSpeed})
                 break;
             }
             case "aircraft-weapon-quantity-text-field": {
@@ -111,6 +117,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                     <Typography variant="h5" component="div">EDIT AIRCRAFT</Typography>
                     <TextField autoComplete='off' id="aircraft-name-text-field" label="Name" defaultValue={props.aircraft.name} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
                     <TextField autoComplete='off' id="aircraft-type-text-field" label="Type" defaultValue={props.aircraft.className} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
+                    <TextField autoComplete='off' id="aircraft-speed-text-field" label="Speed" defaultValue={props.aircraft.speed.toFixed(0)} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
                     <TextField autoComplete='off' id="aircraft-weapon-quantity-text-field" label="Weapon Quantity" defaultValue={props.aircraft.getTotalWeaponQuantity().toString()} onChange={_handleTextFieldChange} variant="outlined" sx={inputStyle} InputLabelProps={inputLabelStyle}/>
                 </Stack>
             </form>
