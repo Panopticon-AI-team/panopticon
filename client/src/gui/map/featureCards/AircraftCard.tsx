@@ -29,7 +29,7 @@ interface AircraftCardProps {
   
 export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     const [editing, setEditing] = useState(false);
-    const [aircraftTempEditData, setAircraftTempEditData] = useState({
+    const [tempEditData, setTempEditData] = useState({
         name: props.aircraft.name,
         className: props.aircraft.className,
         weaponQuantity: props.aircraft.getTotalWeaponQuantity()
@@ -50,28 +50,28 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         props.handleAircraftAttack(props.aircraft.id);
     }
 
-    const toggleEditAircraft = () => {
+    const toggleEdit = () => {
         setEditing(!editing);
     }
 
     const handleSaveEditedAircraft = () => {
-        props.handleEditAircraft(props.aircraft.id, aircraftTempEditData.name, aircraftTempEditData.className, aircraftTempEditData.weaponQuantity)
-        toggleEditAircraft();
+        props.handleEditAircraft(props.aircraft.id, tempEditData.name, tempEditData.className, tempEditData.weaponQuantity)
+        toggleEdit();
     }
 
     const _handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         switch (event.target.id) {
             case "aircraft-name-text-field": {
-                setAircraftTempEditData({...aircraftTempEditData, name: event.target.value})
+                setTempEditData({...tempEditData, name: event.target.value})
                 break;
             }
             case "aircraft-type-text-field": {
-                setAircraftTempEditData({...aircraftTempEditData, className: event.target.value})
+                setTempEditData({...tempEditData, className: event.target.value})
                 break;
             }
             case "aircraft-weapon-quantity-text-field": {
                 const newWeaponCount = parseInt(event.target.value)
-                if (newWeaponCount) setAircraftTempEditData({...aircraftTempEditData, weaponQuantity: newWeaponCount})
+                if (newWeaponCount) setTempEditData({...tempEditData, weaponQuantity: newWeaponCount})
                 break;
             }
             case "default": {
@@ -124,7 +124,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                 <Button variant="contained" color="error" size="small" onClick={_handleAircraftAttack} startIcon={<RocketLaunchIcon/>}>ATTACK</Button>
             </Stack>
             <Stack spacing={1} direction="row">
-                <Button variant="contained" size="small" onClick={toggleEditAircraft} startIcon={<EditIcon/>}>EDIT</Button>
+                <Button variant="contained" size="small" onClick={toggleEdit} startIcon={<EditIcon/>}>EDIT</Button>
                 <Button variant="contained" color="error" size="small" onClick={_handleDeleteAircraft} startIcon={<DeleteIcon/>}>DELETE</Button>
             </Stack>
         </Stack>
@@ -134,7 +134,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         <Stack spacing={1} direction="column">
             <Stack spacing={1} direction="row">
                 <Button variant="contained" size="small" onClick={handleSaveEditedAircraft} startIcon={<SaveIcon/>}>Save</Button>
-                <Button variant="contained" size="small" color="error" onClick={toggleEditAircraft} startIcon={<CancelIcon/>}>Cancel</Button>
+                <Button variant="contained" size="small" color="error" onClick={toggleEdit} startIcon={<CancelIcon/>}>Cancel</Button>
             </Stack>
         </Stack>  
     )

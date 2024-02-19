@@ -441,6 +441,11 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     featureLabelLayer.updateFeatureLabelFeature(facilityId, facilityName);
   }
 
+  function updateAirbase(airbaseId: string, airbaseName: string) {
+    game.currentScenario.updateAirbase(airbaseId, airbaseName)
+    featureLabelLayer.updateFeatureLabelFeature(airbaseId, airbaseName);
+  }
+
   function toggleFeatureLabelVisibility(on: boolean) {
     setFeatureLabelVisible(on);
     if (on)  {
@@ -479,6 +484,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
           handleAddAircraft={addAircraftToAirbase} 
           handleLaunchAircraft={launchAircraft}
           handleDeleteAirbase={removeAirbase} 
+          handleEditAirbase={updateAirbase}
           anchorPositionTop={openAirbaseCard.top} 
           anchorPositionLeft={openAirbaseCard.left} 
           handleCloseOnMap={() => {setOpenAirbaseCard({open: false, top: 0, left: 0, airbaseId: ''})}}

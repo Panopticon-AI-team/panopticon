@@ -95,4 +95,11 @@ export default class Scenario {
             })
         }
     }
+
+    updateAirbase(airbaseId: string, airbaseName: string) {
+        const airbase = this.getAirbase(airbaseId);
+        if (airbase) {
+            airbase.name = airbaseName;
+        }
+    }
 }
