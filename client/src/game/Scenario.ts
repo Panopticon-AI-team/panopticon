@@ -84,4 +84,15 @@ export default class Scenario {
         }
     }
 
+    updateFacility(facilityId: string, facilityName: string, facilityClassName: string, facilityRange: number, facilityWeaponQuantity: number) {
+        const facility = this.getFacility(facilityId);
+        if (facility) {
+            facility.name = facilityName;
+            facility.className = facilityClassName;
+            facility.range = facilityRange;
+            facility.weapons.forEach((weapon) => {
+                weapon.currentQuantity = facilityWeaponQuantity;
+            })
+        }
+    }
 }

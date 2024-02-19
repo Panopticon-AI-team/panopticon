@@ -106,7 +106,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       context = 'moveAircraft';
     } else if (game.selectingTarget && game.currentAttackerId && featuresAtPixel.length === 1) {
       context = 'aircraftSelectedAttackTarget'
-    } else if (game.selectingTarget && game.currentAttackerId && featuresAtPixel.length === 0) {
+    } else if (game.selectingTarget && game.currentAttackerId && featuresAtPixel.length !== 1) {
       context = 'aircraftCancelledAttack'      
     } else if (featuresAtPixel.length === 1) {
       context = 'selectSingleFeature';
@@ -410,6 +410,11 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     game.currentScenario.updateAircraft(aircraftId, aircraftName, aircraftClassName, aircraftWeaponQuantity)
   }
 
+  function updateFacility(facilityId: string, facilityName: string, facilityClassName: string, facilityRange: number, facilityWeaponQuantity: number) {
+    game.currentScenario.updateFacility(facilityId, facilityName, facilityClassName, facilityRange, facilityWeaponQuantity)
+    rangeLayer.refresh(game.currentScenario.facilities);
+  }
+
   return (
     <div>
       <ToolBar 
@@ -445,6 +450,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         <FacilityCard 
           facility={game.currentScenario.getFacility(openFacilityCard.facilityId)!} 
           handleDeleteFacility={removeFacility} 
+          handleEditFacility={updateFacility}
           anchorPositionTop={openFacilityCard.top} 
           anchorPositionLeft={openFacilityCard.left} 
           handleCloseOnMap={() => {setOpenFacilityCard({open: false, top: 0, left: 0, facilityId: ''})}}
