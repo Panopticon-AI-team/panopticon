@@ -6,8 +6,10 @@ import Facility from "../units/Facility"
 import { Circle } from "ol/geom"
 import Scenario from "../Scenario"
 import Weapon from "../units/Weapon"
-import { generateRoute, getBearingBetweenTwoPoints, randomFloat } from "../../utils/utils"
+import { getBearingBetweenTwoPoints, getDistanceBetweenTwoPoints, getNextCoordinates, randomFloat } from "../../utils/utils"
 import Airbase from "../units/Airbase";
+
+type Target = Aircraft | Facility | Weapon | Airbase
 
 export function checkIfAircraftIsWithinFacilityThreatRange(aircraft: Aircraft, facility: Facility): boolean {
     const projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE})
@@ -15,7 +17,15 @@ export function checkIfAircraftIsWithinFacilityThreatRange(aircraft: Aircraft, f
     return facilityRangeGeometry.intersectsCoordinate(fromLonLat([aircraft.longitude, aircraft.latitude], projection))
 }
 
-export function weaponEndgame(currentScenario: Scenario, weapon: Weapon, target: Aircraft | Facility | Weapon | Airbase): boolean {
+export function checkTargetTrackedByCount(currentScenario: Scenario, target: Target) {
+    let count = 0;
+    currentScenario.weapons.forEach((weapon) => {
+        if (weapon.targetId === target.id) count += 1;
+    })
+    return count
+}
+
+export function weaponEndgame(currentScenario: Scenario, weapon: Weapon, target: Target): boolean {
     currentScenario.weapons = currentScenario.weapons.filter((currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id);
     if (randomFloat() <= weapon.lethality) {
         if (target instanceof Aircraft) {
@@ -32,24 +42,26 @@ export function weaponEndgame(currentScenario: Scenario, weapon: Weapon, target:
     return false
 }
 
-export function launchWeapon(currentScenario: Scenario, origin: Aircraft | Facility, target: Aircraft | Facility | Weapon | Airbase) {
+export function launchWeapon(currentScenario: Scenario, origin: Aircraft | Facility, target: Target) {
     if (origin.weapons.length === 0) return
 
-    const numberOfWaypoints = 10
     const weaponPrototype = origin.weapons[0]
+    const nextWeaponCoordinates = getNextCoordinates(origin.latitude, origin.longitude, target.latitude, target.longitude, weaponPrototype.speed);
+    const nextWeaponLatitude = nextWeaponCoordinates[0];
+    const nextWeaponLongitude = nextWeaponCoordinates[1];
     const newWeapon = new Weapon({
         id: uuidv4(), 
         name: weaponPrototype.name, 
         sideName: origin.sideName, 
         className: weaponPrototype.className,
-        latitude: weaponPrototype.latitude,
-        longitude: weaponPrototype.longitude,
+        latitude: nextWeaponLatitude,
+        longitude: nextWeaponLongitude,
         altitude: weaponPrototype.altitude,
-        heading: getBearingBetweenTwoPoints(origin.latitude, origin.longitude, target.latitude, target.longitude),
+        heading: getBearingBetweenTwoPoints(nextWeaponLatitude, nextWeaponLongitude, target.latitude, target.longitude),
         speed: weaponPrototype.speed,
         fuel: weaponPrototype.fuel,
         range: weaponPrototype.range,
-        route: generateRoute(origin.latitude, origin.longitude, target.latitude, target.longitude, numberOfWaypoints),
+        route: [[target.latitude, target.longitude]],
         sideColor: weaponPrototype.sideColor,
         targetId: target.id,
         lethality: weaponPrototype.lethality,
@@ -65,12 +77,17 @@ export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
     const target = currentScenario.getAircraft(weapon.targetId) ?? currentScenario.getFacility(weapon.targetId) ?? currentScenario.getWeapon(weapon.targetId) ?? currentScenario.getAirbase(weapon.targetId);
     if (target) {
         const weaponRoute = weapon.route;
-        if (weapon.route.length === 2) {
-            weaponEndgame(currentScenario, weapon, target)
-        } else if (weaponRoute.length > 0) {
-            const nextWaypoint = weaponRoute[0];
-            weapon.route = generateRoute(nextWaypoint[0], nextWaypoint[1], target.latitude, target.longitude, weaponRoute.length > 0 ? weaponRoute.length - 1 : 0);
-            weapon.heading = getBearingBetweenTwoPoints(weapon.latitude, weapon.longitude, target.latitude, target.longitude);
+        if (weaponRoute.length > 0) {
+            if (getDistanceBetweenTwoPoints(weapon.latitude, weapon.longitude, target.latitude, target.longitude) < 0.5) {
+                weaponEndgame(currentScenario, weapon, target)
+            } else {
+                const nextWeaponCoordinates = getNextCoordinates(weapon.latitude, weapon.longitude, target.latitude, target.longitude, weapon.speed);
+                const nextWeaponLatitude = nextWeaponCoordinates[0];
+                const nextWeaponLongitude = nextWeaponCoordinates[1];
+                weapon.heading = getBearingBetweenTwoPoints(nextWeaponLatitude, nextWeaponLongitude, target.latitude, target.longitude);
+                weapon.latitude = nextWeaponLatitude;
+                weapon.longitude = nextWeaponLongitude;
+            }
         }
     } else {
         currentScenario.weapons = currentScenario.weapons.filter((currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id)

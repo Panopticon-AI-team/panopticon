@@ -4,8 +4,8 @@ import Aircraft from "./units/Aircraft";
 import Facility from "./units/Facility";
 import Scenario from "./Scenario";
 
-import { getBearingBetweenTwoPoints, generateRoute } from "../utils/utils";
-import { checkIfAircraftIsWithinFacilityThreatRange, launchWeapon, weaponEngagement } from "./engine/weaponEngagement";
+import { getBearingBetweenTwoPoints, getNextCoordinates, getDistanceBetweenTwoPoints } from "../utils/utils";
+import { checkIfAircraftIsWithinFacilityThreatRange, checkTargetTrackedByCount, launchWeapon, weaponEngagement } from "./engine/weaponEngagement";
 import Airbase from "./units/Airbase";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
@@ -53,7 +53,7 @@ export default class Game {
             longitude: longitude,
             altitude: 10000.0,
             heading: 90.0,
-            speed: 150.0,
+            speed: 300.0,
             fuel: 10000.0,
             range: 100,
             sideColor: this.currentScenario.getSideColor(this.currentSideName),
@@ -78,7 +78,7 @@ export default class Game {
                 longitude: airbase.longitude - 0.5,
                 altitude: 10000.0,
                 heading: 90.0,
-                speed: 150.0,
+                speed: 300.0,
                 fuel: 10000.0,
                 range: 100,
                 sideColor: this.currentScenario.getSideColor(this.currentSideName),
@@ -148,7 +148,7 @@ export default class Game {
             longitude: 0.0,
             altitude: 10000.0,
             heading: 90.0,
-            speed: 150.0,
+            speed: 1000.0,
             fuel: 10000.0,
             range: 100,
             sideColor: this.currentScenario.getSideColor(sideName),
@@ -163,7 +163,7 @@ export default class Game {
     moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {
         const aircraft = this.currentScenario.getAircraft(aircraftId);
         if (aircraft) {
-            aircraft.route = generateRoute(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude, this.numberOfWaypoints);
+            aircraft.route = [[newLatitude, newLongitude]];
             aircraft.heading = getBearingBetweenTwoPoints(aircraft.latitude, aircraft.longitude, newLatitude, newLongitude);
             return aircraft
         }
@@ -322,7 +322,7 @@ export default class Game {
         this.currentScenario.facilities.forEach((facility) => {
             this.currentScenario.aircraft.forEach((aircraft) => {
                 if (facility.sideName !== aircraft.sideName) {
-                    if (checkIfAircraftIsWithinFacilityThreatRange(aircraft, facility)) {
+                    if (checkIfAircraftIsWithinFacilityThreatRange(aircraft, facility) && checkTargetTrackedByCount(this.currentScenario, aircraft) < 10) {
                         launchWeapon(this.currentScenario, facility, aircraft)
                     }
                 }
@@ -337,22 +337,26 @@ export default class Game {
 
         this.currentScenario.weapons.forEach((weapon) => {
             weaponEngagement(this.currentScenario, weapon)
-            const route = weapon.route;
-            if (route.length > 0) {
-                const nextWaypoint = route[0];
-                weapon.latitude = nextWaypoint[0];
-                weapon.longitude = nextWaypoint[1];
-                weapon.route.shift();
-            }
         });
 
         this.currentScenario.aircraft.forEach((aircraft) => {
             const route = aircraft.route;
             if (route.length > 0) {
-                const nextWaypoint = route[0];
-                aircraft.latitude = nextWaypoint[0];
-                aircraft.longitude = nextWaypoint[1];
-                aircraft.route.shift();
+                const nextWaypoint = route[route.length - 1];
+                const nextWaypointLatitude = nextWaypoint[0];
+                const nextWaypointLongitude = nextWaypoint[1];
+                if (getDistanceBetweenTwoPoints(aircraft.latitude, aircraft.longitude, nextWaypointLatitude, nextWaypointLongitude) < 0.5) {
+                    aircraft.latitude = nextWaypointLatitude;
+                    aircraft.longitude = nextWaypointLongitude;
+                    aircraft.route.shift();
+                } else {
+                    const nextAircraftCoordinates = getNextCoordinates(aircraft.latitude, aircraft.longitude, nextWaypointLatitude, nextWaypointLongitude, aircraft.speed);
+                    const nextAircraftLatitude = nextAircraftCoordinates[0];
+                    const nextAircraftLongitude = nextAircraftCoordinates[1];
+                    aircraft.latitude = nextAircraftLatitude;
+                    aircraft.longitude = nextAircraftLongitude;
+                    aircraft.heading = getBearingBetweenTwoPoints(aircraft.latitude, aircraft.longitude, nextWaypointLatitude, nextWaypointLongitude);
+                }
             }
         });
     }

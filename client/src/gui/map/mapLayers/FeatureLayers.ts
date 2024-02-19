@@ -51,10 +51,11 @@ export class AircraftLayer extends FeatureLayer {
 
   constructor(projection: Projection, zIndex?: number) {
     super(projection, aircraftStyle, zIndex);
+    this.layer.set('name', 'aircraftLayer')
   }
 
   createAircraftFeature(aircraft: Aircraft) {
-    return new Feature({
+    const aircraftFeature = new Feature({
       type: 'aircraft',
       geometry: new Point(fromLonLat([aircraft.longitude, aircraft.latitude], this.projection)),
       id: aircraft.id,
@@ -64,14 +65,25 @@ export class AircraftLayer extends FeatureLayer {
       sideName: aircraft.sideName,
       sideColor: aircraft.sideColor,
     });
+    aircraftFeature.setId(aircraft.id);
+    return aircraftFeature;
   }
 
   refresh(aircraftList: Aircraft[]) {
-    this.layerSource.clear(true);
+    this.layerSource.clear();
     aircraftList.forEach((aircraft) => {
       this.layerSource.addFeature(this.createAircraftFeature(aircraft));
     });
     this.featureCount = aircraftList.length
+  }
+
+  updateAircraftFeatures(aircraftList: Aircraft[]) {
+    aircraftList.forEach((aircraft) => {
+      const feature = this.layerSource.getFeatureById(aircraft.id);
+      if (feature) {
+        feature.setGeometry(new Point(fromLonLat([aircraft.longitude, aircraft.latitude], this.projection)));
+      }
+    });
   }
 
   addAircraftFeature(aircraft: Aircraft) {
@@ -93,6 +105,7 @@ export class FacilityLayer extends FeatureLayer {
 
   constructor(projection: Projection, zIndex?: number) {
     super(projection, facilityStyle, zIndex);
+    this.layer.set('name', 'facilityLayer')
   }
 
   createFacilityFeature(facility: Facility) {
@@ -107,7 +120,7 @@ export class FacilityLayer extends FeatureLayer {
   }
 
   refresh(facilities: Facility[]) {
-    this.layerSource.clear(true);
+    this.layerSource.clear();
     facilities.forEach((facility) => {
       this.layerSource.addFeature(this.createFacilityFeature(facility));
     });
@@ -125,6 +138,7 @@ export class AirbasesLayer extends FeatureLayer {
 
   constructor(projection: Projection, zIndex?: number) {
     super(projection, airbasesStyle, zIndex);
+    this.layer.set('name', 'airbasesLayer')
   }
 
   createAirbaseFeature(airbase: Airbase) {
@@ -139,7 +153,7 @@ export class AirbasesLayer extends FeatureLayer {
   }
 
   refresh(airbases: Airbase[]) {
-    this.layerSource.clear(true);
+    this.layerSource.clear();
     airbases.forEach((airbase) => {
       this.layerSource.addFeature(this.createAirbaseFeature(airbase));
     });
@@ -157,6 +171,7 @@ export class RangeLayer extends FeatureLayer {
 
   constructor(projection: Projection, zIndex?: number) {
     super(projection, rangeStyle, zIndex);
+    this.layer.set('name', 'rangeRingLayer')
   }
 
   createRangeFeature(entity: Aircraft | Facility) {
@@ -169,7 +184,7 @@ export class RangeLayer extends FeatureLayer {
   }
 
   refresh(entities: (Aircraft | Facility)[]) {
-    this.layerSource.clear(true);
+    this.layerSource.clear();
     entities.forEach((entity) => {
       this.layerSource.addFeature(this.createRangeFeature(entity));
     });
@@ -195,6 +210,7 @@ export class AircraftRouteLayer extends FeatureLayer {
 
   constructor(projection: Projection, zIndex?: number) {
     super(projection, aircraftRouteStyle, zIndex);
+    this.layer.set('name', 'aircraftRouteLayer')
   }
 
   createAircraftRouteFeature(aircraft: Aircraft) {
@@ -202,18 +218,20 @@ export class AircraftRouteLayer extends FeatureLayer {
     const destinationLatitude = aircraft.route[aircraft.route.length - 1][0];
     const destinationLongitude = aircraft.route[aircraft.route.length - 1][1];
     const destinationLocation = fromLonLat([destinationLongitude, destinationLatitude], this.projection);
-    return new Feature({
+    const aircraftRouteFeature = new Feature({
       type: 'aircraftRoute',
       id: aircraft.id,
       geometry: new LineString([aircraftLocation, destinationLocation]),
       sideColor: aircraft.sideColor,
     });
+    aircraftRouteFeature.setId(aircraft.id);
+    return aircraftRouteFeature;
   }
 
   refresh(aircraftList: Aircraft[]) {
-    this.layerSource.clear(true);
+    this.layerSource.clear();
     aircraftList.forEach((aircraft) => {
-      if (aircraft.route.length > 1) {
+      if (aircraft.route.length > 0) {
         this.layerSource.addFeature(this.createAircraftRouteFeature(aircraft));
         this.featureCount += 1
       }
@@ -249,6 +267,7 @@ export class WeaponLayer extends FeatureLayer {
 
   constructor(projection: Projection, zIndex?: number) {
     super(projection, weaponStyle, zIndex);
+    this.layer.set('name', 'weaponLayer')
   }
 
   createWeaponFeature(weapon: Weapon) {
@@ -264,7 +283,7 @@ export class WeaponLayer extends FeatureLayer {
   }
 
   refresh(weaponList: Weapon[]) {
-    this.layerSource.clear(true);
+    this.layerSource.clear();
     weaponList.forEach((weapon) => {
       this.layerSource.addFeature(this.createWeaponFeature(weapon));
     });
@@ -277,6 +296,7 @@ export class FeatureLabelLayer extends FeatureLayer {
 
   constructor(projection: Projection, zIndex?: number) {
     super(projection, featureLabelStyle, zIndex);
+    this.layer.set('name', 'featureLabelLayer')
   }
 
   getFeatureType(entity: GameEntity) {
@@ -300,7 +320,7 @@ export class FeatureLabelLayer extends FeatureLayer {
   }
 
   refresh(entities: (GameEntity)[]) {
-    this.layerSource.clear(true);
+    this.layerSource.clear();
     entities.forEach((entity) => {
       this.layerSource.addFeature(this.createFeatureLabelFeature(entity));
     });

@@ -18,6 +18,7 @@ import MultipleFeatureSelector from "./MultipleFeatureSelector";
 import { Geometry } from "ol/geom";
 import FacilityCard from "./featureCards/FacilityCard";
 import AircraftCard from "./featureCards/AircraftCard";
+import Scenario from "../../game/Scenario";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -73,7 +74,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   });
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   
-  const map = new OlMap({
+    const map = new OlMap({
     layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, airbasesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer, weaponLayer.layer, featureLabelLayer.layer],
     view: new View({
       center: center,
@@ -285,10 +286,22 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   }
 
   function stepGameOnce() {
-    const [observation, reward, terminated, truncated, info] = game.step();
+    const gameStepStartTime = new Date().getTime();
 
+    const [observation, reward, terminated, truncated, info] = game.step();
+    
+    const gameStepElapsed = new Date().getTime() - gameStepStartTime;
     setCurrentScenarioTime(observation.currentTime);
 
+    const guiDrawStartTime = new Date().getTime();
+    drawNextFrame(observation)
+    const guiDrawElapsed = new Date().getTime() - guiDrawStartTime;
+    console.log('stepGameOnce gameStepElapsed:', gameStepElapsed, 'guiDrawElapsed:', guiDrawElapsed)
+
+    return [observation, reward, terminated, truncated, info]
+  }
+
+  function drawNextFrame(observation: Scenario) {
     aircraftLayer.refresh(observation.aircraft);
     aircraftRouteLayer.refresh(observation.aircraft);
     weaponLayer.refresh(observation.weapons);
@@ -302,8 +315,6 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
       airbasesLayer.refresh(observation.airbases);
       if (featureLabelVisible) featureLabelLayer.refreshSubset(observation.airbases, 'airbase')
     }
-
-    return [observation, reward, terminated, truncated, info]
   }
 
   function setGamePaused() {
