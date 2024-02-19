@@ -18,7 +18,7 @@ class FeatureLayer {
   layer: VectorLayer<VectorSource<Geometry>>;
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor(projection: Projection, styleFunction: (feature: FeatureLike) => Style | Style[]) {
+  constructor(projection: Projection, styleFunction: (feature: FeatureLike) => Style | Style[], zIndex?: number) {
     this.layerSource = new VectorSource({
       features: []
     });
@@ -27,14 +27,15 @@ class FeatureLayer {
       style: styleFunction,
     });
     this.projection = projection;
+    this.layer.setZIndex(zIndex ?? 0);
   };
 }
 
 export class AircraftLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor(projection: Projection) {
-    super(projection, aircraftStyle);
+  constructor(projection: Projection, zIndex?: number) {
+    super(projection, aircraftStyle, zIndex);
   }
 
   refresh(aircraftList: Aircraft[]) {
@@ -59,8 +60,8 @@ export class FacilityLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
   featureCount: number = 0
 
-  constructor(projection: Projection) {
-    super(projection, facilityStyle);
+  constructor(projection: Projection, zIndex?: number) {
+    super(projection, facilityStyle, zIndex);
   }
 
   refresh(facilities: Facility[]) {
@@ -84,8 +85,8 @@ export class AirbasesLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
   featureCount: number = 0
 
-  constructor(projection: Projection) {
-    super(projection, airbasesStyle);
+  constructor(projection: Projection, zIndex?: number) {
+    super(projection, airbasesStyle, zIndex);
   }
 
   refresh(airbases: Airbase[]) {
@@ -108,8 +109,8 @@ export class AirbasesLayer extends FeatureLayer {
 export class RangeLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor(projection: Projection) {
-    super(projection, rangeStyle);
+  constructor(projection: Projection, zIndex?: number) {
+    super(projection, rangeStyle, zIndex);
   }
 
   refresh(entities: (Aircraft | Facility)[]) {
@@ -128,8 +129,8 @@ export class RangeLayer extends FeatureLayer {
 export class AircraftRouteLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor(projection: Projection) {
-    super(projection, aircraftRouteStyle);
+  constructor(projection: Projection, zIndex?: number) {
+    super(projection, aircraftRouteStyle, zIndex);
   }
 
   refresh(aircraftList: Aircraft[]) {
@@ -154,8 +155,8 @@ export class AircraftRouteLayer extends FeatureLayer {
 export class WeaponLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor(projection: Projection) {
-    super(projection, weaponStyle);
+  constructor(projection: Projection, zIndex?: number) {
+    super(projection, weaponStyle, zIndex);
   }
 
   refresh(weaponList: Weapon[]) {
@@ -178,8 +179,8 @@ export class WeaponLayer extends FeatureLayer {
 export class FeatureLabelLayer extends FeatureLayer {
   projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
 
-  constructor(projection: Projection) {
-    super(projection, featureLabelStyle);
+  constructor(projection: Projection, zIndex?: number) {
+    super(projection, featureLabelStyle, zIndex);
   }
 
   refresh(entities: (Aircraft | Facility | Airbase)[]) {
