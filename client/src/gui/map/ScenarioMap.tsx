@@ -432,11 +432,13 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
 
   function updateAircraft(aircraftId: string, aircraftName: string, aircraftClassName: string, aircraftWeaponQuantity: number) {
     game.currentScenario.updateAircraft(aircraftId, aircraftName, aircraftClassName, aircraftWeaponQuantity)
+    featureLabelLayer.updateFeatureLabelFeature(aircraftId, aircraftName);
   }
 
   function updateFacility(facilityId: string, facilityName: string, facilityClassName: string, facilityRange: number, facilityWeaponQuantity: number) {
     game.currentScenario.updateFacility(facilityId, facilityName, facilityClassName, facilityRange, facilityWeaponQuantity)
     rangeLayer.updateRangeFeature(facilityId, facilityRange);
+    featureLabelLayer.updateFeatureLabelFeature(facilityId, facilityName);
   }
 
   function toggleFeatureLabelVisibility(on: boolean) {

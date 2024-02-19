@@ -22,6 +22,7 @@ interface AirbaseCardProps {
 }
   
 export default function AirbaseCard({ airbase, handleAddAircraft, handleLaunchAircraft, handleDeleteAirbase, handleCloseOnMap, anchorPositionTop, anchorPositionLeft }: Readonly<AirbaseCardProps>) {
+    const [editing, setEditing] = useState(false);
     const [aircraftCount, setAircraftCount] = useState(airbase.aircraft.length);
 
     const _handleAddAircraft = () => {
@@ -37,6 +38,10 @@ export default function AirbaseCard({ airbase, handleAddAircraft, handleLaunchAi
     const _handleDeleteAirbase = () => {
         handleCloseOnMap();
         handleDeleteAirbase(airbase.id);
+    }
+
+    const toggleEditAircraft = () => {
+        setEditing(!editing);
     }
 
     const airbaseCard = (
@@ -56,7 +61,7 @@ export default function AirbaseCard({ airbase, handleAddAircraft, handleLaunchAi
                         <Button variant="contained" size="small" onClick={_handleLaunchAircraft}>Launch aicraft</Button>
                     </Stack>
                     <Stack spacing={1} direction="row">
-                        <Button variant="contained" size="small" onClick={_handleDeleteAirbase} startIcon={<EditIcon/>}>EDIT</Button>
+                        <Button variant="contained" size="small" onClick={toggleEditAircraft} startIcon={<EditIcon/>}>EDIT</Button>
                         <Button variant="contained" color="error" size="small" onClick={_handleDeleteAirbase} startIcon={<DeleteIcon/>}>DELETE</Button>
                     </Stack>
                 </Stack>

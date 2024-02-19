@@ -320,4 +320,11 @@ export class FeatureLabelLayer extends FeatureLayer {
     this.layerSource.addFeature(this.createFeatureLabelFeature(entity));
     this.featureCount += 1
   }
+
+  updateFeatureLabelFeature(entityId: string, newLabel: string) {
+    const feature = this.findFeatureByKey('id', entityId);
+    if (feature) {
+      feature.set('name', newLabel);
+    }
+  }
 }
