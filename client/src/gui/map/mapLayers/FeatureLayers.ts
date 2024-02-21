@@ -13,7 +13,7 @@ import { DEFAULT_OL_PROJECTION_CODE, NAUTICAL_MILES_TO_METERS } from '../../../u
 import { aircraftRouteStyle, aircraftStyle, airbasesStyle, facilityStyle, rangeStyle, weaponStyle, featureLabelStyle } from './FeatureLayerStyles';
 import Weapon from '../../../game/units/Weapon';
 
-type GameEntity = Aircraft | Facility | Airbase
+type GameEntity = Aircraft | Facility | Airbase | Weapon
 
 class FeatureLayer {
   layerSource: VectorSource;
@@ -32,6 +32,12 @@ class FeatureLayer {
     this.projection = projection;
     this.layer.setZIndex(zIndex ?? 0);
   };
+
+  refreshFeatures(features: Feature[]) {
+    this.layerSource.clear();
+    this.layerSource.addFeatures(features);
+    this.featureCount = features.length
+  }
 
   findFeatureByKey(key: string, value: any) {
     return this.layerSource.getFeatures().find((feature) => feature.getProperties()[key] === value);
@@ -70,18 +76,18 @@ export class AircraftLayer extends FeatureLayer {
   }
 
   refresh(aircraftList: Aircraft[]) {
-    this.layerSource.clear();
-    aircraftList.forEach((aircraft) => {
-      this.layerSource.addFeature(this.createAircraftFeature(aircraft));
-    });
-    this.featureCount = aircraftList.length
+    const aircraftFeatures = aircraftList.map((aircraft) => this.createAircraftFeature(aircraft));
+    this.refreshFeatures(aircraftFeatures)
   }
 
-  updateAircraftFeatures(aircraftList: Aircraft[]) {
+  updateAircraftGeometry(aircraftList: Aircraft[]) {
     aircraftList.forEach((aircraft) => {
       const feature = this.layerSource.getFeatureById(aircraft.id);
       if (feature) {
         feature.setGeometry(new Point(fromLonLat([aircraft.longitude, aircraft.latitude], this.projection)));
+      } else {
+        this.layerSource.addFeature(this.createAircraftFeature(aircraft));
+        this.featureCount += 1
       }
     });
   }
@@ -120,11 +126,8 @@ export class FacilityLayer extends FeatureLayer {
   }
 
   refresh(facilities: Facility[]) {
-    this.layerSource.clear();
-    facilities.forEach((facility) => {
-      this.layerSource.addFeature(this.createFacilityFeature(facility));
-    });
-    this.featureCount = facilities.length
+    const facilityFeatures = facilities.map((facility) => this.createFacilityFeature(facility));
+    this.refreshFeatures(facilityFeatures)
   }
 
   addFacilityFeature(facility: Facility) {
@@ -153,11 +156,8 @@ export class AirbasesLayer extends FeatureLayer {
   }
 
   refresh(airbases: Airbase[]) {
-    this.layerSource.clear();
-    airbases.forEach((airbase) => {
-      this.layerSource.addFeature(this.createAirbaseFeature(airbase));
-    });
-    this.featureCount = airbases.length
+    const airbaseFeatures = airbases.map((airbase) => this.createAirbaseFeature(airbase));
+    this.refreshFeatures(airbaseFeatures)
   }
 
   addAirbaseFeature(airbase: Airbase) {
@@ -184,11 +184,8 @@ export class RangeLayer extends FeatureLayer {
   }
 
   refresh(entities: (Aircraft | Facility)[]) {
-    this.layerSource.clear();
-    entities.forEach((entity) => {
-      this.layerSource.addFeature(this.createRangeFeature(entity));
-    });
-    this.featureCount = entities.length
+    const entityFeatures = entities.map((entity) => this.createRangeFeature(entity));
+    this.refreshFeatures(entityFeatures)
   }
 
   addRangeFeature(entity: Aircraft | Facility) {
@@ -229,13 +226,13 @@ export class AircraftRouteLayer extends FeatureLayer {
   }
 
   refresh(aircraftList: Aircraft[]) {
-    this.layerSource.clear();
+    const aircraftRouteFeatures: Feature<LineString>[] = []
     aircraftList.forEach((aircraft) => {
       if (aircraft.route.length > 0) {
-        this.layerSource.addFeature(this.createAircraftRouteFeature(aircraft));
-        this.featureCount += 1
+        aircraftRouteFeatures.push(this.createAircraftRouteFeature(aircraft))
       }
     });
+    if (aircraftRouteFeatures.length > 0) this.refreshFeatures(aircraftRouteFeatures)
   }
 
   addAircraftRouteFeature(aircraft: Aircraft) {
@@ -283,11 +280,8 @@ export class WeaponLayer extends FeatureLayer {
   }
 
   refresh(weaponList: Weapon[]) {
-    this.layerSource.clear();
-    weaponList.forEach((weapon) => {
-      this.layerSource.addFeature(this.createWeaponFeature(weapon));
-    });
-    this.featureCount = weaponList.length
+    const weaponFeatures = weaponList.map((weapon) => this.createWeaponFeature(weapon));
+    this.refreshFeatures(weaponFeatures)
   }
 }
 
@@ -304,8 +298,12 @@ export class FeatureLabelLayer extends FeatureLayer {
       return 'aircraft'
     } else if (entity instanceof Facility) {
       return 'facility'
-    } else {
+    } else if (entity instanceof Airbase) {
       return 'airbase'
+    } else if (entity instanceof Weapon) {
+      return 'weapon'
+    } else {
+      return 'unknown'
     }
   }
 
@@ -320,11 +318,8 @@ export class FeatureLabelLayer extends FeatureLayer {
   }
 
   refresh(entities: (GameEntity)[]) {
-    this.layerSource.clear();
-    entities.forEach((entity) => {
-      this.layerSource.addFeature(this.createFeatureLabelFeature(entity));
-    });
-    this.featureCount = entities.length
+    const entityFeatures = entities.map((entity) => this.createFeatureLabelFeature(entity));
+    this.refreshFeatures(entityFeatures)
   }
 
   refreshSubset(entities: (GameEntity)[], entityType: string) {

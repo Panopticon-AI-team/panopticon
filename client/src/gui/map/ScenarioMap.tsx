@@ -286,17 +286,17 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   }
 
   function stepGameOnce() {
-    const gameStepStartTime = new Date().getTime();
-
-    const [observation, reward, terminated, truncated, info] = game.step();
     
-    const gameStepElapsed = new Date().getTime() - gameStepStartTime;
-    setCurrentScenarioTime(observation.currentTime);
+    // const gameStepStartTime = new Date().getTime();
+    const [observation, reward, terminated, truncated, info] = game.step();
+    // const gameStepElapsed = new Date().getTime() - gameStepStartTime;
+    
+    // setCurrentScenarioTime(observation.currentTime);
 
-    const guiDrawStartTime = new Date().getTime();
+    // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation)
-    const guiDrawElapsed = new Date().getTime() - guiDrawStartTime;
-    console.log('stepGameOnce gameStepElapsed:', gameStepElapsed, 'guiDrawElapsed:', guiDrawElapsed)
+    // const guiDrawElapsed = new Date().getTime() - guiDrawStartTime;
+    // console.log('gameStepElapsed:', gameStepElapsed, 'guiDrawElapsed:', guiDrawElapsed)
 
     return [observation, reward, terminated, truncated, info]
   }
