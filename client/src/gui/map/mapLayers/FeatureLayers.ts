@@ -85,9 +85,6 @@ export class AircraftLayer extends FeatureLayer {
       const feature = this.layerSource.getFeatureById(aircraft.id);
       if (feature) {
         feature.setGeometry(new Point(fromLonLat([aircraft.longitude, aircraft.latitude], this.projection)));
-      } else {
-        this.layerSource.addFeature(this.createAircraftFeature(aircraft));
-        this.featureCount += 1
       }
     });
   }
@@ -232,7 +229,7 @@ export class AircraftRouteLayer extends FeatureLayer {
         aircraftRouteFeatures.push(this.createAircraftRouteFeature(aircraft))
       }
     });
-    if (aircraftRouteFeatures.length > 0) this.refreshFeatures(aircraftRouteFeatures)
+    this.refreshFeatures(aircraftRouteFeatures)
   }
 
   addAircraftRouteFeature(aircraft: Aircraft) {
