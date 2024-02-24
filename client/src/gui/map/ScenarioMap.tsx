@@ -25,7 +25,7 @@ interface ScenarioMapProps {
   center: number[];
   game: Game;
   projection: Projection | null;
-}
+  }
 
 interface IOpenMultipleFeatureSelector {
   open: boolean;
@@ -74,7 +74,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   });
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   
-    const map = new OlMap({
+  const map = new OlMap({
     layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, airbasesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer, weaponLayer.layer, featureLabelLayer.layer],
     view: new View({
       center: center,
@@ -273,22 +273,42 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     game.addingFacility = false;
   }
 
-  async function setGamePlaying() {
+  function handleStepGameClick() {
+    setGamePaused()
+    stepGameAndDrawFrame()
+    setCurrentScenarioTime(game.currentScenario.currentTime)
+  }
+
+  function handlePauseGameClick() {
+    setGamePaused()
+    setCurrentScenarioTime(game.currentScenario.currentTime)
+  }
+
+  async function handlePlayGameClick() {
     game.scenarioPaused = false;
     let gameEnded = game.checkGameEnded();
     while (!game.scenarioPaused && !gameEnded) {
-      const [observation, reward, terminated, truncated, info] = stepGameOnce();
+      const [observation, reward, terminated, truncated, info] = stepGameAndDrawFrame();
 
       gameEnded = terminated || truncated;
 
-      await delay(GAME_SPEED_DELAY_MS[game.currentScenario.timeCompression]);
+      await delay(0);
     }
   }
 
-  function stepGameOnce() {
-    
+  function stepGameForStepSize(stepSize: number): [Scenario, number, boolean, boolean, any] {
+    let steps = 1
+    let [observation, reward, terminated, truncated, info] = game.step()
+    while (steps < stepSize) {
+      [observation, reward, terminated, truncated, info] = game.step();
+      steps++
+    }
+    return [observation, reward, terminated, truncated, info]
+  }
+
+  function stepGameAndDrawFrame() {
     // const gameStepStartTime = new Date().getTime();
-    const [observation, reward, terminated, truncated, info] = game.step();
+    const [observation, reward, terminated, truncated, info] = stepGameForStepSize(game.currentScenario.timeCompression)
     // const gameStepElapsed = new Date().getTime() - gameStepStartTime;
     
     // setCurrentScenarioTime(observation.currentTime);
@@ -473,9 +493,9 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         addAircraftOnClick={setAddingAircraft} 
         addFacilityOnClick={setAddingFacility} 
         addAirbaseOnClick={setAddingAirbase} 
-        playOnClick={setGamePlaying} 
-        stepOnClick={() => {setGamePaused(); stepGameOnce()}} 
-        pauseOnClick={setGamePaused}
+        playOnClick={handlePlayGameClick} 
+        stepOnClick={handleStepGameClick} 
+        pauseOnClick={handlePauseGameClick}
         toggleScenarioTimeCompressionOnClick={toggleScenarioTimeCompression}
         switchCurrentSideOnClick={switchCurrentSide} 
         refreshAllLayers={refreshAllLayers} 
@@ -487,7 +507,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         game={game}
         featureLabelVisibility={featureLabelVisible}
         toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
-      />
+              />
       <div ref={mapId} className='map'></div>
       {openAirbaseCard.open &&
         <AirbaseCard 
