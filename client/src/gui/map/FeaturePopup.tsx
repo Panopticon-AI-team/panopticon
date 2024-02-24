@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import Popover from '@mui/material/Popover';
 
-interface MapPopupProps {
+interface FeaturePopupProps {
     anchorPositionTop: number;
     anchorPositionLeft: number;
     content: JSX.Element;
     handleCloseOnMap: () => void;
 }
 
-export default function BasicPopover({ anchorPositionTop, anchorPositionLeft, content, handleCloseOnMap }: Readonly<MapPopupProps>) {
+export default function FeaturePopup({ anchorPositionTop, anchorPositionLeft, content, handleCloseOnMap }: Readonly<FeaturePopupProps>) {
   const [open, setOpen] = useState(true);
 
   const handleClose = () => {
