@@ -15,6 +15,7 @@ import Game from '../../game/Game';
 import { v4 as uuidv4 } from "uuid";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import ReplayIcon from '@mui/icons-material/Replay';
 
 interface ToolBarProps {
     addAircraftOnClick: () => void;
@@ -34,9 +35,11 @@ interface ToolBarProps {
     game: Game;
     featureLabelVisibility: boolean;
     toggleFeatureLabelVisibility: (featureLabelVisibility: boolean) => void;
-}
+    }
 
 export default function ToolBar(props: Readonly<ToolBarProps>) {
+  const [currentScenarioFile, setCurrentScenarioFile] = React.useState<File | null>(null);
+  const [initalScenarioString, setInitialScenarioString] = React.useState<string>(props.game.exportCurrentScenario());
 
   const toolbarStyle = {
     backgroundColor: "#282c34",
@@ -75,9 +78,29 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
           props.updateScenarioTimeCompression(props.game.currentScenario.timeCompression)
           props.refreshAllLayers();
         }
+        setCurrentScenarioFile(file);
       }
     }
     input.click();
+  }
+
+  const reloadScenario = () => {
+    props.pauseOnClick()
+    if (currentScenarioFile) {
+      const reader = new FileReader();
+      reader.readAsText(currentScenarioFile, "UTF-8");
+      reader.onload = (readerEvent) => {
+        props.game.loadScenario(readerEvent.target?.result as string);
+        props.updateMapView(props.game.mapView.defaultCenter, props.game.mapView.defaultZoom);
+        props.updateScenarioTimeCompression(props.game.currentScenario.timeCompression)
+        props.refreshAllLayers();
+      }
+    } else {
+      props.game.loadScenario(initalScenarioString);
+      props.updateMapView(props.game.mapView.defaultCenter, props.game.mapView.defaultZoom);
+      props.updateScenarioTimeCompression(props.game.currentScenario.timeCompression)
+      props.refreshAllLayers();
+    }
   }
 
   return (
@@ -88,12 +111,13 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
       <Button variant="contained" color="error" onClick={props.pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
       <Button variant="contained" onClick={props.stepOnClick} startIcon={<RedoIcon/>}>STEP</Button>
       <Button variant="contained" onClick={props.switchCurrentSideOnClick}>Current side: {props.scenarioCurrentSideName}</Button>
+      <Button variant="contained" onClick={() => {props.toggleFeatureLabelVisibility(!props.featureLabelVisibility)}} startIcon={props.featureLabelVisibility ? <VisibilityIcon/> : <VisibilityOffIcon/>}>{"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}</Button>
       <Button variant="contained" onClick={props.addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
       <Button variant="contained" onClick={props.addAirbaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add airbase</Button>
       <Button variant="contained" onClick={props.addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
       <Button variant="contained" onClick={exportScenario} startIcon={<DownloadIcon/>}>EXPORT SCENARIO</Button>
       <Button variant="contained" onClick={loadScenario} startIcon={<CloudUploadIcon/>}>LOAD SCENARIO</Button>
-      <Button variant="contained" onClick={() => {props.toggleFeatureLabelVisibility(!props.featureLabelVisibility)}} startIcon={props.featureLabelVisibility ? <VisibilityIcon/> : <VisibilityOffIcon/>}>{"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}</Button>
+      <Button variant="contained" onClick={reloadScenario} startIcon={<ReplayIcon/>}>RELOAD SCENARIO</Button>
     </Stack>
   );
 }
