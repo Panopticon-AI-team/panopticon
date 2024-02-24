@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 
 import { Pixel } from "ol/pixel";
 import { Feature, MapBrowserEvent, Map as OlMap } from "ol";
@@ -19,6 +19,7 @@ import { Geometry } from "ol/geom";
 import FacilityCard from "./featureCards/FacilityCard";
 import AircraftCard from "./featureCards/AircraftCard";
 import Scenario from "../../game/Scenario";
+import { SetCurrentScenarioTimeContext } from "./currentScenarioTimeProvider";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -45,7 +46,6 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection ?? defaultProjection));
   const [weaponLayer, setWeaponLayer] = useState(new WeaponLayer(projection ?? defaultProjection, 2));
   const [featureLabelLayer, setFeatureLabelLayer] = useState(new FeatureLabelLayer(projection ?? defaultProjection, 4));
-  const [currentScenarioTime, setCurrentScenarioTime] = useState(game.currentScenario.currentTime);
   const [currentScenarioTimeCompression, setCurrentScenarioTimeCompression] = useState(game.currentScenario.timeCompression);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
   const [openAircraftCard, setOpenAircraftCard] = useState({
@@ -73,6 +73,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     features: [],
   });
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
+  const setCurrentScenarioTimeToContext = useContext(SetCurrentScenarioTimeContext);
   
   const map = new OlMap({
     layers: [...baseMapLayers.layers, aircraftLayer.layer, facilityLayer.layer, airbasesLayer.layer, rangeLayer.layer, aircraftRouteLayer.layer, weaponLayer.layer, featureLabelLayer.layer],
@@ -88,6 +89,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   useEffect(() => {
     theMap.setTarget(mapId.current!);
     refreshAllLayers();
+    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
     
     return () => {
       if (!theMap) return;
@@ -276,12 +278,11 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
   function handleStepGameClick() {
     setGamePaused()
     stepGameAndDrawFrame()
-    setCurrentScenarioTime(game.currentScenario.currentTime)
   }
 
   function handlePauseGameClick() {
     setGamePaused()
-    setCurrentScenarioTime(game.currentScenario.currentTime)
+    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
   }
 
   async function handlePlayGameClick() {
@@ -311,7 +312,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     const [observation, reward, terminated, truncated, info] = stepGameForStepSize(game.currentScenario.timeCompression)
     // const gameStepElapsed = new Date().getTime() - gameStepStartTime;
     
-    // setCurrentScenarioTime(observation.currentTime);
+    setCurrentScenarioTimeToContext(observation.currentTime);
 
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation)
@@ -501,7 +502,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         refreshAllLayers={refreshAllLayers} 
         updateMapView={updateMapView}
         updateScenarioTimeCompression={setCurrentScenarioTimeCompression}
-        scenarioCurrentTime={currentScenarioTime}
+        updateCurrentScenarioTimeToContext={() => {setCurrentScenarioTimeToContext(game.currentScenario.currentTime)}}
         scenarioTimeCompression={currentScenarioTimeCompression} 
         scenarioCurrentSideName={currentSideName} 
         game={game}

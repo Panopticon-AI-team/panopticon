@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ReplayIcon from '@mui/icons-material/Replay';
+import { CurrentScenarioTimeContext } from './currentScenarioTimeProvider';
 
 interface ToolBarProps {
     addAircraftOnClick: () => void;
@@ -29,17 +30,18 @@ interface ToolBarProps {
     refreshAllLayers: () => void;
     updateMapView: (center: number[], zoom: number) => void;
     updateScenarioTimeCompression: (scenarioTimeCompression: number) => void;
-    scenarioCurrentTime: number;
+    updateCurrentScenarioTimeToContext: () => void;
     scenarioTimeCompression: number;
     scenarioCurrentSideName: string;
     game: Game;
     featureLabelVisibility: boolean;
     toggleFeatureLabelVisibility: (featureLabelVisibility: boolean) => void;
-    }
+}
 
 export default function ToolBar(props: Readonly<ToolBarProps>) {
   const [currentScenarioFile, setCurrentScenarioFile] = React.useState<File | null>(null);
   const [initalScenarioString, setInitialScenarioString] = React.useState<string>(props.game.exportCurrentScenario());
+  const currentScenarioTimeFromContext = useContext(CurrentScenarioTimeContext);
 
   const toolbarStyle = {
     backgroundColor: "#282c34",
@@ -77,6 +79,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
           props.updateMapView(props.game.mapView.defaultCenter, props.game.mapView.defaultZoom);
           props.updateScenarioTimeCompression(props.game.currentScenario.timeCompression)
           props.refreshAllLayers();
+          props.updateCurrentScenarioTimeToContext();
         }
         setCurrentScenarioFile(file);
       }
@@ -94,18 +97,20 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
         props.updateMapView(props.game.mapView.defaultCenter, props.game.mapView.defaultZoom);
         props.updateScenarioTimeCompression(props.game.currentScenario.timeCompression)
         props.refreshAllLayers();
+        props.updateCurrentScenarioTimeToContext();
       }
     } else {
       props.game.loadScenario(initalScenarioString);
       props.updateMapView(props.game.mapView.defaultCenter, props.game.mapView.defaultZoom);
       props.updateScenarioTimeCompression(props.game.currentScenario.timeCompression)
       props.refreshAllLayers();
+      props.updateCurrentScenarioTimeToContext();
     }
   }
 
   return (
     <Stack spacing={2} direction="row" style={toolbarStyle}>
-      <Chip label={"Current time: " + unixToLocalTime(props.scenarioCurrentTime)} style={currentTimeChipStyle} />
+      <Chip label={"Current time: " + unixToLocalTime(currentScenarioTimeFromContext)} style={currentTimeChipStyle} />
       <Button variant="contained" onClick={props.toggleScenarioTimeCompressionOnClick}>Game Speed: {props.scenarioTimeCompression}X</Button>
       <Button variant="contained" color="success" onClick={props.playOnClick} startIcon={<PlayArrowIcon/>}>PLAY</Button>
       <Button variant="contained" color="error" onClick={props.pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
