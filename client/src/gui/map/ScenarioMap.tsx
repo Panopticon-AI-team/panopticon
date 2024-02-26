@@ -38,7 +38,7 @@ interface IOpenMultipleFeatureSelector {
 export default function ScenarioMap({ zoom, center, game, projection }: Readonly<ScenarioMapProps>) {  
   const mapId = useRef(null);
   const defaultProjection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
-  const baseMapLayers = new BaseMapLayers(projection ?? defaultProjection);
+  const [baseMapLayers, setBaseMapLayers] = useState(new BaseMapLayers(projection ?? defaultProjection));
   const [aircraftLayer, setAircraftLayer] = useState(new AircraftLayer(projection ?? defaultProjection, 3));
   const [airbasesLayer, setAirbasesLayer] = useState(new AirbasesLayer(projection ?? defaultProjection, 1));
   const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection ?? defaultProjection, 1));
