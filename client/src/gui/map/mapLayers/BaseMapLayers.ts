@@ -5,19 +5,22 @@ import TileJSON from 'ol/source/TileJSON.js';
 import { DEFAULT_OL_PROJECTION_CODE } from '../../../utils/constants';
 
 const devMode = false;
-let mapTilerBasicLayer: TileLayer<OSM>;
-let mapTilerSatelliteLayer: TileLayer<TileJSON>;
+
+const layers: (TileLayer<OSM> | TileLayer<TileJSON>)[] = []
 if (!devMode) {
   const mapTilerKey = 'KSJDrRj74VJSIlWTIIap'
-  mapTilerBasicLayer = new TileLayer({source: new OSM({url: `https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${mapTilerKey}`})});
+  const mapTilerBasicLayer = new TileLayer({source: new OSM({url: `https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${mapTilerKey}`})});
   const mapTilerSatelliteSource = new TileJSON({
     url: `https://api.maptiler.com/maps/satellite/tiles.json?key=${mapTilerKey}`,
     tileSize: 512,
     crossOrigin: 'anonymous'
   })
-  mapTilerSatelliteLayer = new TileLayer({source: mapTilerSatelliteSource})
+  const mapTilerSatelliteLayer = new TileLayer({source: mapTilerSatelliteSource})
+  layers.push(mapTilerBasicLayer);
+  layers.push(mapTilerSatelliteLayer);
 }
 const osmLayer = new TileLayer({source: new OSM()});
+layers.push(osmLayer);
 
 export default class BaseMapLayers {
   layers: (TileLayer<OSM> | TileLayer<TileJSON>)[];
@@ -25,8 +28,7 @@ export default class BaseMapLayers {
   currentLayerIndex: number
 
   constructor(projection: Projection) {
-    if (!devMode) this.layers = [mapTilerBasicLayer, mapTilerSatelliteLayer, osmLayer];
-    else this.layers = [osmLayer];
+    this.layers = layers;
     if (projection) this.projection = projection;
     this.currentLayerIndex = this.layers.length - 1;
   };
