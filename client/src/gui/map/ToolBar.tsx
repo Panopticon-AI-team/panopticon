@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -39,9 +39,11 @@ interface ToolBarProps {
 }
 
 export default function ToolBar(props: Readonly<ToolBarProps>) {
-  const [currentScenarioFile, setCurrentScenarioFile] = React.useState<File | null>(null);
-  const [initalScenarioString, setInitialScenarioString] = React.useState<string>(props.game.exportCurrentScenario());
+  const [currentScenarioFile, setCurrentScenarioFile] = useState<File | null>(null);
+  const [initialScenarioString, setInitialScenarioString] = useState<string>(props.game.exportCurrentScenario());
+  const [scenarioPaused, setScenarioPaused] = useState<boolean>(props.game.scenarioPaused);
   const currentScenarioTimeFromContext = useContext(CurrentScenarioTimeContext);
+  const defaultButtonColor = "#676767"
 
   const toolbarStyle = {
     backgroundColor: "#282c34",
@@ -108,7 +110,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
         props.updateCurrentScenarioTimeToContext();
       }
     } else {
-      props.game.loadScenario(initalScenarioString);
+      props.game.loadScenario(initialScenarioString);
       props.updateMapView(props.game.mapView.defaultCenter, props.game.mapView.defaultZoom);
       props.updateScenarioTimeCompression(props.game.currentScenario.timeCompression)
       props.refreshAllLayers();
@@ -116,21 +118,36 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
     }
   }
 
+  const handlePlayClick = () => {
+    setScenarioPaused(false);
+    props.playOnClick()
+  }
+
+  const handlePauseClick = () => {
+    setScenarioPaused(true);
+    props.pauseOnClick()
+  }
+
+  const handleStepClick = () => {
+    setScenarioPaused(true);
+    props.stepOnClick()
+  }
+
   return (
     <Stack spacing={2} direction="row" style={toolbarStyle}>
       <Chip label={"Current time: " + unixToLocalTime(currentScenarioTimeFromContext)} style={currentTimeChipStyle} />
-      <Button variant="contained" style={buttonStyle("gray")} onClick={props.toggleScenarioTimeCompressionOnClick}>Game Speed: {props.scenarioTimeCompression}X</Button>
-      <Button variant="contained" color="success" onClick={props.playOnClick} startIcon={<PlayArrowIcon/>}>PLAY</Button>
-      <Button variant="contained" color="error" onClick={props.pauseOnClick} startIcon={<PauseIcon/>}>PAUSE</Button>
-      <Button variant="contained" style={buttonStyle("gray")} onClick={props.stepOnClick} startIcon={<RedoIcon/>}>STEP</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={props.toggleScenarioTimeCompressionOnClick}>Game Speed: {props.scenarioTimeCompression}X</Button>
+      <Button variant="contained" color="success" onClick={handlePlayClick} startIcon={<PlayArrowIcon/>}>{scenarioPaused ? "PLAY": "PLAYING"}</Button>
+      <Button variant="contained" color="error" onClick={handlePauseClick} startIcon={<PauseIcon/>}>{scenarioPaused ? "PAUSED": "PAUSE"}</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={handleStepClick} startIcon={<RedoIcon/>}>STEP</Button>
       <Button variant="contained" style={buttonStyle(props.game.currentScenario.getSideColor(props.scenarioCurrentSideName))} onClick={props.switchCurrentSideOnClick}>Current side: {props.scenarioCurrentSideName}</Button>
-      <Button variant="contained" style={buttonStyle("gray")} onClick={() => {props.toggleFeatureLabelVisibility(!props.featureLabelVisibility)}} startIcon={props.featureLabelVisibility ? <VisibilityIcon/> : <VisibilityOffIcon/>}>{"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}</Button>
-      <Button variant="contained" style={buttonStyle("gray")} onClick={props.addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
-      <Button variant="contained" style={buttonStyle("gray")} onClick={props.addAirbaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add airbase</Button>
-      <Button variant="contained" style={buttonStyle("gray")} onClick={props.addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
-      <Button variant="contained" style={buttonStyle("gray")} onClick={exportScenario} startIcon={<DownloadIcon/>}>EXPORT SCENARIO</Button>
-      <Button variant="contained" style={buttonStyle("gray")} onClick={loadScenario} startIcon={<CloudUploadIcon/>}>LOAD SCENARIO</Button>
-      <Button variant="contained" style={buttonStyle("gray")} onClick={reloadScenario} startIcon={<ReplayIcon/>}>RELOAD SCENARIO</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={() => {props.toggleFeatureLabelVisibility(!props.featureLabelVisibility)}} startIcon={props.featureLabelVisibility ? <VisibilityIcon/> : <VisibilityOffIcon/>}>{"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={props.addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={props.addAirbaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add airbase</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={props.addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={exportScenario} startIcon={<DownloadIcon/>}>EXPORT SCENARIO</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={loadScenario} startIcon={<CloudUploadIcon/>}>LOAD SCENARIO</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={reloadScenario} startIcon={<ReplayIcon/>}>RELOAD SCENARIO</Button>
     </Stack>
   );
 }
