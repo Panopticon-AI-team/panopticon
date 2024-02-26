@@ -488,6 +488,10 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
     }
   }
 
+  function toggleBaseMapLayer() {
+    baseMapLayers.toggleLayer();
+  }
+
   return (
     <div>
       <ToolBar 
@@ -508,6 +512,7 @@ export default function ScenarioMap({ zoom, center, game, projection }: Readonly
         game={game}
         featureLabelVisibility={featureLabelVisible}
         toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
+        toggleBaseMapLayer={toggleBaseMapLayer}
               />
       <div ref={mapId} className='map'></div>
       {openAirbaseCard.open &&

@@ -36,6 +36,7 @@ interface ToolBarProps {
     game: Game;
     featureLabelVisibility: boolean;
     toggleFeatureLabelVisibility: (featureLabelVisibility: boolean) => void;
+    toggleBaseMapLayer: () => void;
 }
 
 export default function ToolBar(props: Readonly<ToolBarProps>) {
@@ -142,6 +143,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
       <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={handleStepClick} startIcon={<RedoIcon/>}>STEP</Button>
       <Button variant="contained" style={buttonStyle(props.game.currentScenario.getSideColor(props.scenarioCurrentSideName))} onClick={props.switchCurrentSideOnClick}>Current side: {props.scenarioCurrentSideName}</Button>
       <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={() => {props.toggleFeatureLabelVisibility(!props.featureLabelVisibility)}} startIcon={props.featureLabelVisibility ? <VisibilityIcon/> : <VisibilityOffIcon/>}>{"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}</Button>
+      <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={props.toggleBaseMapLayer} startIcon={<VisibilityIcon/>}>SWITCH MAP</Button>
       <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={props.addAircraftOnClick} startIcon={<FlightIcon/>}>Add aircraft</Button>
       <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={props.addAirbaseOnClick} startIcon={<FlightTakeoffIcon/>}>Add airbase</Button>
       <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={props.addFacilityOnClick} startIcon={<RadarIcon/>}>Add SAM</Button>
