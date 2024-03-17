@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -9,14 +9,12 @@ import RedoIcon from '@mui/icons-material/Redo';
 import { ReactComponent as FlightIcon } from '../assets/flight_black_24dp.svg';
 import { ReactComponent as RadarIcon } from '../assets/radar_black_24dp.svg';
 import { ReactComponent as FlightTakeoffIcon } from '../assets/flight_takeoff_black_24dp.svg';
-import Chip from '@mui/material/Chip';
-import { unixToLocalTime } from '../../utils/utils';
 import Game from '../../game/Game';
 import { v4 as uuidv4 } from "uuid";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { CurrentScenarioTimeContext } from './currentScenarioTimeProvider';
+import CurrentTimeDisplay from './CurrentTimeDisplay';
 
 interface ToolBarProps {
     addAircraftOnClick: () => void;
@@ -43,16 +41,11 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
   const [currentScenarioFile, setCurrentScenarioFile] = useState<File | null>(null);
   const [initialScenarioString, setInitialScenarioString] = useState<string>(props.game.exportCurrentScenario());
   const [scenarioPaused, setScenarioPaused] = useState<boolean>(props.game.scenarioPaused);
-  const currentScenarioTimeFromContext = useContext(CurrentScenarioTimeContext);
   const defaultButtonColor = "#676767"
 
   const toolbarStyle = {
     backgroundColor: "#282c34",
     padding: "10px",
-  }
-
-  const currentTimeChipStyle = {
-    backgroundColor: "white",
   }
 
   const buttonStyle = (backgroundColor: string) => {
@@ -136,7 +129,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
 
   return (
     <Stack spacing={2} direction="row" style={toolbarStyle}>
-      <Chip label={"Current time: " + unixToLocalTime(currentScenarioTimeFromContext)} style={currentTimeChipStyle} />
+      <CurrentTimeDisplay/>
       <Button variant="contained" style={buttonStyle(defaultButtonColor)} onClick={props.toggleScenarioTimeCompressionOnClick}>Game Speed: {props.scenarioTimeCompression}X</Button>
       <Button variant="contained" color="success" onClick={handlePlayClick} startIcon={<PlayArrowIcon/>}>{scenarioPaused ? "PLAY": "PLAYING"}</Button>
       <Button variant="contained" color="error" onClick={handlePauseClick} startIcon={<PauseIcon/>}>{scenarioPaused ? "PAUSED": "PAUSE"}</Button>

@@ -13,7 +13,7 @@ import Game from './game/Game';
 import { DEFAULT_OL_PROJECTION_CODE } from "./utils/constants";
 import defaultScenarioJson from './scenarios/default_scenario.json';
 import SCSScenarioJson from './scenarios/SCS.json';
-import { CurrentScenarioTimeProvider } from "./gui/map/currentScenarioTimeProvider";
+import { CurrentScenarioTimeProvider } from "./gui/map/CurrentScenarioTimeProvider";
 
 export default function App() {
   const sideBlue = new Side({
