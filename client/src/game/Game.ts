@@ -315,6 +315,28 @@ export default class Game {
             });
             loadedScenario.facilities.push(newFacility);
         });
+        savedScenario.weapons.forEach((weapon: any) => {
+            const newWeapon = new Weapon({
+                id: weapon.id, 
+                name: weapon.name, 
+                sideName: weapon.sideName, 
+                className: weapon.className,
+                latitude: weapon.latitude,
+                longitude: weapon.longitude,
+                altitude: weapon.altitude,
+                heading: weapon.heading,
+                speed: weapon.speed,
+                fuel: weapon.fuel,
+                range: weapon.range,
+                route: weapon.route,
+                sideColor: weapon.sideColor,
+                targetId: weapon.targetId,
+                lethality: weapon.lethality,
+                maxQuantity: weapon.maxQuantity,
+                currentQuantity: weapon.currentQuantity,
+            });
+            loadedScenario.weapons.push(newWeapon);
+        })
         this.currentScenario = loadedScenario;
     }
 

@@ -3,7 +3,7 @@ import { Circle, Geometry, LineString } from "ol/geom";
 import Point from 'ol/geom/Point.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import VectorSource from 'ol/source/Vector.js';
-import { Projection, fromLonLat } from 'ol/proj';
+import { Projection, fromLonLat, get as getProjection } from 'ol/proj';
 import { Style } from 'ol/style';
 
 import Aircraft from '../../../game/units/Aircraft';
@@ -15,13 +15,15 @@ import Weapon from '../../../game/units/Weapon';
 
 type GameEntity = Aircraft | Facility | Airbase | Weapon
 
+const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
+
 class FeatureLayer {
   layerSource: VectorSource;
   layer: VectorLayer<VectorSource<Geometry>>;
-  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
+  projection: Projection;
   featureCount: number = 0
 
-  constructor(projection: Projection, styleFunction: (feature: FeatureLike) => Style | Style[], zIndex?: number) {
+  constructor(styleFunction: (feature: FeatureLike) => Style | Style[], projection?: Projection, zIndex?: number) {
     this.layerSource = new VectorSource({
       features: []
     });
@@ -29,7 +31,7 @@ class FeatureLayer {
       source: this.layerSource,
       style: styleFunction,
     });
-    this.projection = projection;
+    this.projection = projection ?? defaultProjection!;
     this.layer.setZIndex(zIndex ?? 0);
   };
 
@@ -53,10 +55,8 @@ class FeatureLayer {
 }
 
 export class AircraftLayer extends FeatureLayer {
-  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
-
-  constructor(projection: Projection, zIndex?: number) {
-    super(projection, aircraftStyle, zIndex);
+  constructor(projection?: Projection, zIndex?: number) {
+    super(aircraftStyle, projection, zIndex);
     this.layer.set('name', 'aircraftLayer')
   }
 
@@ -104,10 +104,8 @@ export class AircraftLayer extends FeatureLayer {
 }
 
 export class FacilityLayer extends FeatureLayer {
-  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
-
-  constructor(projection: Projection, zIndex?: number) {
-    super(projection, facilityStyle, zIndex);
+  constructor(projection?: Projection, zIndex?: number) {
+    super(facilityStyle, projection, zIndex);
     this.layer.set('name', 'facilityLayer')
   }
 
@@ -134,10 +132,8 @@ export class FacilityLayer extends FeatureLayer {
 }
 
 export class AirbasesLayer extends FeatureLayer {
-  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
-
-  constructor(projection: Projection, zIndex?: number) {
-    super(projection, airbasesStyle, zIndex);
+  constructor(projection?: Projection, zIndex?: number) {
+    super(airbasesStyle, projection, zIndex);
     this.layer.set('name', 'airbasesLayer')
   }
 
@@ -164,10 +160,8 @@ export class AirbasesLayer extends FeatureLayer {
 }
 
 export class RangeLayer extends FeatureLayer {
-  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
-
-  constructor(projection: Projection, zIndex?: number) {
-    super(projection, rangeStyle, zIndex);
+  constructor(projection?: Projection, zIndex?: number) {
+    super(rangeStyle, projection, zIndex);
     this.layer.set('name', 'rangeRingLayer')
   }
 
@@ -200,10 +194,8 @@ export class RangeLayer extends FeatureLayer {
 }
 
 export class AircraftRouteLayer extends FeatureLayer {
-  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
-
-  constructor(projection: Projection, zIndex?: number) {
-    super(projection, aircraftRouteStyle, zIndex);
+  constructor(projection?: Projection, zIndex?: number) {
+    super(aircraftRouteStyle, projection, zIndex);
     this.layer.set('name', 'aircraftRouteLayer')
   }
 
@@ -257,10 +249,8 @@ export class AircraftRouteLayer extends FeatureLayer {
 }
 
 export class WeaponLayer extends FeatureLayer {
-  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
-
-  constructor(projection: Projection, zIndex?: number) {
-    super(projection, weaponStyle, zIndex);
+  constructor(projection?: Projection, zIndex?: number) {
+    super(weaponStyle, projection, zIndex);
     this.layer.set('name', 'weaponLayer')
   }
 
@@ -283,10 +273,8 @@ export class WeaponLayer extends FeatureLayer {
 }
 
 export class FeatureLabelLayer extends FeatureLayer {
-  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
-
-  constructor(projection: Projection, zIndex?: number) {
-    super(projection, featureLabelStyle, zIndex);
+  constructor(projection?: Projection, zIndex?: number) {
+    super(featureLabelStyle, projection, zIndex);
     this.layer.set('name', 'featureLabelLayer')
   }
 
