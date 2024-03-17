@@ -30,7 +30,7 @@ import { Geometry } from "ol/geom";
 import FacilityCard from "./featureCards/FacilityCard";
 import AircraftCard from "./featureCards/AircraftCard";
 import Scenario from "../../game/Scenario";
-import { SetCurrentScenarioTimeContext } from "./CurrentScenarioTimeProvider";
+import { SetCurrentScenarioTimeContext } from "./ScenarioTimeProvider";
 
 interface ScenarioMapProps {
   zoom: number;

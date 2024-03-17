@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import Chip from "@mui/material/Chip";
 import { unixToLocalTime } from "../../utils/utils";
-import { CurrentScenarioTimeContext } from "./CurrentScenarioTimeProvider";
+import { CurrentScenarioTimeContext } from "./ScenarioTimeProvider";
 
 interface CurrentTimeDisplayProps {}
 
