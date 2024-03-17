@@ -37,7 +37,7 @@ export default function App() {
   });
   const theGame = new Game(currentScenario);
   theGame.currentSideName = sideBlue.name;
-  const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
+  const projection = getProjection(DEFAULT_OL_PROJECTION_CODE) ?? undefined;
 
   theGame.loadScenario(JSON.stringify(SCSScenarioJson)); // loads default scenario for easier testing
 

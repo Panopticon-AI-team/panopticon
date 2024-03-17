@@ -25,7 +25,7 @@ interface ScenarioMapProps {
   zoom: number;
   center: number[];
   game: Game;
-  projection: Projection | null;
+  projection?: Projection;
   }
 
 interface IOpenMultipleFeatureSelector {
@@ -38,14 +38,14 @@ interface IOpenMultipleFeatureSelector {
 export default function ScenarioMap({ zoom, center, game, projection }: Readonly<ScenarioMapProps>) {  
   const mapId = useRef(null);
   const defaultProjection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
-  const [baseMapLayers, setBaseMapLayers] = useState(new BaseMapLayers(projection ?? defaultProjection));
-  const [aircraftLayer, setAircraftLayer] = useState(new AircraftLayer(projection ?? defaultProjection, 3));
-  const [airbasesLayer, setAirbasesLayer] = useState(new AirbasesLayer(projection ?? defaultProjection, 1));
-  const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection ?? defaultProjection, 1));
-  const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection ?? defaultProjection));
-  const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection ?? defaultProjection));
-  const [weaponLayer, setWeaponLayer] = useState(new WeaponLayer(projection ?? defaultProjection, 2));
-  const [featureLabelLayer, setFeatureLabelLayer] = useState(new FeatureLabelLayer(projection ?? defaultProjection, 4));
+  const [baseMapLayers, setBaseMapLayers] = useState(new BaseMapLayers(projection));
+  const [aircraftLayer, setAircraftLayer] = useState(new AircraftLayer(projection, 3));
+  const [airbasesLayer, setAirbasesLayer] = useState(new AirbasesLayer(projection, 1));
+  const [facilityLayer, setFacilityLayer] = useState(new FacilityLayer(projection, 1));
+  const [rangeLayer, setRangeLayer] = useState(new RangeLayer(projection));
+  const [aircraftRouteLayer, setAircraftRouteLayer] = useState(new AircraftRouteLayer(projection));
+  const [weaponLayer, setWeaponLayer] = useState(new WeaponLayer(projection, 2));
+  const [featureLabelLayer, setFeatureLabelLayer] = useState(new FeatureLabelLayer(projection, 4));
   const [currentScenarioTimeCompression, setCurrentScenarioTimeCompression] = useState(game.currentScenario.timeCompression);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
   const [openAircraftCard, setOpenAircraftCard] = useState({
