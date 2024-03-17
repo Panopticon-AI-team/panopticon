@@ -1,10 +1,11 @@
 import TileLayer from 'ol/layer/Tile.js';
-import { Projection } from 'ol/proj';
+import { Projection, get as getProjection } from 'ol/proj';
 import OSM from 'ol/source/OSM.js';
 import TileJSON from 'ol/source/TileJSON.js';
 import { DEFAULT_OL_PROJECTION_CODE } from '../../../utils/constants';
 
 const devMode = false;
+const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
 
 const layers: (TileLayer<OSM> | TileLayer<TileJSON>)[] = []
 if (!devMode) {
@@ -24,12 +25,13 @@ layers.push(osmLayer);
 
 export default class BaseMapLayers {
   layers: (TileLayer<OSM> | TileLayer<TileJSON>)[];
-  projection: Projection = new Projection({code: DEFAULT_OL_PROJECTION_CODE});
+  projection: Projection;
   currentLayerIndex: number
 
-  constructor(projection: Projection) {
+  constructor(projection?: Projection, zIndex?: number) {
     this.layers = layers;
-    if (projection) this.projection = projection;
+    this.projection = projection ?? defaultProjection!;
+    this.layers.forEach((layer) => layer.setZIndex(zIndex ?? -1));
     this.currentLayerIndex = this.layers.length - 1;
   };
 
