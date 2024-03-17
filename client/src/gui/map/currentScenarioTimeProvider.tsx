@@ -1,18 +1,26 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState } from "react";
 
-const CurrentScenarioTimeContext = createContext(0)
-const SetCurrentScenarioTimeContext = createContext((time: number) => {})
+const CurrentScenarioTimeContext = createContext(0);
+const SetCurrentScenarioTimeContext = createContext((time: number) => {});
 
-const CurrentScenarioTimeProvider = ({ children }: { children: React.ReactNode }) => {
-    const [currentScenarioTime, setCurrentScenarioTime] = useState(0);
+const CurrentScenarioTimeProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [currentScenarioTime, setCurrentScenarioTime] = useState(0);
 
-    return (
-        <CurrentScenarioTimeContext.Provider value={currentScenarioTime}>
-            <SetCurrentScenarioTimeContext.Provider value={setCurrentScenarioTime}>
-                {children}
-            </SetCurrentScenarioTimeContext.Provider>
-        </CurrentScenarioTimeContext.Provider>
-    );
+  return (
+    <CurrentScenarioTimeContext.Provider value={currentScenarioTime}>
+      <SetCurrentScenarioTimeContext.Provider value={setCurrentScenarioTime}>
+        {children}
+      </SetCurrentScenarioTimeContext.Provider>
+    </CurrentScenarioTimeContext.Provider>
+  );
 };
 
-export { CurrentScenarioTimeContext, SetCurrentScenarioTimeContext, CurrentScenarioTimeProvider };
+export {
+  CurrentScenarioTimeContext,
+  SetCurrentScenarioTimeContext,
+  CurrentScenarioTimeProvider,
+};

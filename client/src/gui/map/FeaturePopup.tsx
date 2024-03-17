@@ -1,14 +1,19 @@
 import React, { useState } from "react";
-import Popover from '@mui/material/Popover';
+import Popover from "@mui/material/Popover";
 
 interface FeaturePopupProps {
-    anchorPositionTop: number;
-    anchorPositionLeft: number;
-    content: JSX.Element;
-    handleCloseOnMap: () => void;
+  anchorPositionTop: number;
+  anchorPositionLeft: number;
+  content: JSX.Element;
+  handleCloseOnMap: () => void;
 }
 
-export default function FeaturePopup({ anchorPositionTop, anchorPositionLeft, content, handleCloseOnMap }: Readonly<FeaturePopupProps>) {
+export default function FeaturePopup({
+  anchorPositionTop,
+  anchorPositionLeft,
+  content,
+  handleCloseOnMap,
+}: Readonly<FeaturePopupProps>) {
   const [open, setOpen] = useState(true);
 
   const handleClose = () => {
@@ -16,7 +21,7 @@ export default function FeaturePopup({ anchorPositionTop, anchorPositionLeft, co
     handleCloseOnMap();
   };
 
-  const id = open ? 'simple-popover' : undefined;
+  const id = open ? "simple-popover" : undefined;
 
   return (
     <div>
@@ -27,12 +32,12 @@ export default function FeaturePopup({ anchorPositionTop, anchorPositionLeft, co
         anchorReference="anchorPosition"
         anchorPosition={{ top: anchorPositionTop, left: anchorPositionLeft }}
         anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
         transformOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
+          vertical: "bottom",
+          horizontal: "left",
         }}
       >
         {content}
