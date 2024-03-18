@@ -160,6 +160,12 @@ export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
         weapon.latitude = nextWeaponLatitude;
         weapon.longitude = nextWeaponLongitude;
       }
+      weapon.currentFuel -= weapon.fuelRate / 3600;
+      if (weapon.currentFuel <= 0) {
+        currentScenario.weapons = currentScenario.weapons.filter(
+          (currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id
+        );
+      }
     }
   } else {
     currentScenario.weapons = currentScenario.weapons.filter(
