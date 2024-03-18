@@ -121,7 +121,8 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         Speed: {props.aircraft.speed.toFixed(0)} KTS
       </Typography>
       <Typography variant="h6">
-        Fuel: {props.aircraft.fuel.toFixed(2)}
+        Fuel: {props.aircraft.currentFuel.toFixed(2)} /{" "}
+        {props.aircraft.maxFuel.toFixed(2)}
       </Typography>
       <Typography variant="h6">Side: {props.aircraft.sideName}</Typography>
       <Typography variant="h6">

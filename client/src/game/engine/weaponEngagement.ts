@@ -107,7 +107,9 @@ export function launchWeapon(
       target.longitude
     ),
     speed: weaponPrototype.speed,
-    fuel: weaponPrototype.fuel,
+    currentFuel: weaponPrototype.currentFuel,
+    maxFuel: weaponPrototype.maxFuel,
+    fuelRate: weaponPrototype.fuelRate,
     range: weaponPrototype.range,
     route: [[target.latitude, target.longitude]],
     sideColor: weaponPrototype.sideColor,

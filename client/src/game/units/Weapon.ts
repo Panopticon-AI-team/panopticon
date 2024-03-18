@@ -10,7 +10,9 @@ interface IWeapon {
   altitude: number;
   heading: number;
   speed: number;
-  fuel: number;
+  currentFuel: number;
+  maxFuel: number;
+  fuelRate: number; // lbs/hr
   range: number;
   route?: number[][];
   sideColor?: string;
@@ -30,7 +32,9 @@ export default class Weapon {
   altitude: number; // FT ASL -- currently default -- need to reference from database
   heading: number;
   speed: number; // KTS -- currently default -- need to reference from database
-  fuel: number;
+  currentFuel: number;
+  maxFuel: number;
+  fuelRate: number; // lbs/hr
   range: number; // NM -- currently default -- need to reference from database
   route: number[][];
   sideColor: string;
@@ -49,7 +53,9 @@ export default class Weapon {
     this.altitude = parameters.altitude;
     this.heading = parameters.heading;
     this.speed = parameters.speed;
-    this.fuel = parameters.fuel;
+    this.currentFuel = parameters.currentFuel;
+    this.maxFuel = parameters.maxFuel;
+    this.fuelRate = parameters.fuelRate;
     this.range = parameters.range;
     this.route = parameters.route ?? [];
     this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
