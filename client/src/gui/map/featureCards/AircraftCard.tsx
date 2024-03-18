@@ -26,7 +26,8 @@ interface AircraftCardProps {
     aircraftName: string,
     aircraftClassName: string,
     aircraftSpeed: number,
-    aircraftWeaponQuantity: number
+    aircraftWeaponQuantity: number,
+    aircraftCurrentFuel: number
   ) => void;
   handleCloseOnMap: () => void;
   anchorPositionTop: number;
@@ -40,6 +41,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     className: props.aircraft.className,
     speed: props.aircraft.speed,
     weaponQuantity: props.aircraft.getTotalWeaponQuantity(),
+    currentFuel: props.aircraft.currentFuel,
   });
 
   const _handleDeleteAircraft = () => {
@@ -67,7 +69,8 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
       tempEditData.name,
       tempEditData.className,
       tempEditData.speed,
-      tempEditData.weaponQuantity
+      tempEditData.weaponQuantity,
+      tempEditData.currentFuel
     );
     toggleEdit();
   };
@@ -93,6 +96,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         const newWeaponCount = parseInt(event.target.value);
         if (newWeaponCount)
           setTempEditData({ ...tempEditData, weaponQuantity: newWeaponCount });
+        break;
+      }
+      case "aircraft-current-fuel-text-field": {
+        const newFuel = parseInt(event.target.value);
+        if (newFuel) setTempEditData({ ...tempEditData, currentFuel: newFuel });
         break;
       }
       case "default": {
@@ -183,6 +191,16 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             id="aircraft-weapon-quantity-text-field"
             label="Weapon Quantity"
             defaultValue={props.aircraft.getTotalWeaponQuantity().toString()}
+            onChange={_handleTextFieldChange}
+            variant="outlined"
+            sx={inputStyle}
+            InputLabelProps={inputLabelStyle}
+          />
+          <TextField
+            autoComplete="off"
+            id="aircraft-current-fuel-text-field"
+            label="Current Fuel"
+            defaultValue={props.aircraft.currentFuel.toFixed(2)}
             onChange={_handleTextFieldChange}
             variant="outlined"
             sx={inputStyle}
