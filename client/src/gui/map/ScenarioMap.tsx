@@ -40,10 +40,10 @@ import FacilityCard from "./featureCards/FacilityCard";
 import AircraftCard from "./featureCards/AircraftCard";
 import Scenario from "../../game/Scenario";
 import { SetCurrentScenarioTimeContext } from "./ScenarioTimeProvider";
-import { Stroke, Style } from "ol/style";
 import { EventsKey } from "ol/events";
 import { unByKey } from "ol/Observable";
 import VectorSource from "ol/source/Vector";
+import { aircraftRouteDrawLineStyle } from "./mapLayers/FeatureLayerStyles";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -366,18 +366,11 @@ export default function ScenarioMap({
       game.currentScenario.getSideColor(game.currentSideName),
       0.5
     );
-    const style = new Style({
-      stroke: new Stroke({
-        color: colorArray ?? "rgba(0, 0, 0, 0.5)",
-        lineDash: [10, 10],
-        width: 1.5,
-      }),
-    });
 
     aircraftRouteDrawLine = new Draw({
       source: new VectorSource(),
       type: "LineString",
-      style: style,
+      style: aircraftRouteDrawLineStyle,
     });
 
     theMap.addInteraction(aircraftRouteDrawLine);
@@ -386,6 +379,9 @@ export default function ScenarioMap({
 
     aircraftRouteDrawLine.on("drawstart", function (event) {
       const sketch = event.feature;
+      sketch.setProperties({
+        sideColor: game.currentScenario.getSideColor(game.currentSideName),
+      });
       aircraftRouteMeasurementListener = sketch
         .getGeometry()
         ?.on("change", function (event) {
@@ -564,6 +560,7 @@ export default function ScenarioMap({
           return aircraft.id !== game.selectedUnitId;
         })
       );
+      aircraftRouteDrawInteraction.removeLastPoint();
       aircraftRouteDrawInteraction.removeLastPoint();
       const aircraftQueuedForMovement = observation.aircraft.find(
         (aircraft) => aircraft.id === game.selectedUnitId

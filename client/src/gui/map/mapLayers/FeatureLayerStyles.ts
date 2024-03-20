@@ -93,6 +93,46 @@ export const aircraftRouteStyle = function (feature: FeatureLike) {
   return styles;
 };
 
+export const aircraftRouteDrawLineStyle = function (feature: FeatureLike) {
+  if (feature.getGeometry()?.getType() !== "LineString") return [];
+
+  const colorArray = colorNameToColorArray(
+    feature.getProperties().sideColor ?? "black",
+    0.5
+  );
+  const styles = [
+    new Style({
+      stroke: new Stroke({
+        color: colorArray ?? "rgba(0, 0, 0, 0.5)",
+        width: 1.5,
+        lineDash: [10, 10],
+      }),
+    }),
+  ];
+
+  // const lineString = feature.getGeometry() as LineString;
+  // const secondToLastPoint =
+  //   lineString.getCoordinates()[lineString.getCoordinates().length - 2];
+  // const lastPoint = lineString.getLastCoordinate();
+  // const dx = lastPoint[0] - secondToLastPoint[0];
+  // const dy = lastPoint[1] - secondToLastPoint[1];
+  // const rotation = Math.atan2(dy, dx);
+  // styles.push(
+  //   new Style({
+  //     geometry: new Point(lastPoint),
+  //     image: new Icon({
+  //       src: ChevronRightSvg,
+  //       anchor: [0.75, 0.5],
+  //       rotateWithView: true,
+  //       rotation: -rotation,
+  //       color: colorArray ?? "rgba(0, 0, 0, 0.5)",
+  //     }),
+  //   })
+  // );
+
+  return styles;
+};
+
 export const weaponStyle = function (feature: FeatureLike) {
   return new Style({
     image: new Icon({
