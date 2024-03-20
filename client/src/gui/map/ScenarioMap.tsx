@@ -1,10 +1,18 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 
 import { Pixel } from "ol/pixel";
-import { Feature, MapBrowserEvent, Map as OlMap } from "ol";
+import { Feature, MapBrowserEvent, Map as OlMap, Overlay } from "ol";
 import View from "ol/View";
-import { Projection, toLonLat, transform } from "ol/proj";
+import {
+  Projection,
+  fromLonLat,
+  toLonLat,
+  transform,
+  get as getProjection,
+} from "ol/proj";
 import Point from "ol/geom/Point.js";
+import Draw from "ol/interaction/Draw.js";
+import { getLength } from "ol/sphere.js";
 
 import "../styles/ScenarioMap.css";
 import {
@@ -22,15 +30,19 @@ import ToolBar from "./ToolBar";
 import {
   DEFAULT_OL_PROJECTION_CODE,
   GAME_SPEED_DELAY_MS,
+  NAUTICAL_MILES_TO_METERS,
 } from "../../utils/constants";
-import { delay, randomInt } from "../../utils/utils";
+import { colorNameToColorArray, delay, randomInt } from "../../utils/utils";
 import AirbaseCard from "./featureCards/AirbaseCard";
 import MultipleFeatureSelector from "./MultipleFeatureSelector";
-import { Geometry } from "ol/geom";
+import { Geometry, LineString } from "ol/geom";
 import FacilityCard from "./featureCards/FacilityCard";
 import AircraftCard from "./featureCards/AircraftCard";
 import Scenario from "../../game/Scenario";
 import { SetCurrentScenarioTimeContext } from "./ScenarioTimeProvider";
+import { Stroke, Style } from "ol/style";
+import { EventsKey } from "ol/events";
+import { unByKey } from "ol/Observable";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -53,9 +65,7 @@ export default function ScenarioMap({
   projection,
 }: Readonly<ScenarioMapProps>) {
   const mapId = useRef(null);
-  const defaultProjection = new Projection({
-    code: DEFAULT_OL_PROJECTION_CODE,
-  });
+  const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
   const [baseMapLayers, setBaseMapLayers] = useState(
     new BaseMapLayers(projection)
   );
@@ -110,6 +120,10 @@ export default function ScenarioMap({
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
+  let aircraftRouteDrawLine: Draw | null = null;
+  let aircraftRouteMeasurementTooltipElement: HTMLDivElement | null = null;
+  let aircraftRouteMeasurementTooltip: Overlay | null = null;
+  let aircraftRouteMeasurementListener: EventsKey | undefined;
 
   const map = new OlMap({
     layers: [
@@ -125,7 +139,7 @@ export default function ScenarioMap({
     view: new View({
       center: center,
       zoom: zoom,
-      projection: projection ?? defaultProjection,
+      projection: projection ?? defaultProjection!,
     }),
     controls: [],
   });
@@ -154,7 +168,7 @@ export default function ScenarioMap({
     const featuresAtPixel = getFeaturesAtPixel(
       theMap.getEventPixel(event.originalEvent)
     );
-    if (game.selectedUnitId && featuresAtPixel.length === 0) {
+    if (game.selectedUnitId && aircraftRouteDrawLine) {
       context = "moveAircraft";
     } else if (
       game.selectingTarget &&
@@ -189,6 +203,7 @@ export default function ScenarioMap({
     );
     switch (mapClickContext) {
       case "moveAircraft": {
+        cleanUpAircraftRouteDrawLineAndMeasurementTooltip();
         moveAircraft(game.selectedUnitId, event.coordinate);
         const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
         if (aircraft) {
@@ -299,6 +314,96 @@ export default function ScenarioMap({
     }
   }
 
+  function createAircraftRouteMeasurementTooltip() {
+    if (aircraftRouteMeasurementTooltipElement) {
+      aircraftRouteMeasurementTooltipElement.parentNode?.removeChild(
+        aircraftRouteMeasurementTooltipElement
+      );
+    }
+    aircraftRouteMeasurementTooltipElement = document.createElement("div");
+    aircraftRouteMeasurementTooltipElement.className =
+      "ol-tooltip ol-tooltip-measure";
+    aircraftRouteMeasurementTooltip = new Overlay({
+      element: aircraftRouteMeasurementTooltipElement,
+      offset: [0, -15],
+      positioning: "bottom-center",
+      stopEvent: false,
+      insertFirst: false,
+    });
+    theMap.addOverlay(aircraftRouteMeasurementTooltip);
+  }
+
+  function cleanUpAircraftRouteDrawLineAndMeasurementTooltip() {
+    if (aircraftRouteDrawLine) theMap.removeInteraction(aircraftRouteDrawLine);
+    aircraftRouteDrawLine = null;
+    if (aircraftRouteMeasurementTooltipElement) {
+      aircraftRouteMeasurementTooltipElement.parentNode?.removeChild(
+        aircraftRouteMeasurementTooltipElement
+      );
+    }
+    aircraftRouteMeasurementTooltipElement = null;
+    aircraftRouteMeasurementTooltip = null;
+    if (aircraftRouteMeasurementListener)
+      unByKey(aircraftRouteMeasurementListener);
+  }
+
+  const formatAircraftRouteLengthDisplay = function (line: LineString) {
+    const length = getLength(line, {
+      projection: projection ?? defaultProjection!,
+    });
+    const output = (length / NAUTICAL_MILES_TO_METERS).toFixed(2) + " " + "NM";
+    return output;
+  };
+
+  function addAircraftRouteMeasurementInteraction(startCoordinates: number[]) {
+    const colorArray = colorNameToColorArray(
+      game.currentScenario.getSideColor(game.currentSideName),
+      0.5
+    );
+    const style = new Style({
+      stroke: new Stroke({
+        color: colorArray ?? "rgba(0, 0, 0, 0.5)",
+        lineDash: [10, 10],
+        width: 1.5,
+      }),
+    });
+
+    aircraftRouteDrawLine = new Draw({
+      source: aircraftRouteLayer.layerSource,
+      type: "LineString",
+      style: style,
+    });
+
+    theMap.addInteraction(aircraftRouteDrawLine);
+
+    createAircraftRouteMeasurementTooltip();
+
+    aircraftRouteDrawLine.on("drawstart", function (event) {
+      const sketch = event.feature;
+      aircraftRouteMeasurementListener = sketch
+        .getGeometry()
+        ?.on("change", function (event) {
+          const geom = event.target as LineString;
+          const firstPoint = geom.getFirstCoordinate();
+          const lastPoint = geom.getLastCoordinate();
+          const tooltipCoord = [
+            (firstPoint[0] + lastPoint[0]) / 2,
+            (firstPoint[1] + lastPoint[1]) / 2,
+          ];
+          if (aircraftRouteMeasurementTooltipElement) {
+            aircraftRouteMeasurementTooltipElement.innerHTML =
+              formatAircraftRouteLengthDisplay(geom);
+            aircraftRouteMeasurementTooltipElement.style.color =
+              game.currentScenario.getSideColor(game.currentSideName);
+            aircraftRouteMeasurementTooltipElement.style.fontWeight = "bold";
+          }
+          aircraftRouteMeasurementTooltip?.setPosition(tooltipCoord);
+        });
+    });
+
+    aircraftRouteDrawLine.appendCoordinates([startCoordinates]);
+  }
+
   function queueAircraftForMovement(aircraftId: string) {
     game.selectedUnitId = aircraftId;
     const aircraft = game.currentScenario.getAircraft(aircraftId);
@@ -308,6 +413,13 @@ export default function ScenarioMap({
         aircraft.id,
         aircraft.selected,
         aircraft.heading
+      );
+      aircraftRouteLayer.removeFeatureById(aircraft.id);
+      addAircraftRouteMeasurementInteraction(
+        fromLonLat(
+          [aircraft.longitude, aircraft.latitude],
+          projection ?? defaultProjection!
+        )
       );
     }
   }
@@ -350,10 +462,11 @@ export default function ScenarioMap({
       "facilityFeatureLabel",
       "airbaseFeatureLabel",
     ];
+    const includedFeatureTypes = ["aircraft", "facility", "airbase"];
     theMap.forEachFeatureAtPixel(
       pixel,
       function (feature) {
-        if (!excludedFeatureTypes.includes(feature.getProperties()?.type))
+        if (includedFeatureTypes.includes(feature.getProperties()?.type))
           selectedFeatures.push(feature as Feature);
       },
       { hitTolerance: 5 }
@@ -432,6 +545,16 @@ export default function ScenarioMap({
 
   function drawNextFrame(observation: Scenario) {
     aircraftLayer.refresh(observation.aircraft);
+    // if (aircraftRouteDrawLine !== null) {
+    //   const temp = observation.aircraft;
+    //   const temp2 = observation.aircraft.filter((aircraft) => {
+    //     return aircraft.id !== game.selectedUnitId;
+    //   });
+    //   console.log(temp.length, temp2.length);
+    //   aircraftRouteLayer.refresh(temp2);
+    // } else {
+    //   aircraftRouteLayer.refresh(observation.aircraft);
+    // }
     aircraftRouteLayer.refresh(observation.aircraft);
     weaponLayer.refresh(observation.weapons);
     if (featureLabelVisible)
@@ -447,6 +570,22 @@ export default function ScenarioMap({
       if (featureLabelVisible)
         featureLabelLayer.refreshSubset(observation.airbases, "airbase");
     }
+    // if (aircraftRouteDrawLine) {
+    //   aircraftRouteDrawLine.removeLastPoint();
+    //   const aircraftQueuedForMovement = observation.aircraft.find(
+    //     (aircraft) => aircraft.id === game.selectedUnitId
+    //   );
+    //   if (aircraftQueuedForMovement) {
+    //     const aircraftNewCoordinates = fromLonLat(
+    //       [
+    //         aircraftQueuedForMovement.longitude,
+    //         aircraftQueuedForMovement.latitude,
+    //       ],
+    //       projection ?? defaultProjection!
+    //     );
+    //     aircraftRouteDrawLine.appendCoordinates([aircraftNewCoordinates]);
+    //   }
+    // }
   }
 
   function setGamePaused() {
