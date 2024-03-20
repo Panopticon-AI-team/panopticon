@@ -107,7 +107,9 @@ export function launchWeapon(
       target.longitude
     ),
     speed: weaponPrototype.speed,
-    fuel: weaponPrototype.fuel,
+    currentFuel: weaponPrototype.currentFuel,
+    maxFuel: weaponPrototype.maxFuel,
+    fuelRate: weaponPrototype.fuelRate,
     range: weaponPrototype.range,
     route: [[target.latitude, target.longitude]],
     sideColor: weaponPrototype.sideColor,
@@ -157,6 +159,12 @@ export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
         );
         weapon.latitude = nextWeaponLatitude;
         weapon.longitude = nextWeaponLongitude;
+      }
+      weapon.currentFuel -= weapon.fuelRate / 3600;
+      if (weapon.currentFuel <= 0) {
+        currentScenario.weapons = currentScenario.weapons.filter(
+          (currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id
+        );
       }
     }
   } else {

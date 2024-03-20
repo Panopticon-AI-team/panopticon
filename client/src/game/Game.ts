@@ -68,7 +68,9 @@ export default class Game {
       altitude: 10000.0,
       heading: 90.0,
       speed: 300.0,
-      fuel: 10000.0,
+      currentFuel: 10000.0,
+      maxFuel: 10000.0,
+      fuelRate: 5000.0,
       range: 100,
       sideColor: this.currentScenario.getSideColor(this.currentSideName),
       weapons: [this.getSampleWeapon(10, 0.25)],
@@ -97,7 +99,9 @@ export default class Game {
         altitude: 10000.0,
         heading: 90.0,
         speed: 300.0,
-        fuel: 10000.0,
+        currentFuel: 10000.0,
+        maxFuel: 10000.0,
+        fuelRate: 5000.0,
         range: 100,
         sideColor: this.currentScenario.getSideColor(this.currentSideName),
         weapons: [this.getSampleWeapon(10, 0.25)],
@@ -187,7 +191,9 @@ export default class Game {
       altitude: 10000.0,
       heading: 90.0,
       speed: 1000.0,
-      fuel: 10000.0,
+      currentFuel: 5000.0,
+      maxFuel: 5000.0,
+      fuelRate: 5000.0,
       range: 100,
       sideColor: this.currentScenario.getSideColor(sideName),
       targetId: null,
@@ -309,7 +315,9 @@ export default class Game {
         altitude: aircraft.altitude,
         heading: aircraft.heading,
         speed: aircraft.speed,
-        fuel: aircraft.fuel,
+        currentFuel: aircraft.currentFuel,
+        maxFuel: aircraft.maxFuel,
+        fuelRate: aircraft.fuelRate,
         range: aircraft.range,
         route: aircraft.route,
         selected: aircraft.selected,
@@ -333,7 +341,9 @@ export default class Game {
           altitude: aircraft.altitude,
           heading: aircraft.heading,
           speed: aircraft.speed,
-          fuel: aircraft.fuel,
+          currentFuel: aircraft.currentFuel,
+          maxFuel: aircraft.maxFuel,
+          fuelRate: aircraft.fuelRate,
           range: aircraft.range,
           route: aircraft.route,
           selected: aircraft.selected,
@@ -385,7 +395,9 @@ export default class Game {
         altitude: weapon.altitude,
         heading: weapon.heading,
         speed: weapon.speed,
-        fuel: weapon.fuel,
+        currentFuel: weapon.currentFuel,
+        maxFuel: weapon.maxFuel,
+        fuelRate: weapon.fuelRate,
         range: weapon.range,
         route: weapon.route,
         sideColor: weapon.sideColor,
@@ -414,15 +426,7 @@ export default class Game {
     });
   }
 
-  updateGameState() {
-    this.currentScenario.currentTime += 1;
-
-    this.facilityAutoDefense();
-
-    this.currentScenario.weapons.forEach((weapon) => {
-      weaponEngagement(this.currentScenario, weapon);
-    });
-
+  updateAllAircraftPosition() {
     this.currentScenario.aircraft.forEach((aircraft) => {
       const route = aircraft.route;
       if (route.length > 0) {
@@ -459,8 +463,24 @@ export default class Game {
             nextWaypointLongitude
           );
         }
+        aircraft.currentFuel -= aircraft.fuelRate / 3600;
+        if (aircraft.currentFuel <= 0) {
+          this.removeAircraft(aircraft.id);
+        }
       }
     });
+  }
+
+  updateGameState() {
+    this.currentScenario.currentTime += 1;
+
+    this.facilityAutoDefense();
+
+    this.currentScenario.weapons.forEach((weapon) => {
+      weaponEngagement(this.currentScenario, weapon);
+    });
+
+    this.updateAllAircraftPosition();
   }
 
   _getObservation(): Scenario {
