@@ -43,6 +43,7 @@ import { SetCurrentScenarioTimeContext } from "./ScenarioTimeProvider";
 import { Stroke, Style } from "ol/style";
 import { EventsKey } from "ol/events";
 import { unByKey } from "ol/Observable";
+import VectorSource from "ol/source/Vector";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -124,6 +125,7 @@ export default function ScenarioMap({
   let aircraftRouteMeasurementTooltipElement: HTMLDivElement | null = null;
   let aircraftRouteMeasurementTooltip: Overlay | null = null;
   let aircraftRouteMeasurementListener: EventsKey | undefined;
+  let mousePosition: number[];
 
   const map = new OlMap({
     layers: [
@@ -157,6 +159,10 @@ export default function ScenarioMap({
   }, []);
 
   theMap.on("click", (event) => handleMapClick(event));
+
+  theMap.on("pointermove", function (event) {
+    mousePosition = event.coordinate;
+  });
 
   // theMap.getViewport().addEventListener('contextmenu', function (evt) {
   //   evt.preventDefault();
@@ -369,7 +375,7 @@ export default function ScenarioMap({
     });
 
     aircraftRouteDrawLine = new Draw({
-      source: aircraftRouteLayer.layerSource,
+      source: new VectorSource(),
       type: "LineString",
       style: style,
     });
@@ -545,17 +551,40 @@ export default function ScenarioMap({
 
   function drawNextFrame(observation: Scenario) {
     aircraftLayer.refresh(observation.aircraft);
-    // if (aircraftRouteDrawLine !== null) {
-    //   const temp = observation.aircraft;
-    //   const temp2 = observation.aircraft.filter((aircraft) => {
-    //     return aircraft.id !== game.selectedUnitId;
-    //   });
-    //   console.log(temp.length, temp2.length);
-    //   aircraftRouteLayer.refresh(temp2);
-    // } else {
-    //   aircraftRouteLayer.refresh(observation.aircraft);
-    // }
-    aircraftRouteLayer.refresh(observation.aircraft);
+
+    let aircraftRouteDrawInteraction: Draw | undefined;
+    theMap.getInteractions().forEach((interaction) => {
+      if (interaction instanceof Draw) {
+        aircraftRouteDrawInteraction = interaction;
+      }
+    });
+    if (aircraftRouteDrawInteraction) {
+      aircraftRouteLayer.refresh(
+        observation.aircraft.filter((aircraft) => {
+          return aircraft.id !== game.selectedUnitId;
+        })
+      );
+      aircraftRouteDrawInteraction.removeLastPoint();
+      const aircraftQueuedForMovement = observation.aircraft.find(
+        (aircraft) => aircraft.id === game.selectedUnitId
+      );
+      if (aircraftQueuedForMovement) {
+        const aircraftNewCoordinates = fromLonLat(
+          [
+            aircraftQueuedForMovement.longitude,
+            aircraftQueuedForMovement.latitude,
+          ],
+          projection ?? defaultProjection!
+        );
+        aircraftRouteDrawInteraction.appendCoordinates([
+          aircraftNewCoordinates,
+          mousePosition,
+        ]);
+      }
+    } else {
+      aircraftRouteLayer.refresh(observation.aircraft);
+    }
+
     weaponLayer.refresh(observation.weapons);
     if (featureLabelVisible)
       featureLabelLayer.refreshSubset(observation.aircraft, "aircraft");
@@ -570,22 +599,6 @@ export default function ScenarioMap({
       if (featureLabelVisible)
         featureLabelLayer.refreshSubset(observation.airbases, "airbase");
     }
-    // if (aircraftRouteDrawLine) {
-    //   aircraftRouteDrawLine.removeLastPoint();
-    //   const aircraftQueuedForMovement = observation.aircraft.find(
-    //     (aircraft) => aircraft.id === game.selectedUnitId
-    //   );
-    //   if (aircraftQueuedForMovement) {
-    //     const aircraftNewCoordinates = fromLonLat(
-    //       [
-    //         aircraftQueuedForMovement.longitude,
-    //         aircraftQueuedForMovement.latitude,
-    //       ],
-    //       projection ?? defaultProjection!
-    //     );
-    //     aircraftRouteDrawLine.appendCoordinates([aircraftNewCoordinates]);
-    //   }
-    // }
   }
 
   function setGamePaused() {
