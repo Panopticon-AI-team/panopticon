@@ -121,7 +121,7 @@ export default function ScenarioMap({
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
-  let aircraftRouteDrawLine: Draw | null = null;
+  let aircraftRouteMeasurementDrawLine: Draw | null = null;
   let aircraftRouteMeasurementTooltipElement: HTMLDivElement | null = null;
   let aircraftRouteMeasurementTooltip: Overlay | null = null;
   let aircraftRouteMeasurementListener: EventsKey | undefined;
@@ -174,7 +174,7 @@ export default function ScenarioMap({
     const featuresAtPixel = getFeaturesAtPixel(
       theMap.getEventPixel(event.originalEvent)
     );
-    if (game.selectedUnitId && aircraftRouteDrawLine) {
+    if (game.selectedUnitId && aircraftRouteMeasurementDrawLine) {
       context = "moveAircraft";
     } else if (
       game.selectingTarget &&
@@ -340,13 +340,16 @@ export default function ScenarioMap({
   }
 
   function cleanUpAircraftRouteDrawLineAndMeasurementTooltip() {
-    if (aircraftRouteDrawLine) theMap.removeInteraction(aircraftRouteDrawLine);
-    aircraftRouteDrawLine = null;
+    if (aircraftRouteMeasurementDrawLine)
+      theMap.removeInteraction(aircraftRouteMeasurementDrawLine);
+    aircraftRouteMeasurementDrawLine = null;
     if (aircraftRouteMeasurementTooltipElement) {
       aircraftRouteMeasurementTooltipElement.parentNode?.removeChild(
         aircraftRouteMeasurementTooltipElement
       );
     }
+    if (aircraftRouteMeasurementTooltip)
+      theMap.removeOverlay(aircraftRouteMeasurementTooltip);
     aircraftRouteMeasurementTooltipElement = null;
     aircraftRouteMeasurementTooltip = null;
     if (aircraftRouteMeasurementListener)
@@ -362,27 +365,22 @@ export default function ScenarioMap({
   };
 
   function addAircraftRouteMeasurementInteraction(startCoordinates: number[]) {
-    const colorArray = colorNameToColorArray(
-      game.currentScenario.getSideColor(game.currentSideName),
-      0.5
-    );
-
-    aircraftRouteDrawLine = new Draw({
+    aircraftRouteMeasurementDrawLine = new Draw({
       source: new VectorSource(),
       type: "LineString",
       style: aircraftRouteDrawLineStyle,
     });
 
-    theMap.addInteraction(aircraftRouteDrawLine);
+    theMap.addInteraction(aircraftRouteMeasurementDrawLine);
 
     createAircraftRouteMeasurementTooltip();
 
-    aircraftRouteDrawLine.on("drawstart", function (event) {
-      const sketch = event.feature;
-      sketch.setProperties({
+    aircraftRouteMeasurementDrawLine.on("drawstart", function (event) {
+      const drawLineFeature = event.feature;
+      drawLineFeature.setProperties({
         sideColor: game.currentScenario.getSideColor(game.currentSideName),
       });
-      aircraftRouteMeasurementListener = sketch
+      aircraftRouteMeasurementListener = drawLineFeature
         .getGeometry()
         ?.on("change", function (event) {
           const geom = event.target as LineString;
@@ -403,7 +401,7 @@ export default function ScenarioMap({
         });
     });
 
-    aircraftRouteDrawLine.appendCoordinates([startCoordinates]);
+    aircraftRouteMeasurementDrawLine.appendCoordinates([startCoordinates]);
   }
 
   function queueAircraftForMovement(aircraftId: string) {
@@ -547,41 +545,7 @@ export default function ScenarioMap({
 
   function drawNextFrame(observation: Scenario) {
     aircraftLayer.refresh(observation.aircraft);
-
-    let aircraftRouteDrawInteraction: Draw | undefined;
-    theMap.getInteractions().forEach((interaction) => {
-      if (interaction instanceof Draw) {
-        aircraftRouteDrawInteraction = interaction;
-      }
-    });
-    if (aircraftRouteDrawInteraction) {
-      aircraftRouteLayer.refresh(
-        observation.aircraft.filter((aircraft) => {
-          return aircraft.id !== game.selectedUnitId;
-        })
-      );
-      aircraftRouteDrawInteraction.removeLastPoint();
-      aircraftRouteDrawInteraction.removeLastPoint();
-      const aircraftQueuedForMovement = observation.aircraft.find(
-        (aircraft) => aircraft.id === game.selectedUnitId
-      );
-      if (aircraftQueuedForMovement) {
-        const aircraftNewCoordinates = fromLonLat(
-          [
-            aircraftQueuedForMovement.longitude,
-            aircraftQueuedForMovement.latitude,
-          ],
-          projection ?? defaultProjection!
-        );
-        aircraftRouteDrawInteraction.appendCoordinates([
-          aircraftNewCoordinates,
-          mousePosition,
-        ]);
-      }
-    } else {
-      aircraftRouteLayer.refresh(observation.aircraft);
-    }
-
+    refreshAircraftRouteLayer(observation);
     weaponLayer.refresh(observation.weapons);
     if (featureLabelVisible)
       featureLabelLayer.refreshSubset(observation.aircraft, "aircraft");
@@ -739,6 +703,42 @@ export default function ScenarioMap({
       ...game.currentScenario.facilities,
       ...game.currentScenario.airbases,
     ]);
+  }
+
+  function refreshAircraftRouteLayer(observation: Scenario) {
+    let aircraftRouteDrawInteraction: Draw | undefined;
+    theMap.getInteractions().forEach((interaction) => {
+      if (interaction instanceof Draw) {
+        aircraftRouteDrawInteraction = interaction;
+      }
+    });
+    if (aircraftRouteDrawInteraction) {
+      aircraftRouteLayer.refresh(
+        observation.aircraft.filter((aircraft) => {
+          return aircraft.id !== game.selectedUnitId;
+        })
+      );
+      aircraftRouteDrawInteraction.removeLastPoint();
+      aircraftRouteDrawInteraction.removeLastPoint();
+      const aircraftQueuedForMovement = observation.aircraft.find(
+        (aircraft) => aircraft.id === game.selectedUnitId
+      );
+      if (aircraftQueuedForMovement) {
+        const aircraftNewCoordinates = fromLonLat(
+          [
+            aircraftQueuedForMovement.longitude,
+            aircraftQueuedForMovement.latitude,
+          ],
+          projection ?? defaultProjection!
+        );
+        aircraftRouteDrawInteraction.appendCoordinates([
+          aircraftNewCoordinates,
+          mousePosition,
+        ]);
+      }
+    } else {
+      aircraftRouteLayer.refresh(observation.aircraft);
+    }
   }
 
   function updateMapView(center: number[], zoom: number) {

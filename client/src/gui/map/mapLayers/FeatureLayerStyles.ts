@@ -110,26 +110,6 @@ export const aircraftRouteDrawLineStyle = function (feature: FeatureLike) {
     }),
   ];
 
-  // const lineString = feature.getGeometry() as LineString;
-  // const secondToLastPoint =
-  //   lineString.getCoordinates()[lineString.getCoordinates().length - 2];
-  // const lastPoint = lineString.getLastCoordinate();
-  // const dx = lastPoint[0] - secondToLastPoint[0];
-  // const dy = lastPoint[1] - secondToLastPoint[1];
-  // const rotation = Math.atan2(dy, dx);
-  // styles.push(
-  //   new Style({
-  //     geometry: new Point(lastPoint),
-  //     image: new Icon({
-  //       src: ChevronRightSvg,
-  //       anchor: [0.75, 0.5],
-  //       rotateWithView: true,
-  //       rotation: -rotation,
-  //       color: colorArray ?? "rgba(0, 0, 0, 0.5)",
-  //     }),
-  //   })
-  // );
-
   return styles;
 };
 
