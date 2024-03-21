@@ -1,7 +1,6 @@
 import Feature, { FeatureLike } from "ol/Feature.js";
 import { Circle, Geometry, LineString } from "ol/geom";
 import Point from "ol/geom/Point.js";
-import { Vector as VectorLayer } from "ol/layer.js";
 import VectorSource from "ol/source/Vector.js";
 import { Projection, fromLonLat, get as getProjection } from "ol/proj";
 import { Style } from "ol/style";
@@ -23,14 +22,15 @@ import {
   featureLabelStyle,
 } from "./FeatureLayerStyles";
 import Weapon from "../../../game/units/Weapon";
+import VectorLayer from "ol/layer/Vector";
 
 type GameEntity = Aircraft | Facility | Airbase | Weapon;
 
 const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
 
 class FeatureLayer {
-  layerSource: VectorSource;
-  layer: VectorLayer<VectorSource<Geometry>>;
+  layerSource: VectorSource<Feature<Geometry>>;
+  layer: VectorLayer<VectorSource<Feature<Geometry>>>;
   projection: Projection;
   featureCount: number = 0;
 
@@ -39,9 +39,7 @@ class FeatureLayer {
     projection?: Projection,
     zIndex?: number
   ) {
-    this.layerSource = new VectorSource({
-      features: [],
-    });
+    this.layerSource = new VectorSource();
     this.layer = new VectorLayer({
       source: this.layerSource,
       style: styleFunction,
