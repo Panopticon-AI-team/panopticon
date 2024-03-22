@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import FeaturePopup from "./FeaturePopup";
 import Stack from "@mui/material/Stack";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
 import { ReactComponent as FlightIcon } from "../assets/flight_black_24dp.svg";
 import { ReactComponent as RadarIcon } from "../assets/radar_black_24dp.svg";
 import { ReactComponent as FlightTakeoffIcon } from "../assets/flight_takeoff_black_24dp.svg";
@@ -46,6 +47,8 @@ export default function MultipleFeatureSelector({
         return <RadarIcon />;
       case "aircraft":
         return <FlightIcon />;
+      case "ship":
+        return <DirectionsBoatIcon />;
       default:
         return <HelpOutlineIcon />;
     }
