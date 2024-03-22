@@ -568,7 +568,7 @@ export default function ScenarioMap({
   function addAircraft(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = "F-22A";
+    const className = "F-22Z";
     const latitude = coordinates[1];
     const longitude = coordinates[0];
     const newAircraft = game.addAircraft(
@@ -586,14 +586,14 @@ export default function ScenarioMap({
 
   function addAircraftToAirbase(airbaseId: string) {
     const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = "F-22A";
+    const className = "F-22Z";
     game.addAircraftToAirbase(aircraftName, className, airbaseId);
   }
 
   function addFacility(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const facilityName = "SA-20 #" + randomInt(1, 5000).toString();
-    const className = "SA-20";
+    const facilityName = "SAM #" + randomInt(1, 5000).toString();
+    const className = "SAM";
     const latitude = coordinates[1];
     const longitude = coordinates[0];
     const newFacility = game.addFacility(
@@ -652,7 +652,7 @@ export default function ScenarioMap({
   function addShip(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const shipName = "Fishing boat #" + randomInt(1, 5000).toString();
-    const className = "USS Nimitz";
+    const className = "Carrier";
     const latitude = coordinates[1];
     const longitude = coordinates[0];
     const newShip = game.addShip(shipName, className, latitude, longitude);
@@ -666,7 +666,7 @@ export default function ScenarioMap({
 
   function addAircraftToShip(shipId: string) {
     const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = "F-22A";
+    const className = "F-22Z";
     game.addAircraftToShip(aircraftName, className, shipId);
   }
 
