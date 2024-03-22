@@ -529,6 +529,31 @@ export default class Game {
       loadedScenario.weapons.push(newWeapon);
     });
     savedScenario.ships?.forEach((ship: any) => {
+      const shipAircraft: Aircraft[] = [];
+      ship.aircraft.forEach((aircraft: any) => {
+        const newAircraft = new Aircraft({
+          id: aircraft.id,
+          name: aircraft.name,
+          sideName: aircraft.sideName,
+          className: aircraft.className,
+          latitude: aircraft.latitude,
+          longitude: aircraft.longitude,
+          altitude: aircraft.altitude,
+          heading: aircraft.heading,
+          speed: aircraft.speed,
+          currentFuel: aircraft.currentFuel,
+          maxFuel: aircraft.maxFuel,
+          fuelRate: aircraft.fuelRate,
+          range: aircraft.range,
+          route: aircraft.route,
+          selected: aircraft.selected,
+          sideColor: aircraft.sideColor,
+          weapons: aircraft.weapons ?? [
+            this.getSampleWeapon(10, 0.25, aircraft.sideName),
+          ],
+        });
+        shipAircraft.push(newAircraft);
+      });
       const newShip = new Ship({
         id: ship.id,
         name: ship.name,
@@ -548,7 +573,7 @@ export default class Game {
         weapons: ship.weapons ?? [
           this.getSampleWeapon(300, 0.15, ship.sideName),
         ],
-        aircraft: ship.aircraft,
+        aircraft: shipAircraft,
       });
       loadedScenario.ships.push(newShip);
     });
