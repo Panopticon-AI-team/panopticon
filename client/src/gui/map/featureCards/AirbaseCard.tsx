@@ -13,6 +13,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import TextField from "@mui/material/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import AddIcon from "@mui/icons-material/Add";
+import FlightIcon from "@mui/icons-material/Flight";
 
 interface AirbaseCardProps {
   airbase: Airbase;
@@ -124,13 +126,19 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
   const defaultCardActions = (
     <Stack spacing={1} direction="column">
       <Stack spacing={1} direction="row">
-        <Button variant="contained" size="small" onClick={_handleAddAircraft}>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={_handleAddAircraft}
+          startIcon={<AddIcon />}
+        >
           Add aicraft
         </Button>
         <Button
           variant="contained"
           size="small"
           onClick={_handleLaunchAircraft}
+          startIcon={<FlightIcon />}
         >
           Launch aicraft
         </Button>
