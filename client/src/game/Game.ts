@@ -10,7 +10,7 @@ import {
   getDistanceBetweenTwoPoints,
 } from "../utils/utils";
 import {
-  checkIfAircraftIsWithinFacilityThreatRange,
+  checkIfAircraftIsWithinThreatRange,
   checkTargetTrackedByCount,
   launchWeapon,
   weaponEngagement,
@@ -19,6 +19,7 @@ import Airbase from "./units/Airbase";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
 import { GAME_SPEED_DELAY_MS } from "../utils/constants";
+import Ship from "./units/Ship";
 
 interface IMapView {
   defaultCenter: number[];
@@ -40,6 +41,7 @@ export default class Game {
   addingAircraft: boolean = false;
   addingAirbase: boolean = false;
   addingFacility: boolean = false;
+  addingShip: boolean = false;
   selectingTarget: boolean = false;
   currentAttackerId: string = "";
   selectedUnitId: string = "";
@@ -176,6 +178,86 @@ export default class Game {
     return facility;
   }
 
+  addShip(
+    shipName: string,
+    className: string,
+    latitude: number,
+    longitude: number
+  ): Ship | undefined {
+    if (!this.currentSideName) {
+      return;
+    }
+    const ship = new Ship({
+      id: uuidv4(),
+      name: shipName,
+      sideName: this.currentSideName,
+      className: className,
+      latitude: latitude,
+      longitude: longitude,
+      altitude: 0.0,
+      heading: 0.0,
+      speed: 30.0,
+      currentFuel: 32000000.0,
+      maxFuel: 32000000.0,
+      fuelRate: 7000.0,
+      range: 250,
+      route: [],
+      selected: false,
+      sideColor: this.currentScenario.getSideColor(this.currentSideName),
+      weapons: [this.getSampleWeapon(300, 0.15, this.currentSideName)],
+      aircraft: [],
+    });
+    this.currentScenario.ships.push(ship);
+    return ship;
+  }
+
+  addAircraftToShip(aircraftName: string, className: string, shipId: string) {
+    if (!this.currentSideName) {
+      return;
+    }
+    const ship = this.currentScenario.getShip(shipId);
+    if (ship) {
+      const aircraft = new Aircraft({
+        id: uuidv4(),
+        name: aircraftName,
+        sideName: this.currentSideName,
+        className: className,
+        latitude: ship.latitude - 0.5,
+        longitude: ship.longitude - 0.5,
+        altitude: 10000.0,
+        heading: 90.0,
+        speed: 300.0,
+        currentFuel: 10000.0,
+        maxFuel: 10000.0,
+        fuelRate: 5000.0,
+        range: 100,
+        sideColor: this.currentScenario.getSideColor(this.currentSideName),
+        weapons: [this.getSampleWeapon(10, 0.25)],
+      });
+      ship.aircraft.push(aircraft);
+    }
+  }
+
+  launchAircraftFromShip(shipId: string) {
+    if (!this.currentSideName) {
+      return;
+    }
+    const ship = this.currentScenario.getShip(shipId);
+    if (ship && ship.aircraft.length > 0) {
+      const aircraft = ship.aircraft.pop();
+      if (aircraft) {
+        this.currentScenario.aircraft.push(aircraft);
+        return aircraft;
+      }
+    }
+  }
+
+  removeShip(shipId: string) {
+    this.currentScenario.ships = this.currentScenario.ships.filter(
+      (ship) => ship.id !== shipId
+    );
+  }
+
   getSampleWeapon(
     quantity: number,
     lethality: number,
@@ -218,6 +300,20 @@ export default class Game {
     }
   }
 
+  moveShip(shipId: string, newLatitude: number, newLongitude: number) {
+    const ship = this.currentScenario.getShip(shipId);
+    if (ship) {
+      ship.route = [[newLatitude, newLongitude]];
+      ship.heading = getBearingBetweenTwoPoints(
+        ship.latitude,
+        ship.longitude,
+        newLatitude,
+        newLongitude
+      );
+      return ship;
+    }
+  }
+
   launchAircraftFromAirbase(airbaseId: string) {
     if (!this.currentSideName) {
       return;
@@ -237,6 +333,7 @@ export default class Game {
       this.currentScenario.getAircraft(targetId) ??
       this.currentScenario.getFacility(targetId) ??
       this.currentScenario.getWeapon(targetId) ??
+      this.currentScenario.getShip(targetId) ??
       this.currentScenario.getAirbase(targetId);
     const aircraft = this.currentScenario.getAircraft(aircraftId);
     if (target && aircraft && target?.sideName !== aircraft?.sideName) {
@@ -408,6 +505,30 @@ export default class Game {
       });
       loadedScenario.weapons.push(newWeapon);
     });
+    savedScenario.ships?.forEach((ship: any) => {
+      const newShip = new Ship({
+        id: ship.id,
+        name: ship.name,
+        sideName: ship.sideName,
+        className: ship.className,
+        latitude: ship.latitude,
+        longitude: ship.longitude,
+        altitude: ship.altitude,
+        heading: ship.heading,
+        speed: ship.speed,
+        currentFuel: ship.currentFuel,
+        maxFuel: ship.maxFuel,
+        fuelRate: ship.fuelRate,
+        range: ship.range,
+        route: ship.route,
+        sideColor: ship.sideColor,
+        weapons: ship.weapons ?? [
+          this.getSampleWeapon(300, 0.15, ship.sideName),
+        ],
+        aircraft: ship.aircraft,
+      });
+      loadedScenario.ships.push(newShip);
+    });
     this.currentScenario = loadedScenario;
   }
 
@@ -416,10 +537,25 @@ export default class Game {
       this.currentScenario.aircraft.forEach((aircraft) => {
         if (facility.sideName !== aircraft.sideName) {
           if (
-            checkIfAircraftIsWithinFacilityThreatRange(aircraft, facility) &&
+            checkIfAircraftIsWithinThreatRange(aircraft, facility) &&
             checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
           ) {
             launchWeapon(this.currentScenario, facility, aircraft);
+          }
+        }
+      });
+    });
+  }
+
+  shipAutoDefense() {
+    this.currentScenario.ships.forEach((ship) => {
+      this.currentScenario.aircraft.forEach((aircraft) => {
+        if (ship.sideName !== aircraft.sideName) {
+          if (
+            checkIfAircraftIsWithinThreatRange(aircraft, ship) &&
+            checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
+          ) {
+            launchWeapon(this.currentScenario, ship, aircraft);
           }
         }
       });
@@ -471,16 +607,63 @@ export default class Game {
     });
   }
 
+  updateAllShipPosition() {
+    this.currentScenario.ships.forEach((ship) => {
+      const route = ship.route;
+      if (route.length > 0) {
+        const nextWaypoint = route[route.length - 1];
+        const nextWaypointLatitude = nextWaypoint[0];
+        const nextWaypointLongitude = nextWaypoint[1];
+        if (
+          getDistanceBetweenTwoPoints(
+            ship.latitude,
+            ship.longitude,
+            nextWaypointLatitude,
+            nextWaypointLongitude
+          ) < 0.5
+        ) {
+          ship.latitude = nextWaypointLatitude;
+          ship.longitude = nextWaypointLongitude;
+          ship.route.shift();
+        } else {
+          const nextShipCoordinates = getNextCoordinates(
+            ship.latitude,
+            ship.longitude,
+            nextWaypointLatitude,
+            nextWaypointLongitude,
+            ship.speed
+          );
+          const nextShipLatitude = nextShipCoordinates[0];
+          const nextShipLongitude = nextShipCoordinates[1];
+          ship.latitude = nextShipLatitude;
+          ship.longitude = nextShipLongitude;
+          ship.heading = getBearingBetweenTwoPoints(
+            ship.latitude,
+            ship.longitude,
+            nextWaypointLatitude,
+            nextWaypointLongitude
+          );
+        }
+        ship.currentFuel -= ship.fuelRate / 3600;
+        if (ship.currentFuel <= 0) {
+          this.removeShip(ship.id);
+        }
+      }
+    });
+  }
+
   updateGameState() {
     this.currentScenario.currentTime += 1;
 
     this.facilityAutoDefense();
+    this.shipAutoDefense();
 
     this.currentScenario.weapons.forEach((weapon) => {
       weaponEngagement(this.currentScenario, weapon);
     });
 
     this.updateAllAircraftPosition();
+    this.updateAllShipPosition();
   }
 
   _getObservation(): Scenario {
