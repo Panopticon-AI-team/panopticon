@@ -30,6 +30,7 @@ interface ToolBarProps {
   refreshAllLayers: () => void;
   updateMapView: (center: number[], zoom: number) => void;
   updateScenarioTimeCompression: (scenarioTimeCompression: number) => void;
+  updateCurrentSideName: (currentSideName: string) => void;
   updateCurrentScenarioTimeToContext: () => void;
   scenarioTimeCompression: number;
   scenarioCurrentSideName: string;
@@ -95,6 +96,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
           props.updateScenarioTimeCompression(
             props.game.currentScenario.timeCompression
           );
+          props.updateCurrentSideName(props.game.currentSideName);
           props.refreshAllLayers();
           props.updateCurrentScenarioTimeToContext();
         };
@@ -118,6 +120,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
         props.updateScenarioTimeCompression(
           props.game.currentScenario.timeCompression
         );
+        props.updateCurrentSideName(props.game.currentSideName);
         props.refreshAllLayers();
         props.updateCurrentScenarioTimeToContext();
       };
@@ -130,6 +133,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
       props.updateScenarioTimeCompression(
         props.game.currentScenario.timeCompression
       );
+      props.updateCurrentSideName(props.game.currentSideName);
       props.refreshAllLayers();
       props.updateCurrentScenarioTimeToContext();
     }

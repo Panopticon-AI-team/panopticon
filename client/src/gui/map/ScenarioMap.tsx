@@ -1062,6 +1062,7 @@ export default function ScenarioMap({
         updateCurrentScenarioTimeToContext={() => {
           setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
         }}
+        updateCurrentSideName={setCurrentSideName}
         scenarioTimeCompression={currentScenarioTimeCompression}
         scenarioCurrentSideName={currentSideName}
         game={game}
