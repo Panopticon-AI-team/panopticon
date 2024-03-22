@@ -37,6 +37,8 @@ interface ToolBarProps {
   game: Game;
   featureLabelVisibility: boolean;
   toggleFeatureLabelVisibility: (featureLabelVisibility: boolean) => void;
+  threatRangeVisibility: boolean;
+  toggleThreatRangeVisibility: (threatRangeVisibility: boolean) => void;
   toggleBaseMapLayer: () => void;
 }
 
@@ -265,6 +267,22 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
           }
         >
           {"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={() => {
+            props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
+          }}
+          startIcon={
+            props.threatRangeVisibility ? (
+              <VisibilityIcon />
+            ) : (
+              <VisibilityOffIcon />
+            )
+          }
+        >
+          {"THREAT RANGE " + (props.threatRangeVisibility ? "ON" : "OFF")}
         </Button>
         <Button
           variant="contained"

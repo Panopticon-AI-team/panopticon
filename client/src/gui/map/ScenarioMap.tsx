@@ -132,6 +132,7 @@ export default function ScenarioMap({
       features: [],
     });
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
+  const [threatRangeVisible, setThreatRangeVisible] = useState(true);
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
@@ -558,7 +559,11 @@ export default function ScenarioMap({
       if (featureLabelVisible)
         featureLabelLayer.refreshSubset(observation.airbases, "airbase");
     }
-    threatRangeLayer.refresh([...observation.facilities, ...observation.ships]);
+    if (threatRangeVisible)
+      threatRangeLayer.refresh([
+        ...observation.facilities,
+        ...observation.ships,
+      ]);
   }
 
   function setGamePaused() {
@@ -604,7 +609,7 @@ export default function ScenarioMap({
     );
     if (newFacility) {
       facilityLayer.addFacilityFeature(newFacility);
-      threatRangeLayer.addRangeFeature(newFacility);
+      if (threatRangeVisible) threatRangeLayer.addRangeFeature(newFacility);
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(newFacility);
     }
@@ -658,7 +663,7 @@ export default function ScenarioMap({
     const newShip = game.addShip(shipName, className, latitude, longitude);
     if (newShip) {
       shipLayer.addShipFeature(newShip);
-      threatRangeLayer.addRangeFeature(newShip);
+      if (threatRangeVisible) threatRangeLayer.addRangeFeature(newShip);
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(newShip);
     }
@@ -787,10 +792,11 @@ export default function ScenarioMap({
     aircraftLayer.refresh(game.currentScenario.aircraft);
     facilityLayer.refresh(game.currentScenario.facilities);
     airbasesLayer.refresh(game.currentScenario.airbases);
-    threatRangeLayer.refresh([
-      ...game.currentScenario.facilities,
-      ...game.currentScenario.ships,
-    ]);
+    if (threatRangeVisible)
+      threatRangeLayer.refresh([
+        ...game.currentScenario.facilities,
+        ...game.currentScenario.ships,
+      ]);
     aircraftRouteLayer.refresh(game.currentScenario.aircraft);
     shipRouteLayer.refresh(game.currentScenario.ships);
     weaponLayer.refresh(game.currentScenario.weapons);
@@ -803,6 +809,13 @@ export default function ScenarioMap({
       ...game.currentScenario.aircraft,
       ...game.currentScenario.facilities,
       ...game.currentScenario.airbases,
+      ...game.currentScenario.ships,
+    ]);
+  }
+
+  function refreshThreatRangeLayer() {
+    threatRangeLayer.refresh([
+      ...game.currentScenario.facilities,
       ...game.currentScenario.ships,
     ]);
   }
@@ -964,6 +977,16 @@ export default function ScenarioMap({
     }
   }
 
+  function toggleThreatRangeVisibility(on: boolean) {
+    setThreatRangeVisible(on);
+    if (on) {
+      refreshThreatRangeLayer();
+      threatRangeLayer.layer.setVisible(true);
+    } else {
+      threatRangeLayer.layer.setVisible(false);
+    }
+  }
+
   function toggleBaseMapLayer() {
     baseMapLayers.toggleLayer();
   }
@@ -1083,6 +1106,8 @@ export default function ScenarioMap({
         game={game}
         featureLabelVisibility={featureLabelVisible}
         toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
+        threatRangeVisibility={threatRangeVisible}
+        toggleThreatRangeVisibility={toggleThreatRangeVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
       />
       <div ref={mapId} className="map"></div>
