@@ -20,17 +20,17 @@ import Ship from "../units/Ship";
 
 type Target = Aircraft | Facility | Weapon | Airbase | Ship;
 
-export function checkIfAircraftIsWithinThreatRange(
-  aircraft: Aircraft,
-  threat: Facility | Ship
+export function checkIfThreatIsWithinRange(
+  threat: Aircraft | Weapon,
+  defender: Facility | Ship
 ): boolean {
   const projection = new Projection({ code: DEFAULT_OL_PROJECTION_CODE });
-  const threatRangeGeometry = new Circle(
-    fromLonLat([threat.longitude, threat.latitude], projection),
-    threat.range * NAUTICAL_MILES_TO_METERS
+  const defenderRangeGeometry = new Circle(
+    fromLonLat([defender.longitude, defender.latitude], projection),
+    defender.range * NAUTICAL_MILES_TO_METERS
   );
-  return threatRangeGeometry.intersectsCoordinate(
-    fromLonLat([aircraft.longitude, aircraft.latitude], projection)
+  return defenderRangeGeometry.intersectsCoordinate(
+    fromLonLat([threat.longitude, threat.latitude], projection)
   );
 }
 
