@@ -133,6 +133,7 @@ export default function ScenarioMap({
     });
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
+  const [routeVisible, setRouteVisible] = useState(true);
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
@@ -797,11 +798,12 @@ export default function ScenarioMap({
         ...game.currentScenario.facilities,
         ...game.currentScenario.ships,
       ]);
-    aircraftRouteLayer.refresh(game.currentScenario.aircraft);
-    shipRouteLayer.refresh(game.currentScenario.ships);
+    // aircraftRouteLayer.refresh(game.currentScenario.aircraft);
+    // shipRouteLayer.refresh(game.currentScenario.ships);
     weaponLayer.refresh(game.currentScenario.weapons);
     shipLayer.refresh(game.currentScenario.ships);
     if (featureLabelVisible) refreshFeatureLabelLayer();
+    if (routeVisible) refreshRouteLayer(game.currentScenario);
   }
 
   function refreshFeatureLabelLayer() {
@@ -846,6 +848,7 @@ export default function ScenarioMap({
           return aircraft.id !== game.selectedUnitId;
         })
       );
+      shipRouteLayer.refresh(observation.ships);
       routeDrawInteraction.removeLastPoint();
       routeDrawInteraction.removeLastPoint();
       const aircraftQueuedForMovement = observation.aircraft.find(
@@ -864,7 +867,6 @@ export default function ScenarioMap({
           mousePosition,
         ]);
       }
-      shipRouteLayer.refresh(observation.ships);
     } else if (
       routeDrawInteraction &&
       getSelectedFeatureType(game.selectedUnitId) == "ship"
@@ -874,6 +876,7 @@ export default function ScenarioMap({
           return ship.id !== game.selectedUnitId;
         })
       );
+      aircraftRouteLayer.refresh(observation.aircraft);
       routeDrawInteraction.removeLastPoint();
       routeDrawInteraction.removeLastPoint();
       const shipQueuedForMovement = observation.ships.find(
@@ -889,7 +892,6 @@ export default function ScenarioMap({
           mousePosition,
         ]);
       }
-      aircraftRouteLayer.refresh(observation.aircraft);
     } else {
       aircraftRouteLayer.refresh(observation.aircraft);
       shipRouteLayer.refresh(observation.ships);
@@ -984,6 +986,18 @@ export default function ScenarioMap({
       threatRangeLayer.layer.setVisible(true);
     } else {
       threatRangeLayer.layer.setVisible(false);
+    }
+  }
+
+  function toggleRouteVisibility(on: boolean) {
+    setRouteVisible(on);
+    if (on) {
+      refreshRouteLayer(game.currentScenario);
+      aircraftRouteLayer.layer.setVisible(true);
+      shipRouteLayer.layer.setVisible(true);
+    } else {
+      aircraftRouteLayer.layer.setVisible(false);
+      shipRouteLayer.layer.setVisible(false);
     }
   }
 
@@ -1108,6 +1122,8 @@ export default function ScenarioMap({
         toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
         threatRangeVisibility={threatRangeVisible}
         toggleThreatRangeVisibility={toggleThreatRangeVisibility}
+        routeVisibility={routeVisible}
+        toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
       />
       <div ref={mapId} className="map"></div>

@@ -39,6 +39,8 @@ interface ToolBarProps {
   toggleFeatureLabelVisibility: (featureLabelVisibility: boolean) => void;
   threatRangeVisibility: boolean;
   toggleThreatRangeVisibility: (threatRangeVisibility: boolean) => void;
+  routeVisibility: boolean;
+  toggleRouteVisibility: (routeVisibility: boolean) => void;
   toggleBaseMapLayer: () => void;
 }
 
@@ -81,6 +83,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
 
   const loadScenario = () => {
     props.pauseOnClick();
+    setScenarioPaused(true);
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".json";
@@ -110,6 +113,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
 
   const reloadScenario = () => {
     props.pauseOnClick();
+    setScenarioPaused(true);
     if (currentScenarioFile) {
       const reader = new FileReader();
       reader.readAsText(currentScenarioFile, "UTF-8");
@@ -283,6 +287,18 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
           }
         >
           {"THREAT RANGE " + (props.threatRangeVisibility ? "ON" : "OFF")}
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={() => {
+            props.toggleRouteVisibility(!props.routeVisibility);
+          }}
+          startIcon={
+            props.routeVisibility ? <VisibilityIcon /> : <VisibilityOffIcon />
+          }
+        >
+          {"ROUTES " + (props.routeVisibility ? "ON" : "OFF")}
         </Button>
         <Button
           variant="contained"
