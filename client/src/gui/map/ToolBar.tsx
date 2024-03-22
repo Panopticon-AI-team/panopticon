@@ -6,6 +6,7 @@ import PauseIcon from "@mui/icons-material/Pause";
 import DownloadIcon from "@mui/icons-material/Download";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import RedoIcon from "@mui/icons-material/Redo";
+import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
 import { ReactComponent as FlightIcon } from "../assets/flight_black_24dp.svg";
 import { ReactComponent as RadarIcon } from "../assets/radar_black_24dp.svg";
 import { ReactComponent as FlightTakeoffIcon } from "../assets/flight_takeoff_black_24dp.svg";
@@ -20,6 +21,7 @@ interface ToolBarProps {
   addAircraftOnClick: () => void;
   addFacilityOnClick: () => void;
   addAirbaseOnClick: () => void;
+  addShipOnClick: () => void;
   playOnClick: () => void;
   stepOnClick: () => void;
   pauseOnClick: () => void;
@@ -51,7 +53,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
 
   const toolbarStyle = {
     backgroundColor: "#282c34",
-    padding: "10px",
+    padding: "5px",
   };
 
   const buttonStyle = (backgroundColor: string) => {
@@ -134,13 +136,13 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
   };
 
   const handlePlayClick = () => {
-    setScenarioPaused(false);
-    props.playOnClick();
-  };
-
-  const handlePauseClick = () => {
-    setScenarioPaused(true);
-    props.pauseOnClick();
+    if (scenarioPaused) {
+      setScenarioPaused(false);
+      props.playOnClick();
+    } else {
+      setScenarioPaused(true);
+      props.pauseOnClick();
+    }
   };
 
   const handleStepClick = () => {
@@ -149,120 +151,126 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
   };
 
   return (
-    <Stack spacing={2} direction="row" style={toolbarStyle}>
-      <CurrentTimeDisplay />
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={props.toggleScenarioTimeCompressionOnClick}
-      >
-        Game Speed: {props.scenarioTimeCompression}X
-      </Button>
-      <Button
-        variant="contained"
-        color="success"
-        onClick={handlePlayClick}
-        startIcon={<PlayArrowIcon />}
-      >
-        {scenarioPaused ? "PLAY" : "PLAYING"}
-      </Button>
-      <Button
-        variant="contained"
-        color="error"
-        onClick={handlePauseClick}
-        startIcon={<PauseIcon />}
-      >
-        {scenarioPaused ? "PAUSED" : "PAUSE"}
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={handleStepClick}
-        startIcon={<RedoIcon />}
-      >
-        STEP
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(
-          props.game.currentScenario.getSideColor(props.scenarioCurrentSideName)
-        )}
-        onClick={props.switchCurrentSideOnClick}
-      >
-        Current side: {props.scenarioCurrentSideName}
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={() => {
-          props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
-        }}
-        startIcon={
-          props.featureLabelVisibility ? (
-            <VisibilityIcon />
-          ) : (
-            <VisibilityOffIcon />
-          )
-        }
-      >
-        {"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={props.toggleBaseMapLayer}
-        startIcon={<VisibilityIcon />}
-      >
-        SWITCH MAP
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={props.addAircraftOnClick}
-        startIcon={<FlightIcon />}
-      >
-        Add aircraft
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={props.addAirbaseOnClick}
-        startIcon={<FlightTakeoffIcon />}
-      >
-        Add airbase
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={props.addFacilityOnClick}
-        startIcon={<RadarIcon />}
-      >
-        Add SAM
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={exportScenario}
-        startIcon={<DownloadIcon />}
-      >
-        EXPORT SCENARIO
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={loadScenario}
-        startIcon={<CloudUploadIcon />}
-      >
-        LOAD SCENARIO
-      </Button>
-      <Button
-        variant="contained"
-        style={buttonStyle(defaultButtonColor)}
-        onClick={reloadScenario}
-        startIcon={<ReplayIcon />}
-      >
-        RELOAD SCENARIO
-      </Button>
+    <Stack spacing={0.5} direction="column" style={toolbarStyle}>
+      <Stack spacing={2} direction="row" style={toolbarStyle}>
+        <CurrentTimeDisplay />
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={props.toggleScenarioTimeCompressionOnClick}
+        >
+          Game Speed: {props.scenarioTimeCompression}X
+        </Button>
+        <Button
+          variant="contained"
+          color={scenarioPaused ? "success" : "error"}
+          onClick={handlePlayClick}
+          startIcon={scenarioPaused ? <PlayArrowIcon /> : <PauseIcon />}
+        >
+          {scenarioPaused ? "PLAY" : "PAUSE"}
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={handleStepClick}
+          startIcon={<RedoIcon />}
+        >
+          STEP
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={exportScenario}
+          startIcon={<DownloadIcon />}
+        >
+          EXPORT SCENARIO
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={loadScenario}
+          startIcon={<CloudUploadIcon />}
+        >
+          LOAD SCENARIO
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={reloadScenario}
+          startIcon={<ReplayIcon />}
+        >
+          RELOAD SCENARIO
+        </Button>
+      </Stack>
+      <Stack spacing={2} direction="row" style={toolbarStyle}>
+        <Button
+          variant="contained"
+          style={buttonStyle(
+            props.game.currentScenario.getSideColor(
+              props.scenarioCurrentSideName
+            )
+          )}
+          onClick={props.switchCurrentSideOnClick}
+        >
+          Current side: {props.scenarioCurrentSideName}
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={props.addAircraftOnClick}
+          startIcon={<FlightIcon />}
+        >
+          Add aircraft
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={props.addAirbaseOnClick}
+          startIcon={<FlightTakeoffIcon />}
+        >
+          Add airbase
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={props.addFacilityOnClick}
+          startIcon={<RadarIcon />}
+        >
+          Add SAM
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={props.addShipOnClick}
+          startIcon={<DirectionsBoatIcon />}
+        >
+          Add Ship
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={() => {
+            props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
+          }}
+          startIcon={
+            props.featureLabelVisibility ? (
+              <VisibilityIcon />
+            ) : (
+              <VisibilityOffIcon />
+            )
+          }
+        >
+          {"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}
+        </Button>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          onClick={props.toggleBaseMapLayer}
+          startIcon={<VisibilityIcon />}
+        >
+          SWITCH MAP
+        </Button>
+      </Stack>
     </Stack>
   );
 }
