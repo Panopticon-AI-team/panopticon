@@ -808,6 +808,16 @@ export default function ScenarioMap({
   }
 
   function refreshRouteLayer(observation: Scenario) {
+    if (
+      !observation.getAircraft(game.selectedUnitId) &&
+      !observation.getShip(game.selectedUnitId)
+    ) {
+      cleanUpRouteDrawLineAndMeasurementTooltip();
+      aircraftRouteLayer.refresh(observation.aircraft);
+      shipRouteLayer.refresh(observation.ships);
+      return;
+    }
+
     let routeDrawInteraction: Draw | undefined;
     theMap.getInteractions().forEach((interaction) => {
       if (interaction instanceof Draw) {
@@ -991,6 +1001,11 @@ export default function ScenarioMap({
       );
     }
     if (routeMeasurementTooltip) theMap.removeOverlay(routeMeasurementTooltip);
+    theMap.getOverlays().forEach((overlay) => {
+      if (overlay.getElement()?.innerHTML.slice(-2) === "NM") {
+        theMap.removeOverlay(overlay);
+      }
+    });
     routeMeasurementTooltipElement = null;
     routeMeasurementTooltip = null;
     if (routeMeasurementListener) unByKey(routeMeasurementListener);
