@@ -154,8 +154,8 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
         Range: {props.ship.range.toFixed(0)} NM
       </Typography>
       <Typography variant="h6">
-        Fuel: {props.ship.currentFuel.toFixed(2)} /{" "}
-        {props.ship.maxFuel.toFixed(2)}
+        Fuel: {props.ship.currentFuel.toFixed(0)} /{" "}
+        {props.ship.maxFuel.toFixed(0) + " LBS"}
       </Typography>
       <Typography variant="h6">Side: {props.ship.sideName}</Typography>
       <Typography variant="h6">
@@ -226,7 +226,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
             autoComplete="off"
             id="ship-current-fuel-text-field"
             label="Current Fuel"
-            defaultValue={props.ship.currentFuel.toFixed(2)}
+            defaultValue={props.ship.currentFuel.toFixed(0)}
             onChange={_handleTextFieldChange}
             variant="outlined"
             sx={inputStyle}
