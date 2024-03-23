@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -16,6 +16,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ReplayIcon from "@mui/icons-material/Replay";
 import CurrentTimeDisplay from "./CurrentTimeDisplay";
+import CurrentActionContextDisplay from "./CurrentActionContextDisplay";
 
 interface ToolBarProps {
   addAircraftOnClick: () => void;
@@ -211,6 +212,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
         >
           RELOAD SCENARIO
         </Button>
+        <CurrentActionContextDisplay />
       </Stack>
       <Stack spacing={2} direction="row" style={toolbarStyle}>
         <Button

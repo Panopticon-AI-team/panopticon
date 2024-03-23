@@ -46,6 +46,7 @@ import { unByKey } from "ol/Observable";
 import VectorSource from "ol/source/Vector";
 import { routeDrawLineStyle } from "./mapLayers/FeatureLayerStyles";
 import ShipCard from "./featureCards/ShipCard";
+import { SetCurrentGameStatus } from "./contextProviders/GameStatusProvider";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -137,6 +138,7 @@ export default function ScenarioMap({
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
+  const setCurrentGameStatusToContext = useContext(SetCurrentGameStatus);
   let routeMeasurementDrawLine: Draw | null = null;
   let routeMeasurementTooltipElement: HTMLDivElement | null = null;
   let routeMeasurementTooltip: Overlay | null = null;
@@ -271,6 +273,9 @@ export default function ScenarioMap({
           );
         }
         game.selectedUnitId = "";
+        setCurrentGameStatusToContext(
+          game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+        );
         break;
       }
       case "moveShip": {
@@ -282,6 +287,9 @@ export default function ScenarioMap({
           shipLayer.updateShipFeature(ship.id, ship.selected, ship.heading);
         }
         game.selectedUnitId = "";
+        setCurrentGameStatusToContext(
+          game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+        );
         break;
       }
       case "aircraftSelectedAttackTarget": {
@@ -289,6 +297,7 @@ export default function ScenarioMap({
         const targetId = targetFeature.getProperties()?.id;
         game.handleAircraftAttack(game.currentAttackerId, targetId);
         resetAttack();
+        setCurrentGameStatusToContext("Target acquired");
         break;
       }
       case "shipSelectedAttackTarget": {
@@ -296,6 +305,7 @@ export default function ScenarioMap({
         const targetId = targetFeature.getProperties()?.id;
         game.handleShipAttack(game.currentAttackerId, targetId);
         resetAttack();
+        setCurrentGameStatusToContext("Target acquired");
         break;
       }
       case "aircraftCancelledAttack": {
@@ -437,6 +447,9 @@ export default function ScenarioMap({
       addShip(coordinates);
       game.addingShip = false;
     }
+    setCurrentGameStatusToContext(
+      game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+    );
   }
 
   function getFeaturesAtPixel(pixel: Pixel): Feature[] {
@@ -467,6 +480,7 @@ export default function ScenarioMap({
     game.addingFacility = false;
     game.addingAirbase = false;
     game.addingShip = false;
+    setCurrentGameStatusToContext("Click on the map to add an aircraft");
   }
 
   function setAddingFacility() {
@@ -474,6 +488,7 @@ export default function ScenarioMap({
     game.addingAircraft = false;
     game.addingAirbase = false;
     game.addingShip = false;
+    setCurrentGameStatusToContext("Click on the map to add a facility");
   }
 
   function setAddingAirbase() {
@@ -481,6 +496,7 @@ export default function ScenarioMap({
     game.addingAircraft = false;
     game.addingFacility = false;
     game.addingShip = false;
+    setCurrentGameStatusToContext("Click on the map to add an airbase");
   }
 
   function setAddingShip() {
@@ -488,6 +504,7 @@ export default function ScenarioMap({
     game.addingAircraft = false;
     game.addingFacility = false;
     game.addingAirbase = false;
+    setCurrentGameStatusToContext("Click on the map to add a ship");
   }
 
   function handleStepGameClick() {
@@ -501,6 +518,7 @@ export default function ScenarioMap({
   }
 
   async function handlePlayGameClick() {
+    setCurrentGameStatusToContext("Scenario playing");
     game.scenarioPaused = false;
     let gameEnded = game.checkGameEnded();
     while (!game.scenarioPaused && !gameEnded) {
@@ -569,6 +587,7 @@ export default function ScenarioMap({
 
   function setGamePaused() {
     game.scenarioPaused = true;
+    setCurrentGameStatusToContext("Scenario paused");
   }
 
   function addAircraft(coordinates: number[]) {
@@ -731,16 +750,21 @@ export default function ScenarioMap({
   function resetAttack() {
     game.selectingTarget = false;
     game.currentAttackerId = "";
+    setCurrentGameStatusToContext(
+      game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+    );
   }
 
   function handleAircraftAttack(aircraftId: string) {
     game.selectingTarget = true;
     game.currentAttackerId = aircraftId;
+    setCurrentGameStatusToContext("Select an enemy target to attack");
   }
 
   function handleShipAttack(shipId: string) {
     game.selectingTarget = true;
     game.currentAttackerId = shipId;
+    setCurrentGameStatusToContext("Select an enemy target to attack");
   }
 
   function queueAircraftForMovement(aircraftId: string) {
@@ -761,6 +785,7 @@ export default function ScenarioMap({
         )
       );
       aircraft.rtb = false;
+      setCurrentGameStatusToContext("Click on the map to move the aircraft");
     }
   }
 
@@ -777,6 +802,7 @@ export default function ScenarioMap({
           projection ?? defaultProjection!
         )
       );
+      setCurrentGameStatusToContext("Click on the map to move the ship");
     }
   }
 
