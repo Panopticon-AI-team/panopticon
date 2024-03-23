@@ -657,7 +657,7 @@ export default function ScenarioMap({
 
   function addShip(coordinates: number[]) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const shipName = "Fishing boat #" + randomInt(1, 5000).toString();
+    const shipName = "Ship #" + randomInt(1, 5000).toString();
     const className = "Carrier";
     const latitude = coordinates[1];
     const longitude = coordinates[0];
@@ -760,6 +760,7 @@ export default function ScenarioMap({
           projection ?? defaultProjection!
         )
       );
+      aircraft.rtb = false;
     }
   }
 
@@ -776,6 +777,15 @@ export default function ScenarioMap({
           projection ?? defaultProjection!
         )
       );
+    }
+  }
+
+  function handleAircraftRtb(aircraftId: string) {
+    const aircraftReturningToBase = game.aircraftReturnToBase(aircraftId);
+    if (aircraftReturningToBase) {
+      if (aircraftReturningToBase.route.length === 0)
+        aircraftRouteLayer.removeFeatureById(aircraftId);
+      else aircraftRouteLayer.addRouteFeature(aircraftReturningToBase);
     }
   }
 
@@ -1169,6 +1179,7 @@ export default function ScenarioMap({
           handleMoveAircraft={queueAircraftForMovement}
           handleAircraftAttack={handleAircraftAttack}
           handleEditAircraft={updateAircraft}
+          handleAircraftRtb={handleAircraftRtb}
           anchorPositionTop={openAircraftCard.top}
           anchorPositionLeft={openAircraftCard.left}
           handleCloseOnMap={() => {

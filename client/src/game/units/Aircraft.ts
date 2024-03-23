@@ -19,6 +19,8 @@ interface IAircraft {
   selected?: boolean;
   sideColor?: string;
   weapons?: Weapon[];
+  homeBaseId?: string;
+  rtb?: boolean;
 }
 
 export default class Aircraft {
@@ -39,6 +41,8 @@ export default class Aircraft {
   selected: boolean;
   sideColor: string;
   weapons: Weapon[];
+  homeBaseId: string;
+  rtb: boolean;
 
   constructor(parameters: IAircraft) {
     this.id = parameters.id;
@@ -58,6 +62,8 @@ export default class Aircraft {
     this.selected = parameters.selected ?? false;
     this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
     this.weapons = parameters.weapons ?? [];
+    this.homeBaseId = parameters.homeBaseId ?? "";
+    this.rtb = parameters.rtb ?? false;
   }
 
   getTotalWeaponQuantity(): number {
