@@ -17,6 +17,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ReplayIcon from "@mui/icons-material/Replay";
 import CurrentTimeDisplay from "./CurrentTimeDisplay";
 import CurrentActionContextDisplay from "./CurrentActionContextDisplay";
+import { Tooltip } from "@mui/material";
 
 interface ToolBarProps {
   addAircraftOnClick: () => void;
@@ -232,29 +233,35 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
     <Stack spacing={0.5} direction="column" style={toolbarStyle}>
       <Stack spacing={2} direction="row" style={toolbarStyle}>
         <CurrentTimeDisplay />
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={props.toggleScenarioTimeCompressionOnClick}
-        >
-          Game Speed: {props.scenarioTimeCompression}X
-        </Button>
-        <Button
-          variant="contained"
-          color={scenarioPaused ? "success" : "error"}
-          onClick={handlePlayClick}
-          startIcon={scenarioPaused ? <PlayArrowIcon /> : <PauseIcon />}
-        >
-          {scenarioPaused ? "PLAY" : "PAUSE"}
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={handleStepClick}
-          startIcon={<RedoIcon />}
-        >
-          STEP
-        </Button>
+        <Tooltip title="Change the scenario time compression. Shortcut: F">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={props.toggleScenarioTimeCompressionOnClick}
+          >
+            Game Speed: {props.scenarioTimeCompression}X
+          </Button>
+        </Tooltip>
+        <Tooltip title="Play/pause the scenario. Shortcut: SPACEBAR">
+          <Button
+            variant="contained"
+            color={scenarioPaused ? "success" : "error"}
+            onClick={handlePlayClick}
+            startIcon={scenarioPaused ? <PlayArrowIcon /> : <PauseIcon />}
+          >
+            {scenarioPaused ? "PLAY" : "PAUSE"}
+          </Button>
+        </Tooltip>
+        <Tooltip title="Step the scenario forwards. Shortcut: N">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={handleStepClick}
+            startIcon={<RedoIcon />}
+          >
+            STEP
+          </Button>
+        </Tooltip>
         <Button
           variant="contained"
           style={buttonStyle(defaultButtonColor)}
@@ -271,112 +278,132 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
         >
           LOAD SCENARIO
         </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={reloadScenario}
-          startIcon={<ReplayIcon />}
-        >
-          RELOAD SCENARIO
-        </Button>
+        <Tooltip title="Reload the scenario. Shortcut: R">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={reloadScenario}
+            startIcon={<ReplayIcon />}
+          >
+            RELOAD SCENARIO
+          </Button>
+        </Tooltip>
         <CurrentActionContextDisplay />
       </Stack>
       <Stack spacing={2} direction="row" style={toolbarStyle}>
-        <Button
-          variant="contained"
-          style={buttonStyle(
-            props.game.currentScenario.getSideColor(
-              props.scenarioCurrentSideName
-            )
-          )}
-          onClick={props.switchCurrentSideOnClick}
-        >
-          Current side: {props.scenarioCurrentSideName}
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={props.addAircraftOnClick}
-          startIcon={<FlightIcon />}
-        >
-          Add aircraft
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={props.addAirbaseOnClick}
-          startIcon={<FlightTakeoffIcon />}
-        >
-          Add airbase
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={props.addFacilityOnClick}
-          startIcon={<RadarIcon />}
-        >
-          Add SAM
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={props.addShipOnClick}
-          startIcon={<DirectionsBoatIcon />}
-        >
-          Add Ship
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={() => {
-            props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
-          }}
-          startIcon={
-            props.featureLabelVisibility ? (
-              <VisibilityIcon />
-            ) : (
-              <VisibilityOffIcon />
-            )
-          }
-        >
-          {"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={() => {
-            props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
-          }}
-          startIcon={
-            props.threatRangeVisibility ? (
-              <VisibilityIcon />
-            ) : (
-              <VisibilityOffIcon />
-            )
-          }
-        >
-          {"THREAT RANGE " + (props.threatRangeVisibility ? "ON" : "OFF")}
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={() => {
-            props.toggleRouteVisibility(!props.routeVisibility);
-          }}
-          startIcon={
-            props.routeVisibility ? <VisibilityIcon /> : <VisibilityOffIcon />
-          }
-        >
-          {"ROUTES " + (props.routeVisibility ? "ON" : "OFF")}
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={props.toggleBaseMapLayer}
-          startIcon={<VisibilityIcon />}
-        >
-          SWITCH MAP
-        </Button>
+        <Tooltip title="Switch sides. Shortcut: S">
+          <Button
+            variant="contained"
+            style={buttonStyle(
+              props.game.currentScenario.getSideColor(
+                props.scenarioCurrentSideName
+              )
+            )}
+            onClick={props.switchCurrentSideOnClick}
+          >
+            Current side: {props.scenarioCurrentSideName}
+          </Button>
+        </Tooltip>
+        <Tooltip title="Add an aircraft. Shortcut: 1">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={props.addAircraftOnClick}
+            startIcon={<FlightIcon />}
+          >
+            Add aircraft
+          </Button>
+        </Tooltip>
+        <Tooltip title="Add an airbase. Shortcut: 2">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={props.addAirbaseOnClick}
+            startIcon={<FlightTakeoffIcon />}
+          >
+            Add airbase
+          </Button>
+        </Tooltip>
+        <Tooltip title="Add a facility. Shortcut: 3">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={props.addFacilityOnClick}
+            startIcon={<RadarIcon />}
+          >
+            Add SAM
+          </Button>
+        </Tooltip>
+        <Tooltip title="Add a ship. Shortcut: 4">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={props.addShipOnClick}
+            startIcon={<DirectionsBoatIcon />}
+          >
+            Add Ship
+          </Button>
+        </Tooltip>
+        <Tooltip title="Toggle labels. Shortcut: 5">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={() => {
+              props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
+            }}
+            startIcon={
+              props.featureLabelVisibility ? (
+                <VisibilityIcon />
+              ) : (
+                <VisibilityOffIcon />
+              )
+            }
+          >
+            {"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}
+          </Button>
+        </Tooltip>
+        <Tooltip title="Toggle threat range rings. Shortcut: 6">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={() => {
+              props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
+            }}
+            startIcon={
+              props.threatRangeVisibility ? (
+                <VisibilityIcon />
+              ) : (
+                <VisibilityOffIcon />
+              )
+            }
+          >
+            {"THREAT RANGE " + (props.threatRangeVisibility ? "ON" : "OFF")}
+          </Button>
+        </Tooltip>
+        <Tooltip title="Toggle routes. Shortcut: 7">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={() => {
+              props.toggleRouteVisibility(!props.routeVisibility);
+            }}
+            startIcon={
+              props.routeVisibility ? <VisibilityIcon /> : <VisibilityOffIcon />
+            }
+          >
+            {"ROUTES " + (props.routeVisibility ? "ON" : "OFF")}
+          </Button>
+        </Tooltip>
+        <Tooltip title="Switch maps. Shortcut: 8">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={props.toggleBaseMapLayer}
+            startIcon={<VisibilityIcon />}
+          >
+            SWITCH MAP
+          </Button>
+        </Tooltip>
       </Stack>
     </Stack>
   );
