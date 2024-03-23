@@ -98,7 +98,8 @@ export function unixToLocalTime(unixTimestamp: number): string {
   const date = new Date(unixTimestamp * 1000);
 
   // Hours part from the timestamp
-  const hours = date.getHours();
+  const hours =
+    date.getHours() < 10 ? "0" + date.getHours().toString() : date.getHours();
 
   // Minutes part from the timestamp
   const minutes = "0" + date.getMinutes();

@@ -3,6 +3,7 @@ import Airbase from "./units/Airbase";
 import Facility from "./units/Facility";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
+import Ship from "./units/Ship";
 
 interface IScenario {
   id: string;
@@ -13,6 +14,7 @@ interface IScenario {
   sides: Side[];
   timeCompression?: number;
   aircraft?: Aircraft[];
+  ships?: Ship[];
   facilities?: Facility[];
   airbases?: Airbase[];
   weapons?: Weapon[];
@@ -27,6 +29,7 @@ export default class Scenario {
   sides: Side[];
   timeCompression: number;
   aircraft: Aircraft[];
+  ships: Ship[];
   facilities: Facility[];
   airbases: Airbase[];
   weapons: Weapon[];
@@ -43,6 +46,7 @@ export default class Scenario {
     this.facilities = parameters.facilities ?? [];
     this.airbases = parameters.airbases ?? [];
     this.weapons = parameters.weapons ?? [];
+    this.ships = parameters.ships ?? [];
   }
 
   getSide(sideName: string): Side | undefined {
@@ -73,13 +77,18 @@ export default class Scenario {
     return this.weapons.find((weapon) => weapon.id === weaponId);
   }
 
+  getShip(shipId: string | null): Ship | undefined {
+    return this.ships.find((ship) => ship.id === shipId);
+  }
+
   updateAircraft(
     aircraftId: string,
     aircraftName: string,
     aircraftClassName: string,
     aircraftSpeed: number,
     aircraftWeaponQuantity: number,
-    aircraftCurrentFuel: number
+    aircraftCurrentFuel: number,
+    aircraftFuelRate: number
   ) {
     const aircraft = this.getAircraft(aircraftId);
     if (aircraft) {
@@ -90,6 +99,7 @@ export default class Scenario {
         weapon.currentQuantity = aircraftWeaponQuantity;
       });
       aircraft.currentFuel = aircraftCurrentFuel;
+      aircraft.fuelRate = aircraftFuelRate;
     }
   }
 
@@ -115,6 +125,28 @@ export default class Scenario {
     const airbase = this.getAirbase(airbaseId);
     if (airbase) {
       airbase.name = airbaseName;
+    }
+  }
+
+  updateShip(
+    shipId: string,
+    shipName: string,
+    shipClassName: string,
+    shipSpeed: number,
+    shipCurrentFuel: number,
+    shipWeaponQuantity: number,
+    shipRange: number
+  ) {
+    const ship = this.getShip(shipId);
+    if (ship) {
+      ship.name = shipName;
+      ship.className = shipClassName;
+      ship.speed = shipSpeed;
+      ship.currentFuel = shipCurrentFuel;
+      ship.range = shipRange;
+      ship.weapons.forEach((weapon) => {
+        weapon.currentQuantity = shipWeaponQuantity;
+      });
     }
   }
 }

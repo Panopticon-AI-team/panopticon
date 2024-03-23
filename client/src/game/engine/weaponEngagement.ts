@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Projection, fromLonLat } from "ol/proj";
+import { Projection, fromLonLat, get as getProjection } from "ol/proj";
 import {
   DEFAULT_OL_PROJECTION_CODE,
   NAUTICAL_MILES_TO_METERS,
@@ -16,20 +16,21 @@ import {
   randomFloat,
 } from "../../utils/utils";
 import Airbase from "../units/Airbase";
+import Ship from "../units/Ship";
 
-type Target = Aircraft | Facility | Weapon | Airbase;
+type Target = Aircraft | Facility | Weapon | Airbase | Ship;
 
-export function checkIfAircraftIsWithinFacilityThreatRange(
-  aircraft: Aircraft,
-  facility: Facility
+export function checkIfThreatIsWithinRange(
+  threat: Aircraft | Weapon,
+  defender: Facility | Ship
 ): boolean {
-  const projection = new Projection({ code: DEFAULT_OL_PROJECTION_CODE });
-  const facilityRangeGeometry = new Circle(
-    fromLonLat([facility.longitude, facility.latitude], projection),
-    facility.range * NAUTICAL_MILES_TO_METERS
+  const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
+  const defenderRangeGeometry = new Circle(
+    fromLonLat([defender.longitude, defender.latitude], projection!!),
+    defender.range * NAUTICAL_MILES_TO_METERS
   );
-  return facilityRangeGeometry.intersectsCoordinate(
-    fromLonLat([aircraft.longitude, aircraft.latitude], projection)
+  return defenderRangeGeometry.intersectsCoordinate(
+    fromLonLat([threat.longitude, threat.latitude], projection!!)
   );
 }
 
@@ -69,6 +70,10 @@ export function weaponEndgame(
       currentScenario.airbases = currentScenario.airbases.filter(
         (currentScenarioAirbase) => currentScenarioAirbase.id !== target.id
       );
+    } else if (target instanceof Ship) {
+      currentScenario.ships = currentScenario.ships.filter(
+        (currentScenarioShip) => currentScenarioShip.id !== target.id
+      );
     }
     return true;
   }
@@ -77,7 +82,7 @@ export function weaponEndgame(
 
 export function launchWeapon(
   currentScenario: Scenario,
-  origin: Aircraft | Facility,
+  origin: Aircraft | Facility | Ship,
   target: Target
 ) {
   if (origin.weapons.length === 0) return;
@@ -128,6 +133,7 @@ export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
     currentScenario.getAircraft(weapon.targetId) ??
     currentScenario.getFacility(weapon.targetId) ??
     currentScenario.getWeapon(weapon.targetId) ??
+    currentScenario.getShip(weapon.targetId) ??
     currentScenario.getAirbase(weapon.targetId);
   if (target) {
     const weaponRoute = weapon.route;

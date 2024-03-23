@@ -13,18 +13,22 @@ import {
   NAUTICAL_MILES_TO_METERS,
 } from "../../../utils/constants";
 import {
-  aircraftRouteStyle,
+  routeStyle,
   aircraftStyle,
   airbasesStyle,
   facilityStyle,
-  rangeStyle,
+  threatRangeStyle,
   weaponStyle,
   featureLabelStyle,
+  shipStyle,
 } from "./FeatureLayerStyles";
 import Weapon from "../../../game/units/Weapon";
 import VectorLayer from "ol/layer/Vector";
+import Ship from "../../../game/units/Ship";
 
-type GameEntity = Aircraft | Facility | Airbase | Weapon;
+type GameEntity = Aircraft | Facility | Airbase | Weapon | Ship;
+type GameEntityWithRange = Aircraft | Facility | Ship;
+type GameEntityWithRoute = Aircraft | Ship;
 
 const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
 
@@ -194,13 +198,13 @@ export class AirbasesLayer extends FeatureLayer {
   }
 }
 
-export class RangeLayer extends FeatureLayer {
+export class ThreatRangeLayer extends FeatureLayer {
   constructor(projection?: Projection, zIndex?: number) {
-    super(rangeStyle, projection, zIndex);
+    super(threatRangeStyle, projection, zIndex);
     this.layer.set("name", "rangeRingLayer");
   }
 
-  createRangeFeature(entity: Aircraft | Facility) {
+  createRangeFeature(entity: GameEntityWithRange) {
     return new Feature({
       type: "rangeRing",
       id: entity.id,
@@ -212,19 +216,19 @@ export class RangeLayer extends FeatureLayer {
     });
   }
 
-  refresh(entities: (Aircraft | Facility)[]) {
+  refresh(entities: GameEntityWithRange[]) {
     const entityFeatures = entities.map((entity) =>
       this.createRangeFeature(entity)
     );
     this.refreshFeatures(entityFeatures);
   }
 
-  addRangeFeature(entity: Aircraft | Facility) {
+  addRangeFeature(entity: GameEntityWithRange) {
     this.layerSource.addFeature(this.createRangeFeature(entity));
     this.featureCount += 1;
   }
 
-  updateRangeFeature(facilityId: string, facilityRange: number) {
+  updateFacilityRangeFeature(facilityId: string, facilityRange: number) {
     const feature = this.findFeatureByKey("id", facilityId);
     if (feature) {
       const featureGeometry = feature.getGeometry() as Circle;
@@ -236,72 +240,89 @@ export class RangeLayer extends FeatureLayer {
       );
     }
   }
+
+  updateShipRangeFeature(shipId: string, shipRange: number) {
+    const feature = this.findFeatureByKey("id", shipId);
+    if (feature) {
+      const featureGeometry = feature.getGeometry() as Circle;
+      feature.setGeometry(
+        new Circle(
+          featureGeometry.getCenter(),
+          shipRange * NAUTICAL_MILES_TO_METERS
+        )
+      );
+    }
+  }
 }
 
-export class AircraftRouteLayer extends FeatureLayer {
-  constructor(projection?: Projection, zIndex?: number) {
-    super(aircraftRouteStyle, projection, zIndex);
-    this.layer.set("name", "aircraftRouteLayer");
+export class RouteLayer extends FeatureLayer {
+  constructor(layerName: string, projection?: Projection, zIndex?: number) {
+    super(routeStyle, projection, zIndex);
+    this.layer.set("name", layerName);
   }
 
-  createAircraftRouteFeature(aircraft: Aircraft) {
-    const aircraftLocation = fromLonLat(
-      [aircraft.longitude, aircraft.latitude],
+  createRouteFeature(moveableUnit: GameEntityWithRoute) {
+    const moveableUnitLocation = fromLonLat(
+      [moveableUnit.longitude, moveableUnit.latitude],
       this.projection
     );
-    const destinationLatitude = aircraft.route[aircraft.route.length - 1][0];
-    const destinationLongitude = aircraft.route[aircraft.route.length - 1][1];
+    const destinationLatitude =
+      moveableUnit.route[moveableUnit.route.length - 1][0];
+    const destinationLongitude =
+      moveableUnit.route[moveableUnit.route.length - 1][1];
     const destinationLocation = fromLonLat(
       [destinationLongitude, destinationLatitude],
       this.projection
     );
-    const aircraftRouteFeature = new Feature({
-      type: "aircraftRoute",
-      id: aircraft.id,
-      geometry: new LineString([aircraftLocation, destinationLocation]),
-      sideColor: aircraft.sideColor,
+    const moveableUnitRouteFeature = new Feature({
+      type: "route",
+      id: moveableUnit.id,
+      geometry: new LineString([moveableUnitLocation, destinationLocation]),
+      sideColor: moveableUnit.sideColor,
     });
-    aircraftRouteFeature.setId(aircraft.id);
-    return aircraftRouteFeature;
+    moveableUnitRouteFeature.setId(moveableUnit.id);
+    return moveableUnitRouteFeature;
   }
 
-  refresh(aircraftList: Aircraft[]) {
-    const aircraftRouteFeatures: Feature<LineString>[] = [];
-    aircraftList.forEach((aircraft) => {
-      if (aircraft.route.length > 0) {
-        aircraftRouteFeatures.push(this.createAircraftRouteFeature(aircraft));
+  refresh(moveableUnitList: GameEntityWithRoute[]) {
+    const moveableUnitRouteFeatures: Feature<LineString>[] = [];
+    moveableUnitList.forEach((moveableUnit) => {
+      if (moveableUnit.route.length > 0) {
+        moveableUnitRouteFeatures.push(this.createRouteFeature(moveableUnit));
       }
     });
-    this.refreshFeatures(aircraftRouteFeatures);
+    this.refreshFeatures(moveableUnitRouteFeatures);
   }
 
-  addAircraftRouteFeature(aircraft: Aircraft) {
-    if (aircraft.route.length > 0) {
-      const previousFeature = this.findFeatureByKey("id", aircraft.id);
+  addRouteFeature(moveableUnit: GameEntityWithRoute) {
+    if (moveableUnit.route.length > 0) {
+      const previousFeature = this.findFeatureByKey("id", moveableUnit.id);
       if (previousFeature) {
         this.layerSource.removeFeature(previousFeature);
         this.featureCount -= 1;
       }
-      this.layerSource.addFeature(this.createAircraftRouteFeature(aircraft));
+      this.layerSource.addFeature(this.createRouteFeature(moveableUnit));
       this.featureCount += 1;
     }
   }
 
-  updateAircraftRouteFeature(aircraft: Aircraft) {
-    const feature = this.findFeatureByKey("id", aircraft.id);
-    if (feature && aircraft.route.length > 0) {
-      const aircraftLocation = fromLonLat(
-        [aircraft.longitude, aircraft.latitude],
+  updateRouteFeature(moveableUnit: GameEntityWithRoute) {
+    const feature = this.findFeatureByKey("id", moveableUnit.id);
+    if (feature && moveableUnit.route.length > 0) {
+      const moveableUnitLocation = fromLonLat(
+        [moveableUnit.longitude, moveableUnit.latitude],
         this.projection
       );
-      const destinationLatitude = aircraft.route[aircraft.route.length - 1][0];
-      const destinationLongitude = aircraft.route[aircraft.route.length - 1][1];
+      const destinationLatitude =
+        moveableUnit.route[moveableUnit.route.length - 1][0];
+      const destinationLongitude =
+        moveableUnit.route[moveableUnit.route.length - 1][1];
       const destinationLocation = fromLonLat(
         [destinationLongitude, destinationLatitude],
         this.projection
       );
       feature.setGeometry(
-        new LineString([aircraftLocation, destinationLocation])
+        new LineString([moveableUnitLocation, destinationLocation])
       );
     }
   }
@@ -350,6 +371,8 @@ export class FeatureLabelLayer extends FeatureLayer {
       return "airbase";
     } else if (entity instanceof Weapon) {
       return "weapon";
+    } else if (entity instanceof Ship) {
+      return "ship";
     } else {
       return "unknown";
     }
@@ -397,6 +420,52 @@ export class FeatureLabelLayer extends FeatureLayer {
     const feature = this.findFeatureByKey("id", entityId);
     if (feature) {
       feature.set("name", newLabel);
+    }
+  }
+}
+
+export class ShipLayer extends FeatureLayer {
+  constructor(projection?: Projection, zIndex?: number) {
+    super(shipStyle, projection, zIndex);
+    this.layer.set("name", "shipLayer");
+  }
+
+  createShipFeature(ship: Ship) {
+    const shipFeature = new Feature({
+      type: "ship",
+      geometry: new Point(
+        fromLonLat([ship.longitude, ship.latitude], this.projection)
+      ),
+      id: ship.id,
+      name: ship.name,
+      heading: ship.heading,
+      selected: ship.selected,
+      sideName: ship.sideName,
+      sideColor: ship.sideColor,
+    });
+    shipFeature.setId(ship.id);
+    return shipFeature;
+  }
+
+  refresh(shipsList: Ship[]) {
+    const shipFeatures = shipsList.map((ship) => this.createShipFeature(ship));
+    this.refreshFeatures(shipFeatures);
+  }
+
+  addShipFeature(ship: Ship) {
+    this.layerSource.addFeature(this.createShipFeature(ship));
+    this.featureCount += 1;
+  }
+
+  updateShipFeature(
+    shipId: string,
+    shipSelected: boolean,
+    shipHeading: number
+  ) {
+    const feature = this.findFeatureByKey("id", shipId);
+    if (feature) {
+      feature.set("selected", shipSelected);
+      feature.set("heading", shipHeading);
     }
   }
 }

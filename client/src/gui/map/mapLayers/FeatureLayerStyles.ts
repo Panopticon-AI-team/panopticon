@@ -8,6 +8,7 @@ import RadarIconSvg from "../../assets/radar_black_24dp.svg";
 import FlightTakeoffSvg from "../../assets/flight_takeoff_black_24dp.svg";
 import ChevronRightSvg from "../../assets/chevron_right_black_24dp.svg";
 import WeaponSvg from "../../assets/keyboard_double_arrow_up_black_24dp.svg";
+import DirectionsBoatSvg from "../../assets/directions_boat_black_24dp.svg";
 import { LineString, Point } from "ol/geom";
 
 export const aircraftStyle = function (feature: FeatureLike) {
@@ -41,7 +42,7 @@ export const airbasesStyle = function (feature: FeatureLike) {
   });
 };
 
-export const rangeStyle = function (feature: FeatureLike) {
+export const threatRangeStyle = function (feature: FeatureLike) {
   const colorArray = colorNameToColorArray(
     feature.getProperties().sideColor,
     0.1
@@ -57,7 +58,7 @@ export const rangeStyle = function (feature: FeatureLike) {
   });
 };
 
-export const aircraftRouteStyle = function (feature: FeatureLike) {
+export const routeStyle = function (feature: FeatureLike) {
   const colorArray = colorNameToColorArray(
     feature.getProperties().sideColor,
     0.5
@@ -93,7 +94,7 @@ export const aircraftRouteStyle = function (feature: FeatureLike) {
   return styles;
 };
 
-export const aircraftRouteDrawLineStyle = function (feature: FeatureLike) {
+export const routeDrawLineStyle = function (feature: FeatureLike) {
   if (feature.getGeometry()?.getType() !== "LineString") return [];
 
   const colorArray = colorNameToColorArray(
@@ -137,6 +138,17 @@ export const featureLabelStyle = function (feature: FeatureLike) {
         width: 1,
       }),
       offsetY: 20,
+    }),
+  });
+};
+
+export const shipStyle = function (feature: FeatureLike) {
+  return new Style({
+    image: new Icon({
+      opacity: feature.getProperties().selected ? 0.5 : 1,
+      src: DirectionsBoatSvg,
+      // rotation: toRadians(feature.getProperties().heading),
+      color: feature.getProperties().sideColor,
     }),
   });
 };

@@ -5,7 +5,7 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Aircraft from "../../../game/units/Aircraft";
+import Ship from "../../../game/units/Ship";
 import FeaturePopup from "../FeaturePopup";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PinDropIcon from "@mui/icons-material/PinDrop";
@@ -15,65 +15,82 @@ import EditIcon from "@mui/icons-material/Edit";
 import TextField from "@mui/material/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import AddIcon from "@mui/icons-material/Add";
+import FlightIcon from "@mui/icons-material/Flight";
 
-interface AircraftCardProps {
-  aircraft: Aircraft;
-  handleDeleteAircraft: (aircraftId: string) => void;
-  handleMoveAircraft: (aircraftId: string) => void;
-  handleAircraftAttack: (aircraftId: string) => void;
-  handleEditAircraft: (
-    aircraftId: string,
-    aircraftName: string,
-    aircraftClassName: string,
-    aircraftSpeed: number,
-    aircraftWeaponQuantity: number,
-    aircraftCurrentFuel: number,
-    aircraftCurrentFuelRate: number
+interface ShipCardProps {
+  ship: Ship;
+  handleAddAircraft: (shipId: string) => void;
+  handleLaunchAircraft: (shipId: string) => void;
+  handleDeleteShip: (shipId: string) => void;
+  handleMoveShip: (shipId: string) => void;
+  handleShipAttack: (shipId: string) => void;
+  handleEditShip: (
+    shipId: string,
+    shipName: string,
+    shipClassName: string,
+    shipSpeed: number,
+    shipWeaponQuantity: number,
+    shipCurrentFuel: number,
+    shipRange: number
   ) => void;
   handleCloseOnMap: () => void;
   anchorPositionTop: number;
   anchorPositionLeft: number;
 }
 
-export default function AircraftCard(props: Readonly<AircraftCardProps>) {
+export default function ShipCard(props: Readonly<ShipCardProps>) {
   const [editing, setEditing] = useState(false);
   const [tempEditData, setTempEditData] = useState({
-    name: props.aircraft.name,
-    className: props.aircraft.className,
-    speed: props.aircraft.speed,
-    weaponQuantity: props.aircraft.getTotalWeaponQuantity(),
-    currentFuel: props.aircraft.currentFuel,
-    currentFuelRate: props.aircraft.fuelRate,
+    name: props.ship.name,
+    className: props.ship.className,
+    speed: props.ship.speed,
+    currentFuel: props.ship.currentFuel,
+    range: props.ship.range,
+    weaponQuantity: props.ship.getTotalWeaponQuantity(),
   });
+  const [aircraftCount, setAircraftCount] = useState(
+    props.ship.aircraft.length
+  );
 
-  const _handleDeleteAircraft = () => {
-    props.handleCloseOnMap();
-    props.handleDeleteAircraft(props.aircraft.id);
+  const _handleAddAircraft = () => {
+    props.handleAddAircraft(props.ship.id);
+    setAircraftCount(props.ship.aircraft.length);
   };
 
-  const _handleMoveAircraft = () => {
-    props.handleCloseOnMap();
-    props.handleMoveAircraft(props.aircraft.id);
+  const _handleLaunchAircraft = () => {
+    props.handleLaunchAircraft(props.ship.id);
+    setAircraftCount(props.ship.aircraft.length);
   };
 
-  const _handleAircraftAttack = () => {
+  const _handleDeleteShip = () => {
     props.handleCloseOnMap();
-    props.handleAircraftAttack(props.aircraft.id);
+    props.handleDeleteShip(props.ship.id);
+  };
+
+  const _handleMoveShip = () => {
+    props.handleCloseOnMap();
+    props.handleMoveShip(props.ship.id);
+  };
+
+  const _handleShipAttack = () => {
+    props.handleCloseOnMap();
+    props.handleShipAttack(props.ship.id);
   };
 
   const toggleEdit = () => {
     setEditing(!editing);
   };
 
-  const handleSaveEditedAircraft = () => {
-    props.handleEditAircraft(
-      props.aircraft.id,
+  const handleSaveEditedShip = () => {
+    props.handleEditShip(
+      props.ship.id,
       tempEditData.name,
       tempEditData.className,
       tempEditData.speed,
       tempEditData.weaponQuantity,
       tempEditData.currentFuel,
-      tempEditData.currentFuelRate
+      tempEditData.range
     );
     toggleEdit();
   };
@@ -82,34 +99,33 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     switch (event.target.id) {
-      case "aircraft-name-text-field": {
+      case "ship-name-text-field": {
         setTempEditData({ ...tempEditData, name: event.target.value });
         break;
       }
-      case "aircraft-type-text-field": {
+      case "ship-type-text-field": {
         setTempEditData({ ...tempEditData, className: event.target.value });
         break;
       }
-      case "aircraft-speed-text-field": {
+      case "ship-speed-text-field": {
         const newSpeed = parseInt(event.target.value);
         if (newSpeed) setTempEditData({ ...tempEditData, speed: newSpeed });
         break;
       }
-      case "aircraft-weapon-quantity-text-field": {
+      case "ship-weapon-quantity-text-field": {
         const newWeaponCount = parseInt(event.target.value);
         if (newWeaponCount)
           setTempEditData({ ...tempEditData, weaponQuantity: newWeaponCount });
         break;
       }
-      case "aircraft-current-fuel-text-field": {
+      case "ship-current-fuel-text-field": {
         const newFuel = parseInt(event.target.value);
         if (newFuel) setTempEditData({ ...tempEditData, currentFuel: newFuel });
         break;
       }
-      case "aircraft-current-fuel-rate-text-field": {
-        const newFuelRate = parseInt(event.target.value);
-        if (newFuelRate)
-          setTempEditData({ ...tempEditData, currentFuelRate: newFuelRate });
+      case "ship-range-text-field": {
+        const newRange = parseInt(event.target.value);
+        if (newRange) setTempEditData({ ...tempEditData, range: newRange });
         break;
       }
       case "default": {
@@ -118,36 +134,34 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     }
   };
 
-  const aircraftDataContent = (
+  const shipDataContent = (
     <>
       <Typography variant="h5" component="div">
-        {props.aircraft.name}
+        {props.ship.name}
       </Typography>
-      <Typography variant="h6">Type: {props.aircraft.className}</Typography>
+      <Typography variant="h6">Type: {props.ship.className}</Typography>
       <Typography variant="h6">
-        Coordinates: {props.aircraft.latitude.toFixed(2)},{" "}
-        {props.aircraft.longitude.toFixed(2)}
-      </Typography>
-      <Typography variant="h6">
-        Altitude: {props.aircraft.altitude.toFixed(2)} FT
+        Coordinates: {props.ship.latitude.toFixed(2)},{" "}
+        {props.ship.longitude.toFixed(2)}
       </Typography>
       <Typography variant="h6">
-        Heading: {props.aircraft.heading.toFixed(2)}
+        Heading: {props.ship.heading.toFixed(2)}
       </Typography>
       <Typography variant="h6">
-        Speed: {props.aircraft.speed.toFixed(0)} KTS
+        Speed: {props.ship.speed.toFixed(0)} KTS
       </Typography>
       <Typography variant="h6">
-        Fuel: {props.aircraft.currentFuel.toFixed(0)} /{" "}
-        {props.aircraft.maxFuel.toFixed(0) + " LBS"}
+        Range: {props.ship.range.toFixed(0)} NM
       </Typography>
       <Typography variant="h6">
-        Fuel Consumption: {props.aircraft.fuelRate.toFixed(0) + " LBS/HR"}
+        Fuel: {props.ship.currentFuel.toFixed(0)} /{" "}
+        {props.ship.maxFuel.toFixed(0) + " LBS"}
       </Typography>
-      <Typography variant="h6">Side: {props.aircraft.sideName}</Typography>
+      <Typography variant="h6">Side: {props.ship.sideName}</Typography>
       <Typography variant="h6">
-        Weapon Quantity: {props.aircraft.getTotalWeaponQuantity()}
+        Weapon Quantity: {props.ship.getTotalWeaponQuantity()}
       </Typography>
+      <Typography variant="h6">Aircraft Quantity: {aircraftCount}</Typography>
     </>
   );
 
@@ -166,13 +180,13 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
       <form>
         <Stack spacing={1} direction="column">
           <Typography variant="h5" component="div">
-            EDIT AIRCRAFT
+            EDIT SHIP
           </Typography>
           <TextField
             autoComplete="off"
-            id="aircraft-name-text-field"
+            id="ship-name-text-field"
             label="Name"
-            defaultValue={props.aircraft.name}
+            defaultValue={props.ship.name}
             onChange={_handleTextFieldChange}
             variant="outlined"
             sx={inputStyle}
@@ -180,9 +194,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           />
           <TextField
             autoComplete="off"
-            id="aircraft-type-text-field"
+            id="ship-type-text-field"
             label="Type"
-            defaultValue={props.aircraft.className}
+            defaultValue={props.ship.className}
             onChange={_handleTextFieldChange}
             variant="outlined"
             sx={inputStyle}
@@ -190,9 +204,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           />
           <TextField
             autoComplete="off"
-            id="aircraft-speed-text-field"
+            id="ship-speed-text-field"
             label="Speed"
-            defaultValue={props.aircraft.speed.toFixed(0)}
+            defaultValue={props.ship.speed.toFixed(0)}
             onChange={_handleTextFieldChange}
             variant="outlined"
             sx={inputStyle}
@@ -200,9 +214,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           />
           <TextField
             autoComplete="off"
-            id="aircraft-weapon-quantity-text-field"
+            id="ship-weapon-quantity-text-field"
             label="Weapon Quantity"
-            defaultValue={props.aircraft.getTotalWeaponQuantity().toString()}
+            defaultValue={props.ship.getTotalWeaponQuantity().toString()}
             onChange={_handleTextFieldChange}
             variant="outlined"
             sx={inputStyle}
@@ -210,9 +224,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           />
           <TextField
             autoComplete="off"
-            id="aircraft-current-fuel-text-field"
+            id="ship-current-fuel-text-field"
             label="Current Fuel"
-            defaultValue={props.aircraft.currentFuel.toFixed(0)}
+            defaultValue={props.ship.currentFuel.toFixed(0)}
             onChange={_handleTextFieldChange}
             variant="outlined"
             sx={inputStyle}
@@ -220,9 +234,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           />
           <TextField
             autoComplete="off"
-            id="aircraft-current-fuel-rate-text-field"
-            label="Fuel Consumption"
-            defaultValue={props.aircraft.fuelRate.toFixed(0)}
+            id="ship-range-text-field"
+            label="Range"
+            defaultValue={props.ship.range}
             onChange={_handleTextFieldChange}
             variant="outlined"
             sx={inputStyle}
@@ -239,7 +253,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         <Button
           variant="contained"
           size="small"
-          onClick={_handleMoveAircraft}
+          onClick={_handleMoveShip}
           startIcon={<PinDropIcon />}
         >
           PLOT COURSE
@@ -248,10 +262,28 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           variant="contained"
           color="error"
           size="small"
-          onClick={_handleAircraftAttack}
+          onClick={_handleShipAttack}
           startIcon={<RocketLaunchIcon />}
         >
           ATTACK
+        </Button>
+      </Stack>
+      <Stack spacing={1} direction="row">
+        <Button
+          variant="contained"
+          size="small"
+          onClick={_handleAddAircraft}
+          startIcon={<AddIcon />}
+        >
+          ADD AIRCRAFT
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={_handleLaunchAircraft}
+          startIcon={<FlightIcon />}
+        >
+          LAUNCH AIRCRAFT
         </Button>
       </Stack>
       <Stack spacing={1} direction="row">
@@ -267,7 +299,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           variant="contained"
           color="error"
           size="small"
-          onClick={_handleDeleteAircraft}
+          onClick={_handleDeleteShip}
           startIcon={<DeleteIcon />}
         >
           DELETE
@@ -282,7 +314,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         <Button
           variant="contained"
           size="small"
-          onClick={handleSaveEditedAircraft}
+          onClick={handleSaveEditedShip}
           startIcon={<SaveIcon />}
         >
           Save
@@ -300,7 +332,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     </Stack>
   );
 
-  const aircraftCard = (
+  const shipCard = (
     <Box sx={{ minWidth: 150 }}>
       <Card
         variant="outlined"
@@ -314,7 +346,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         }}
       >
         <CardContent>
-          {!editing && aircraftDataContent}
+          {!editing && shipDataContent}
           {editing && editingContent()}
         </CardContent>
         <CardActions>
@@ -329,7 +361,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     <FeaturePopup
       anchorPositionTop={props.anchorPositionTop}
       anchorPositionLeft={props.anchorPositionLeft}
-      content={aircraftCard}
+      content={shipCard}
       handleCloseOnMap={props.handleCloseOnMap}
     ></FeaturePopup>
   );
