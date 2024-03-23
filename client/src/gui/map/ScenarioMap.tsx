@@ -760,6 +760,7 @@ export default function ScenarioMap({
           projection ?? defaultProjection!
         )
       );
+      aircraft.rtb = false;
     }
   }
 

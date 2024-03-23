@@ -700,23 +700,25 @@ export default class Game {
 
   updateAllAircraftPosition() {
     this.currentScenario.aircraft.forEach((aircraft) => {
-      const aircraftHomeBase =
-        aircraft.homeBaseId !== ""
-          ? this.currentScenario.getAircraftHomeBase(aircraft.id)
-          : this.currentScenario.getClosestBaseToAircraft(aircraft.id);
-      if (
-        aircraft.rtb &&
-        aircraftHomeBase &&
-        getDistanceBetweenTwoPoints(
-          aircraft.latitude,
-          aircraft.longitude,
-          aircraftHomeBase.latitude,
-          aircraftHomeBase.longitude
-        ) < 0.5
-      ) {
-        this.landAircraft(aircraft.id);
-        return;
+      if (aircraft.rtb) {
+        const aircraftHomeBase =
+          aircraft.homeBaseId !== ""
+            ? this.currentScenario.getAircraftHomeBase(aircraft.id)
+            : this.currentScenario.getClosestBaseToAircraft(aircraft.id);
+        if (
+          aircraftHomeBase &&
+          getDistanceBetweenTwoPoints(
+            aircraft.latitude,
+            aircraft.longitude,
+            aircraftHomeBase.latitude,
+            aircraftHomeBase.longitude
+          ) < 0.5
+        ) {
+          this.landAircraft(aircraft.id);
+          return;
+        }
       }
+
       const route = aircraft.route;
       if (route.length > 0) {
         const nextWaypoint = route[route.length - 1];
