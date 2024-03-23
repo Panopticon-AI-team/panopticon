@@ -27,7 +27,8 @@ interface AircraftCardProps {
     aircraftClassName: string,
     aircraftSpeed: number,
     aircraftWeaponQuantity: number,
-    aircraftCurrentFuel: number
+    aircraftCurrentFuel: number,
+    aircraftCurrentFuelRate: number
   ) => void;
   handleCloseOnMap: () => void;
   anchorPositionTop: number;
@@ -42,6 +43,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     speed: props.aircraft.speed,
     weaponQuantity: props.aircraft.getTotalWeaponQuantity(),
     currentFuel: props.aircraft.currentFuel,
+    currentFuelRate: props.aircraft.fuelRate,
   });
 
   const _handleDeleteAircraft = () => {
@@ -70,7 +72,8 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
       tempEditData.className,
       tempEditData.speed,
       tempEditData.weaponQuantity,
-      tempEditData.currentFuel
+      tempEditData.currentFuel,
+      tempEditData.currentFuelRate
     );
     toggleEdit();
   };
@@ -103,6 +106,12 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         if (newFuel) setTempEditData({ ...tempEditData, currentFuel: newFuel });
         break;
       }
+      case "aircraft-current-fuel-rate-text-field": {
+        const newFuelRate = parseInt(event.target.value);
+        if (newFuelRate)
+          setTempEditData({ ...tempEditData, currentFuelRate: newFuelRate });
+        break;
+      }
       case "default": {
         break;
       }
@@ -129,8 +138,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         Speed: {props.aircraft.speed.toFixed(0)} KTS
       </Typography>
       <Typography variant="h6">
-        Fuel: {props.aircraft.currentFuel.toFixed(2)} /{" "}
-        {props.aircraft.maxFuel.toFixed(2)}
+        Fuel: {props.aircraft.currentFuel.toFixed(0)} /{" "}
+        {props.aircraft.maxFuel.toFixed(0) + " LBS"}
+      </Typography>
+      <Typography variant="h6">
+        Fuel Consumption: {props.aircraft.fuelRate.toFixed(0) + " LBS/HR"}
       </Typography>
       <Typography variant="h6">Side: {props.aircraft.sideName}</Typography>
       <Typography variant="h6">
@@ -200,7 +212,17 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             autoComplete="off"
             id="aircraft-current-fuel-text-field"
             label="Current Fuel"
-            defaultValue={props.aircraft.currentFuel.toFixed(2)}
+            defaultValue={props.aircraft.currentFuel.toFixed(0)}
+            onChange={_handleTextFieldChange}
+            variant="outlined"
+            sx={inputStyle}
+            InputLabelProps={inputLabelStyle}
+          />
+          <TextField
+            autoComplete="off"
+            id="aircraft-current-fuel-rate-text-field"
+            label="Fuel Consumption"
+            defaultValue={props.aircraft.fuelRate.toFixed(0)}
             onChange={_handleTextFieldChange}
             variant="outlined"
             sx={inputStyle}

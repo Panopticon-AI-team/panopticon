@@ -87,7 +87,8 @@ export default class Scenario {
     aircraftClassName: string,
     aircraftSpeed: number,
     aircraftWeaponQuantity: number,
-    aircraftCurrentFuel: number
+    aircraftCurrentFuel: number,
+    aircraftFuelRate: number
   ) {
     const aircraft = this.getAircraft(aircraftId);
     if (aircraft) {
@@ -98,6 +99,7 @@ export default class Scenario {
         weapon.currentQuantity = aircraftWeaponQuantity;
       });
       aircraft.currentFuel = aircraftCurrentFuel;
+      aircraft.fuelRate = aircraftFuelRate;
     }
   }
 
