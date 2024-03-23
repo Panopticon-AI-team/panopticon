@@ -43,6 +43,7 @@ interface ToolBarProps {
   routeVisibility: boolean;
   toggleRouteVisibility: (routeVisibility: boolean) => void;
   toggleBaseMapLayer: () => void;
+  keyboardShortcutsEnabled: boolean;
 }
 
 export default function ToolBar(props: Readonly<ToolBarProps>) {
@@ -160,6 +161,72 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
     setScenarioPaused(true);
     props.stepOnClick();
   };
+
+  const keyboardEventHandler = (event: KeyboardEvent) => {
+    const key = event.key;
+    switch (key) {
+      case " ":
+        event.preventDefault();
+        handlePlayClick();
+        break;
+      case "n":
+        event.preventDefault();
+        handleStepClick();
+        break;
+      case "r":
+        event.preventDefault();
+        reloadScenario();
+        break;
+      case "f":
+        event.preventDefault();
+        props.toggleScenarioTimeCompressionOnClick();
+        break;
+      case "s":
+        event.preventDefault();
+        props.switchCurrentSideOnClick();
+        break;
+      case "1":
+        event.preventDefault();
+        props.addAircraftOnClick();
+        break;
+      case "2":
+        event.preventDefault();
+        props.addAirbaseOnClick();
+        break;
+      case "3":
+        event.preventDefault();
+        props.addFacilityOnClick();
+        break;
+      case "4":
+        event.preventDefault();
+        props.addShipOnClick();
+        break;
+      case "5":
+        event.preventDefault();
+        props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
+        break;
+      case "6":
+        event.preventDefault();
+        props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
+        break;
+      case "7":
+        event.preventDefault();
+        props.toggleRouteVisibility(!props.routeVisibility);
+        break;
+      case "8":
+        event.preventDefault();
+        props.toggleBaseMapLayer();
+        break;
+      default:
+        break;
+    }
+  };
+
+  if (props.keyboardShortcutsEnabled) {
+    document.onkeydown = keyboardEventHandler;
+  } else {
+    document.onkeydown = null;
+  }
 
   return (
     <Stack spacing={0.5} direction="column" style={toolbarStyle}>

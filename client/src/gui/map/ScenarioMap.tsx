@@ -135,6 +135,8 @@ export default function ScenarioMap({
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
   const [routeVisible, setRouteVisible] = useState(true);
+  const [keyboardShortcutsEnabled, setKeyboardShortcutsEnabled] =
+    useState(true);
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
@@ -415,6 +417,7 @@ export default function ScenarioMap({
           shipId: currentSelectedFeatureId,
         });
       }
+      setKeyboardShortcutsEnabled(false);
     }
   }
 
@@ -480,7 +483,13 @@ export default function ScenarioMap({
     game.addingFacility = false;
     game.addingAirbase = false;
     game.addingShip = false;
-    setCurrentGameStatusToContext("Click on the map to add an aircraft");
+    if (game.addingAircraft) {
+      setCurrentGameStatusToContext("Click on the map to add an aircraft");
+    } else {
+      setCurrentGameStatusToContext(
+        game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+      );
+    }
   }
 
   function setAddingFacility() {
@@ -488,7 +497,13 @@ export default function ScenarioMap({
     game.addingAircraft = false;
     game.addingAirbase = false;
     game.addingShip = false;
-    setCurrentGameStatusToContext("Click on the map to add a facility");
+    if (game.addingFacility) {
+      setCurrentGameStatusToContext("Click on the map to add a facility");
+    } else {
+      setCurrentGameStatusToContext(
+        game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+      );
+    }
   }
 
   function setAddingAirbase() {
@@ -496,7 +511,13 @@ export default function ScenarioMap({
     game.addingAircraft = false;
     game.addingFacility = false;
     game.addingShip = false;
-    setCurrentGameStatusToContext("Click on the map to add an airbase");
+    if (game.addingAirbase) {
+      setCurrentGameStatusToContext("Click on the map to add an airbase");
+    } else {
+      setCurrentGameStatusToContext(
+        game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+      );
+    }
   }
 
   function setAddingShip() {
@@ -504,7 +525,13 @@ export default function ScenarioMap({
     game.addingAircraft = false;
     game.addingFacility = false;
     game.addingAirbase = false;
-    setCurrentGameStatusToContext("Click on the map to add a ship");
+    if (game.addingShip) {
+      setCurrentGameStatusToContext("Click on the map to add a ship");
+    } else {
+      setCurrentGameStatusToContext(
+        game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+      );
+    }
   }
 
   function handleStepGameClick() {
@@ -1161,6 +1188,7 @@ export default function ScenarioMap({
         routeVisibility={routeVisible}
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
+        keyboardShortcutsEnabled={keyboardShortcutsEnabled}
       />
       <div ref={mapId} className="map"></div>
       {openAirbaseCard.open && (
@@ -1174,6 +1202,7 @@ export default function ScenarioMap({
           anchorPositionLeft={openAirbaseCard.left}
           handleCloseOnMap={() => {
             setOpenAirbaseCard({ open: false, top: 0, left: 0, airbaseId: "" });
+            setKeyboardShortcutsEnabled(true);
           }}
         />
       )}
@@ -1193,6 +1222,7 @@ export default function ScenarioMap({
               left: 0,
               facilityId: "",
             });
+            setKeyboardShortcutsEnabled(true);
           }}
         />
       )}
@@ -1215,6 +1245,7 @@ export default function ScenarioMap({
               left: 0,
               aircraftId: "",
             });
+            setKeyboardShortcutsEnabled(true);
           }}
         />
       )}
@@ -1236,6 +1267,7 @@ export default function ScenarioMap({
               left: 0,
               shipId: "",
             });
+            setKeyboardShortcutsEnabled(true);
           }}
         />
       )}
