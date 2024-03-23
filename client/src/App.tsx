@@ -11,7 +11,7 @@ import Game from "./game/Game";
 import { DEFAULT_OL_PROJECTION_CODE } from "./utils/constants";
 import defaultScenarioJson from "./scenarios/default_scenario.json";
 import SCSScenarioJson from "./scenarios/SCS.json";
-import { CurrentScenarioTimeProvider } from "./gui/map/ScenarioTimeProvider";
+import { CurrentScenarioTimeProvider } from "./gui/map/contextProviders/ScenarioTimeProvider";
 import { CurrentGameStatusProvider } from "./gui/map/contextProviders/GameStatusProvider";
 
 export default function App() {

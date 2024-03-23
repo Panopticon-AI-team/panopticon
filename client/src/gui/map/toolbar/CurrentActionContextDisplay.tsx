@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Typography } from "@mui/material";
-import { CurrentGameStatus } from "./contextProviders/GameStatusProvider";
+import { CurrentGameStatus } from "../contextProviders/GameStatusProvider";
 
 interface CurrentActionContextDisplayProps {}
 

@@ -27,7 +27,7 @@ import {
 } from "./mapLayers/FeatureLayers";
 import BaseMapLayers from "./mapLayers/BaseMapLayers";
 import Game from "../../game/Game";
-import ToolBar from "./ToolBar";
+import ToolBar from "./toolbar/ToolBar";
 import {
   DEFAULT_OL_PROJECTION_CODE,
   GAME_SPEED_DELAY_MS,
@@ -40,7 +40,7 @@ import { Geometry, LineString } from "ol/geom";
 import FacilityCard from "./featureCards/FacilityCard";
 import AircraftCard from "./featureCards/AircraftCard";
 import Scenario from "../../game/Scenario";
-import { SetCurrentScenarioTimeContext } from "./ScenarioTimeProvider";
+import { SetCurrentScenarioTimeContext } from "./contextProviders/ScenarioTimeProvider";
 import { EventsKey } from "ol/events";
 import { unByKey } from "ol/Observable";
 import VectorSource from "ol/source/Vector";
