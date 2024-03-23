@@ -76,6 +76,8 @@ export default class Game {
       range: 100,
       sideColor: this.currentScenario.getSideColor(this.currentSideName),
       weapons: [this.getSampleWeapon(10, 0.25)],
+      homeBaseId: "",
+      rtb: false,
     });
     this.currentScenario.aircraft.push(aircraft);
     return aircraft;
@@ -107,6 +109,8 @@ export default class Game {
         range: 100,
         sideColor: this.currentScenario.getSideColor(this.currentSideName),
         weapons: [this.getSampleWeapon(10, 0.25)],
+        homeBaseId: airbase.id,
+        rtb: false,
       });
       airbase.aircraft.push(aircraft);
     }
@@ -233,6 +237,8 @@ export default class Game {
         range: 100,
         sideColor: this.currentScenario.getSideColor(this.currentSideName),
         weapons: [this.getSampleWeapon(10, 0.25)],
+        homeBaseId: ship.id,
+        rtb: false,
       });
       ship.aircraft.push(aircraft);
     }
@@ -364,6 +370,62 @@ export default class Game {
     }
   }
 
+  aircraftReturnToBase(aircraftId: string) {
+    const aircraft = this.currentScenario.getAircraft(aircraftId);
+    if (aircraft) {
+      if (aircraft.rtb) {
+        aircraft.rtb = false;
+        aircraft.route = [];
+        return aircraft;
+      } else {
+        aircraft.rtb = true;
+        const homeBase =
+          aircraft.homeBaseId !== ""
+            ? this.currentScenario.getAircraftHomeBase(aircraftId)
+            : this.currentScenario.getClosestBaseToAircraft(aircraftId);
+        if (homeBase) {
+          if (aircraft.homeBaseId !== homeBase.id)
+            aircraft.homeBaseId = homeBase.id;
+          return this.moveAircraft(
+            aircraftId,
+            homeBase.latitude,
+            homeBase.longitude
+          );
+        }
+      }
+    }
+  }
+
+  landAircraft(aircraftId: string) {
+    const aircraft = this.currentScenario.getAircraft(aircraftId);
+    if (aircraft && aircraft.rtb) {
+      const homeBase = this.currentScenario.getAircraftHomeBase(aircraftId);
+      if (homeBase) {
+        const newAircraft = new Aircraft({
+          id: aircraft.id,
+          name: aircraft.name,
+          sideName: aircraft.sideName,
+          className: aircraft.className,
+          latitude: homeBase.latitude - 0.5,
+          longitude: homeBase.longitude - 0.5,
+          altitude: aircraft.altitude,
+          heading: 90.0,
+          speed: aircraft.speed,
+          currentFuel: aircraft.maxFuel,
+          maxFuel: aircraft.maxFuel,
+          fuelRate: aircraft.fuelRate,
+          range: aircraft.range,
+          sideColor: aircraft.sideColor,
+          weapons: aircraft.weapons,
+          homeBaseId: homeBase.id,
+          rtb: false,
+        });
+        homeBase.aircraft.push(newAircraft);
+        this.removeAircraft(aircraft.id);
+      }
+    }
+  }
+
   switchCurrentSide() {
     for (let i = 0; i < this.currentScenario.sides.length; i++) {
       if (this.currentScenario.sides[i].name === this.currentSideName) {
@@ -445,6 +507,8 @@ export default class Game {
         weapons: aircraft.weapons ?? [
           this.getSampleWeapon(10, 0.25, aircraft.sideName),
         ],
+        homeBaseId: aircraft.homeBaseId,
+        rtb: aircraft.rtb,
       });
       loadedScenario.aircraft.push(newAircraft);
     });
@@ -471,6 +535,8 @@ export default class Game {
           weapons: aircraft.weapons ?? [
             this.getSampleWeapon(10, 0.25, aircraft.sideName),
           ],
+          homeBaseId: aircraft.homeBaseId,
+          rtb: aircraft.rtb,
         });
         airbaseAircraft.push(newAircraft);
       });
@@ -551,6 +617,8 @@ export default class Game {
           weapons: aircraft.weapons ?? [
             this.getSampleWeapon(10, 0.25, aircraft.sideName),
           ],
+          homeBaseId: aircraft.homeBaseId,
+          rtb: aircraft.rtb,
         });
         shipAircraft.push(newAircraft);
       });
@@ -632,6 +700,23 @@ export default class Game {
 
   updateAllAircraftPosition() {
     this.currentScenario.aircraft.forEach((aircraft) => {
+      const aircraftHomeBase =
+        aircraft.homeBaseId !== ""
+          ? this.currentScenario.getAircraftHomeBase(aircraft.id)
+          : this.currentScenario.getClosestBaseToAircraft(aircraft.id);
+      if (
+        aircraft.rtb &&
+        aircraftHomeBase &&
+        getDistanceBetweenTwoPoints(
+          aircraft.latitude,
+          aircraft.longitude,
+          aircraftHomeBase.latitude,
+          aircraftHomeBase.longitude
+        ) < 0.5
+      ) {
+        this.landAircraft(aircraft.id);
+        return;
+      }
       const route = aircraft.route;
       if (route.length > 0) {
         const nextWaypoint = route[route.length - 1];

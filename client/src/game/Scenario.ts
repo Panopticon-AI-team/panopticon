@@ -4,6 +4,7 @@ import Facility from "./units/Facility";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
 import Ship from "./units/Ship";
+import { getDistanceBetweenTwoPoints } from "../utils/utils";
 
 interface IScenario {
   id: string;
@@ -147,6 +148,51 @@ export default class Scenario {
       ship.weapons.forEach((weapon) => {
         weapon.currentQuantity = shipWeaponQuantity;
       });
+    }
+  }
+
+  getAircraftHomeBase(aircraftId: string): Airbase | Ship | undefined {
+    const aircraft = this.getAircraft(aircraftId);
+    if (aircraft) {
+      return (
+        this.getAirbase(aircraft.homeBaseId) ??
+        this.getShip(aircraft.homeBaseId)
+      );
+    }
+  }
+
+  getClosestBaseToAircraft(aircraftId: string): Airbase | Ship | undefined {
+    const aircraft = this.getAircraft(aircraftId);
+    if (aircraft) {
+      let closestBase: Airbase | Ship | undefined;
+      let closestDistance = Number.MAX_VALUE;
+      this.airbases.forEach((airbase) => {
+        if (airbase.sideName !== aircraft.sideName) return;
+        const distance = getDistanceBetweenTwoPoints(
+          aircraft.latitude,
+          aircraft.longitude,
+          airbase.latitude,
+          airbase.longitude
+        );
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestBase = airbase;
+        }
+      });
+      this.ships.forEach((ship) => {
+        if (ship.sideName !== aircraft.sideName) return;
+        const distance = getDistanceBetweenTwoPoints(
+          aircraft.latitude,
+          aircraft.longitude,
+          ship.latitude,
+          ship.longitude
+        );
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestBase = ship;
+        }
+      });
+      return closestBase;
     }
   }
 }

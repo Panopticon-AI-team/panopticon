@@ -15,12 +15,14 @@ import EditIcon from "@mui/icons-material/Edit";
 import TextField from "@mui/material/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import HomeIcon from "@mui/icons-material/Home";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
   handleDeleteAircraft: (aircraftId: string) => void;
   handleMoveAircraft: (aircraftId: string) => void;
   handleAircraftAttack: (aircraftId: string) => void;
+  handleAircraftRtb: (aircraftId: string) => void;
   handleEditAircraft: (
     aircraftId: string,
     aircraftName: string,
@@ -59,6 +61,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
   const _handleAircraftAttack = () => {
     props.handleCloseOnMap();
     props.handleAircraftAttack(props.aircraft.id);
+  };
+
+  const _handleAircraftRtb = () => {
+    props.handleCloseOnMap();
+    props.handleAircraftRtb(props.aircraft.id);
   };
 
   const toggleEdit = () => {
@@ -252,6 +259,14 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           startIcon={<RocketLaunchIcon />}
         >
           ATTACK
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={_handleAircraftRtb}
+          startIcon={<HomeIcon />}
+        >
+          RTB
         </Button>
       </Stack>
       <Stack spacing={1} direction="row">
