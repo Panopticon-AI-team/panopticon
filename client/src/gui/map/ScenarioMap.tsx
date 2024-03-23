@@ -798,8 +798,6 @@ export default function ScenarioMap({
         ...game.currentScenario.facilities,
         ...game.currentScenario.ships,
       ]);
-    // aircraftRouteLayer.refresh(game.currentScenario.aircraft);
-    // shipRouteLayer.refresh(game.currentScenario.ships);
     weaponLayer.refresh(game.currentScenario.weapons);
     shipLayer.refresh(game.currentScenario.ships);
     if (featureLabelVisible) refreshFeatureLabelLayer();

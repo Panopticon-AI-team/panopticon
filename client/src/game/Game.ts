@@ -621,7 +621,7 @@ export default class Game {
         if (ship.sideName !== weapon.sideName) {
           if (
             checkIfThreatIsWithinRange(weapon, ship) &&
-            checkTargetTrackedByCount(this.currentScenario, weapon) < 10
+            checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
             launchWeapon(this.currentScenario, ship, weapon);
           }

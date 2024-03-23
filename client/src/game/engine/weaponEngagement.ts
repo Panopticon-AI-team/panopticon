@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Projection, fromLonLat } from "ol/proj";
+import { Projection, fromLonLat, get as getProjection } from "ol/proj";
 import {
   DEFAULT_OL_PROJECTION_CODE,
   NAUTICAL_MILES_TO_METERS,
@@ -24,13 +24,13 @@ export function checkIfThreatIsWithinRange(
   threat: Aircraft | Weapon,
   defender: Facility | Ship
 ): boolean {
-  const projection = new Projection({ code: DEFAULT_OL_PROJECTION_CODE });
+  const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
   const defenderRangeGeometry = new Circle(
-    fromLonLat([defender.longitude, defender.latitude], projection),
+    fromLonLat([defender.longitude, defender.latitude], projection!!),
     defender.range * NAUTICAL_MILES_TO_METERS
   );
   return defenderRangeGeometry.intersectsCoordinate(
-    fromLonLat([threat.longitude, threat.latitude], projection)
+    fromLonLat([threat.longitude, threat.latitude], projection!!)
   );
 }
 
