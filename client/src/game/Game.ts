@@ -215,6 +215,37 @@ export default class Game {
     return ship;
   }
 
+  duplicateUnit(unitId: string, unitType: string) {
+    if (unitType === "aircraft") {
+      const aircraft = this.currentScenario.getAircraft(unitId);
+      if (aircraft) {
+        const newAircraft = new Aircraft({
+          id: uuidv4(),
+          name: aircraft.name,
+          sideName: aircraft.sideName,
+          className: aircraft.className,
+          latitude: aircraft.latitude - 0.5,
+          longitude: aircraft.longitude - 0.5,
+          altitude: aircraft.altitude,
+          heading: aircraft.heading,
+          speed: aircraft.speed,
+          currentFuel: aircraft.maxFuel,
+          maxFuel: aircraft.maxFuel,
+          fuelRate: aircraft.fuelRate,
+          range: aircraft.range,
+          route: [],
+          selected: false,
+          sideColor: aircraft.sideColor,
+          weapons: aircraft.weapons,
+          homeBaseId: aircraft.homeBaseId,
+          rtb: false,
+        });
+        this.currentScenario.aircraft.push(newAircraft);
+        return newAircraft;
+      }
+    }
+  }
+
   addAircraftToShip(aircraftName: string, className: string, shipId: string) {
     if (!this.currentSideName) {
       return;
