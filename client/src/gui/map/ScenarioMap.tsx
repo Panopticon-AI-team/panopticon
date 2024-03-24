@@ -221,31 +221,31 @@ export default function ScenarioMap({
     );
     const selectedFeatureType = getSelectedFeatureType(game.selectedUnitId);
     const attackerFeatureType = getSelectedFeatureType(game.currentAttackerId);
-    if (selectedFeatureType == "aircraft" && routeMeasurementDrawLine) {
+    if (selectedFeatureType === "aircraft" && routeMeasurementDrawLine) {
       context = "moveAircraft";
-    } else if (selectedFeatureType == "ship" && routeMeasurementDrawLine) {
+    } else if (selectedFeatureType === "ship" && routeMeasurementDrawLine) {
       context = "moveShip";
     } else if (
       game.selectingTarget &&
-      attackerFeatureType == "aircraft" &&
+      attackerFeatureType === "aircraft" &&
       featuresAtPixel.length === 1
     ) {
       context = "aircraftSelectedAttackTarget";
     } else if (
       game.selectingTarget &&
-      attackerFeatureType == "ship" &&
+      attackerFeatureType === "ship" &&
       featuresAtPixel.length === 1
     ) {
       context = "shipSelectedAttackTarget";
     } else if (
       game.selectingTarget &&
-      attackerFeatureType == "aircraft" &&
+      attackerFeatureType === "aircraft" &&
       featuresAtPixel.length !== 1
     ) {
       context = "aircraftCancelledAttack";
     } else if (
       game.selectingTarget &&
-      attackerFeatureType == "ship" &&
+      attackerFeatureType === "ship" &&
       featuresAtPixel.length !== 1
     ) {
       context = "shipCancelledAttack";
@@ -919,7 +919,7 @@ export default function ScenarioMap({
     });
     if (
       routeDrawInteraction &&
-      getSelectedFeatureType(game.selectedUnitId) == "aircraft"
+      getSelectedFeatureType(game.selectedUnitId) === "aircraft"
     ) {
       aircraftRouteLayer.refresh(
         observation.aircraft.filter((aircraft) => {
@@ -947,7 +947,7 @@ export default function ScenarioMap({
       }
     } else if (
       routeDrawInteraction &&
-      getSelectedFeatureType(game.selectedUnitId) == "ship"
+      getSelectedFeatureType(game.selectedUnitId) === "ship"
     ) {
       shipRouteLayer.refresh(
         observation.ships.filter((ship) => {
