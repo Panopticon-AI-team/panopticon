@@ -219,37 +219,33 @@ export default function ScenarioMap({
     const featuresAtPixel = getFeaturesAtPixel(
       theMap.getEventPixel(event.originalEvent)
     );
-    if (
-      getSelectedFeatureType(game.selectedUnitId) == "aircraft" &&
-      routeMeasurementDrawLine
-    ) {
+    const selectedFeatureType = getSelectedFeatureType(game.selectedUnitId);
+    const attackerFeatureType = getSelectedFeatureType(game.currentAttackerId);
+    if (selectedFeatureType == "aircraft" && routeMeasurementDrawLine) {
       context = "moveAircraft";
-    } else if (
-      getSelectedFeatureType(game.selectedUnitId) == "ship" &&
-      routeMeasurementDrawLine
-    ) {
+    } else if (selectedFeatureType == "ship" && routeMeasurementDrawLine) {
       context = "moveShip";
     } else if (
       game.selectingTarget &&
-      getSelectedFeatureType(game.currentAttackerId) == "aircraft" &&
+      attackerFeatureType == "aircraft" &&
       featuresAtPixel.length === 1
     ) {
       context = "aircraftSelectedAttackTarget";
     } else if (
       game.selectingTarget &&
-      getSelectedFeatureType(game.currentAttackerId) == "ship" &&
+      attackerFeatureType == "ship" &&
       featuresAtPixel.length === 1
     ) {
       context = "shipSelectedAttackTarget";
     } else if (
       game.selectingTarget &&
-      getSelectedFeatureType(game.currentAttackerId) == "aircraft" &&
+      attackerFeatureType == "aircraft" &&
       featuresAtPixel.length !== 1
     ) {
       context = "aircraftCancelledAttack";
     } else if (
       game.selectingTarget &&
-      getSelectedFeatureType(game.currentAttackerId) == "ship" &&
+      attackerFeatureType == "ship" &&
       featuresAtPixel.length !== 1
     ) {
       context = "shipCancelledAttack";
@@ -854,6 +850,15 @@ export default function ScenarioMap({
     }
   }
 
+  function handleDuplicateAircraft(aircraftId: string) {
+    const duplicatedAircraft = game.duplicateUnit(aircraftId, "aircraft");
+    if (duplicatedAircraft) {
+      aircraftLayer.addAircraftFeature(duplicatedAircraft);
+      if (featureLabelVisible)
+        featureLabelLayer.addFeatureLabelFeature(duplicatedAircraft);
+    }
+  }
+
   function switchCurrentSide() {
     game.switchCurrentSide();
     setCurrentSideName(game.currentSideName);
@@ -1248,6 +1253,7 @@ export default function ScenarioMap({
           handleAircraftAttack={handleAircraftAttack}
           handleEditAircraft={updateAircraft}
           handleAircraftRtb={handleAircraftRtb}
+          handleDuplicateAircraft={handleDuplicateAircraft}
           anchorPositionTop={openAircraftCard.top}
           anchorPositionLeft={openAircraftCard.left}
           handleCloseOnMap={() => {

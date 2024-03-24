@@ -16,6 +16,7 @@ import TextField from "@mui/material/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import HomeIcon from "@mui/icons-material/Home";
+import AddIcon from "@mui/icons-material/Add";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -23,6 +24,7 @@ interface AircraftCardProps {
   handleMoveAircraft: (aircraftId: string) => void;
   handleAircraftAttack: (aircraftId: string) => void;
   handleAircraftRtb: (aircraftId: string) => void;
+  handleDuplicateAircraft: (aircraftId: string) => void;
   handleEditAircraft: (
     aircraftId: string,
     aircraftName: string,
@@ -66,6 +68,10 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
   const _handleAircraftRtb = () => {
     props.handleCloseOnMap();
     props.handleAircraftRtb(props.aircraft.id);
+  };
+
+  const _handleDuplicateAircraft = () => {
+    props.handleDuplicateAircraft(props.aircraft.id);
   };
 
   const toggleEdit = () => {
@@ -270,6 +276,14 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         </Button>
       </Stack>
       <Stack spacing={1} direction="row">
+        <Button
+          variant="contained"
+          size="small"
+          onClick={_handleDuplicateAircraft}
+          startIcon={<AddIcon />}
+        >
+          DUPLICATE
+        </Button>
         <Button
           variant="contained"
           size="small"
