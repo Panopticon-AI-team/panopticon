@@ -47,6 +47,7 @@ import VectorSource from "ol/source/Vector";
 import { routeDrawLineStyle } from "./mapLayers/FeatureLayerStyles";
 import ShipCard from "./featureCards/ShipCard";
 import { SetCurrentGameStatus } from "./contextProviders/GameStatusProvider";
+import { SetCurrentMouseMapCoordinates } from "./contextProviders/MouseMapCoordinatesProvider";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -141,6 +142,9 @@ export default function ScenarioMap({
     SetCurrentScenarioTimeContext
   );
   const setCurrentGameStatusToContext = useContext(SetCurrentGameStatus);
+  const setCurrentMouseMapCoordinatesToContext = useContext(
+    SetCurrentMouseMapCoordinates
+  );
   let routeMeasurementDrawLine: Draw | null = null;
   let routeMeasurementTooltipElement: HTMLDivElement | null = null;
   let routeMeasurementTooltip: Overlay | null = null;
@@ -184,6 +188,14 @@ export default function ScenarioMap({
 
   theMap.on("pointermove", function (event) {
     mousePosition = event.coordinate;
+    const coordinatesLatLong = toLonLat(
+      event.coordinate,
+      theMap.getView().getProjection()
+    );
+    setCurrentMouseMapCoordinatesToContext({
+      latitude: coordinatesLatLong[1],
+      longitude: coordinatesLatLong[0],
+    });
   });
 
   // theMap.getViewport().addEventListener('contextmenu', function (evt) {

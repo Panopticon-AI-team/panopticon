@@ -18,6 +18,7 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import CurrentTimeDisplay from "./CurrentTimeDisplay";
 import CurrentActionContextDisplay from "./CurrentActionContextDisplay";
 import { Tooltip } from "@mui/material";
+import CurrentMouseMapCoordinatesDisplay from "./CurrentMouseMapCoordinatesDisplay";
 
 interface ToolBarProps {
   addAircraftOnClick: () => void;
@@ -404,6 +405,7 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
             SWITCH MAP
           </Button>
         </Tooltip>
+        <CurrentMouseMapCoordinatesDisplay />
       </Stack>
     </Stack>
   );
