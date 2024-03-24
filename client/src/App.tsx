@@ -11,7 +11,9 @@ import Game from "./game/Game";
 import { DEFAULT_OL_PROJECTION_CODE } from "./utils/constants";
 import defaultScenarioJson from "./scenarios/default_scenario.json";
 import SCSScenarioJson from "./scenarios/SCS.json";
-import { CurrentScenarioTimeProvider } from "./gui/map/ScenarioTimeProvider";
+import { CurrentScenarioTimeProvider } from "./gui/map/contextProviders/ScenarioTimeProvider";
+import { CurrentGameStatusProvider } from "./gui/map/contextProviders/GameStatusProvider";
+import { CurrentMouseMapCoordinatesProvider } from "./gui/map/contextProviders/MouseMapCoordinatesProvider";
 
 export default function App() {
   const sideBlue = new Side({
@@ -42,16 +44,20 @@ export default function App() {
   return (
     <div className="App">
       <CurrentScenarioTimeProvider>
-        <ScenarioMap
-          center={transform(
-            theGame.mapView.defaultCenter,
-            "EPSG:4326",
-            DEFAULT_OL_PROJECTION_CODE
-          )}
-          zoom={theGame.mapView.defaultZoom}
-          game={theGame}
-          projection={projection}
-        ></ScenarioMap>
+        <CurrentGameStatusProvider>
+          <CurrentMouseMapCoordinatesProvider>
+            <ScenarioMap
+              center={transform(
+                theGame.mapView.defaultCenter,
+                "EPSG:4326",
+                DEFAULT_OL_PROJECTION_CODE
+              )}
+              zoom={theGame.mapView.defaultZoom}
+              game={theGame}
+              projection={projection}
+            ></ScenarioMap>
+          </CurrentMouseMapCoordinatesProvider>
+        </CurrentGameStatusProvider>
       </CurrentScenarioTimeProvider>
     </div>
   );
