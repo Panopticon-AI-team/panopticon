@@ -17,8 +17,12 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "jest": "jest",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!ol|color-space|color-rgba|color-parse|color-name)"
+    ]
   },
   "eslintConfig": {
     "extends": [
