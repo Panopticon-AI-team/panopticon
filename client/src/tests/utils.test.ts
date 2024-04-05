@@ -2,6 +2,7 @@ import {
   toRadians,
   toDegrees,
   getBearingBetweenTwoPoints,
+  getDistanceBetweenTwoPoints,
 } from "../utils/utils";
 
 describe("testing distance math functions", () => {
@@ -66,6 +67,36 @@ describe("testing distance math functions", () => {
           destCoordinates.lon
         )
       ).toBeCloseTo(bearing, 2);
+    }
+  );
+
+  it.each([
+    [{ lat: 0, lon: 0 }, { lat: 0, lon: 0 }, 0],
+    [{ lat: 0, lon: 0 }, { lat: 0, lon: 1 }, 111.32],
+    [{ lat: 0, lon: 0 }, { lat: 1, lon: 0 }, 111.32],
+    [{ lat: 0, lon: 0 }, { lat: 1, lon: 1 }, 157.25],
+    [{ lat: 0, lon: 0 }, { lat: 1, lon: -1 }, 157.25],
+    [{ lat: 0, lon: 0 }, { lat: -1, lon: 1 }, 157.25],
+    [{ lat: 0, lon: 0 }, { lat: -1, lon: -1 }, 157.25],
+    [{ lat: 0, lon: 0 }, { lat: -1, lon: 0 }, 111.32],
+    [{ lat: 0, lon: 0 }, { lat: 0, lon: -5 }, 556.6],
+    [{ lat: 40.76, lon: -73.984 }, { lat: 38.89, lon: -77.032 }, 333.9],
+    [
+      { lat: 60.82778, lon: -28.17587 },
+      { lat: 75.91378, lon: -56.74914 },
+      2001.4341,
+    ],
+  ])(
+    `distance between (%o) and (%o) is %f`,
+    (startCoordinates, destCoordinates, distance) => {
+      expect(
+        getDistanceBetweenTwoPoints(
+          startCoordinates.lat,
+          startCoordinates.lon,
+          destCoordinates.lat,
+          destCoordinates.lon
+        )
+      ).toBeCloseTo(distance, 0);
     }
   );
 });
