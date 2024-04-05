@@ -118,7 +118,7 @@ export function unixToLocalTime(unixTimestamp: number): string {
   return formattedTime;
 }
 
-function colorNameToHex(color: string): string {
+export function colorNameToHex(color: string): string {
   const colors = {
     aliceblue: "#f0f8ff",
     antiquewhite: "#faebd7",
@@ -279,7 +279,7 @@ export function colorNameToColorArray(
     let colorArray;
     colorArray = asArray(colorHexCode);
     colorArray = colorArray.slice();
-    colorArray[3] = alpha;
+    colorArray[3] = Math.min(Math.max(alpha, 0), 1);
     return colorArray;
   }
 }

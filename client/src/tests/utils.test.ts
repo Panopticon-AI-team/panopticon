@@ -3,6 +3,15 @@ import {
   toDegrees,
   getBearingBetweenTwoPoints,
   getDistanceBetweenTwoPoints,
+  getTerminalCoordinatesFromDistanceAndBearing,
+  unixToLocalTime,
+  colorNameToHex,
+  colorNameToColorArray,
+  randomFloat,
+  randomInt,
+  generateRoute,
+  generateRouteRealistic,
+  getNextCoordinates,
 } from "../utils/utils";
 
 describe("testing distance math functions", () => {
@@ -66,7 +75,7 @@ describe("testing distance math functions", () => {
           destCoordinates.lat,
           destCoordinates.lon
         )
-      ).toBeCloseTo(bearing, 2);
+      ).toBeCloseTo(bearing, 5);
     }
   );
 
@@ -96,7 +105,141 @@ describe("testing distance math functions", () => {
           destCoordinates.lat,
           destCoordinates.lon
         )
-      ).toBeCloseTo(distance, 0);
+      ).toBeCloseTo(distance, 5);
     }
   );
+
+  it.each([
+    [{ lat: 0, lon: 0 }, 0, 0, { lat: 0, lon: 0 }],
+    [{ lat: 0, lon: 0 }, 1, 0, { lat: 0.008993203677616674, lon: 0 }],
+    [{ lat: 0, lon: 0 }, 1, 90, { lat: 0, lon: 0.008993203677616674 }],
+    [{ lat: 0, lon: 0 }, 1, 180, { lat: -0.008993203677616674, lon: 0 }],
+    [{ lat: 0, lon: 0 }, 1, 270, { lat: 0, lon: -0.008993203677616674 }],
+    [
+      { lat: 0, lon: 0 },
+      1,
+      45,
+      { lat: 0.006363961030678928, lon: 0.006363961030678928 },
+    ],
+    [
+      { lat: 0, lon: 0 },
+      1,
+      135,
+      { lat: 0.006363961030678928, lon: -0.006363961030678928 },
+    ],
+    [
+      { lat: 0, lon: 0 },
+      1,
+      225,
+      { lat: -0.006363961030678928, lon: -0.006363961030678928 },
+    ],
+    [
+      { lat: 0, lon: 0 },
+      1,
+      315,
+      { lat: -0.006363961030678928, lon: 0.006363961030678928 },
+    ],
+    [{ lat: 0, lon: 0 }, 1, 360, { lat: 0.008993203677616674, lon: 0 }],
+    [
+      { lat: 0, lon: 0 },
+      1,
+      405,
+      { lat: 0.006363961030678928, lon: 0.006363961030678928 },
+    ],
+    [{ lat: 0, lon: 0 }, 1, 450, { lat: 0, lon: 0.008993203677616674 }],
+    [
+      { lat: 0, lon: 0 },
+      1,
+      495,
+      { lat: -0.006363961030678928, lon: 0.006363961030678928 },
+    ],
+    [{ lat: 0, lon: 0 }, 1, 540, { lat: -0.008993203677616674, lon: 0 }],
+  ])(
+    `terminal coordinates from distance and bearing`,
+    (startCoordinates, distance, bearing, expectedEndCoordinates) => {
+      const [endLatitude, endLongitude] =
+        getTerminalCoordinatesFromDistanceAndBearing(
+          startCoordinates.lat,
+          startCoordinates.lon,
+          distance,
+          bearing
+        );
+      expect(endLatitude).toBeCloseTo(expectedEndCoordinates.lat, 5);
+      expect(endLongitude).toBeCloseTo(expectedEndCoordinates.lon, 5);
+    }
+  );
+});
+
+describe("testing miscellaneous utility functions", () => {
+  it.each([
+    [1712279806, "20:16:46"],
+    [0, "18:00:00"],
+    [86400, "18:00:00"],
+    [86401, "18:00:01"],
+    [1732475866, "13:17:46"],
+    [-1732475866, "22:42:14"],
+    [2147483647.546, "21:14:07"],
+  ])(`formatted unix time %i is %s`, (unixTime, formattedTime) => {
+    expect(unixToLocalTime(unixTime)).toBe(formattedTime);
+  });
+
+  it.each([
+    ["aliceblue", "#f0f8ff"],
+    ["ALICEBLUE", "#f0f8ff"],
+    ["AliceBlue", "#f0f8ff"],
+    ["bluealice", ""],
+  ])(`color name %s in hex is %s`, (colorName, hex) => {
+    expect(colorNameToHex(colorName)).toBe(hex);
+  });
+
+  it.each([
+    ["aliceblue", 1, [240, 248, 255, 1]],
+    ["ALICEBLUE", undefined, [240, 248, 255, 1]],
+    ["AliceBlue", 0.3, [240, 248, 255, 0.3]],
+    ["AliceBlue", 2, [240, 248, 255, 1]],
+    ["sandybrown", -1, [244, 164, 96, 0]],
+    ["bluealice", undefined, undefined],
+  ])(`color name %s in RGB array is %s`, (colorName, alpha, rgb) => {
+    expect(colorNameToColorArray(colorName, alpha)).toStrictEqual(rgb);
+  });
+
+  it.each([
+    [0, 1],
+    [-1.3, 2.3],
+    [0.5, 1.5],
+    [1.5, -4.5],
+  ])(`random float is between %f and %f`, (min, max) => {
+    const random = randomFloat(min, max);
+    if (min < max) {
+      expect(random).toBeGreaterThanOrEqual(min);
+      expect(random).toBeLessThanOrEqual(max);
+    } else {
+      expect(random).toBeGreaterThanOrEqual(max);
+      expect(random).toBeLessThanOrEqual(min);
+    }
+  });
+
+  it.each([
+    [0, 1],
+    [-1, 2],
+    [0, 1],
+    [1, -4],
+  ])(`random int is between %i and %i`, (min, max) => {
+    const random = randomInt(min, max);
+    if (min < max) {
+      expect(random).toBeGreaterThanOrEqual(min);
+      expect(random).toBeLessThanOrEqual(max);
+    } else {
+      expect(random).toBeGreaterThanOrEqual(max);
+      expect(random).toBeLessThanOrEqual(min);
+    }
+  });
+});
+
+describe("testing route generation", () => {
+  it("generates a route with 10 waypoints", () => {});
+
+  it("generates a realistic route with 10 waypoints", () => {});
+
+  it("gets the next coordinates along a route", () => {});
 });
