@@ -5,7 +5,7 @@ export function toRadians(degrees: number): number {
   return (degrees * Math.PI) / 180;
 }
 
-function toDegrees(radians: number): number {
+export function toDegrees(radians: number): number {
   return (radians * 180) / Math.PI;
 }
 
@@ -118,7 +118,7 @@ export function unixToLocalTime(unixTimestamp: number): string {
   return formattedTime;
 }
 
-function colorNameToHex(color: string): string {
+export function colorNameToHex(color: string): string {
   const colors = {
     aliceblue: "#f0f8ff",
     antiquewhite: "#faebd7",
@@ -279,7 +279,7 @@ export function colorNameToColorArray(
     let colorArray;
     colorArray = asArray(colorHexCode);
     colorArray = colorArray.slice();
-    colorArray[3] = alpha;
+    colorArray[3] = Math.min(Math.max(alpha, 0), 1);
     return colorArray;
   }
 }
@@ -415,7 +415,8 @@ export function getNextCoordinates(
     destinationLongitude
   );
   const totalTimeHours =
-    (totalDistance * KILOMETERS_TO_NAUTICAL_MILES) / platformSpeed; // hours
+    (totalDistance * KILOMETERS_TO_NAUTICAL_MILES) /
+    (platformSpeed < 0 ? -platformSpeed : platformSpeed); // hours
   const totalTimeSeconds = Math.floor(totalTimeHours * 3600); // seconds
   const legDistance = totalDistance / totalTimeSeconds;
 
