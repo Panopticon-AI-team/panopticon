@@ -6,7 +6,7 @@ import Weapon from "./units/Weapon";
 import Ship from "./units/Ship";
 import { getDistanceBetweenTwoPoints } from "../utils/utils";
 
-type Homebase = Airbase | Ship;
+type HomeBase = Airbase | Ship;
 
 interface IScenario {
   id: string;
@@ -153,7 +153,7 @@ export default class Scenario {
     }
   }
 
-  getAircraftHomeBase(aircraftId: string): Homebase | undefined {
+  getAircraftHomeBase(aircraftId: string): HomeBase | undefined {
     const aircraft = this.getAircraft(aircraftId);
     if (aircraft) {
       return (
@@ -163,10 +163,10 @@ export default class Scenario {
     }
   }
 
-  getClosestBaseToAircraft(aircraftId: string): Homebase | undefined {
+  getClosestBaseToAircraft(aircraftId: string): HomeBase | undefined {
     const aircraft = this.getAircraft(aircraftId);
     if (aircraft) {
-      let closestBase: Homebase | undefined;
+      let closestBase: HomeBase | undefined;
       let closestDistance = Number.MAX_VALUE;
       this.airbases.forEach((airbase) => {
         if (airbase.sideName !== aircraft.sideName) return;
