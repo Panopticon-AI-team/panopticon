@@ -1,128 +1,4 @@
-import Scenario from "../game/Scenario";
-import Side from "../game/Side";
-import Aircraft from "../game/units/Aircraft";
-import Ship from "../game/units/Ship";
-import Airbase from "../game/units/Airbase";
-import Facility from "../game/units/Facility";
-import Weapon from "../game/units/Weapon";
-
-function getTestUnits() {
-  const sideBlue = new Side({
-    id: "123453",
-    name: "BLUE",
-    sideColor: "blue",
-  });
-  const sideRed = new Side({
-    id: "123453",
-    name: "RED",
-    sideColor: "red",
-  });
-  const testAirbase = new Airbase({
-    id: "12345",
-    name: "Floridistan AFB",
-    sideName: "BLUE",
-    className: "Airfield",
-    latitude: 90,
-    longitude: 90,
-    altitude: 0.0,
-    sideColor: "blue",
-  });
-  const testWeapon = new Weapon({
-    id: "123456",
-    name: "Sample Weapon",
-    sideName: "sideName",
-    className: "Sample Weapon",
-    latitude: 0.0,
-    longitude: 0.0,
-    altitude: 10000.0,
-    heading: 90.0,
-    speed: 1000.0,
-    currentFuel: 5000.0,
-    maxFuel: 5000.0,
-    fuelRate: 5000.0,
-    range: 100,
-    sideColor: "red",
-    targetId: null,
-    lethality: 0.5,
-    maxQuantity: 20,
-    currentQuantity: 20,
-  });
-  const testAircraft = new Aircraft({
-    id: "12345",
-    name: "F-16",
-    sideName: "BLUE",
-    className: "Fighter",
-    latitude: 15,
-    longitude: 20,
-    altitude: 0.0,
-    heading: 0,
-    speed: 100,
-    currentFuel: 100,
-    maxFuel: 100,
-    fuelRate: 10,
-    range: 100,
-    sideColor: "blue",
-    weapons: [testWeapon],
-    homeBaseId: "12345",
-  });
-  const testShip = new Ship({
-    id: "12345",
-    name: "Nimitz",
-    sideName: "BLUE",
-    className: "USS Nimitz",
-    latitude: 15,
-    longitude: 20,
-    altitude: 0.0,
-    heading: 0,
-    speed: 100,
-    currentFuel: 100,
-    maxFuel: 100,
-    fuelRate: 10,
-    range: 100,
-    route: [
-      [0, 0],
-      [1, 1],
-    ],
-    sideColor: "blue",
-    weapons: [testWeapon],
-  });
-  const testFacility = new Facility({
-    id: "12345",
-    name: "SAM",
-    sideName: "RED",
-    className: "SAM",
-    latitude: 15,
-    longitude: 20,
-    altitude: 0.0,
-    range: 250,
-    sideColor: "red",
-    weapons: [testWeapon],
-  });
-  const testScenario = new Scenario({
-    id: "123453",
-    name: "Test Scenario",
-    startTime: 1699073110,
-    currentTime: 1699073110,
-    duration: 14400,
-    sides: [sideBlue, sideRed],
-    timeCompression: 1,
-    aircraft: [testAircraft],
-    ships: [testShip],
-    airbases: [testAirbase],
-    facilities: [testFacility],
-    weapons: [testWeapon],
-  });
-  return [
-    testScenario,
-    testAirbase,
-    testAircraft,
-    testFacility,
-    testShip,
-    testWeapon,
-    sideBlue,
-    sideRed,
-  ];
-}
+import { getTestUnits } from "./helpers";
 
 describe("Scenario", () => {
   test("a Scenario is instantiated correctly", () => {
@@ -134,7 +10,7 @@ describe("Scenario", () => {
       testShip,
       testWeapon,
     ] = getTestUnits();
-    expect(testScenario.id).toBe("123453");
+    expect(testScenario.id).toBe("8");
     expect(testScenario.name).toBe("Test Scenario");
     expect(testScenario.startTime).toBe(1699073110);
     expect(testScenario.currentTime).toBe(1699073110);
@@ -177,7 +53,7 @@ describe("Scenario", () => {
 
   test("getAircraft finds the correct aircraft", () => {
     const [testScenario, testAirbase, testAircraft] = getTestUnits();
-    expect(testScenario.getAircraft("12345")).toBe(testAircraft);
+    expect(testScenario.getAircraft("5")).toBe(testAircraft);
   });
 
   test("getAircraft returns undefined if the aircraft is not found", () => {
@@ -187,7 +63,7 @@ describe("Scenario", () => {
 
   test("getAirbase finds the correct airbase", () => {
     const [testScenario, testAirbase] = getTestUnits();
-    expect(testScenario.getAirbase("12345")).toBe(testAirbase);
+    expect(testScenario.getAirbase("3")).toBe(testAirbase);
   });
 
   test("getAirbase returns undefined if the airbase is not found", () => {
@@ -198,7 +74,7 @@ describe("Scenario", () => {
   test("getFacility finds the correct facility", () => {
     const [testScenario, testAirbase, testAircraft, testFacility] =
       getTestUnits();
-    expect(testScenario.getFacility("12345")).toBe(testFacility);
+    expect(testScenario.getFacility("7")).toBe(testFacility);
   });
 
   test("getFacility returns undefined if the facility is not found", () => {
@@ -209,7 +85,7 @@ describe("Scenario", () => {
   test("getShip finds the correct ship", () => {
     const [testScenario, testAirbase, testAircraft, testFacility, testShip] =
       getTestUnits();
-    expect(testScenario.getShip("12345")).toBe(testShip);
+    expect(testScenario.getShip("6")).toBe(testShip);
   });
 
   test("getShip returns undefined if the ship is not found", () => {
@@ -226,7 +102,7 @@ describe("Scenario", () => {
     const newAircraftFuelRate = 5;
     const [testScenario] = getTestUnits();
     testScenario.updateAircraft(
-      "12345",
+      "5",
       newAircraftName,
       newAircraftClassname,
       newAircraftSpeed,
@@ -234,7 +110,7 @@ describe("Scenario", () => {
       newAircraftCurrentFuel,
       newAircraftFuelRate
     );
-    const updatedAircraft = testScenario.getAircraft("12345");
+    const updatedAircraft = testScenario.getAircraft("5");
     expect(updatedAircraft.name).toBe(newAircraftName);
     expect(updatedAircraft.className).toBe(newAircraftClassname);
     expect(updatedAircraft.speed).toBe(newAircraftSpeed);
@@ -254,7 +130,7 @@ describe("Scenario", () => {
     const newShipRange = 600;
     const [testScenario] = getTestUnits();
     testScenario.updateShip(
-      "12345",
+      "6",
       newShipName,
       newShipClassname,
       newShipSpeed,
@@ -262,7 +138,7 @@ describe("Scenario", () => {
       newShipWeaponQuantity,
       newShipRange
     );
-    const updatedShip = testScenario.getShip("12345");
+    const updatedShip = testScenario.getShip("6");
     expect(updatedShip.name).toBe(newShipName);
     expect(updatedShip.className).toBe(newShipClassname);
     expect(updatedShip.speed).toBe(newShipSpeed);
@@ -278,13 +154,13 @@ describe("Scenario", () => {
     const newFacilityWeaponQuantity = 40;
     const [testScenario] = getTestUnits();
     testScenario.updateFacility(
-      "12345",
+      "7",
       newFacilityName,
       newFacilityClassname,
       newFacilityRange,
       newFacilityWeaponQuantity
     );
-    const updatedFacility = testScenario.getFacility("12345");
+    const updatedFacility = testScenario.getFacility("7");
     expect(updatedFacility.name).toBe(newFacilityName);
     expect(updatedFacility.className).toBe(newFacilityClassname);
     expect(updatedFacility.range).toBe(newFacilityRange);
@@ -296,8 +172,8 @@ describe("Scenario", () => {
   test("can update airbase", () => {
     const newAirbaseName = "Floridistan International Airport";
     const [testScenario] = getTestUnits();
-    testScenario.updateAirbase("12345", newAirbaseName);
-    const updatedAirbase = testScenario.getAirbase("12345");
+    testScenario.updateAirbase("3", newAirbaseName);
+    const updatedAirbase = testScenario.getAirbase("3");
     expect(updatedAirbase.name).toBe(newAirbaseName);
   });
 
