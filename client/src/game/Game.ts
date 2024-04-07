@@ -143,6 +143,15 @@ export default class Game {
     this.currentScenario.airbases = this.currentScenario.airbases.filter(
       (airbase) => airbase.id !== airbaseId
     );
+    this.currentScenario.aircraft.forEach((aircraft) => {
+      if (aircraft.homeBaseId === airbaseId) {
+        aircraft.homeBaseId = "";
+        if (aircraft.rtb) {
+          aircraft.rtb = false;
+          aircraft.route = [];
+        }
+      }
+    });
   }
 
   removeFacility(facilityId: string) {
@@ -293,6 +302,15 @@ export default class Game {
     this.currentScenario.ships = this.currentScenario.ships.filter(
       (ship) => ship.id !== shipId
     );
+    this.currentScenario.aircraft.forEach((aircraft) => {
+      if (aircraft.homeBaseId === shipId) {
+        aircraft.homeBaseId = "";
+        if (aircraft.rtb) {
+          aircraft.rtb = false;
+          aircraft.route = [];
+        }
+      }
+    });
   }
 
   getSampleWeapon(
