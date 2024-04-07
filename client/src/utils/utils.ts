@@ -415,7 +415,8 @@ export function getNextCoordinates(
     destinationLongitude
   );
   const totalTimeHours =
-    (totalDistance * KILOMETERS_TO_NAUTICAL_MILES) / platformSpeed; // hours
+    (totalDistance * KILOMETERS_TO_NAUTICAL_MILES) /
+    (platformSpeed < 0 ? -platformSpeed : platformSpeed); // hours
   const totalTimeSeconds = Math.floor(totalTimeHours * 3600); // seconds
   const legDistance = totalDistance / totalTimeSeconds;
 

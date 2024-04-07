@@ -241,5 +241,27 @@ describe("testing route generation", () => {
 
   it("generates a realistic route with 10 waypoints", () => {});
 
-  it("gets the next coordinates along a route", () => {});
+  it.each([
+    [0, 0, 0],
+    [1, 1, 1],
+    [200, 1, 1],
+    [-100, 1, 1],
+  ])(
+    "gets the next coordinates along a route with speed %i",
+    (platformSpeed, expectedNextLatitude, expectedNextLongitude) => {
+      const startLatitude = 0;
+      const startLongitude = 0;
+      const endLatitude = 1;
+      const endLongitude = 1;
+      const [nextLatitude, nextLongitude] = getNextCoordinates(
+        startLatitude,
+        startLongitude,
+        endLatitude,
+        endLongitude,
+        platformSpeed
+      );
+      expect(nextLatitude).toBeCloseTo(expectedNextLatitude, 5);
+      expect(nextLongitude).toBeCloseTo(expectedNextLongitude, 5);
+    }
+  );
 });
