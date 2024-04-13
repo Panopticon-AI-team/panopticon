@@ -19,6 +19,7 @@ import CurrentTimeDisplay from "./CurrentTimeDisplay";
 import CurrentActionContextDisplay from "./CurrentActionContextDisplay";
 import { Tooltip } from "@mui/material";
 import CurrentMouseMapCoordinatesDisplay from "./CurrentMouseMapCoordinatesDisplay";
+import HomeIcon from "@mui/icons-material/Home";
 
 interface ToolBarProps {
   addAircraftOnClick: () => void;
@@ -63,6 +64,9 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
   const toolbarStyle = {
     backgroundColor: "#282c34",
     padding: "5px",
+    alignItems: "center",
+    marginLeft: "0",
+    marginRight: "auto",
   };
 
   const buttonStyle = (backgroundColor: string) => {
@@ -233,6 +237,16 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
   return (
     <Stack spacing={0.5} direction="column" style={toolbarStyle}>
       <Stack spacing={2} direction="row" style={toolbarStyle}>
+        <Button
+          variant="contained"
+          style={buttonStyle(defaultButtonColor)}
+          startIcon={<HomeIcon />}
+          href="https://panopticon-ai.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          HOME
+        </Button>
         <CurrentTimeDisplay />
         <Tooltip title="Change the scenario time compression. Shortcut: F">
           <Button
