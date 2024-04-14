@@ -12,14 +12,13 @@ import { ReactComponent as RadarIcon } from "../../assets/radar_black_24dp.svg";
 import { ReactComponent as FlightTakeoffIcon } from "../../assets/flight_takeoff_black_24dp.svg";
 import Game from "../../../game/Game";
 import { v4 as uuidv4 } from "uuid";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ReplayIcon from "@mui/icons-material/Replay";
 import CurrentTimeDisplay from "./CurrentTimeDisplay";
 import CurrentActionContextDisplay from "./CurrentActionContextDisplay";
 import { Tooltip } from "@mui/material";
 import CurrentMouseMapCoordinatesDisplay from "./CurrentMouseMapCoordinatesDisplay";
 import HomeIcon from "@mui/icons-material/Home";
+import LayerVisibilityPanelToggle from "./layerVisibilityToggle";
 
 interface ToolBarProps {
   addAircraftOnClick: () => void;
@@ -46,6 +45,7 @@ interface ToolBarProps {
   routeVisibility: boolean;
   toggleRouteVisibility: (routeVisibility: boolean) => void;
   toggleBaseMapLayer: () => void;
+  toggleLayerVisibilityPanel: () => void;
   keyboardShortcutsEnabled: boolean;
 }
 
@@ -306,6 +306,9 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
         <CurrentActionContextDisplay />
       </Stack>
       <Stack spacing={2} direction="row" style={toolbarStyle}>
+        <LayerVisibilityPanelToggle
+          toggleLayerVisibilityPanelOnClick={props.toggleLayerVisibilityPanel}
+        ></LayerVisibilityPanelToggle>
         <Tooltip title="Switch sides. Shortcut: S">
           <Button
             variant="contained"
@@ -357,66 +360,6 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
             startIcon={<DirectionsBoatIcon />}
           >
             Add Ship
-          </Button>
-        </Tooltip>
-        <Tooltip title="Toggle labels. Shortcut: 5">
-          <Button
-            variant="contained"
-            style={buttonStyle(defaultButtonColor)}
-            onClick={() => {
-              props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
-            }}
-            startIcon={
-              props.featureLabelVisibility ? (
-                <VisibilityIcon />
-              ) : (
-                <VisibilityOffIcon />
-              )
-            }
-          >
-            {"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}
-          </Button>
-        </Tooltip>
-        <Tooltip title="Toggle threat range rings. Shortcut: 6">
-          <Button
-            variant="contained"
-            style={buttonStyle(defaultButtonColor)}
-            onClick={() => {
-              props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
-            }}
-            startIcon={
-              props.threatRangeVisibility ? (
-                <VisibilityIcon />
-              ) : (
-                <VisibilityOffIcon />
-              )
-            }
-          >
-            {"THREAT RANGE " + (props.threatRangeVisibility ? "ON" : "OFF")}
-          </Button>
-        </Tooltip>
-        <Tooltip title="Toggle routes. Shortcut: 7">
-          <Button
-            variant="contained"
-            style={buttonStyle(defaultButtonColor)}
-            onClick={() => {
-              props.toggleRouteVisibility(!props.routeVisibility);
-            }}
-            startIcon={
-              props.routeVisibility ? <VisibilityIcon /> : <VisibilityOffIcon />
-            }
-          >
-            {"ROUTES " + (props.routeVisibility ? "ON" : "OFF")}
-          </Button>
-        </Tooltip>
-        <Tooltip title="Switch maps. Shortcut: 8">
-          <Button
-            variant="contained"
-            style={buttonStyle(defaultButtonColor)}
-            onClick={props.toggleBaseMapLayer}
-            startIcon={<VisibilityIcon />}
-          >
-            SWITCH MAP
           </Button>
         </Tooltip>
         <CurrentMouseMapCoordinatesDisplay />

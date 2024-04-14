@@ -48,6 +48,7 @@ import { routeDrawLineStyle } from "./mapLayers/FeatureLayerStyles";
 import ShipCard from "./featureCards/ShipCard";
 import { SetCurrentGameStatus } from "./contextProviders/GameStatusProvider";
 import { SetCurrentMouseMapCoordinates } from "./contextProviders/MouseMapCoordinatesProvider";
+import LayerVisibilityPanel from "./toolbar/layerVisibilityPanel";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -133,6 +134,8 @@ export default function ScenarioMap({
       left: 0,
       features: [],
     });
+  const [layerVisibilityPanelOpen, setLayerVisibilityPanelOpen] =
+    useState(false);
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
   const [routeVisible, setRouteVisible] = useState(true);
@@ -1205,9 +1208,30 @@ export default function ScenarioMap({
         routeVisibility={routeVisible}
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
+        toggleLayerVisibilityPanel={() => {
+          setLayerVisibilityPanelOpen(!layerVisibilityPanelOpen);
+        }}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
       />
+      {layerVisibilityPanelOpen && (
+        <LayerVisibilityPanel
+          featureLabelVisibility={featureLabelVisible}
+          toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
+          threatRangeVisibility={threatRangeVisible}
+          toggleThreatRangeVisibility={toggleThreatRangeVisibility}
+          routeVisibility={routeVisible}
+          toggleRouteVisibility={toggleRouteVisibility}
+          toggleBaseMapLayer={toggleBaseMapLayer}
+          anchorPositionTop={350}
+          anchorPositionLeft={0}
+          handleCloseOnMap={() => {
+            setLayerVisibilityPanelOpen(false);
+          }}
+        ></LayerVisibilityPanel>
+      )}
+
       <div ref={mapId} className="map"></div>
+
       {openAirbaseCard.open && (
         <AirbaseCard
           airbase={game.currentScenario.getAirbase(openAirbaseCard.airbaseId)!}
