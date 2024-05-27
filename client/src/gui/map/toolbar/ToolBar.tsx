@@ -18,7 +18,6 @@ import CurrentActionContextDisplay from "./CurrentActionContextDisplay";
 import { Tooltip } from "@mui/material";
 import CurrentMouseMapCoordinatesDisplay from "./CurrentMouseMapCoordinatesDisplay";
 import HomeIcon from "@mui/icons-material/Home";
-import LayerVisibilityPanelToggle from "./layerVisibilityToggle";
 
 interface ToolBarProps {
   addAircraftOnClick: () => void;
@@ -45,7 +44,6 @@ interface ToolBarProps {
   routeVisibility: boolean;
   toggleRouteVisibility: (routeVisibility: boolean) => void;
   toggleBaseMapLayer: () => void;
-  toggleLayerVisibilityPanel: () => void;
   keyboardShortcutsEnabled: boolean;
 }
 
@@ -306,9 +304,6 @@ export default function ToolBar(props: Readonly<ToolBarProps>) {
         <CurrentActionContextDisplay />
       </Stack>
       <Stack spacing={2} direction="row" style={toolbarStyle}>
-        <LayerVisibilityPanelToggle
-          toggleLayerVisibilityPanelOnClick={props.toggleLayerVisibilityPanel}
-        ></LayerVisibilityPanelToggle>
         <Tooltip title="Switch sides. Shortcut: S">
           <Button
             variant="contained"

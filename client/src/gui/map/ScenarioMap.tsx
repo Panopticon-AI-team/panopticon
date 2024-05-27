@@ -48,7 +48,7 @@ import { routeDrawLineStyle } from "./mapLayers/FeatureLayerStyles";
 import ShipCard from "./featureCards/ShipCard";
 import { SetCurrentGameStatus } from "./contextProviders/GameStatusProvider";
 import { SetCurrentMouseMapCoordinates } from "./contextProviders/MouseMapCoordinatesProvider";
-import LayerVisibilityPanel from "./toolbar/layerVisibilityPanel";
+import LayerVisibilityPanelToggle from "./toolbar/layerVisibilityToggle";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -1180,7 +1180,7 @@ export default function ScenarioMap({
   }
 
   return (
-    <div>
+    <div>     
       <ToolBar
         addAircraftOnClick={setAddingAircraft}
         addFacilityOnClick={setAddingFacility}
@@ -1208,13 +1208,9 @@ export default function ScenarioMap({
         routeVisibility={routeVisible}
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
-        toggleLayerVisibilityPanel={() => {
-          setLayerVisibilityPanelOpen(!layerVisibilityPanelOpen);
-        }}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
       />
-      {layerVisibilityPanelOpen && (
-        <LayerVisibilityPanel
+      <LayerVisibilityPanelToggle
           featureLabelVisibility={featureLabelVisible}
           toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
           threatRangeVisibility={threatRangeVisible}
@@ -1222,13 +1218,7 @@ export default function ScenarioMap({
           routeVisibility={routeVisible}
           toggleRouteVisibility={toggleRouteVisibility}
           toggleBaseMapLayer={toggleBaseMapLayer}
-          anchorPositionTop={350}
-          anchorPositionLeft={0}
-          handleCloseOnMap={() => {
-            setLayerVisibilityPanelOpen(false);
-          }}
-        ></LayerVisibilityPanel>
-      )}
+      ></LayerVisibilityPanelToggle>
 
       <div ref={mapId} className="map"></div>
 
