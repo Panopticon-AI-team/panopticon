@@ -149,8 +149,8 @@ export default function LayerVisibilityPanelToggle(
     <>
     <div style={{
       position: "absolute",
-      left: "1em",
-      top: "12em",
+      left: "25em",
+      top: "1em",
       color: "white",
       fontSize: "small",
       zIndex: 1000

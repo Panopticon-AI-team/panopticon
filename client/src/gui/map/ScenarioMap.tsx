@@ -49,6 +49,7 @@ import ShipCard from "./featureCards/ShipCard";
 import { SetCurrentGameStatus } from "./contextProviders/GameStatusProvider";
 import { SetCurrentMouseMapCoordinates } from "./contextProviders/MouseMapCoordinatesProvider";
 import LayerVisibilityPanelToggle from "./toolbar/layerVisibilityToggle";
+import SideToolBar from "./toolbar/SideToolBar";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -1179,7 +1180,7 @@ export default function ScenarioMap({
 
   return (
     <div>     
-      <ToolBar
+      {/* <ToolBar
         addAircraftOnClick={setAddingAircraft}
         addFacilityOnClick={setAddingFacility}
         addAirbaseOnClick={setAddingAirbase}
@@ -1207,6 +1208,35 @@ export default function ScenarioMap({
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
+      /> */}
+      <SideToolBar
+        addAircraftOnClick={setAddingAircraft}
+        addFacilityOnClick={setAddingFacility}
+        addAirbaseOnClick={setAddingAirbase}
+        addShipOnClick={setAddingShip}
+        playOnClick={handlePlayGameClick}
+        stepOnClick={handleStepGameClick}
+        pauseOnClick={handlePauseGameClick}
+        toggleScenarioTimeCompressionOnClick={toggleScenarioTimeCompression}
+        switchCurrentSideOnClick={switchCurrentSide}
+        refreshAllLayers={refreshAllLayers}
+        updateMapView={updateMapView}
+        updateScenarioTimeCompression={setCurrentScenarioTimeCompression}
+        updateCurrentScenarioTimeToContext={() => {
+          setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+        }}
+        updateCurrentSideName={setCurrentSideName}
+        scenarioTimeCompression={currentScenarioTimeCompression}
+        scenarioCurrentSideName={currentSideName}
+        game={game}
+        featureLabelVisibility={featureLabelVisible}
+        toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
+        threatRangeVisibility={threatRangeVisible}
+        toggleThreatRangeVisibility={toggleThreatRangeVisibility}
+        routeVisibility={routeVisible}
+        toggleRouteVisibility={toggleRouteVisibility}
+        toggleBaseMapLayer={toggleBaseMapLayer}
+        keyboardShortcutsEnabled={keyboardShortcutsEnabled}      
       />
       <LayerVisibilityPanelToggle
           featureLabelVisibility={featureLabelVisible}
@@ -1216,7 +1246,7 @@ export default function ScenarioMap({
           routeVisibility={routeVisible}
           toggleRouteVisibility={toggleRouteVisibility}
           toggleBaseMapLayer={toggleBaseMapLayer}
-      ></LayerVisibilityPanelToggle>
+      />
 
       <div ref={mapId} className="map"></div>
 
