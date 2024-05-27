@@ -134,8 +134,6 @@ export default function ScenarioMap({
       left: 0,
       features: [],
     });
-  const [layerVisibilityPanelOpen, setLayerVisibilityPanelOpen] =
-    useState(false);
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
   const [routeVisible, setRouteVisible] = useState(true);
