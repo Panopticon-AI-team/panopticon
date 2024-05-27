@@ -48,6 +48,7 @@ import { routeDrawLineStyle } from "./mapLayers/FeatureLayerStyles";
 import ShipCard from "./featureCards/ShipCard";
 import { SetCurrentGameStatus } from "./contextProviders/GameStatusProvider";
 import { SetCurrentMouseMapCoordinates } from "./contextProviders/MouseMapCoordinatesProvider";
+import LayerVisibilityPanelToggle from "./toolbar/layerVisibilityToggle";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -1177,7 +1178,7 @@ export default function ScenarioMap({
   }
 
   return (
-    <div>
+    <div>     
       <ToolBar
         addAircraftOnClick={setAddingAircraft}
         addFacilityOnClick={setAddingFacility}
@@ -1207,7 +1208,18 @@ export default function ScenarioMap({
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
       />
+      <LayerVisibilityPanelToggle
+          featureLabelVisibility={featureLabelVisible}
+          toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
+          threatRangeVisibility={threatRangeVisible}
+          toggleThreatRangeVisibility={toggleThreatRangeVisibility}
+          routeVisibility={routeVisible}
+          toggleRouteVisibility={toggleRouteVisibility}
+          toggleBaseMapLayer={toggleBaseMapLayer}
+      ></LayerVisibilityPanelToggle>
+
       <div ref={mapId} className="map"></div>
+
       {openAirbaseCard.open && (
         <AirbaseCard
           airbase={game.currentScenario.getAirbase(openAirbaseCard.airbaseId)!}
