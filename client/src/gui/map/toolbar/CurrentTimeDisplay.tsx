@@ -6,7 +6,8 @@ import { CurrentScenarioTimeContext } from "../contextProviders/ScenarioTimeProv
 interface CurrentTimeDisplayProps {}
 
 const currentTimeChipStyle = {
-  backgroundColor: "white",
+  backgroundColor: "#dddddd",
+  color: "black",
 };
 
 export default function CurrentTimeDisplay() {

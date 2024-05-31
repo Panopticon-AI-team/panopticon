@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
-import { Typography } from "@mui/material";
+import { Chip, Typography } from "@mui/material";
 import { CurrentMouseMapCoordinates } from "../contextProviders/MouseMapCoordinatesProvider";
 
 interface CurrentMouseMapCoordinatesDisplayProps {}
 
 const currentMouseMapCoordinatesDisplayStyle = {
-  color: "white",
+  backgroundColor: "#dddddd",
+  color: "black",
 };
 
 export default function CurrentMouseMapCoordinatesDisplay() {
@@ -14,15 +15,12 @@ export default function CurrentMouseMapCoordinatesDisplay() {
   );
 
   return (
-    <Typography
-      variant="h6"
-      component="h6"
-      style={currentMouseMapCoordinatesDisplayStyle}
-    >
-      {"Coordinates: " +
+    <Chip
+      label={"Coordinates: " +
         CurrentMouseMapCoordinatesFromContext.latitude.toFixed(2) +
         ", " +
         CurrentMouseMapCoordinatesFromContext.longitude.toFixed(2)}
-    </Typography>
+      style={currentMouseMapCoordinatesDisplayStyle}
+    />
   );
 }

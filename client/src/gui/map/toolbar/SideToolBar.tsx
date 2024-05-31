@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import CollapsibleCard from './CollapsibleCard';
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -28,10 +19,8 @@ import { ReactComponent as FlightTakeoffIcon } from "../../assets/flight_takeoff
 import Game from "../../../game/Game";
 import { v4 as uuidv4 } from "uuid";
 import ReplayIcon from "@mui/icons-material/Replay";
-import CurrentTimeDisplay from "./CurrentTimeDisplay";
 import CurrentActionContextDisplay from "./CurrentActionContextDisplay";
 import { Tooltip } from "@mui/material";
-import CurrentMouseMapCoordinatesDisplay from "./CurrentMouseMapCoordinatesDisplay";
 import HomeIcon from "@mui/icons-material/Home";
 
 const drawerWidth = 300;
@@ -418,9 +407,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
         <Divider />
         <List>
           <Stack spacing={0.5} direction="column" style={toolbarStyle}>
-            <CurrentActionContextDisplay />
-            <CurrentTimeDisplay />
-            <CurrentMouseMapCoordinatesDisplay />            
+            <CurrentActionContextDisplay />          
           </Stack>           
           <CollapsibleCard
             title="File"
