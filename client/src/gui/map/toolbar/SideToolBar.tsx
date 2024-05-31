@@ -263,7 +263,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
         >
           LOAD SCENARIO
         </Button>
-        <Tooltip title="Reload the scenario. Shortcut: R">
+        <Tooltip title="Reload the scenario. Shortcut: R" placement="right">
           <Button
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
@@ -280,7 +280,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
   const editUnitSection = () => {
     return (
       <Stack spacing={1} direction="column" style={toolbarStyle}>
-        <Tooltip title="Add an aircraft. Shortcut: 1">
+        <Tooltip title="Add an aircraft. Shortcut: 1" placement="right">
           <Button
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
@@ -290,7 +290,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             Add aircraft
           </Button>
         </Tooltip>
-        <Tooltip title="Add an airbase. Shortcut: 2">
+        <Tooltip title="Add an airbase. Shortcut: 2" placement="right">
           <Button
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
@@ -300,7 +300,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             Add airbase
           </Button>
         </Tooltip>
-        <Tooltip title="Add a facility. Shortcut: 3">
+        <Tooltip title="Add a facility. Shortcut: 3" placement="right">
           <Button
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
@@ -310,7 +310,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             Add SAM
           </Button>
         </Tooltip>
-        <Tooltip title="Add a ship. Shortcut: 4">
+        <Tooltip title="Add a ship. Shortcut: 4" placement="right">
           <Button
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
@@ -327,7 +327,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
   const editScenarioSection = () => {
     return (
       <Stack spacing={2} direction="column" style={toolbarStyle}>
-        <Tooltip title="Switch sides. Shortcut: S">
+        <Tooltip title="Switch sides. Shortcut: S" placement="right">
           <Button
             variant="contained"
             style={buttonStyle(
@@ -355,7 +355,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
   const runScenarioSection = () => {
     return (
       <Stack spacing={1} direction="column" style={toolbarStyle}>
-        <Tooltip title="Play/pause the scenario. Shortcut: SPACEBAR">
+        <Tooltip title="Play/pause the scenario. Shortcut: SPACEBAR" placement="right">
           <Button
             variant="contained"
             style={buttonStyle(scenarioPaused ? "green" : "red")}
@@ -365,7 +365,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             {scenarioPaused ? "PLAY" : "PAUSE"}
           </Button>
         </Tooltip>
-        <Tooltip title="Step the scenario forwards. Shortcut: N">
+        <Tooltip title="Step the scenario forwards. Shortcut: N" placement="right">
           <Button
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
@@ -375,7 +375,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             STEP
           </Button>
         </Tooltip> 
-        <Tooltip title="Change the scenario time compression. Shortcut: F">
+        <Tooltip title="Change the scenario time compression. Shortcut: F" placement="right">
           <Button
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
