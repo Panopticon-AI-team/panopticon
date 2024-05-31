@@ -12,21 +12,28 @@ interface CollapsibleCardProps {
     title: string;
     content: JSX.Element;
     width: number;
+    height: number;
+    expandParent?: (expanded: boolean) => void;
+    open: boolean;
 }
 
 export default function CollapsibleCard(props: Readonly<CollapsibleCardProps>) { 
-    const [open, setOpen] = useState(false); 
+    const [open, setOpen] = useState(props.open); 
     return ( 
         <> 
             <Card sx={{ 
                 minWidth: props.width, 
-                // border: "1px solid rgba(211,211,211,0.6)"
+                padding: '5px',
+                backgroundColor: '#282c34',
             }}> 
                 <CardHeader 
                     title={props.title}
                     action={ 
                         <IconButton 
-                            onClick={() => setOpen(!open)} 
+                            onClick={() => {
+                                setOpen(!open);
+                                if (props.expandParent) props.expandParent(!open);
+                            }} 
                             aria-label="expand"
                             size="small"
                         > 
@@ -34,17 +41,21 @@ export default function CollapsibleCard(props: Readonly<CollapsibleCardProps>) {
                                 : <KeyboardArrowDownIcon />} 
                         </IconButton> 
                     }
-                    style={{ textAlign: 'left' }}
+                    sx={{ textAlign: 'left', backgroundColor: '#676767', color: 'white', height: '15px', borderRadius: '10px', alignItems: 'center'}}
+                    titleTypographyProps={{ variant:'body1' }}
                 ></CardHeader>
                 <div style={{ 
-                    backgroundColor: "#282c34"
+                    backgroundColor: "#282c34",
                 }}> 
                     <Collapse in={open} timeout="auto"
                         unmountOnExit> 
-                        <CardContent> 
+                        <CardContent sx={{
+                            width: "100%",
+                            paddingLeft: '0px',
+                            marginLeft: '0px',
+                        }}> 
                             <Container sx={{ 
-                                height: 300, 
-                                lineHeight: 2 
+                                height: props.height
                             }}> 
                                 {props.content}
                             </Container> 

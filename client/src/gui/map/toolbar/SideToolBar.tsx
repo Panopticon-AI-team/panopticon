@@ -69,6 +69,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
   const [scenarioPaused, setScenarioPaused] = useState<boolean>(
     props.game.scenarioPaused
   );
+  const [expandEditScenarioSection, setExpandEditScenarioSection] = useState<boolean>(false);
   const defaultButtonColor = "#676767";
   const toolbarStyle = {
     backgroundColor: "#282c34",
@@ -80,6 +81,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
   const buttonStyle = (backgroundColor: string) => {
     return {
       backgroundColor: backgroundColor,
+      justifyContent: "left",
     };
   };
 
@@ -244,12 +246,12 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
 
   const fileOperationsSection = () => {
     return (
-      <Stack spacing={1} direction="column" style={toolbarStyle}>
+      <Stack spacing={1} direction="column" style={{...toolbarStyle}}>
         <Button
           variant="contained"
           style={buttonStyle(defaultButtonColor)}
           onClick={exportScenario}
-          startIcon={<DownloadIcon />}
+          // startIcon={<DownloadIcon />}
         >
           EXPORT SCENARIO
         </Button>
@@ -257,7 +259,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
           variant="contained"
           style={buttonStyle(defaultButtonColor)}
           onClick={loadScenario}
-          startIcon={<CloudUploadIcon />}
+          // startIcon={<CloudUploadIcon />}
         >
           LOAD SCENARIO
         </Button>
@@ -266,7 +268,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
             onClick={reloadScenario}
-            startIcon={<ReplayIcon />}
+            // startIcon={<ReplayIcon />}
           >
             RELOAD SCENARIO
           </Button>
@@ -283,7 +285,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
             onClick={props.addAircraftOnClick}
-            startIcon={<FlightIcon />}
+            // startIcon={<FlightIcon />}
           >
             Add aircraft
           </Button>
@@ -293,7 +295,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
             onClick={props.addAirbaseOnClick}
-            startIcon={<FlightTakeoffIcon />}
+            // startIcon={<FlightTakeoffIcon />}
           >
             Add airbase
           </Button>
@@ -303,7 +305,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
             onClick={props.addFacilityOnClick}
-            startIcon={<RadarIcon />}
+            // startIcon={<RadarIcon />}
           >
             Add SAM
           </Button>
@@ -313,7 +315,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
             onClick={props.addShipOnClick}
-            startIcon={<DirectionsBoatIcon />}
+            // startIcon={<DirectionsBoatIcon />}
           >
             Add Ship
           </Button>
@@ -341,7 +343,10 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
         <CollapsibleCard
           title="Add Unit"
           content={editUnitSection()}
-          width={drawerWidth - 40}
+          width={drawerWidth - 80}
+          height={150}
+          expandParent={setExpandEditScenarioSection}
+          open={false}
           />                
       </Stack>    
     )    
@@ -353,9 +358,9 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
         <Tooltip title="Play/pause the scenario. Shortcut: SPACEBAR">
           <Button
             variant="contained"
-            color={scenarioPaused ? "success" : "error"}
+            style={buttonStyle(scenarioPaused ? "green" : "red")}
             onClick={handlePlayClick}
-            startIcon={scenarioPaused ? <PlayArrowIcon /> : <PauseIcon />}
+            // startIcon={scenarioPaused ? <PlayArrowIcon /> : <PauseIcon />}
           >
             {scenarioPaused ? "PLAY" : "PAUSE"}
           </Button>
@@ -365,11 +370,20 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             variant="contained"
             style={buttonStyle(defaultButtonColor)}
             onClick={handleStepClick}
-            startIcon={<RedoIcon />}
+            // startIcon={<RedoIcon />}
           >
             STEP
           </Button>
-        </Tooltip>      
+        </Tooltip> 
+        <Tooltip title="Change the scenario time compression. Shortcut: F">
+          <Button
+            variant="contained"
+            style={buttonStyle(defaultButtonColor)}
+            onClick={props.toggleScenarioTimeCompressionOnClick}
+          >
+            Game Speed: {props.scenarioTimeCompression}X
+          </Button>
+        </Tooltip>             
       </Stack>    
     )
   }
@@ -384,17 +398,25 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             width: drawerWidth,
             boxSizing: 'border-box',
             backgroundColor: "#282c34",
+            overflow: "hidden",
           },
         }}
         variant="persistent"
         anchor="left"
         open={true}
       >
-        <DrawerHeader>
-          <Stack spacing={2} direction="row" style={toolbarStyle}>
+        <DrawerHeader sx={{backgroundColor: defaultButtonColor}}>
+          <Stack spacing={2} direction="row" style={{width: "100%"}}>
             <Button
               variant="contained"
-              style={buttonStyle(defaultButtonColor)}
+              style={
+                {
+                  backgroundColor: defaultButtonColor,
+                  justifyContent: "left",
+                  width: "100%",
+                  height: "100%",
+                }
+              }
               startIcon={<HomeIcon />}
               href="https://panopticon-ai.com/"
               target="_blank"
@@ -405,7 +427,7 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
           </Stack>
         </DrawerHeader>       
         <Divider />
-        <List>
+        <List disablePadding>
           <Stack spacing={0.5} direction="column" style={toolbarStyle}>
             <CurrentActionContextDisplay />          
           </Stack>           
@@ -413,16 +435,22 @@ export default function SideToolBar(props: Readonly<ToolBarProps>) {
             title="File"
             content={fileOperationsSection()}
             width={drawerWidth - 20}
+            height={125}
+            open={false}
             />
           <CollapsibleCard
             title="Edit Scenario"
             content={editScenarioSection()}
             width={drawerWidth - 20}
+            height={expandEditScenarioSection ? 300 : 100}
+            open={false}
             />
           <CollapsibleCard
             title="Run Scenario"
             content={runScenarioSection()}
             width={drawerWidth - 20}
+            height={125}
+            open={true}
           />
         </List>
       </Drawer>

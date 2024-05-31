@@ -6,13 +6,15 @@ interface CurrentActionContextDisplayProps {}
 
 const currentActionContextStyle = {
   color: "white",
+  textAlign: "left",
+  padding: "5px",
 };
 
 export default function CurrentActionContextDisplay() {
   const CurrentGameStatusFromContext = useContext(CurrentGameStatus);
 
   return (
-    <Typography variant="h6" component="h6" style={currentActionContextStyle}>
+    <Typography variant="body2" component="h6" sx={currentActionContextStyle}>
       {CurrentGameStatusFromContext}
     </Typography>
   );
