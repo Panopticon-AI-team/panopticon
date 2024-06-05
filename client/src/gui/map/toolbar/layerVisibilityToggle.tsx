@@ -9,6 +9,7 @@ import Stack from "@mui/material/Stack";
 import { Tooltip } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { colorPalette } from "../../../utils/constants";
 
 interface LayerVisibilityPanelToggleProps {
   featureLabelVisibility: boolean;
@@ -34,29 +35,33 @@ export default function LayerVisibilityPanelToggle(
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? 'layer-visibility-panel' : undefined;
+  const id = open ? "layer-visibility-panel" : undefined;
 
-  const defaultButtonColor = "#676767";
+  const defaultButtonColor = colorPalette.white;
+  const defaultButtonTextColor = colorPalette.black;
   const buttonStyle = (backgroundColor: string) => {
     return {
       border: 1,
-      backgroundColor: backgroundColor, 
+      backgroundColor: backgroundColor,
+      color: defaultButtonTextColor,
       borderRadius: "16px",
       borderColor: "black",
+      justifyContent: "left",
     };
   };
 
   const layerVisibilityPanelCard = (
-    <Box sx={{ minWidth: 150 }}>
+    <Box sx={{ minWidth: 150, borderRadius: "32px" }}>
       <Card
         variant="outlined"
         sx={{
-          backgroundColor: "#282c34",
-          color: "white",
+          backgroundColor: colorPalette.darkGray,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "left",
+          borderRadius: "16px",
+          borderColor: "black",
         }}
       >
         <CardActions
@@ -68,24 +73,32 @@ export default function LayerVisibilityPanelToggle(
           }}
         >
           <Stack spacing={1} direction="column">
-            <Tooltip title="Toggle labels. Shortcut: 5" placement="right">
+            <Tooltip title="Switch maps. Shortcut: 8" placement="right">
               <Button
-                variant="contained"
+                variant="outlined"
+                style={buttonStyle(defaultButtonColor)}
+                onClick={props.toggleBaseMapLayer}
+                // startIcon={<VisibilityIcon />}
+              >
+                TOGGLE BASE MAP
+              </Button>
+            </Tooltip>
+            <Tooltip title="Toggle routes. Shortcut: 7" placement="right">
+              <Button
+                variant="outlined"
                 style={buttonStyle(defaultButtonColor)}
                 onClick={() => {
-                  props.toggleFeatureLabelVisibility(
-                    !props.featureLabelVisibility
-                  );
+                  props.toggleRouteVisibility(!props.routeVisibility);
                 }}
-                startIcon={
-                  props.featureLabelVisibility ? (
-                    <VisibilityIcon />
-                  ) : (
-                    <VisibilityOffIcon />
-                  )
-                }
+                // startIcon={
+                //   props.routeVisibility ? (
+                //     <VisibilityIcon />
+                //   ) : (
+                //     <VisibilityOffIcon />
+                //   )
+                // }
               >
-                {"LABELS " + (props.featureLabelVisibility ? "ON" : "OFF")}
+                TOGGLE ROUTES
               </Button>
             </Tooltip>
             <Tooltip
@@ -93,91 +106,81 @@ export default function LayerVisibilityPanelToggle(
               placement="right"
             >
               <Button
-                variant="contained"
+                variant="outlined"
                 style={buttonStyle(defaultButtonColor)}
                 onClick={() => {
                   props.toggleThreatRangeVisibility(
                     !props.threatRangeVisibility
                   );
                 }}
-                startIcon={
-                  props.threatRangeVisibility ? (
-                    <VisibilityIcon />
-                  ) : (
-                    <VisibilityOffIcon />
-                  )
-                }
+                // startIcon={
+                //   props.threatRangeVisibility ? (
+                //     <VisibilityIcon />
+                //   ) : (
+                //     <VisibilityOffIcon />
+                //   )
+                // }
               >
-                {"THREAT RANGE " + (props.threatRangeVisibility ? "ON" : "OFF")}
+                TOGGLE THREAT RANGE
               </Button>
             </Tooltip>
-            <Tooltip title="Toggle routes. Shortcut: 7" placement="right">
+            <Tooltip title="Toggle labels. Shortcut: 5" placement="right">
               <Button
-                variant="contained"
+                variant="outlined"
                 style={buttonStyle(defaultButtonColor)}
                 onClick={() => {
-                  props.toggleRouteVisibility(!props.routeVisibility);
+                  props.toggleFeatureLabelVisibility(
+                    !props.featureLabelVisibility
+                  );
                 }}
-                startIcon={
-                  props.routeVisibility ? (
-                    <VisibilityIcon />
-                  ) : (
-                    <VisibilityOffIcon />
-                  )
-                }
+                // startIcon={
+                //   props.featureLabelVisibility ? (
+                //     <VisibilityIcon />
+                //   ) : (
+                //     <VisibilityOffIcon />
+                //   )
+                // }
               >
-                {"ROUTES " + (props.routeVisibility ? "ON" : "OFF")}
-              </Button>
-            </Tooltip>
-            <Tooltip title="Switch maps. Shortcut: 8" placement="right">
-              <Button
-                variant="contained"
-                style={buttonStyle(defaultButtonColor)}
-                onClick={props.toggleBaseMapLayer}
-                startIcon={<VisibilityIcon />}
-              >
-                SWITCH MAP
+                TOGGLE LABELS
               </Button>
             </Tooltip>
           </Stack>
         </CardActions>
       </Card>
     </Box>
-  );  
+  );
 
   return (
     <>
-    <div style={{
-      position: "absolute",
-      left: "25em",
-      top: "1em",
-      color: "white",
-      fontSize: "small",
-      zIndex: 1000
-    }}>
-      <Box sx={buttonStyle("#dddddd")}>
-        <IconButton
-          onClick={handleClick}
-          size="large"
-        >
-          <LayersIcon />
-        </IconButton>
-      </Box>
+      <div
+        style={{
+          position: "absolute",
+          left: "25em",
+          top: "1em",
+          color: "white",
+          fontSize: "small",
+          zIndex: 1000,
+        }}
+      >
+        <Box sx={buttonStyle(colorPalette.darkGray)}>
+          <IconButton onClick={handleClick} size="large">
+            <LayersIcon />
+          </IconButton>
+        </Box>
+      </div>
 
-    </div>
-
-    <Popover
-      id={id}
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handleClose}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-    >
-      {layerVisibilityPanelCard}
-    </Popover>  
-    </>   
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+      >
+        {layerVisibilityPanelCard}
+      </Popover>
+    </>
   );
 }

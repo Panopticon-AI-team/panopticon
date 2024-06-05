@@ -1,12 +1,13 @@
 import React, { useContext } from "react";
 import { Typography } from "@mui/material";
 import { CurrentGameStatus } from "../contextProviders/GameStatusProvider";
+import { colorPalette } from "../../../utils/constants";
 
 interface CurrentActionContextDisplayProps {}
 
 const currentActionContextStyle = {
-  color: "white",
-  textAlign: "left",
+  color: colorPalette.black,
+  textAlign: "center",
   padding: "5px",
 };
 
