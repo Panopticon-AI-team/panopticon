@@ -1,14 +1,16 @@
 import React, { useContext } from "react";
 import { Typography } from "@mui/material";
 import { CurrentGameStatus } from "../contextProviders/GameStatusProvider";
-import { colorPalette } from "../../../utils/constants";
-
-interface CurrentActionContextDisplayProps {}
 
 const currentActionContextStyle = {
-  color: colorPalette.black,
   textAlign: "center",
-  padding: "5px",
+  padding: "2px",
+  color: "#4F4F4F",
+  // fontFamily: "Khula",
+  fontSize: "12px",
+  fontStyle: "normal",
+  fontWeight: 400,
+  lineWeight: "normal",
 };
 
 export default function CurrentActionContextDisplay() {

@@ -1,12 +1,16 @@
 import React, { useContext } from "react";
-import { Chip, Typography } from "@mui/material";
+import { Chip } from "@mui/material";
 import { CurrentMouseMapCoordinates } from "../contextProviders/MouseMapCoordinatesProvider";
-
-interface CurrentMouseMapCoordinatesDisplayProps {}
+import { colorPalette } from "../../../utils/constants";
 
 const currentMouseMapCoordinatesDisplayStyle = {
-  backgroundColor: "#dddddd",
-  color: "black",
+  backgroundColor: colorPalette.lightGray,
+  color: "#000",
+  // fontFamily: "Khula",
+  fontSize: "12px",
+  fontStyle: "normal",
+  fontWeight: 400,
+  lineWeight: "normal",
 };
 
 export default function CurrentMouseMapCoordinatesDisplay() {
@@ -16,10 +20,12 @@ export default function CurrentMouseMapCoordinatesDisplay() {
 
   return (
     <Chip
-      label={"Coordinates: " +
+      label={
+        "Coordinates: " +
         CurrentMouseMapCoordinatesFromContext.latitude.toFixed(2) +
         ", " +
-        CurrentMouseMapCoordinatesFromContext.longitude.toFixed(2)}
+        CurrentMouseMapCoordinatesFromContext.longitude.toFixed(2)
+      }
       style={currentMouseMapCoordinatesDisplayStyle}
     />
   );
