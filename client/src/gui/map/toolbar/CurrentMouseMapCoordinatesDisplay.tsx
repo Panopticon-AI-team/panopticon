@@ -6,7 +6,6 @@ import { colorPalette } from "../../../utils/constants";
 const currentMouseMapCoordinatesDisplayStyle = {
   backgroundColor: colorPalette.lightGray,
   color: "#000",
-  // fontFamily: "Khula",
   fontSize: "12px",
   fontStyle: "normal",
   fontWeight: 400,

@@ -6,7 +6,6 @@ const currentActionContextStyle = {
   textAlign: "center",
   padding: "2px",
   color: "#4F4F4F",
-  // fontFamily: "Khula",
   fontSize: "12px",
   fontStyle: "normal",
   fontWeight: 400,
