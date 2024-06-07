@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Tooltip } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -7,12 +8,16 @@ import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
-import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+
 import Game from "../../../game/Game";
 import { colorPalette } from "../../../utils/constants";
 import { ReactComponent as PanopticonLogoSvg } from "../../assets/panopticon.svg";
-import CollapsibleCard from "./CollapsibleCard";
+import ToolbarCollapsible from "./ToolbarCollapsible";
 import CurrentActionContextDisplay from "./CurrentActionContextDisplay";
 
 const drawerWidth = 300;
@@ -51,6 +56,10 @@ interface ToolBarProps {
   keyboardShortcutsEnabled: boolean;
 }
 
+const formatSideName = (sideName: string) => {
+  return sideName.charAt(0) + sideName.slice(1).toLowerCase();
+};
+
 export default function Toolbar(props: Readonly<ToolBarProps>) {
   const [currentScenarioFile, setCurrentScenarioFile] = useState<File | null>(
     null
@@ -61,23 +70,50 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   const [scenarioPaused, setScenarioPaused] = useState<boolean>(
     props.game.scenarioPaused
   );
-  const [expandEditScenarioSection, setExpandEditScenarioSection] =
-    useState<boolean>(false);
-  const defaultButtonColor = colorPalette.white;
-  const defaultButtonTextColor = colorPalette.black;
-  const toolbarStyle = {
-    padding: "5px",
-    alignItems: "left",
-    marginLeft: "0",
-    marginRight: "auto",
+  const [addUnitSelectorValue, setAddUnitSelectorValue] =
+    React.useState("aircraft");
+
+  const toolbarDrawerStyle = {
+    width: drawerWidth,
+    flexShrink: 0,
+    "& .MuiDrawer-paper": {
+      width: drawerWidth,
+      boxSizing: "border-box",
+      backgroundColor: colorPalette.lightGray,
+      overflow: "hidden",
+    },
   };
-  const buttonStyle = (backgroundColor: string) => {
+  const toolbarDrawerHeaderStyle = {
+    backgroundColor: colorPalette.lightGray,
+  };
+  const homepageButtonStyle = {
+    backgroundColor: colorPalette.lightGray,
+    color: colorPalette.black,
+    justifyContent: "left",
+    width: "100%",
+    height: "100%",
+    textTransform: "none",
+    fontWeight: "bold",
+  };
+  const stackStyle = {
+    padding: "2px",
+  };
+  const toggleStyle = {
+    border: 1,
+    backgroundColor: colorPalette.white,
+    color: colorPalette.black,
+    borderRadius: "16px",
+    borderColor: colorPalette.lightGray,
+    justifyContent: "left",
+    textTransform: "none",
+    fontStyle: "normal",
+    lineHeight: "normal",
+  };
+  const displayChipStyle = (backgroundColor: string, color: string) => {
     return {
+      width: "90px",
       backgroundColor: backgroundColor,
-      color: defaultButtonTextColor,
-      justifyContent: "left",
-      borderRadius: "16px",
-      borderColor: "black",
+      color: color,
     };
   };
 
@@ -174,6 +210,29 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     props.stepOnClick();
   };
 
+  const handleAddUnitClick = () => {
+    switch (addUnitSelectorValue) {
+      case "aircraft":
+        props.addAircraftOnClick();
+        break;
+      case "airbase":
+        props.addAirbaseOnClick();
+        break;
+      case "facility":
+        props.addFacilityOnClick();
+        break;
+      case "ship":
+        props.addShipOnClick();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleAddUnitSelectorChange = (event: SelectChangeEvent) => {
+    setAddUnitSelectorValue(event.target.value);
+  };
+
   const keyboardEventHandler = (event: KeyboardEvent) => {
     const key = event.key;
     switch (key) {
@@ -215,19 +274,19 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         break;
       case "5":
         event.preventDefault();
-        props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
+        props.toggleBaseMapLayer();
         break;
       case "6":
         event.preventDefault();
-        props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
+        props.toggleRouteVisibility(!props.routeVisibility);
         break;
       case "7":
         event.preventDefault();
-        props.toggleRouteVisibility(!props.routeVisibility);
+        props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
         break;
       case "8":
         event.preventDefault();
-        props.toggleBaseMapLayer();
+        props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
         break;
       default:
         break;
@@ -242,173 +301,139 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const fileOperationsSection = () => {
     return (
-      <Stack spacing={1} direction="column" style={{ ...toolbarStyle }}>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={loadScenario}
-          // startIcon={<CloudUploadIcon />}
-        >
-          UPLOAD SCENARIO
-        </Button>
-        <Button
-          variant="contained"
-          style={buttonStyle(defaultButtonColor)}
-          onClick={exportScenario}
-          // startIcon={<DownloadIcon />}
-        >
-          SAVE SCENARIO
-        </Button>
-        <Tooltip title="Reload the scenario. Shortcut: R" placement="right">
-          <Button
-            variant="contained"
-            style={buttonStyle(defaultButtonColor)}
-            onClick={reloadScenario}
-            // startIcon={<ReplayIcon />}
-          >
-            RESTART SCENARIO
+      <Stack spacing={1} direction="row">
+        <Stack spacing={1} direction="column" sx={stackStyle}>
+          <Button variant="contained" sx={toggleStyle} onClick={loadScenario}>
+            Upload Scenario
           </Button>
-        </Tooltip>
+          <Button variant="contained" sx={toggleStyle} onClick={exportScenario}>
+            Save Scenario
+          </Button>
+          <Tooltip title="Reload the scenario. Shortcut: R" placement="right">
+            <Button
+              variant="contained"
+              sx={toggleStyle}
+              onClick={reloadScenario}
+            >
+              Restart Scenario
+            </Button>
+          </Tooltip>
+        </Stack>
       </Stack>
     );
   };
 
   const editUnitSection = () => {
     return (
-      <Stack spacing={1} direction="column" style={toolbarStyle}>
-        <Tooltip title="Add an aircraft. Shortcut: 1" placement="right">
-          <Button
-            variant="contained"
-            style={buttonStyle(defaultButtonColor)}
-            onClick={props.addAircraftOnClick}
-            // startIcon={<FlightIcon />}
+      <Box sx={{ minWidth: 90 }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Type</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={addUnitSelectorValue}
+            label="UnitType"
+            onChange={handleAddUnitSelectorChange}
           >
-            Add aircraft
-          </Button>
-        </Tooltip>
-        <Tooltip title="Add an airbase. Shortcut: 2" placement="right">
-          <Button
-            variant="contained"
-            style={buttonStyle(defaultButtonColor)}
-            onClick={props.addAirbaseOnClick}
-            // startIcon={<FlightTakeoffIcon />}
-          >
-            Add airbase
-          </Button>
-        </Tooltip>
-        <Tooltip title="Add a facility. Shortcut: 3" placement="right">
-          <Button
-            variant="contained"
-            style={buttonStyle(defaultButtonColor)}
-            onClick={props.addFacilityOnClick}
-            // startIcon={<RadarIcon />}
-          >
-            Add SAM
-          </Button>
-        </Tooltip>
-        <Tooltip title="Add a ship. Shortcut: 4" placement="right">
-          <Button
-            variant="contained"
-            style={buttonStyle(defaultButtonColor)}
-            onClick={props.addShipOnClick}
-            // startIcon={<DirectionsBoatIcon />}
-          >
-            Add Ship
-          </Button>
-        </Tooltip>
-      </Stack>
+            <MenuItem value={"aircraft"}>Aircraft</MenuItem>
+            <MenuItem value={"airbase"}>Airbase</MenuItem>
+            <MenuItem value={"facility"}>SAM</MenuItem>
+            <MenuItem value={"ship"}>Ship</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
     );
   };
 
   const editScenarioSection = () => {
     return (
-      <Stack spacing={2} direction="column" style={toolbarStyle}>
-        <Stack spacing={2} direction="row" style={toolbarStyle}>
-          <Stack spacing={2} direction="column" style={toolbarStyle}>
-            <Tooltip title="Switch sides. Shortcut: S" placement="right">
-              <Button
-                variant="contained"
-                style={buttonStyle(defaultButtonColor)}
-                onClick={props.switchCurrentSideOnClick}
-              >
-                TOGGLE SIDE
-              </Button>
-            </Tooltip>
-          </Stack>
-          <Stack spacing={2} direction="column" style={toolbarStyle}>
-            <Chip
-              label={props.scenarioCurrentSideName}
-              style={buttonStyle(
-                props.game.currentScenario.getSideColor(
-                  props.scenarioCurrentSideName
-                )
-              )}
-            />
-          </Stack>
+      <Stack spacing={1} direction="row" sx={stackStyle}>
+        <Stack spacing={3} direction="column" sx={stackStyle}>
+          <Tooltip title="Switch sides. Shortcut: S" placement="top">
+            <Button
+              variant="contained"
+              sx={toggleStyle}
+              onClick={props.switchCurrentSideOnClick}
+            >
+              Toggle Side
+            </Button>
+          </Tooltip>
+          <Button
+            variant="contained"
+            sx={toggleStyle}
+            onClick={handleAddUnitClick}
+          >
+            Add Unit
+          </Button>
         </Stack>
-        <CollapsibleCard
-          title="Add Unit"
-          content={editUnitSection()}
-          width={drawerWidth - 80}
-          height={150}
-          expandParent={setExpandEditScenarioSection}
-          open={false}
-        />
+        <Stack spacing={1} direction="column" sx={stackStyle}>
+          <Chip
+            label={formatSideName(props.scenarioCurrentSideName)}
+            sx={displayChipStyle(
+              props.game.currentScenario.getSideColor(
+                props.scenarioCurrentSideName
+              ),
+              colorPalette.white
+            )}
+          />
+          {editUnitSection()}
+        </Stack>
       </Stack>
     );
   };
 
   const runScenarioSection = () => {
     return (
-      <Stack spacing={1} direction="row" style={toolbarStyle}>
-        <Stack spacing={1} direction="column" style={toolbarStyle}>
+      <Stack spacing={1} direction="row" sx={stackStyle}>
+        <Stack spacing={1} direction="column" sx={stackStyle}>
           <Tooltip
             title="Change the scenario time compression. Shortcut: F"
             placement="top"
           >
             <Button
               variant="contained"
-              style={buttonStyle(defaultButtonColor)}
+              sx={toggleStyle}
               onClick={props.toggleScenarioTimeCompressionOnClick}
             >
-              TOGGLE SPEED
+              Toggle Speed
             </Button>
           </Tooltip>
           <Tooltip
             title="Play/pause the scenario. Shortcut: SPACEBAR"
-            placement="top"
+            placement="right"
           >
             <Button
               variant="contained"
-              style={buttonStyle(defaultButtonColor)}
+              sx={toggleStyle}
               onClick={handlePlayClick}
-              // startIcon={scenarioPaused ? <PlayArrowIcon /> : <PauseIcon />}
             >
-              PLAY/PAUSE
+              Play/Pause
             </Button>
           </Tooltip>
           <Tooltip
             title="Step the scenario forwards. Shortcut: N"
-            placement="top"
+            placement="bottom"
           >
             <Button
               variant="contained"
-              style={buttonStyle(defaultButtonColor)}
+              sx={toggleStyle}
               onClick={handleStepClick}
-              // startIcon={<RedoIcon />}
             >
-              STEP
+              Step
             </Button>
           </Tooltip>
         </Stack>
-        <Stack spacing={1} direction="column" style={toolbarStyle}>
+        <Stack spacing={1} direction="column" sx={stackStyle}>
           <Chip
-            label={props.scenarioTimeCompression + "X"}
-            style={buttonStyle(colorPalette.darkGray)}
+            label={props.scenarioTimeCompression + "x"}
+            sx={displayChipStyle(colorPalette.darkGray, colorPalette.white)}
           />
           <Chip
             label={scenarioPaused ? "Paused" : "Playing"}
-            style={buttonStyle(scenarioPaused ? "red" : "green")}
+            sx={displayChipStyle(
+              scenarioPaused ? "red" : "green",
+              colorPalette.white
+            )}
           />
         </Stack>
       </Stack>
@@ -418,64 +443,47 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   return (
     <Box sx={{ display: "flex" }}>
       <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-            backgroundColor: colorPalette.lightGray,
-            overflow: "hidden",
-          },
-        }}
+        sx={toolbarDrawerStyle}
         variant="persistent"
         anchor="left"
         open={true}
       >
-        <DrawerHeader sx={{ backgroundColor: colorPalette.lightGray }}>
-          <Stack spacing={2} direction="row" style={{ width: "100%" }}>
-            <Button
-              variant="text"
-              style={{
-                backgroundColor: colorPalette.lightGray,
-                color: defaultButtonTextColor,
-                justifyContent: "left",
-                width: "100%",
-                height: "100%",
-              }}
-              startIcon={<PanopticonLogoSvg />}
-              href="https://panopticon-ai.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              PANOPTICON-AI
-            </Button>
-          </Stack>
+        <DrawerHeader sx={toolbarDrawerHeaderStyle}>
+          <Button
+            variant="text"
+            sx={homepageButtonStyle}
+            startIcon={<PanopticonLogoSvg />}
+            href="https://panopticon-ai.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Panopticon AI
+          </Button>
         </DrawerHeader>
         <Divider />
         <List disablePadding>
-          <Stack spacing={0.5} direction="column" style={toolbarStyle}>
+          <Stack spacing={0.5} direction="column" sx={stackStyle}>
             <CurrentActionContextDisplay />
           </Stack>
-          <CollapsibleCard
+          <ToolbarCollapsible
             title="File"
             content={fileOperationsSection()}
             width={drawerWidth - 20}
-            height={125}
+            height={95}
             open={true}
           />
-          <CollapsibleCard
+          <ToolbarCollapsible
             title="Edit Scenario"
             content={editScenarioSection()}
             width={drawerWidth - 20}
-            height={expandEditScenarioSection ? 300 : 100}
+            height={95}
             open={true}
           />
-          <CollapsibleCard
+          <ToolbarCollapsible
             title="Run Scenario"
             content={runScenarioSection()}
             width={drawerWidth - 20}
-            height={125}
+            height={95}
             open={true}
           />
         </List>

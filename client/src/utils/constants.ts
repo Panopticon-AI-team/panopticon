@@ -13,7 +13,7 @@ export const GAME_SPEED_DELAY_MS: { [key: number]: number } = {
 };
 export const colorPalette = {
   lightGray: "#E8E8E8",
-  darkGray: "#D9D9D9",
+  darkGray: "#9B9B9B",
   black: "#000000",
   white: "#F2F2F2",
 };

@@ -54,7 +54,7 @@ export default function LayerVisibilityPanelToggle(
     borderWidth: "2px",
   };
   const layersVisibilityPanelStyle = {
-    backgroundColor: colorPalette.darkGray,
+    backgroundColor: colorPalette.lightGray,
     borderRadius: "5px",
     borderColor: "black",
     borderWidth: "2px",
@@ -64,7 +64,7 @@ export default function LayerVisibilityPanelToggle(
     <Card variant="outlined" sx={layersVisibilityPanelStyle}>
       <CardActions>
         <Stack spacing={1} direction="column">
-          <Tooltip title="Switch maps. Shortcut: 8" placement="right">
+          <Tooltip title="Switch maps. Shortcut: 5" placement="right">
             <Button
               variant="outlined"
               sx={toggleStyle}
@@ -73,7 +73,7 @@ export default function LayerVisibilityPanelToggle(
               Toggle Base Map
             </Button>
           </Tooltip>
-          <Tooltip title="Toggle routes. Shortcut: 7" placement="right">
+          <Tooltip title="Toggle routes. Shortcut: 6" placement="right">
             <Button
               variant="outlined"
               sx={toggleStyle}
@@ -85,7 +85,7 @@ export default function LayerVisibilityPanelToggle(
             </Button>
           </Tooltip>
           <Tooltip
-            title="Toggle threat range rings. Shortcut: 6"
+            title="Toggle threat range rings. Shortcut: 7"
             placement="right"
           >
             <Button
@@ -98,7 +98,7 @@ export default function LayerVisibilityPanelToggle(
               Toggle Threat Range
             </Button>
           </Tooltip>
-          <Tooltip title="Toggle labels. Shortcut: 5" placement="right">
+          <Tooltip title="Toggle labels. Shortcut: 8" placement="right">
             <Button
               variant="outlined"
               sx={toggleStyle}
