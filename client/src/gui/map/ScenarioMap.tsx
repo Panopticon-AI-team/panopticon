@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { Feature, MapBrowserEvent, Map as OlMap, Overlay } from "ol";
+import { unByKey } from "ol/Observable";
 import View from "ol/View";
+import { EventsKey } from "ol/events";
+import { Geometry, LineString } from "ol/geom";
 import Point from "ol/geom/Point.js";
 import Draw from "ol/interaction/Draw.js";
 import { Pixel } from "ol/pixel";
@@ -12,13 +15,8 @@ import {
   toLonLat,
   transform,
 } from "ol/proj";
-import { getLength } from "ol/sphere.js";
-
-import { Stack } from "@mui/material";
-import { unByKey } from "ol/Observable";
-import { EventsKey } from "ol/events";
-import { Geometry, LineString } from "ol/geom";
 import VectorSource from "ol/source/Vector";
+import { getLength } from "ol/sphere.js";
 import Game from "../../game/Game";
 import Scenario from "../../game/Scenario";
 import {
@@ -47,10 +45,9 @@ import {
   ThreatRangeLayer,
   WeaponLayer,
 } from "./mapLayers/FeatureLayers";
-import CurrentMouseMapCoordinatesDisplay from "./toolbar/CurrentMouseMapCoordinatesDisplay";
-import CurrentTimeDisplay from "./toolbar/CurrentTimeDisplay";
-import Toolbar from "./toolbar/Toolbar";
+import BottomCornerInfoDisplay from "./toolbar/BottomCornerInfoDisplay";
 import LayerVisibilityPanelToggle from "./toolbar/LayerVisibilityToggle";
+import Toolbar from "./toolbar/Toolbar";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -1210,6 +1207,7 @@ export default function ScenarioMap({
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
       />
+
       <LayerVisibilityPanelToggle
         featureLabelVisibility={featureLabelVisible}
         toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
@@ -1219,19 +1217,7 @@ export default function ScenarioMap({
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
       />
-      <div
-        style={{
-          position: "absolute",
-          right: "1em",
-          bottom: "1em",
-          zIndex: 1000,
-        }}
-      >
-        <Stack direction="row" spacing={1}>
-          <CurrentMouseMapCoordinatesDisplay />
-          <CurrentTimeDisplay />
-        </Stack>
-      </div>
+      <BottomCornerInfoDisplay />
 
       <div ref={mapId} className="map"></div>
 
