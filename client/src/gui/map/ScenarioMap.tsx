@@ -1,58 +1,56 @@
-import React, { useEffect, useRef, useState, useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
-import { Pixel } from "ol/pixel";
 import { Feature, MapBrowserEvent, Map as OlMap, Overlay } from "ol";
 import View from "ol/View";
+import Point from "ol/geom/Point.js";
+import Draw from "ol/interaction/Draw.js";
+import { Pixel } from "ol/pixel";
 import {
   Projection,
   fromLonLat,
+  get as getProjection,
   toLonLat,
   transform,
-  get as getProjection,
 } from "ol/proj";
-import Point from "ol/geom/Point.js";
-import Draw from "ol/interaction/Draw.js";
 import { getLength } from "ol/sphere.js";
 
-import "../styles/ScenarioMap.css";
-import {
-  AircraftLayer,
-  RouteLayer,
-  AirbasesLayer,
-  FacilityLayer,
-  ThreatRangeLayer,
-  WeaponLayer,
-  FeatureLabelLayer,
-  ShipLayer,
-} from "./mapLayers/FeatureLayers";
-import BaseMapLayers from "./mapLayers/BaseMapLayers";
+import { Stack } from "@mui/material";
+import { unByKey } from "ol/Observable";
+import { EventsKey } from "ol/events";
+import { Geometry, LineString } from "ol/geom";
+import VectorSource from "ol/source/Vector";
 import Game from "../../game/Game";
-import ToolBar from "./toolbar/ToolBar";
+import Scenario from "../../game/Scenario";
 import {
   DEFAULT_OL_PROJECTION_CODE,
-  GAME_SPEED_DELAY_MS,
   NAUTICAL_MILES_TO_METERS,
 } from "../../utils/constants";
 import { delay, randomInt } from "../../utils/utils";
-import AirbaseCard from "./featureCards/AirbaseCard";
+import "../styles/ScenarioMap.css";
 import MultipleFeatureSelector from "./MultipleFeatureSelector";
-import { Geometry, LineString } from "ol/geom";
-import FacilityCard from "./featureCards/FacilityCard";
-import AircraftCard from "./featureCards/AircraftCard";
-import Scenario from "../../game/Scenario";
-import { SetCurrentScenarioTimeContext } from "./contextProviders/ScenarioTimeProvider";
-import { EventsKey } from "ol/events";
-import { unByKey } from "ol/Observable";
-import VectorSource from "ol/source/Vector";
-import { routeDrawLineStyle } from "./mapLayers/FeatureLayerStyles";
-import ShipCard from "./featureCards/ShipCard";
 import { SetCurrentGameStatus } from "./contextProviders/GameStatusProvider";
 import { SetCurrentMouseMapCoordinates } from "./contextProviders/MouseMapCoordinatesProvider";
-import LayerVisibilityPanelToggle from "./toolbar/layerVisibilityToggle";
-import SideToolBar from "./toolbar/SideToolBar";
-import CurrentTimeDisplay from "./toolbar/CurrentTimeDisplay";
+import { SetCurrentScenarioTimeContext } from "./contextProviders/ScenarioTimeProvider";
+import AirbaseCard from "./featureCards/AirbaseCard";
+import AircraftCard from "./featureCards/AircraftCard";
+import FacilityCard from "./featureCards/FacilityCard";
+import ShipCard from "./featureCards/ShipCard";
+import BaseMapLayers from "./mapLayers/BaseMapLayers";
+import { routeDrawLineStyle } from "./mapLayers/FeatureLayerStyles";
+import {
+  AirbasesLayer,
+  AircraftLayer,
+  FacilityLayer,
+  FeatureLabelLayer,
+  RouteLayer,
+  ShipLayer,
+  ThreatRangeLayer,
+  WeaponLayer,
+} from "./mapLayers/FeatureLayers";
 import CurrentMouseMapCoordinatesDisplay from "./toolbar/CurrentMouseMapCoordinatesDisplay";
-import { Stack } from "@mui/material";
+import CurrentTimeDisplay from "./toolbar/CurrentTimeDisplay";
+import Toolbar from "./toolbar/Toolbar";
+import LayerVisibilityPanelToggle from "./toolbar/layerVisibilityToggle";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -1183,7 +1181,7 @@ export default function ScenarioMap({
 
   return (
     <div>
-      <SideToolBar
+      <Toolbar
         addAircraftOnClick={setAddingAircraft}
         addFacilityOnClick={setAddingFacility}
         addAirbaseOnClick={setAddingAirbase}
@@ -1210,27 +1208,29 @@ export default function ScenarioMap({
         routeVisibility={routeVisible}
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
-        keyboardShortcutsEnabled={keyboardShortcutsEnabled}      
+        keyboardShortcutsEnabled={keyboardShortcutsEnabled}
       />
       <LayerVisibilityPanelToggle
-          featureLabelVisibility={featureLabelVisible}
-          toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
-          threatRangeVisibility={threatRangeVisible}
-          toggleThreatRangeVisibility={toggleThreatRangeVisibility}
-          routeVisibility={routeVisible}
-          toggleRouteVisibility={toggleRouteVisibility}
-          toggleBaseMapLayer={toggleBaseMapLayer}
+        featureLabelVisibility={featureLabelVisible}
+        toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
+        threatRangeVisibility={threatRangeVisible}
+        toggleThreatRangeVisibility={toggleThreatRangeVisibility}
+        routeVisibility={routeVisible}
+        toggleRouteVisibility={toggleRouteVisibility}
+        toggleBaseMapLayer={toggleBaseMapLayer}
       />
-      <div style={{
-        position: "absolute",
-        right: "1em",
-        bottom: "1em",
-        zIndex: 1000
-      }}>
-        <Stack direction="row" spacing={2}>
-          <CurrentMouseMapCoordinatesDisplay />  
+      <div
+        style={{
+          position: "absolute",
+          right: "1em",
+          bottom: "1em",
+          zIndex: 1000,
+        }}
+      >
+        <Stack direction="row" spacing={1}>
+          <CurrentMouseMapCoordinatesDisplay />
           <CurrentTimeDisplay />
-        </Stack>  
+        </Stack>
       </div>
 
       <div ref={mapId} className="map"></div>
