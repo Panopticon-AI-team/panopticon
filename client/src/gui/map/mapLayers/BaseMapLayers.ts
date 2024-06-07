@@ -4,7 +4,7 @@ import OSM from "ol/source/OSM.js";
 import TileJSON from "ol/source/TileJSON.js";
 import { DEFAULT_OL_PROJECTION_CODE } from "../../../utils/constants";
 
-const devMode = true;
+const devMode = false;
 const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
 
 const layers: (TileLayer<OSM> | TileLayer<TileJSON>)[] = [];
