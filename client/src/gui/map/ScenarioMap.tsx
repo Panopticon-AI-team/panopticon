@@ -50,7 +50,7 @@ import {
 import CurrentMouseMapCoordinatesDisplay from "./toolbar/CurrentMouseMapCoordinatesDisplay";
 import CurrentTimeDisplay from "./toolbar/CurrentTimeDisplay";
 import Toolbar from "./toolbar/Toolbar";
-import LayerVisibilityPanelToggle from "./toolbar/layerVisibilityToggle";
+import LayerVisibilityPanelToggle from "./toolbar/LayerVisibilityToggle";
 
 interface ScenarioMapProps {
   zoom: number;
