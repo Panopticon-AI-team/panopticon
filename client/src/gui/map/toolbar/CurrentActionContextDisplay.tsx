@@ -10,7 +10,6 @@ const currentActionContextStyle = {
   fontSize: "12px",
   fontStyle: "normal",
   fontWeight: 400,
-  lineWeight: "normal",
 };
 
 export default function CurrentActionContextDisplay() {
