@@ -6,7 +6,6 @@ import Container from "@mui/material/Container";
 import CardContent from "@mui/material/CardContent";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import IconButton from "@mui/material/IconButton";
 import { makeStyles } from "@material-ui/styles";
 import { colorPalette } from "../../../utils/constants";
 

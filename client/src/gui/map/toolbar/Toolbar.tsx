@@ -328,7 +328,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         style={{
           width: "112px",
           height: "30px",
-          marginTop: "26px",
+          marginTop: "10px",
         }}
       >
         <option value={"aircraft"}>Aircraft</option>
@@ -341,8 +341,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const editScenarioSection = () => {
     return (
-      <Stack spacing={1} direction="row" sx={stackStyle}>
-        <Stack spacing={3} direction="column" sx={stackStyle}>
+      <Stack spacing={2} direction="row" sx={stackStyle}>
+        <Stack spacing={1} direction="column" sx={stackStyle}>
           <Tooltip title="Switch sides. Shortcut: S" placement="top">
             <Button
               variant="contained"
@@ -354,7 +354,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           </Tooltip>
           {editUnitSection()}
         </Stack>
-        <Stack spacing={3} direction="column" sx={stackStyle}>
+        <Stack spacing={1} direction="column" sx={stackStyle}>
           <Chip
             label={formatSideName(props.scenarioCurrentSideName)}
             sx={displayChipStyle(
@@ -364,13 +364,18 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               colorPalette.white
             )}
           />
-          <Button
-            variant="contained"
-            sx={toggleStyle}
-            onClick={handleAddUnitClick}
+          <Tooltip
+            title="Add a unit. Shortcut: 1 for Aircraft, 2 for Airbase, 3 for SAM, and 4 for Ship"
+            placement="right"
           >
-            Add Unit
-          </Button>
+            <Button
+              variant="contained"
+              sx={toggleStyle}
+              onClick={handleAddUnitClick}
+            >
+              Add Unit
+            </Button>
+          </Tooltip>
         </Stack>
       </Stack>
     );
@@ -470,7 +475,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             title="Edit Scenario"
             content={editScenarioSection()}
             width={drawerWidth - 20}
-            height={95}
+            height={60}
             open={true}
           />
           <ToolbarCollapsible
