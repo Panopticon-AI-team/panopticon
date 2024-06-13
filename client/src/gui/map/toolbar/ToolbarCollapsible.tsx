@@ -38,6 +38,7 @@ export default function ToolbarCollapsible(
     minWidth: props.width,
     padding: "5px",
     backgroundColor: colorPalette.lightGray,
+    boxShadow: "none",
   };
   const collapsibleStyle = {
     width: "100%",

@@ -9,10 +9,6 @@ import List from "@mui/material/List";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import { v4 as uuidv4 } from "uuid";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 import Game from "../../../game/Game";
 import { colorPalette } from "../../../utils/constants";
@@ -229,8 +225,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     }
   };
 
-  const handleAddUnitSelectorChange = (event: SelectChangeEvent) => {
-    setAddUnitSelectorValue(event.target.value);
+  const handleAddUnitSelectorChange = (unitType: string) => {
+    setAddUnitSelectorValue(unitType);
   };
 
   const keyboardEventHandler = (event: KeyboardEvent) => {
@@ -325,23 +321,21 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const editUnitSection = () => {
     return (
-      <Box sx={{ minWidth: 90 }}>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Type</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={addUnitSelectorValue}
-            label="UnitType"
-            onChange={handleAddUnitSelectorChange}
-          >
-            <MenuItem value={"aircraft"}>Aircraft</MenuItem>
-            <MenuItem value={"airbase"}>Airbase</MenuItem>
-            <MenuItem value={"facility"}>SAM</MenuItem>
-            <MenuItem value={"ship"}>Ship</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
+      <select
+        value={addUnitSelectorValue}
+        onChange={(event) => handleAddUnitSelectorChange(event.target.value)}
+        aria-label="UnitType"
+        style={{
+          width: "112px",
+          height: "30px",
+          marginTop: "26px",
+        }}
+      >
+        <option value={"aircraft"}>Aircraft</option>
+        <option value={"airbase"}>Airbase</option>
+        <option value={"facility"}>SAM</option>
+        <option value={"ship"}>Ship</option>
+      </select>
     );
   };
 
@@ -358,15 +352,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               Toggle Side
             </Button>
           </Tooltip>
-          <Button
-            variant="contained"
-            sx={toggleStyle}
-            onClick={handleAddUnitClick}
-          >
-            Add Unit
-          </Button>
+          {editUnitSection()}
         </Stack>
-        <Stack spacing={1} direction="column" sx={stackStyle}>
+        <Stack spacing={3} direction="column" sx={stackStyle}>
           <Chip
             label={formatSideName(props.scenarioCurrentSideName)}
             sx={displayChipStyle(
@@ -376,7 +364,13 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               colorPalette.white
             )}
           />
-          {editUnitSection()}
+          <Button
+            variant="contained"
+            sx={toggleStyle}
+            onClick={handleAddUnitClick}
+          >
+            Add Unit
+          </Button>
         </Stack>
       </Stack>
     );
