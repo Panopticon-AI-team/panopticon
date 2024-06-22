@@ -11,6 +11,12 @@ import { styled } from "@mui/material/styles";
 import { v4 as uuidv4 } from "uuid";
 
 import Game from "../../../game/Game";
+import {
+  AircraftDb,
+  AirbaseDb,
+  FacilityDb,
+  ShipDb,
+} from "../../../game/db/UnitDb";
 import { colorPalette } from "../../../utils/constants";
 import { ReactComponent as PanopticonLogoSvg } from "../../assets/panopticon.svg";
 import ToolbarCollapsible from "./ToolbarCollapsible";
@@ -68,6 +74,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   );
   const [addUnitSelectorValue, setAddUnitSelectorValue] =
     React.useState("aircraft");
+  const [unitClassSelectorValue, setUnitClassSelectorValue] = React.useState(
+    "A-10 Thunderbolt II"
+  );
 
   const toolbarDrawerStyle = {
     width: drawerWidth,
@@ -227,6 +236,19 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const handleAddUnitSelectorChange = (unitType: string) => {
     setAddUnitSelectorValue(unitType);
+    if (unitType === "aircraft") {
+      setUnitClassSelectorValue("A-10 Thunderbolt II");
+    } else if (unitType === "airbase") {
+      setUnitClassSelectorValue("Al Udeid Air Base");
+    } else if (unitType === "facility") {
+      setUnitClassSelectorValue("9K330 Tor");
+    } else if (unitType === "ship") {
+      setUnitClassSelectorValue("Admiral Gorshkov Frigate");
+    }
+  };
+
+  const handleUnitClassSelectorChange = (unitType: string) => {
+    setUnitClassSelectorValue(unitType);
   };
 
   const keyboardEventHandler = (event: KeyboardEvent) => {
@@ -319,7 +341,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     );
   };
 
-  const editUnitSection = () => {
+  const addUnitSection = () => {
     return (
       <select
         value={addUnitSelectorValue}
@@ -339,7 +361,106 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     );
   };
 
+  const aircraftClassSelection = () => {
+    const aircraftClassesSorted = AircraftDb.slice().sort((a, b) =>
+      a.className.localeCompare(b.className)
+    );
+    return (
+      <select
+        id="unit-class-selector"
+        value={unitClassSelectorValue}
+        onChange={(event) => handleUnitClassSelectorChange(event.target.value)}
+        aria-label="UnitClass"
+        style={{
+          width: "112px",
+          height: "30px",
+          marginTop: "10px",
+        }}
+      >
+        {aircraftClassesSorted.map((aircraft) => (
+          <option key={aircraft.className} value={aircraft.className}>
+            {aircraft.className}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
+  const airbaseClassSelection = () => {
+    return (
+      <select
+        id="unit-class-selector"
+        value={unitClassSelectorValue}
+        onChange={(event) => handleUnitClassSelectorChange(event.target.value)}
+        aria-label="UnitClass"
+        style={{
+          width: "112px",
+          height: "30px",
+          marginTop: "10px",
+        }}
+      >
+        {AirbaseDb.map((airbase) => (
+          <option key={airbase.name} value={airbase.name}>
+            {airbase.name}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
+  const facilityClassSelection = () => {
+    return (
+      <select
+        id="unit-class-selector"
+        value={unitClassSelectorValue}
+        onChange={(event) => handleUnitClassSelectorChange(event.target.value)}
+        aria-label="UnitClass"
+        style={{
+          width: "112px",
+          height: "30px",
+          marginTop: "10px",
+        }}
+      >
+        {FacilityDb.map((facility) => (
+          <option key={facility.className} value={facility.className}>
+            {facility.className}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
+  const shipClassSelection = () => {
+    return (
+      <select
+        id="unit-class-selector"
+        value={unitClassSelectorValue}
+        onChange={(event) => handleUnitClassSelectorChange(event.target.value)}
+        aria-label="UnitClass"
+        style={{
+          width: "112px",
+          height: "30px",
+          marginTop: "10px",
+        }}
+      >
+        {ShipDb.map((ship) => (
+          <option key={ship.className} value={ship.className}>
+            {ship.className}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
   const editScenarioSection = () => {
+    let unitClassSelection = aircraftClassSelection();
+    if (addUnitSelectorValue === "airbase") {
+      unitClassSelection = airbaseClassSelection();
+    } else if (addUnitSelectorValue === "facility") {
+      unitClassSelection = facilityClassSelection();
+    } else if (addUnitSelectorValue === "ship") {
+      unitClassSelection = shipClassSelection();
+    }
     return (
       <Stack spacing={2} direction="row" sx={stackStyle}>
         <Stack spacing={1} direction="column" sx={stackStyle}>
@@ -352,7 +473,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               Toggle Side
             </Button>
           </Tooltip>
-          {editUnitSection()}
+          {addUnitSection()}
+          {unitClassSelection}
         </Stack>
         <Stack spacing={1} direction="column" sx={stackStyle}>
           <Chip
@@ -475,7 +597,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             title="Edit Scenario"
             content={editScenarioSection()}
             width={drawerWidth - 20}
-            height={60}
+            height={90}
             open={true}
           />
           <ToolbarCollapsible
