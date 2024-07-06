@@ -249,6 +249,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const handleUnitClassSelectorChange = (unitType: string) => {
     setUnitClassSelectorValue(unitType);
+    handleAddUnitClick();
   };
 
   const keyboardEventHandler = (event: KeyboardEvent) => {
@@ -597,7 +598,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             title="Edit Scenario"
             content={editScenarioSection()}
             width={drawerWidth - 20}
-            height={90}
+            height={100}
             open={true}
           />
           <ToolbarCollapsible
