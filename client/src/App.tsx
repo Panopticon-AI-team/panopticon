@@ -48,11 +48,11 @@ export default function App() {
           <CurrentMouseMapCoordinatesProvider>
             <ScenarioMap
               center={transform(
-                theGame.mapView.defaultCenter,
+                theGame.mapView.currentCameraCenter,
                 "EPSG:4326",
                 DEFAULT_OL_PROJECTION_CODE
               )}
-              zoom={theGame.mapView.defaultZoom}
+              zoom={theGame.mapView.currentCameraZoom}
               game={theGame}
               projection={projection}
             ></ScenarioMap>
