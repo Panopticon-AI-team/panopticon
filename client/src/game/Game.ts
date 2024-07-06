@@ -55,7 +55,11 @@ export default class Game {
     aircraftName: string,
     className: string,
     latitude: number,
-    longitude: number
+    longitude: number,
+    speed?: number,
+    maxFuel?: number,
+    fuelRate?: number,
+    range?: number
   ): Aircraft | undefined {
     if (!this.currentSideName) {
       return;
@@ -69,11 +73,11 @@ export default class Game {
       longitude: longitude,
       altitude: 10000.0,
       heading: 90.0,
-      speed: 300.0,
-      currentFuel: 10000.0,
-      maxFuel: 10000.0,
-      fuelRate: 5000.0,
-      range: 100,
+      speed: speed ?? 300.0,
+      currentFuel: maxFuel ?? 10000.0,
+      maxFuel: maxFuel ?? 10000.0,
+      fuelRate: fuelRate ?? 5000.0,
+      range: range ?? 100,
       sideColor: this.currentScenario.getSideColor(this.currentSideName),
       weapons: [this.getSampleWeapon(10, 0.25)],
       homeBaseId: "",
@@ -170,7 +174,8 @@ export default class Game {
     facilityName: string,
     className: string,
     latitude: number,
-    longitude: number
+    longitude: number,
+    range?: number
   ) {
     if (!this.currentSideName) {
       return;
@@ -183,7 +188,7 @@ export default class Game {
       latitude: latitude,
       longitude: longitude,
       altitude: 0.0,
-      range: 250,
+      range: range ?? 250,
       sideColor: this.currentScenario.getSideColor(this.currentSideName),
       weapons: [this.getSampleWeapon(30, 0.1)],
     });
@@ -195,7 +200,11 @@ export default class Game {
     shipName: string,
     className: string,
     latitude: number,
-    longitude: number
+    longitude: number,
+    speed?: number,
+    maxFuel?: number,
+    fuelRate?: number,
+    range?: number
   ): Ship | undefined {
     if (!this.currentSideName) {
       return;
@@ -209,10 +218,10 @@ export default class Game {
       longitude: longitude,
       altitude: 0.0,
       heading: 0.0,
-      speed: 30.0,
-      currentFuel: 32000000.0,
-      maxFuel: 32000000.0,
-      fuelRate: 7000.0,
+      speed: speed ?? 30.0,
+      currentFuel: maxFuel ?? 32000000.0,
+      maxFuel: maxFuel ?? 32000000.0,
+      fuelRate: fuelRate ?? 7000.0,
       range: 250,
       route: [],
       selected: false,

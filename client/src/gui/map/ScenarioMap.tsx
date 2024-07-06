@@ -48,6 +48,12 @@ import {
 import BottomCornerInfoDisplay from "./toolbar/BottomCornerInfoDisplay";
 import LayerVisibilityPanelToggle from "./toolbar/LayerVisibilityToggle";
 import Toolbar from "./toolbar/Toolbar";
+import {
+  AircraftDb,
+  AirbaseDb,
+  FacilityDb,
+  ShipDb,
+} from "../../game/db/UnitDb";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -445,17 +451,51 @@ export default function ScenarioMap({
   }
 
   function handleAddUnit(coordinates: number[]) {
+    const unitClassSelector = document.getElementById(
+      "unit-class-selector"
+    ) as HTMLSelectElement;
+    const selectedUnitClassName = unitClassSelector.value;
     if (game.addingAircraft) {
-      addAircraft(coordinates);
+      const aircraftTemplate = AircraftDb.find(
+        (aircraft) => aircraft.className === selectedUnitClassName
+      );
+      addAircraft(
+        coordinates,
+        aircraftTemplate?.className,
+        aircraftTemplate?.speed ? aircraftTemplate?.speed / 1.151 : undefined,
+        aircraftTemplate?.maxFuel,
+        aircraftTemplate?.fuelRate ? aircraftTemplate?.fuelRate * 8 : undefined,
+        aircraftTemplate?.range
+      );
       game.addingAircraft = false;
     } else if (game.addingFacility) {
-      addFacility(coordinates);
+      const facilityTemplate = FacilityDb.find(
+        (facility) => facility.className === selectedUnitClassName
+      );
+      addFacility(
+        coordinates,
+        facilityTemplate?.className,
+        facilityTemplate?.range
+      );
       game.addingFacility = false;
     } else if (game.addingAirbase) {
-      addAirbase(coordinates);
+      const airbaseTemplate = AirbaseDb.find(
+        (airbase) => airbase.name === selectedUnitClassName
+      );
+      addAirbase(coordinates, airbaseTemplate?.name);
       game.addingAirbase = false;
     } else if (game.addingShip) {
-      addShip(coordinates);
+      const shipTemplate = ShipDb.find(
+        (ship) => ship.className === selectedUnitClassName
+      );
+      addShip(
+        coordinates,
+        shipTemplate?.className,
+        shipTemplate?.speed ? shipTemplate?.speed / 1.151 : undefined,
+        shipTemplate?.maxFuel,
+        shipTemplate?.fuelRate ? shipTemplate?.fuelRate * 8 : undefined,
+        shipTemplate?.range
+      );
       game.addingShip = false;
     }
     setCurrentGameStatusToContext(
@@ -625,17 +665,28 @@ export default function ScenarioMap({
     setCurrentGameStatusToContext("Scenario paused");
   }
 
-  function addAircraft(coordinates: number[]) {
+  function addAircraft(
+    coordinates: number[],
+    className?: string,
+    speed?: number,
+    maxFuel?: number,
+    fuelRate?: number,
+    range?: number
+  ) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = "F-22Z";
+    className = className ?? "F-22Z";
+    const aircraftName = className + " #" + randomInt(1, 5000).toString();
     const latitude = coordinates[1];
     const longitude = coordinates[0];
     const newAircraft = game.addAircraft(
       aircraftName,
       className,
       latitude,
-      longitude
+      longitude,
+      speed,
+      maxFuel,
+      fuelRate,
+      range
     );
     if (newAircraft) {
       aircraftLayer.addAircraftFeature(newAircraft);
@@ -650,17 +701,22 @@ export default function ScenarioMap({
     game.addAircraftToAirbase(aircraftName, className, airbaseId);
   }
 
-  function addFacility(coordinates: number[]) {
+  function addFacility(
+    coordinates: number[],
+    className?: string,
+    range?: number
+  ) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const facilityName = "SAM #" + randomInt(1, 5000).toString();
-    const className = "SAM";
+    className = className ?? "SAM";
+    const facilityName = className + " #" + randomInt(1, 5000).toString();
     const latitude = coordinates[1];
     const longitude = coordinates[0];
     const newFacility = game.addFacility(
       facilityName,
       className,
       latitude,
-      longitude
+      longitude,
+      range
     );
     if (newFacility) {
       facilityLayer.addFacilityFeature(newFacility);
@@ -670,9 +726,10 @@ export default function ScenarioMap({
     }
   }
 
-  function addAirbase(coordinates: number[]) {
+  function addAirbase(coordinates: number[], name?: string) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const airbaseName = "Floridistan AFB #" + randomInt(1, 5000).toString();
+    const airbaseName =
+      (name ?? "Floridistan AFB") + " #" + randomInt(1, 5000).toString();
     const className = "Airfield";
     const latitude = coordinates[1];
     const longitude = coordinates[0];
@@ -709,13 +766,29 @@ export default function ScenarioMap({
     if (featureLabelVisible) featureLabelLayer.removeFeatureById(aircraftId);
   }
 
-  function addShip(coordinates: number[]) {
+  function addShip(
+    coordinates: number[],
+    className?: string,
+    speed?: number,
+    maxFuel?: number,
+    fuelRate?: number,
+    range?: number
+  ) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    const shipName = "Ship #" + randomInt(1, 5000).toString();
-    const className = "Carrier";
+    className = className ?? "Carrier";
+    const shipName = className + " #" + randomInt(1, 5000).toString();
     const latitude = coordinates[1];
     const longitude = coordinates[0];
-    const newShip = game.addShip(shipName, className, latitude, longitude);
+    const newShip = game.addShip(
+      shipName,
+      className,
+      latitude,
+      longitude,
+      speed,
+      maxFuel,
+      fuelRate,
+      range
+    );
     if (newShip) {
       shipLayer.addShipFeature(newShip);
       if (threatRangeVisible) threatRangeLayer.addRangeFeature(newShip);
