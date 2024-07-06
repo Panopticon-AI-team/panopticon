@@ -150,8 +150,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         reader.onload = (readerEvent) => {
           props.game.loadScenario(readerEvent.target?.result as string);
           props.updateMapView(
-            props.game.mapView.defaultCenter,
-            props.game.mapView.defaultZoom
+            props.game.mapView.currentCameraCenter,
+            props.game.mapView.currentCameraZoom
           );
           props.updateScenarioTimeCompression(
             props.game.currentScenario.timeCompression
@@ -175,8 +175,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       reader.onload = (readerEvent) => {
         props.game.loadScenario(readerEvent.target?.result as string);
         props.updateMapView(
-          props.game.mapView.defaultCenter,
-          props.game.mapView.defaultZoom
+          props.game.mapView.currentCameraCenter,
+          props.game.mapView.currentCameraZoom
         );
         props.updateScenarioTimeCompression(
           props.game.currentScenario.timeCompression
@@ -188,8 +188,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     } else {
       props.game.loadScenario(initialScenarioString);
       props.updateMapView(
-        props.game.mapView.defaultCenter,
-        props.game.mapView.defaultZoom
+        props.game.mapView.currentCameraCenter,
+        props.game.mapView.currentCameraZoom
       );
       props.updateScenarioTimeCompression(
         props.game.currentScenario.timeCompression

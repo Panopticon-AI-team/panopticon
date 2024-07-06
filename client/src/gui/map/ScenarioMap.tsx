@@ -204,6 +204,16 @@ export default function ScenarioMap({
     });
   });
 
+  theMap.on("moveend", function (event) {
+    const view = event.map.getView();
+    const center = view.getCenter();
+    const zoom = view.getZoom();
+    if (center) {
+      game.mapView.currentCameraCenter = toLonLat(center, view.getProjection());
+    }
+    if (zoom) game.mapView.currentCameraZoom = zoom;
+  });
+
   // theMap.getViewport().addEventListener('contextmenu', function (evt) {
   //   evt.preventDefault();
   //   console.log(theMap.getEventPixel(evt));
