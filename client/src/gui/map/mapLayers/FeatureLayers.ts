@@ -47,6 +47,8 @@ class FeatureLayer {
     this.layer = new VectorLayer({
       source: this.layerSource,
       style: styleFunction,
+      updateWhileInteracting: true,
+      updateWhileAnimating: true,
     });
     this.projection = projection ?? defaultProjection!;
     this.layer.setZIndex(zIndex ?? 0);
