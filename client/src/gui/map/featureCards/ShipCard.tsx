@@ -17,6 +17,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import AddIcon from "@mui/icons-material/Add";
 import FlightIcon from "@mui/icons-material/Flight";
+import TelegramIcon from "@mui/icons-material/Telegram";
 
 interface ShipCardProps {
   ship: Ship;
@@ -25,6 +26,7 @@ interface ShipCardProps {
   handleDeleteShip: (shipId: string) => void;
   handleMoveShip: (shipId: string) => void;
   handleShipAttack: (shipId: string) => void;
+  handleTeleportUnit: (unitId: string) => void;
   handleEditShip: (
     shipId: string,
     shipName: string,
@@ -76,6 +78,11 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
   const _handleShipAttack = () => {
     props.handleCloseOnMap();
     props.handleShipAttack(props.ship.id);
+  };
+
+  const _handleTeleportShip = () => {
+    props.handleCloseOnMap();
+    props.handleTeleportUnit(props.ship.id);
   };
 
   const toggleEdit = () => {
@@ -287,6 +294,14 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
         </Button>
       </Stack>
       <Stack spacing={1} direction="row">
+        <Button
+          variant="contained"
+          size="small"
+          onClick={_handleTeleportShip}
+          startIcon={<TelegramIcon />}
+        >
+          TELEPORT
+        </Button>
         <Button
           variant="contained"
           size="small"
