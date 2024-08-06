@@ -971,16 +971,8 @@ export default function ScenarioMap({
 
   function queueUnitForTeleport(unitId: string) {
     game.selectedUnitId = unitId;
-    const unit =
-      game.currentScenario.getAircraft(unitId) ||
-      game.currentScenario.getShip(unitId) ||
-      game.currentScenario.getFacility(unitId) ||
-      game.currentScenario.getAirbase(unitId) ||
-      undefined;
-    if (unit) {
-      teleportingUnit = true;
-      setCurrentGameStatusToContext("Click on the map to teleport the unit");
-    }
+    teleportingUnit = true;
+    setCurrentGameStatusToContext("Click on the map to teleport the unit");
   }
 
   function switchCurrentSide() {
