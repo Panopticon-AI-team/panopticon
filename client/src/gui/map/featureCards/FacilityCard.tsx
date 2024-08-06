@@ -13,9 +13,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import TextField from "@mui/material/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import TelegramIcon from "@mui/icons-material/Telegram";
 
 interface FacilityCardProps {
   facility: Facility;
+  handleTeleportUnit: (unitId: string) => void;
   handleDeleteFacility: (facilityId: string) => void;
   handleCloseOnMap: () => void;
   handleEditFacility: (
@@ -37,6 +39,11 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
     range: props.facility.range,
     weaponQuantity: props.facility.getTotalWeaponQuantity(),
   });
+
+  const _handleTeleportFacility = () => {
+    props.handleCloseOnMap();
+    props.handleTeleportUnit(props.facility.id);
+  };
 
   const _handleDeleteFacility = () => {
     props.handleCloseOnMap();
@@ -175,6 +182,14 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
   const defaultCardActions = (
     <Stack spacing={1} direction="column">
       <Stack spacing={1} direction="row">
+        <Button
+          variant="contained"
+          size="small"
+          onClick={_handleTeleportFacility}
+          startIcon={<TelegramIcon />}
+        >
+          TELEPORT
+        </Button>
         <Button
           variant="contained"
           size="small"

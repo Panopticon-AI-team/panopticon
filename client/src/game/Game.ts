@@ -378,6 +378,41 @@ export default class Game {
     }
   }
 
+  teleportUnit(unitId: string, newLatitude: number, newLongitude: number) {
+    const aircraft = this.currentScenario.getAircraft(unitId);
+    if (aircraft) {
+      aircraft.latitude = newLatitude;
+      aircraft.longitude = newLongitude;
+      return aircraft;
+    }
+    const airbase = this.currentScenario.getAirbase(unitId);
+    if (airbase) {
+      airbase.latitude = newLatitude;
+      airbase.longitude = newLongitude;
+      airbase.aircraft.forEach((aircraft) => {
+        aircraft.latitude = newLatitude - 0.5;
+        aircraft.longitude = newLongitude - 0.5;
+      });
+      return airbase;
+    }
+    const facility = this.currentScenario.getFacility(unitId);
+    if (facility) {
+      facility.latitude = newLatitude;
+      facility.longitude = newLongitude;
+      return facility;
+    }
+    const ship = this.currentScenario.getShip(unitId);
+    if (ship) {
+      ship.latitude = newLatitude;
+      ship.longitude = newLongitude;
+      ship.aircraft.forEach((aircraft) => {
+        aircraft.latitude = newLatitude - 0.5;
+        aircraft.longitude = newLongitude - 0.5;
+      });
+      return ship;
+    }
+  }
+
   launchAircraftFromAirbase(airbaseId: string) {
     if (!this.currentSideName) {
       return;

@@ -156,6 +156,7 @@ export default function ScenarioMap({
   let routeMeasurementTooltip: Overlay | null = null;
   let routeMeasurementListener: EventsKey | undefined;
   let mousePosition: number[];
+  let teleportingUnit = false;
 
   const map = new OlMap({
     layers: [
@@ -241,6 +242,8 @@ export default function ScenarioMap({
       context = "moveAircraft";
     } else if (selectedFeatureType === "ship" && routeMeasurementDrawLine) {
       context = "moveShip";
+    } else if (game.selectedUnitId && teleportingUnit) {
+      context = "teleportUnit";
     } else if (
       game.selectingTarget &&
       attackerFeatureType === "aircraft" &&
@@ -312,6 +315,15 @@ export default function ScenarioMap({
           ship.selected = !ship.selected;
           shipLayer.updateShipFeature(ship.id, ship.selected, ship.heading);
         }
+        game.selectedUnitId = "";
+        setCurrentGameStatusToContext(
+          game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+        );
+        break;
+      }
+      case "teleportUnit": {
+        teleportingUnit = false;
+        teleportUnit(game.selectedUnitId, event.coordinate);
         game.selectedUnitId = "";
         setCurrentGameStatusToContext(
           game.scenarioPaused ? "Scenario paused" : "Scenario playing"
@@ -644,26 +656,29 @@ export default function ScenarioMap({
     return [observation, reward, terminated, truncated, info];
   }
 
-  function drawNextFrame(observation: Scenario) {
+  function drawNextFrame(observation: Scenario, drawAll: boolean = false) {
     aircraftLayer.refresh(observation.aircraft);
     weaponLayer.refresh(observation.weapons);
     shipLayer.refresh(observation.ships);
     refreshRouteLayer(observation);
-    if (featureLabelVisible) {
+    if (featureLabelVisible || drawAll) {
       featureLabelLayer.refreshSubset(observation.aircraft, "aircraft");
       featureLabelLayer.refreshSubset(observation.ships, "ship");
     }
-    if (facilityLayer.featureCount !== observation.facilities.length) {
+    if (
+      facilityLayer.featureCount !== observation.facilities.length ||
+      drawAll
+    ) {
       facilityLayer.refresh(observation.facilities);
-      if (featureLabelVisible)
+      if (featureLabelVisible || drawAll)
         featureLabelLayer.refreshSubset(observation.facilities, "facility");
     }
-    if (airbasesLayer.featureCount !== observation.airbases.length) {
+    if (airbasesLayer.featureCount !== observation.airbases.length || drawAll) {
       airbasesLayer.refresh(observation.airbases);
-      if (featureLabelVisible)
+      if (featureLabelVisible || drawAll)
         featureLabelLayer.refreshSubset(observation.airbases, "airbase");
     }
-    if (threatRangeVisible)
+    if (threatRangeVisible || drawAll)
       threatRangeLayer.refresh([
         ...observation.facilities,
         ...observation.ships,
@@ -856,6 +871,18 @@ export default function ScenarioMap({
       aircraftRouteLayer.addRouteFeature(aircraftQueuedForMovement);
   }
 
+  function teleportUnit(unitId: string, coordinates: number[]) {
+    coordinates = toLonLat(coordinates, theMap.getView().getProjection());
+    const destinationLatitude = coordinates[1];
+    const destinationLongitude = coordinates[0];
+    const teleportedUnit = game.teleportUnit(
+      unitId,
+      destinationLatitude,
+      destinationLongitude
+    );
+    if (teleportedUnit) drawNextFrame(game.currentScenario, true);
+  }
+
   function launchAircraftFromAirbase(airbaseId: string) {
     const launchedAircraft = game.launchAircraftFromAirbase(airbaseId);
     if (launchedAircraft) {
@@ -940,6 +967,12 @@ export default function ScenarioMap({
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(duplicatedAircraft);
     }
+  }
+
+  function queueUnitForTeleport(unitId: string) {
+    game.selectedUnitId = unitId;
+    teleportingUnit = true;
+    setCurrentGameStatusToContext("Click on the map to teleport the unit");
   }
 
   function switchCurrentSide() {
@@ -1311,6 +1344,7 @@ export default function ScenarioMap({
           handleLaunchAircraft={launchAircraftFromAirbase}
           handleDeleteAirbase={removeAirbase}
           handleEditAirbase={updateAirbase}
+          handleTeleportUnit={queueUnitForTeleport}
           anchorPositionTop={openAirbaseCard.top}
           anchorPositionLeft={openAirbaseCard.left}
           handleCloseOnMap={() => {
@@ -1324,6 +1358,7 @@ export default function ScenarioMap({
           facility={
             game.currentScenario.getFacility(openFacilityCard.facilityId)!
           }
+          handleTeleportUnit={queueUnitForTeleport}
           handleDeleteFacility={removeFacility}
           handleEditFacility={updateFacility}
           anchorPositionTop={openFacilityCard.top}
@@ -1350,6 +1385,7 @@ export default function ScenarioMap({
           handleEditAircraft={updateAircraft}
           handleAircraftRtb={handleAircraftRtb}
           handleDuplicateAircraft={handleDuplicateAircraft}
+          handleTeleportUnit={queueUnitForTeleport}
           anchorPositionTop={openAircraftCard.top}
           anchorPositionLeft={openAircraftCard.left}
           handleCloseOnMap={() => {
@@ -1371,6 +1407,7 @@ export default function ScenarioMap({
           handleDeleteShip={removeShip}
           handleMoveShip={queueShipForMovement}
           handleShipAttack={handleShipAttack}
+          handleTeleportUnit={queueUnitForTeleport}
           handleEditShip={updateShip}
           anchorPositionTop={openShipCard.top}
           anchorPositionLeft={openShipCard.left}

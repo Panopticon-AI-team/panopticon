@@ -15,11 +15,13 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import AddIcon from "@mui/icons-material/Add";
 import FlightIcon from "@mui/icons-material/Flight";
+import TelegramIcon from "@mui/icons-material/Telegram";
 
 interface AirbaseCardProps {
   airbase: Airbase;
   handleAddAircraft: (airbaseId: string) => void;
   handleLaunchAircraft: (airbaseId: string) => void;
+  handleTeleportUnit: (unitId: string) => void;
   handleDeleteAirbase: (airbaseId: string) => void;
   handleCloseOnMap: () => void;
   handleEditAirbase: (airbaseId: string, airbaseName: string) => void;
@@ -49,6 +51,11 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
   const _handleDeleteAirbase = () => {
     props.handleCloseOnMap();
     props.handleDeleteAirbase(props.airbase.id);
+  };
+
+  const _handleTeleportAirbase = () => {
+    props.handleCloseOnMap();
+    props.handleTeleportUnit(props.airbase.id);
   };
 
   const toggleEdit = () => {
@@ -144,6 +151,14 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
         </Button>
       </Stack>
       <Stack spacing={1} direction="row">
+        <Button
+          variant="contained"
+          size="small"
+          onClick={_handleTeleportAirbase}
+          startIcon={<TelegramIcon />}
+        >
+          TELEPORT
+        </Button>
         <Button
           variant="contained"
           size="small"

@@ -17,6 +17,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import HomeIcon from "@mui/icons-material/Home";
 import AddIcon from "@mui/icons-material/Add";
+import TelegramIcon from "@mui/icons-material/Telegram";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -25,6 +26,7 @@ interface AircraftCardProps {
   handleAircraftAttack: (aircraftId: string) => void;
   handleAircraftRtb: (aircraftId: string) => void;
   handleDuplicateAircraft: (aircraftId: string) => void;
+  handleTeleportUnit: (unitId: string) => void;
   handleEditAircraft: (
     aircraftId: string,
     aircraftName: string,
@@ -72,6 +74,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
 
   const _handleDuplicateAircraft = () => {
     props.handleDuplicateAircraft(props.aircraft.id);
+  };
+
+  const _handleTeleportAircraft = () => {
+    props.handleCloseOnMap();
+    props.handleTeleportUnit(props.aircraft.id);
   };
 
   const toggleEdit = () => {
@@ -300,6 +307,16 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           startIcon={<DeleteIcon />}
         >
           DELETE
+        </Button>
+      </Stack>
+      <Stack spacing={1} direction="row">
+        <Button
+          variant="contained"
+          size="small"
+          onClick={_handleTeleportAircraft}
+          startIcon={<TelegramIcon />}
+        >
+          TELEPORT
         </Button>
       </Stack>
     </Stack>
