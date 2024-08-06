@@ -5,6 +5,7 @@ import Side from "./Side";
 import Weapon from "./units/Weapon";
 import Ship from "./units/Ship";
 import { getDistanceBetweenTwoPoints } from "../utils/utils";
+import ReferencePoint from "./units/ReferencePoint";
 
 type HomeBase = Airbase | Ship;
 
@@ -21,6 +22,7 @@ interface IScenario {
   facilities?: Facility[];
   airbases?: Airbase[];
   weapons?: Weapon[];
+  referencePoints?: ReferencePoint[];
 }
 
 export default class Scenario {
@@ -36,6 +38,7 @@ export default class Scenario {
   facilities: Facility[];
   airbases: Airbase[];
   weapons: Weapon[];
+  referencePoints: ReferencePoint[];
 
   constructor(parameters: IScenario) {
     this.id = parameters.id;
@@ -50,6 +53,7 @@ export default class Scenario {
     this.airbases = parameters.airbases ?? [];
     this.weapons = parameters.weapons ?? [];
     this.ships = parameters.ships ?? [];
+    this.referencePoints = parameters.referencePoints ?? [];
   }
 
   getSide(sideName: string): Side | undefined {
@@ -82,6 +86,14 @@ export default class Scenario {
 
   getShip(shipId: string | null): Ship | undefined {
     return this.ships.find((ship) => ship.id === shipId);
+  }
+
+  getReferencePoint(
+    referencePointId: string | null
+  ): ReferencePoint | undefined {
+    return this.referencePoints.find(
+      (referencePoint) => referencePoint.id === referencePointId
+    );
   }
 
   updateAircraft(
@@ -150,6 +162,13 @@ export default class Scenario {
       ship.weapons.forEach((weapon) => {
         weapon.currentQuantity = shipWeaponQuantity;
       });
+    }
+  }
+
+  updateReferencePoint(referencePointId: string, referencePointName: string) {
+    const referencePoint = this.getReferencePoint(referencePointId);
+    if (referencePoint) {
+      referencePoint.name = referencePointName;
     }
   }
 

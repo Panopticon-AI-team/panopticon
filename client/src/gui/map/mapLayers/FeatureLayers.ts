@@ -21,12 +21,20 @@ import {
   weaponStyle,
   featureLabelStyle,
   shipStyle,
+  referencePointStyle,
 } from "./FeatureLayerStyles";
 import Weapon from "../../../game/units/Weapon";
 import VectorLayer from "ol/layer/Vector";
 import Ship from "../../../game/units/Ship";
+import ReferencePoint from "../../../game/units/ReferencePoint";
 
-type GameEntity = Aircraft | Facility | Airbase | Weapon | Ship;
+type GameEntity =
+  | Aircraft
+  | Facility
+  | Airbase
+  | Weapon
+  | Ship
+  | ReferencePoint;
 type GameEntityWithRange = Aircraft | Facility | Ship;
 type GameEntityWithRoute = Aircraft | Ship;
 
@@ -469,5 +477,42 @@ export class ShipLayer extends FeatureLayer {
       feature.set("selected", shipSelected);
       feature.set("heading", shipHeading);
     }
+  }
+}
+
+export class ReferencePointLayer extends FeatureLayer {
+  constructor(projection?: Projection, zIndex?: number) {
+    super(referencePointStyle, projection, zIndex);
+    this.layer.set("name", "referencePointLayer");
+  }
+
+  createReferencePointFeature(referencePoint: ReferencePoint) {
+    return new Feature({
+      type: "referencePoint",
+      geometry: new Point(
+        fromLonLat(
+          [referencePoint.longitude, referencePoint.latitude],
+          this.projection
+        )
+      ),
+      id: referencePoint.id,
+      name: referencePoint.name,
+      sideName: referencePoint.sideName,
+      sideColor: referencePoint.sideColor,
+    });
+  }
+
+  refresh(referencePoints: ReferencePoint[]) {
+    const referencePointFeatures = referencePoints.map((referencePoint) =>
+      this.createReferencePointFeature(referencePoint)
+    );
+    this.refreshFeatures(referencePointFeatures);
+  }
+
+  addReferencePointFeature(referencePoint: ReferencePoint) {
+    this.layerSource.addFeature(
+      this.createReferencePointFeature(referencePoint)
+    );
+    this.featureCount += 1;
   }
 }
