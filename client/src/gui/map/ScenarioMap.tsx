@@ -56,6 +56,7 @@ import {
   ShipDb,
 } from "../../game/db/UnitDb";
 import ReferencePointCard from "./featureCards/ReferencePointCard";
+import ReferencePoint from "../../game/units/ReferencePoint";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -153,6 +154,7 @@ export default function ScenarioMap({
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
   const [routeVisible, setRouteVisible] = useState(true);
+  const [referencePointVisible, setReferencePointVisible] = useState(true);
   const [keyboardShortcutsEnabled, setKeyboardShortcutsEnabled] =
     useState(true);
   const setCurrentScenarioTimeToContext = useContext(
@@ -1301,6 +1303,24 @@ export default function ScenarioMap({
     }
   }
 
+  function toggleReferencePointVisibility(on: boolean) {
+    setReferencePointVisible(on);
+    let referencePointsToRefresh: ReferencePoint[] = [];
+    if (on) {
+      referencePointLayer.layer.setVisible(true);
+      referencePointsToRefresh = game.currentScenario.referencePoints;
+    } else {
+      referencePointLayer.layer.setVisible(false);
+    }
+    featureLabelLayer.refresh([
+      ...game.currentScenario.aircraft,
+      ...game.currentScenario.facilities,
+      ...game.currentScenario.airbases,
+      ...game.currentScenario.ships,
+      ...referencePointsToRefresh,
+    ]);
+  }
+
   function toggleBaseMapLayer() {
     baseMapLayers.toggleLayer();
   }
@@ -1437,6 +1457,8 @@ export default function ScenarioMap({
         routeVisibility={routeVisible}
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
+        toggleReferencePointVisibility={toggleReferencePointVisibility}
+        referencePointVisibility={referencePointVisible}
       />
       <BottomCornerInfoDisplay />
 

@@ -16,6 +16,8 @@ interface LayerVisibilityPanelToggleProps {
   routeVisibility: boolean;
   toggleRouteVisibility: (routeVisibility: boolean) => void;
   toggleBaseMapLayer: () => void;
+  toggleReferencePointVisibility: (referencePointVisibility: boolean) => void;
+  referencePointVisibility: boolean;
 }
 
 export default function LayerVisibilityPanelToggle(
@@ -111,6 +113,17 @@ export default function LayerVisibilityPanelToggle(
               Toggle Labels
             </Button>
           </Tooltip>
+          <Button
+            variant="outlined"
+            sx={toggleStyle}
+            onClick={() => {
+              props.toggleReferencePointVisibility(
+                !props.referencePointVisibility
+              );
+            }}
+          >
+            Toggle Reference Points
+          </Button>
         </Stack>
       </CardActions>
     </Card>

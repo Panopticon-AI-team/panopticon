@@ -383,6 +383,8 @@ export class FeatureLabelLayer extends FeatureLayer {
       return "weapon";
     } else if (entity instanceof Ship) {
       return "ship";
+    } else if (entity instanceof ReferencePoint) {
+      return "referencePoint";
     } else {
       return "unknown";
     }
