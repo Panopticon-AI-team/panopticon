@@ -20,6 +20,7 @@ import Side from "./Side";
 import Weapon from "./units/Weapon";
 import { GAME_SPEED_DELAY_MS } from "../utils/constants";
 import Ship from "./units/Ship";
+import ReferencePoint from "./units/ReferencePoint";
 
 interface IMapView {
   defaultCenter: number[];
@@ -41,6 +42,7 @@ export default class Game {
   addingAircraft: boolean = false;
   addingAirbase: boolean = false;
   addingFacility: boolean = false;
+  addingReferencePoint: boolean = false;
   addingShip: boolean = false;
   selectingTarget: boolean = false;
   currentAttackerId: string = "";
@@ -141,6 +143,34 @@ export default class Game {
     });
     this.currentScenario.airbases.push(airbase);
     return airbase;
+  }
+
+  addReferencePoint(
+    referencePointName: string,
+    latitude: number,
+    longitude: number
+  ) {
+    if (!this.currentSideName) {
+      return;
+    }
+    const referencePoint = new ReferencePoint({
+      id: uuidv4(),
+      name: referencePointName,
+      sideName: this.currentSideName,
+      latitude: latitude,
+      longitude: longitude,
+      altitude: 0.0,
+      sideColor: this.currentScenario.getSideColor(this.currentSideName),
+    });
+    this.currentScenario.referencePoints.push(referencePoint);
+    return referencePoint;
+  }
+
+  removeReferencePoint(referencePointId: string) {
+    this.currentScenario.referencePoints =
+      this.currentScenario.referencePoints.filter(
+        (referencePoint) => referencePoint.id !== referencePointId
+      );
   }
 
   removeAirbase(airbaseId: string) {
@@ -410,6 +440,12 @@ export default class Game {
         aircraft.longitude = newLongitude - 0.5;
       });
       return ship;
+    }
+    const referencePoint = this.currentScenario.getReferencePoint(unitId);
+    if (referencePoint) {
+      referencePoint.latitude = newLatitude;
+      referencePoint.longitude = newLongitude;
+      return referencePoint;
     }
   }
 
@@ -737,6 +773,18 @@ export default class Game {
         aircraft: shipAircraft,
       });
       loadedScenario.ships.push(newShip);
+    });
+    savedScenario.referencePoints?.forEach((referencePoint: any) => {
+      const newReferencePoint = new ReferencePoint({
+        id: referencePoint.id,
+        name: referencePoint.name,
+        sideName: referencePoint.sideName,
+        latitude: referencePoint.latitude,
+        longitude: referencePoint.longitude,
+        altitude: referencePoint.altitude,
+        sideColor: referencePoint.sideColor,
+      });
+      loadedScenario.referencePoints.push(newReferencePoint);
     });
     this.currentScenario = loadedScenario;
   }

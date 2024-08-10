@@ -10,6 +10,7 @@ import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
 import { ReactComponent as FlightIcon } from "../assets/flight_black_24dp.svg";
 import { ReactComponent as RadarIcon } from "../assets/radar_black_24dp.svg";
 import { ReactComponent as FlightTakeoffIcon } from "../assets/flight_takeoff_black_24dp.svg";
+import { ReactComponent as PinDropIcon } from "../assets/pin_drop_24dp_E8EAED.svg";
 
 import { Geometry } from "ol/geom";
 import { Feature } from "ol";
@@ -49,6 +50,8 @@ export default function MultipleFeatureSelector({
         return <FlightIcon />;
       case "ship":
         return <DirectionsBoatIcon />;
+      case "referencePoint":
+        return <PinDropIcon />;
       default:
         return <HelpOutlineIcon />;
     }

@@ -35,6 +35,7 @@ interface ToolBarProps {
   addFacilityOnClick: () => void;
   addAirbaseOnClick: () => void;
   addShipOnClick: () => void;
+  addReferencePointOnClick: () => void;
   playOnClick: () => void;
   stepOnClick: () => void;
   pauseOnClick: () => void;
@@ -229,6 +230,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       case "ship":
         props.addShipOnClick();
         break;
+      case "referencePoint":
+        props.addReferencePointOnClick();
+        break;
       default:
         break;
     }
@@ -358,6 +362,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         <option value={"airbase"}>Airbase</option>
         <option value={"facility"}>SAM</option>
         <option value={"ship"}>Ship</option>
+        <option value={"referencePoint"}>Reference Point</option>
       </select>
     );
   };

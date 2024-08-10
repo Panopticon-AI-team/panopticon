@@ -44,6 +44,7 @@ import {
   ShipLayer,
   ThreatRangeLayer,
   WeaponLayer,
+  ReferencePointLayer,
 } from "./mapLayers/FeatureLayers";
 import BottomCornerInfoDisplay from "./toolbar/BottomCornerInfoDisplay";
 import LayerVisibilityPanelToggle from "./toolbar/LayerVisibilityToggle";
@@ -54,6 +55,8 @@ import {
   FacilityDb,
   ShipDb,
 } from "../../game/db/UnitDb";
+import ReferencePointCard from "./featureCards/ReferencePointCard";
+import ReferencePoint from "../../game/units/ReferencePoint";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -102,6 +105,9 @@ export default function ScenarioMap({
     new WeaponLayer(projection, 2)
   );
   const [shipLayer, setShipLayer] = useState(new ShipLayer(projection, 1));
+  const [referencePointLayer, setReferencePointLayer] = useState(
+    new ReferencePointLayer(projection, 1)
+  );
   const [featureLabelLayer, setFeatureLabelLayer] = useState(
     new FeatureLabelLayer(projection, 4)
   );
@@ -132,6 +138,12 @@ export default function ScenarioMap({
     left: 0,
     shipId: "",
   });
+  const [openReferencePointCard, setOpenReferencePointCard] = useState({
+    open: false,
+    top: 0,
+    left: 0,
+    referencePointId: "",
+  });
   const [openMultipleFeatureSelector, setOpenMultipleFeatureSelector] =
     useState<IOpenMultipleFeatureSelector>({
       open: false,
@@ -142,6 +154,7 @@ export default function ScenarioMap({
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
   const [routeVisible, setRouteVisible] = useState(true);
+  const [referencePointVisible, setReferencePointVisible] = useState(true);
   const [keyboardShortcutsEnabled, setKeyboardShortcutsEnabled] =
     useState(true);
   const setCurrentScenarioTimeToContext = useContext(
@@ -170,6 +183,7 @@ export default function ScenarioMap({
       weaponLayer.layer,
       featureLabelLayer.layer,
       shipLayer.layer,
+      referencePointLayer.layer,
     ],
     view: new View({
       center: center,
@@ -276,7 +290,8 @@ export default function ScenarioMap({
       game.addingAircraft ||
       game.addingFacility ||
       game.addingAirbase ||
-      game.addingShip
+      game.addingShip ||
+      game.addingReferencePoint
     ) {
       context = "addUnit";
     }
@@ -452,6 +467,22 @@ export default function ScenarioMap({
           left: shipPixels[0],
           shipId: currentSelectedFeatureId,
         });
+      } else if (
+        currentSelectedFeatureType === "referencePoint" &&
+        game.currentScenario.getReferencePoint(currentSelectedFeatureId)
+      ) {
+        const referencePointGeometry = feature.getGeometry() as Point;
+        const referencePointCoordinate =
+          referencePointGeometry.getCoordinates();
+        const referencePointPixels = theMap.getPixelFromCoordinate(
+          referencePointCoordinate
+        );
+        setOpenReferencePointCard({
+          open: true,
+          top: referencePointPixels[1],
+          left: referencePointPixels[0],
+          referencePointId: currentSelectedFeatureId,
+        });
       }
       setKeyboardShortcutsEnabled(false);
     }
@@ -519,6 +550,9 @@ export default function ScenarioMap({
         shipTemplate?.range
       );
       game.addingShip = false;
+    } else if (game.addingReferencePoint) {
+      addReferencePoint(coordinates);
+      game.addingReferencePoint = false;
     }
     setCurrentGameStatusToContext(
       game.scenarioPaused ? "Scenario paused" : "Scenario playing"
@@ -536,7 +570,13 @@ export default function ScenarioMap({
       "airbaseFeatureLabel",
       "shipFeatureLabel",
     ];
-    const includedFeatureTypes = ["aircraft", "facility", "airbase", "ship"];
+    const includedFeatureTypes = [
+      "aircraft",
+      "facility",
+      "airbase",
+      "ship",
+      "referencePoint",
+    ];
     theMap.forEachFeatureAtPixel(
       pixel,
       function (feature) {
@@ -553,6 +593,7 @@ export default function ScenarioMap({
     game.addingFacility = false;
     game.addingAirbase = false;
     game.addingShip = false;
+    game.addingReferencePoint = false;
     if (game.addingAircraft) {
       setCurrentGameStatusToContext("Click on the map to add an aircraft");
     } else {
@@ -567,6 +608,7 @@ export default function ScenarioMap({
     game.addingAircraft = false;
     game.addingAirbase = false;
     game.addingShip = false;
+    game.addingReferencePoint = false;
     if (game.addingFacility) {
       setCurrentGameStatusToContext("Click on the map to add a facility");
     } else {
@@ -581,6 +623,7 @@ export default function ScenarioMap({
     game.addingAircraft = false;
     game.addingFacility = false;
     game.addingShip = false;
+    game.addingReferencePoint = false;
     if (game.addingAirbase) {
       setCurrentGameStatusToContext("Click on the map to add an airbase");
     } else {
@@ -595,8 +638,26 @@ export default function ScenarioMap({
     game.addingAircraft = false;
     game.addingFacility = false;
     game.addingAirbase = false;
+    game.addingReferencePoint = false;
     if (game.addingShip) {
       setCurrentGameStatusToContext("Click on the map to add a ship");
+    } else {
+      setCurrentGameStatusToContext(
+        game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+      );
+    }
+  }
+
+  function setAddingReferencePoint() {
+    game.addingReferencePoint = !game.addingReferencePoint;
+    game.addingAircraft = false;
+    game.addingFacility = false;
+    game.addingAirbase = false;
+    game.addingShip = false;
+    if (game.addingReferencePoint) {
+      setCurrentGameStatusToContext(
+        "Click on the map to add a reference point"
+      );
     } else {
       setCurrentGameStatusToContext(
         game.scenarioPaused ? "Scenario paused" : "Scenario playing"
@@ -656,33 +717,40 @@ export default function ScenarioMap({
     return [observation, reward, terminated, truncated, info];
   }
 
-  function drawNextFrame(observation: Scenario, drawAll: boolean = false) {
+  function drawNextFrame(observation: Scenario) {
     aircraftLayer.refresh(observation.aircraft);
     weaponLayer.refresh(observation.weapons);
     shipLayer.refresh(observation.ships);
     refreshRouteLayer(observation);
-    if (featureLabelVisible || drawAll) {
+    if (featureLabelVisible) {
       featureLabelLayer.refreshSubset(observation.aircraft, "aircraft");
       featureLabelLayer.refreshSubset(observation.ships, "ship");
     }
-    if (
-      facilityLayer.featureCount !== observation.facilities.length ||
-      drawAll
-    ) {
+    if (facilityLayer.featureCount !== observation.facilities.length) {
       facilityLayer.refresh(observation.facilities);
-      if (featureLabelVisible || drawAll)
+      if (featureLabelVisible)
         featureLabelLayer.refreshSubset(observation.facilities, "facility");
     }
-    if (airbasesLayer.featureCount !== observation.airbases.length || drawAll) {
+    if (airbasesLayer.featureCount !== observation.airbases.length) {
       airbasesLayer.refresh(observation.airbases);
-      if (featureLabelVisible || drawAll)
+      if (featureLabelVisible)
         featureLabelLayer.refreshSubset(observation.airbases, "airbase");
     }
-    if (threatRangeVisible || drawAll)
+    if (threatRangeVisible)
       threatRangeLayer.refresh([
         ...observation.facilities,
         ...observation.ships,
       ]);
+    if (
+      referencePointLayer.featureCount !== observation.referencePoints.length
+    ) {
+      referencePointLayer.refresh(observation.referencePoints);
+      if (featureLabelVisible)
+        featureLabelLayer.refreshSubset(
+          observation.referencePoints,
+          "referencePoint"
+        );
+    }
   }
 
   function setGamePaused() {
@@ -791,6 +859,28 @@ export default function ScenarioMap({
     if (featureLabelVisible) featureLabelLayer.removeFeatureById(aircraftId);
   }
 
+  function addReferencePoint(coordinates: number[], name?: string) {
+    coordinates = toLonLat(coordinates, theMap.getView().getProjection());
+    name = name ?? "Reference Point #" + randomInt(1, 5000).toString();
+    const newReferencePoint = game.addReferencePoint(
+      name,
+      coordinates[1],
+      coordinates[0]
+    );
+    if (newReferencePoint) {
+      referencePointLayer.addReferencePointFeature(newReferencePoint);
+      if (featureLabelVisible)
+        featureLabelLayer.addFeatureLabelFeature(newReferencePoint);
+    }
+  }
+
+  function removeReferencePoint(referencePointId: string) {
+    game.removeReferencePoint(referencePointId);
+    referencePointLayer.removeFeatureById(referencePointId);
+    if (featureLabelVisible)
+      featureLabelLayer.removeFeatureById(referencePointId);
+  }
+
   function addShip(
     coordinates: number[],
     className?: string,
@@ -880,7 +970,7 @@ export default function ScenarioMap({
       destinationLatitude,
       destinationLongitude
     );
-    if (teleportedUnit) drawNextFrame(game.currentScenario, true);
+    if (teleportedUnit) refreshAllLayers();
   }
 
   function launchAircraftFromAirbase(airbaseId: string) {
@@ -996,6 +1086,7 @@ export default function ScenarioMap({
       ]);
     weaponLayer.refresh(game.currentScenario.weapons);
     shipLayer.refresh(game.currentScenario.ships);
+    referencePointLayer.refresh(game.currentScenario.referencePoints);
     if (featureLabelVisible) refreshFeatureLabelLayer();
     if (routeVisible) refreshRouteLayer(game.currentScenario);
   }
@@ -1006,6 +1097,7 @@ export default function ScenarioMap({
       ...game.currentScenario.facilities,
       ...game.currentScenario.airbases,
       ...game.currentScenario.ships,
+      ...game.currentScenario.referencePoints,
     ]);
   }
 
@@ -1165,6 +1257,20 @@ export default function ScenarioMap({
     featureLabelLayer.updateFeatureLabelFeature(shipId, shipName);
   }
 
+  function updateReferencePoint(
+    referencePointId: string,
+    referencePointName: string
+  ) {
+    game.currentScenario.updateReferencePoint(
+      referencePointId,
+      referencePointName
+    );
+    featureLabelLayer.updateFeatureLabelFeature(
+      referencePointId,
+      referencePointName
+    );
+  }
+
   function toggleFeatureLabelVisibility(on: boolean) {
     setFeatureLabelVisible(on);
     if (on) {
@@ -1195,6 +1301,24 @@ export default function ScenarioMap({
       aircraftRouteLayer.layer.setVisible(false);
       shipRouteLayer.layer.setVisible(false);
     }
+  }
+
+  function toggleReferencePointVisibility(on: boolean) {
+    setReferencePointVisible(on);
+    let referencePointsToRefresh: ReferencePoint[] = [];
+    if (on) {
+      referencePointLayer.layer.setVisible(true);
+      referencePointsToRefresh = game.currentScenario.referencePoints;
+    } else {
+      referencePointLayer.layer.setVisible(false);
+    }
+    featureLabelLayer.refresh([
+      ...game.currentScenario.aircraft,
+      ...game.currentScenario.facilities,
+      ...game.currentScenario.airbases,
+      ...game.currentScenario.ships,
+      ...referencePointsToRefresh,
+    ]);
   }
 
   function toggleBaseMapLayer() {
@@ -1299,6 +1423,7 @@ export default function ScenarioMap({
         addFacilityOnClick={setAddingFacility}
         addAirbaseOnClick={setAddingAirbase}
         addShipOnClick={setAddingShip}
+        addReferencePointOnClick={setAddingReferencePoint}
         playOnClick={handlePlayGameClick}
         stepOnClick={handleStepGameClick}
         pauseOnClick={handlePauseGameClick}
@@ -1332,6 +1457,8 @@ export default function ScenarioMap({
         routeVisibility={routeVisible}
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
+        toggleReferencePointVisibility={toggleReferencePointVisibility}
+        referencePointVisibility={referencePointVisible}
       />
       <BottomCornerInfoDisplay />
 
@@ -1417,6 +1544,29 @@ export default function ScenarioMap({
               top: 0,
               left: 0,
               shipId: "",
+            });
+            setKeyboardShortcutsEnabled(true);
+          }}
+        />
+      )}
+      {openReferencePointCard.open && (
+        <ReferencePointCard
+          referencePoint={
+            game.currentScenario.getReferencePoint(
+              openReferencePointCard.referencePointId
+            )!
+          }
+          handleDeleteReferencePoint={removeReferencePoint}
+          handleEditReferencePoint={updateReferencePoint}
+          handleTeleportUnit={queueUnitForTeleport}
+          anchorPositionTop={openReferencePointCard.top}
+          anchorPositionLeft={openReferencePointCard.left}
+          handleCloseOnMap={() => {
+            setOpenReferencePointCard({
+              open: false,
+              top: 0,
+              left: 0,
+              referencePointId: "",
             });
             setKeyboardShortcutsEnabled(true);
           }}

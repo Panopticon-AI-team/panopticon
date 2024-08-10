@@ -9,6 +9,7 @@ import FlightTakeoffSvg from "../../assets/flight_takeoff_black_24dp.svg";
 import ChevronRightSvg from "../../assets/chevron_right_black_24dp.svg";
 import WeaponSvg from "../../assets/keyboard_double_arrow_up_black_24dp.svg";
 import DirectionsBoatSvg from "../../assets/directions_boat_black_24dp.svg";
+import PinDropSvg from "../../assets/pin_drop_24dp_E8EAED.svg";
 import { LineString, Point } from "ol/geom";
 
 export const aircraftStyle = function (feature: FeatureLike) {
@@ -148,6 +149,15 @@ export const shipStyle = function (feature: FeatureLike) {
       opacity: feature.getProperties().selected ? 0.5 : 1,
       src: DirectionsBoatSvg,
       // rotation: toRadians(feature.getProperties().heading),
+      color: feature.getProperties().sideColor,
+    }),
+  });
+};
+
+export const referencePointStyle = function (feature: FeatureLike) {
+  return new Style({
+    image: new Icon({
+      src: PinDropSvg,
       color: feature.getProperties().sideColor,
     }),
   });
