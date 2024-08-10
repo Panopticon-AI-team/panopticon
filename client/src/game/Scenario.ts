@@ -6,6 +6,7 @@ import Weapon from "./units/Weapon";
 import Ship from "./units/Ship";
 import { getDistanceBetweenTwoPoints } from "../utils/utils";
 import ReferencePoint from "./units/ReferencePoint";
+import PatrolMission from "./mission/PatrolMission";
 
 type HomeBase = Airbase | Ship;
 
@@ -23,6 +24,7 @@ interface IScenario {
   airbases?: Airbase[];
   weapons?: Weapon[];
   referencePoints?: ReferencePoint[];
+  missions?: PatrolMission[];
 }
 
 export default class Scenario {
@@ -39,6 +41,7 @@ export default class Scenario {
   airbases: Airbase[];
   weapons: Weapon[];
   referencePoints: ReferencePoint[];
+  missions: PatrolMission[];
 
   constructor(parameters: IScenario) {
     this.id = parameters.id;
@@ -54,6 +57,7 @@ export default class Scenario {
     this.weapons = parameters.weapons ?? [];
     this.ships = parameters.ships ?? [];
     this.referencePoints = parameters.referencePoints ?? [];
+    this.missions = parameters.missions ?? [];
   }
 
   getSide(sideName: string): Side | undefined {

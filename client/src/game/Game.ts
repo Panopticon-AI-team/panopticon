@@ -21,6 +21,7 @@ import Weapon from "./units/Weapon";
 import { GAME_SPEED_DELAY_MS } from "../utils/constants";
 import Ship from "./units/Ship";
 import ReferencePoint from "./units/ReferencePoint";
+import PatrolMission from "./mission/PatrolMission";
 
 interface IMapView {
   defaultCenter: number[];
@@ -786,6 +787,30 @@ export default class Game {
       });
       loadedScenario.referencePoints.push(newReferencePoint);
     });
+
+    // TODO #78 - load sample mission data
+    const samplePatrolMission = new PatrolMission({
+      id: uuidv4(),
+      name: "Sample Patrol Mission",
+      sideId: this.currentSideName,
+      assignedUnitIds: [
+        loadedScenario.aircraft.find(
+          (aircraft) => aircraft.name === "Beaver #1"
+        )?.id ?? "",
+        loadedScenario.aircraft.find(
+          (aircraft) => aircraft.name === "Beaver #2"
+        )?.id ?? "",
+      ],
+      assignedArea: [
+        [22, 141],
+        [22, 150],
+        [15, 141],
+        [15, 150],
+      ],
+      active: true,
+    });
+    loadedScenario.missions = [samplePatrolMission];
+
     this.currentScenario = loadedScenario;
   }
 
@@ -833,6 +858,37 @@ export default class Game {
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
             launchWeapon(this.currentScenario, ship, weapon);
+          }
+        }
+      });
+    });
+  }
+
+  updateUnitsOnPatrolMission() {
+    const activePatrolMissions = this.currentScenario.missions.filter(
+      (mission) => mission.active
+    );
+    if (activePatrolMissions.length < 1) return;
+
+    activePatrolMissions.forEach((mission) => {
+      mission.assignedUnitIds.forEach((unitId) => {
+        const unit = this.currentScenario.getAircraft(unitId);
+        if (unit) {
+          if (unit.route.length === 0) {
+            const randomWaypointInPatrolArea =
+              mission.generateRandomCoordinatesWithinPatrolArea();
+            unit.route.push(randomWaypointInPatrolArea);
+          } else if (unit.route.length > 0) {
+            if (
+              !mission.checkIfCoordinatesIsWithinPatrolArea(
+                unit.route[unit.route.length - 1]
+              )
+            ) {
+              unit.route = [];
+              const randomWaypointInPatrolArea =
+                mission.generateRandomCoordinatesWithinPatrolArea();
+              unit.route.push(randomWaypointInPatrolArea);
+            }
           }
         }
       });
@@ -953,6 +1009,8 @@ export default class Game {
 
     this.facilityAutoDefense();
     this.shipAutoDefense();
+
+    this.updateUnitsOnPatrolMission();
 
     this.currentScenario.weapons.forEach((weapon) => {
       weaponEngagement(this.currentScenario, weapon);

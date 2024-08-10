@@ -57,6 +57,7 @@ import {
 } from "../../game/db/UnitDb";
 import ReferencePointCard from "./featureCards/ReferencePointCard";
 import ReferencePoint from "../../game/units/ReferencePoint";
+import MissionEditor from "./missionEditor/MissionEditor";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -157,6 +158,7 @@ export default function ScenarioMap({
   const [referencePointVisible, setReferencePointVisible] = useState(true);
   const [keyboardShortcutsEnabled, setKeyboardShortcutsEnabled] =
     useState(true);
+  const [missionEditorActive, setMissionCreatorActive] = useState(false);
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
@@ -1447,6 +1449,9 @@ export default function ScenarioMap({
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
+        toggleMissionCreator={() => {
+          setMissionCreatorActive(!missionEditorActive);
+        }}
       />
 
       <LayerVisibilityPanelToggle
@@ -1461,6 +1466,8 @@ export default function ScenarioMap({
         referencePointVisibility={referencePointVisible}
       />
       <BottomCornerInfoDisplay />
+
+      {missionEditorActive && <MissionEditor />}
 
       <div ref={mapId} className="map"></div>
 
