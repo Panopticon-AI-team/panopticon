@@ -805,28 +805,17 @@ export default class Game {
       loadedScenario.referencePoints.push(newReferencePoint);
     });
 
-    // TODO #78 - load sample mission data
-    const samplePatrolMission = new PatrolMission({
-      id: uuidv4(),
-      name: "Sample Patrol Mission",
-      sideId: this.currentSideName,
-      assignedUnitIds: [
-        loadedScenario.aircraft.find(
-          (aircraft) => aircraft.name === "Beaver #1"
-        )?.id ?? "",
-        loadedScenario.aircraft.find(
-          (aircraft) => aircraft.name === "Beaver #2"
-        )?.id ?? "",
-      ],
-      assignedArea: [
-        [22, 141],
-        [22, 150],
-        [15, 141],
-        [15, 150],
-      ],
-      active: true,
+    savedScenario.missions?.forEach((mission: PatrolMission) => {
+      const newMission = new PatrolMission({
+        id: mission.id,
+        name: mission.name,
+        sideId: mission.sideId,
+        assignedUnitIds: mission.assignedUnitIds,
+        assignedArea: mission.assignedArea,
+        active: mission.active,
+      });
+      loadedScenario.missions.push(newMission);
     });
-    loadedScenario.missions = [samplePatrolMission];
 
     this.currentScenario = loadedScenario;
   }

@@ -74,6 +74,13 @@ const MissionEditor = (props: MissionEditorProps) => {
   };
 
   const cardContent = () => {
+    const sortedUnits = props.units.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+    const sortedReferencePoints = props.referencePoints.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+
     return (
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <EditorSelector
@@ -96,8 +103,8 @@ const MissionEditor = (props: MissionEditorProps) => {
         <EditorSelector
           selectId={"mission-creator-unit-selector"}
           caption={"Units"}
-          optionIds={props.units.map((unit) => unit.id)}
-          optionNames={props.units.map((unit) => unit.name)}
+          optionIds={sortedUnits.map((unit) => unit.id)}
+          optionNames={sortedUnits.map((unit) => unit.name)}
           selectedOption={selectedUnits}
           onChange={() => {
             const unitsSelector = document.getElementById(
@@ -113,8 +120,8 @@ const MissionEditor = (props: MissionEditorProps) => {
         <EditorSelector
           selectId={"mission-creator-area-selector"}
           caption={"Area"}
-          optionIds={props.referencePoints.map((point) => point.id)}
-          optionNames={props.referencePoints.map((point) => point.name)}
+          optionIds={sortedReferencePoints.map((point) => point.id)}
+          optionNames={sortedReferencePoints.map((point) => point.name)}
           selectedOption={selectedReferencePoints}
           onChange={() => {
             const pointsSelector = document.getElementById(
