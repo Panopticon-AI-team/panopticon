@@ -1450,6 +1450,7 @@ export default function ScenarioMap({
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
         toggleMissionCreator={() => {
+          setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
           setMissionCreatorActive(!missionEditorActive);
         }}
       />
@@ -1467,7 +1468,20 @@ export default function ScenarioMap({
       />
       <BottomCornerInfoDisplay />
 
-      {missionEditorActive && <MissionEditor />}
+      {missionEditorActive && (
+        <MissionEditor
+          units={game.currentScenario.aircraft.filter(
+            (aircraft) => aircraft.sideName === game.currentSideName
+          )}
+          referencePoints={game.currentScenario.referencePoints.filter(
+            (referencePoint) => referencePoint.sideName === game.currentSideName
+          )}
+          handleCloseOnMap={() => {
+            setKeyboardShortcutsEnabled(true);
+            setMissionCreatorActive(false);
+          }}
+        />
+      )}
 
       <div ref={mapId} className="map"></div>
 

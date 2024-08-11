@@ -5,7 +5,9 @@ import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import { makeStyles } from "@material-ui/styles";
 import { colorPalette } from "../../../utils/constants";
-import { InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
+import EditorSelector from "./EditorSelector";
+import EditorTextInputBox from "./EditorTextInputBox";
+import { Button } from "@mui/material";
 
 const useStyles = makeStyles({
   cardHeaderRoot: {
@@ -15,10 +17,40 @@ const useStyles = makeStyles({
     height: "5px",
     borderRadius: "10px",
   },
+  cardContentRoot: {
+    display: "flex",
+    flexDirection: "column",
+    rowGap: "10px",
+  },
+  createButton: {
+    color: colorPalette.white,
+    borderRadius: "10px",
+  },
+  closeButton: { position: "absolute", top: "0", right: "0" },
 });
 
-const MissionEditor = () => {
+export type Object = {
+  id: string;
+  name: string;
+};
+
+interface MissionEditorProps {
+  units: Object[];
+  referencePoints: Object[];
+  handleCloseOnMap: () => void;
+}
+
+const missionTypes = ["Patrol", "Strike", "Refueling"];
+
+const MissionEditor = (props: MissionEditorProps) => {
   const classes = useStyles();
+  const [selectedMissionType, setSelectedMissionType] =
+    useState<string>("Patrol");
+  const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
+  const [selectedReferencePoints, setSelectedReferencePoints] = useState<
+    string[]
+  >([]);
+  const [missionName, setMissionName] = useState<string>("");
 
   const cardStyle = {
     minWidth: "400px",
@@ -30,51 +62,65 @@ const MissionEditor = () => {
 
   const cardContent = () => {
     return (
-      <CardContent>
-        <TextField id="outlined-basic" label="Name" variant="outlined" />
-        <Stack direction="row" spacing={2}>
-          <InputLabel id="label-for-mission-type-select">
-            Mission Type
-          </InputLabel>
-          <Select
-            labelId="label-for-mission-type-select"
-            id="mission-type-select"
-            value={"patrol"}
-            label="Mission Type"
-            onChange={() => {}}
-          >
-            <MenuItem value={"patrol"}>Patrol</MenuItem>
-            <MenuItem value={"strike"}>Strike</MenuItem>
-          </Select>
-        </Stack>
-        <Stack direction="row" spacing={2}>
-          <label htmlFor="mission-assigned-units-selector">Units</label>
-          <select
-            id="mission-assigned-units-selector"
-            value={""}
-            onChange={(event) => {}}
-            aria-label="MissionAssignedUnits"
-            style={{
-              width: "112px",
-              height: "30px",
-              marginTop: "10px",
-            }}
-          >
-            {/* {FacilityDb.map((facility) => (
-              <option key={facility.className} value={facility.className}>
-                {facility.className}
-              </option>
-            ))} */}
-          </select>
-        </Stack>
-        <Stack direction="row" spacing={2}>
-          <label htmlFor="mission-assigned-area-input">Area</label>
-          <input
-            type="text"
-            id="mission-assigned-area-input"
-            placeholder="Enter coordinates"
-          />
-        </Stack>
+      <CardContent classes={{ root: classes.cardContentRoot }}>
+        <EditorSelector
+          selectId={"mission-type-selector"}
+          caption={"Type"}
+          optionIds={missionTypes}
+          optionNames={missionTypes}
+          selectedOption={selectedMissionType}
+          onChange={(option) => {
+            setSelectedMissionType(option);
+          }}
+        />
+        <EditorTextInputBox
+          caption={"Name"}
+          currentText={missionName}
+          onChange={(newMissionName) => {
+            setMissionName(newMissionName);
+          }}
+        />
+        <EditorSelector
+          selectId={"mission-creator-unit-selector"}
+          caption={"Units"}
+          optionIds={props.units.map((unit) => unit.id)}
+          optionNames={props.units.map((unit) => unit.name)}
+          selectedOption={selectedUnits}
+          onChange={() => {
+            const unitsSelector = document.getElementById(
+              "mission-creator-unit-selector"
+            ) as HTMLSelectElement;
+            const selectedOptions = Array.from(
+              unitsSelector.selectedOptions
+            ).map((option) => option.value);
+            setSelectedUnits(selectedOptions);
+          }}
+          multiple={true}
+        />
+        <EditorSelector
+          selectId={"mission-creator-area-selector"}
+          caption={"Area"}
+          optionIds={props.referencePoints.map((point) => point.id)}
+          optionNames={props.referencePoints.map((point) => point.name)}
+          selectedOption={selectedReferencePoints}
+          onChange={() => {
+            const pointsSelector = document.getElementById(
+              "mission-creator-area-selector"
+            ) as HTMLSelectElement;
+            const selectedOptions = Array.from(
+              pointsSelector.selectedOptions
+            ).map((option) => option.value);
+            setSelectedReferencePoints(selectedOptions);
+          }}
+          multiple={true}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          classes={{ root: classes.createButton }}
+        >
+          Create
+        </Button>
       </CardContent>
     );
   };
@@ -92,11 +138,18 @@ const MissionEditor = () => {
         <Card sx={cardStyle}>
           <CardHeader
             title={"Mission Creator"}
-            // avatar={open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             classes={{
               root: classes.cardHeaderRoot,
             }}
             titleTypographyProps={{ variant: "body1" }}
+            avatar={
+              <Button
+                onClick={props.handleCloseOnMap}
+                style={{ position: "absolute", top: "0", right: "0" }}
+              >
+                X
+              </Button>
+            }
           ></CardHeader>
           {cardContent()}
         </Card>
