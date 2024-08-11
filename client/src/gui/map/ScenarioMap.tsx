@@ -58,6 +58,7 @@ import {
 import ReferencePointCard from "./featureCards/ReferencePointCard";
 import ReferencePoint from "../../game/units/ReferencePoint";
 import MissionEditor from "./missionEditor/MissionEditor";
+import MissionViewer from "./missionEditor/MissionViewer";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -159,6 +160,7 @@ export default function ScenarioMap({
   const [keyboardShortcutsEnabled, setKeyboardShortcutsEnabled] =
     useState(true);
   const [missionEditorActive, setMissionCreatorActive] = useState(false);
+  const [missionViewerActive, setMissionViewerActive] = useState(false);
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
@@ -1078,6 +1080,10 @@ export default function ScenarioMap({
     game.createPatrolMission(missionName, assignedUnits, assignedArea);
   }
 
+  function handleDeleteMission(missionId: string) {
+    game.deleteMission(missionId);
+  }
+
   function queueUnitForTeleport(unitId: string) {
     game.selectedUnitId = unitId;
     teleportingUnit = true;
@@ -1470,6 +1476,9 @@ export default function ScenarioMap({
           setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
           setMissionCreatorActive(!missionEditorActive);
         }}
+        toggleMissionViewer={() => {
+          setMissionViewerActive(!missionViewerActive);
+        }}
       />
 
       <LayerVisibilityPanelToggle
@@ -1498,6 +1507,17 @@ export default function ScenarioMap({
             setMissionCreatorActive(false);
           }}
           createPatrolMission={handleCreatePatrolMission}
+        />
+      )}
+
+      {missionViewerActive && game.currentScenario.missions.length > 0 && (
+        <MissionViewer
+          missions={game.currentScenario.missions}
+          aircraft={game.currentScenario.aircraft}
+          deleteMission={handleDeleteMission}
+          handleCloseOnMap={() => {
+            setMissionViewerActive(false);
+          }}
         />
       )}
 

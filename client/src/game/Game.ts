@@ -370,6 +370,12 @@ export default class Game {
     this.currentScenario.missions.push(patrolMission);
   }
 
+  deleteMission(missionId: string) {
+    this.currentScenario.missions = this.currentScenario.missions.filter(
+      (mission) => mission.id !== missionId
+    );
+  }
+
   getSampleWeapon(
     quantity: number,
     lethality: number,

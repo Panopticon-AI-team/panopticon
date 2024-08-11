@@ -58,6 +58,7 @@ interface ToolBarProps {
   toggleBaseMapLayer: () => void;
   keyboardShortcutsEnabled: boolean;
   toggleMissionCreator: () => void;
+  toggleMissionViewer: () => void;
 }
 
 const formatSideName = (sideName: string) => {
@@ -487,7 +488,14 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             sx={toggleStyle}
             onClick={props.toggleMissionCreator}
           >
-            Missions
+            Mission Creator
+          </Button>
+          <Button
+            variant="contained"
+            sx={toggleStyle}
+            onClick={props.toggleMissionViewer}
+          >
+            Mission Viewer
           </Button>
         </Stack>
         <Stack spacing={1} direction="column" sx={stackStyle}>
@@ -611,7 +619,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             title="Edit Scenario"
             content={editScenarioSection()}
             width={drawerWidth - 20}
-            height={130}
+            height={200}
             open={true}
           />
           <ToolbarCollapsible
