@@ -1061,6 +1061,23 @@ export default function ScenarioMap({
     }
   }
 
+  function handleCreatePatrolMission(
+    missionName: string,
+    assignedUnits: string[],
+    referencePoints: string[]
+  ) {
+    if (referencePoints.length < 3) return;
+    const assignedArea = [];
+    for (let referencePointId of referencePoints) {
+      const referencePoint =
+        game.currentScenario.getReferencePoint(referencePointId);
+      if (referencePoint) {
+        assignedArea.push([referencePoint.latitude, referencePoint.longitude]);
+      }
+    }
+    game.createPatrolMission(missionName, assignedUnits, assignedArea);
+  }
+
   function queueUnitForTeleport(unitId: string) {
     game.selectedUnitId = unitId;
     teleportingUnit = true;
@@ -1480,6 +1497,7 @@ export default function ScenarioMap({
             setKeyboardShortcutsEnabled(true);
             setMissionCreatorActive(false);
           }}
+          createPatrolMission={handleCreatePatrolMission}
         />
       )}
 

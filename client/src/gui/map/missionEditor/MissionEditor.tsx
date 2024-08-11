@@ -38,6 +38,11 @@ interface MissionEditorProps {
   units: Object[];
   referencePoints: Object[];
   handleCloseOnMap: () => void;
+  createPatrolMission: (
+    missionName: string,
+    assignedUnits: string[],
+    referencePoints: string[]
+  ) => void;
 }
 
 const missionTypes = ["Patrol", "Strike", "Refueling"];
@@ -58,6 +63,14 @@ const MissionEditor = (props: MissionEditorProps) => {
     backgroundColor: colorPalette.lightGray,
     boxShadow: "none",
     borderRadius: "10px",
+  };
+
+  const handleCreatePatrolMission = () => {
+    props.createPatrolMission(
+      missionName,
+      selectedUnits,
+      selectedReferencePoints
+    );
   };
 
   const cardContent = () => {
@@ -118,6 +131,7 @@ const MissionEditor = (props: MissionEditorProps) => {
           variant="contained"
           color="primary"
           classes={{ root: classes.createButton }}
+          onClick={handleCreatePatrolMission}
         >
           Create
         </Button>

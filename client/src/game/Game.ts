@@ -353,6 +353,23 @@ export default class Game {
     });
   }
 
+  createPatrolMission(
+    missionName: string,
+    assignedUnits: string[],
+    assignedArea: number[][]
+  ) {
+    if (assignedArea.length < 3) return;
+    const patrolMission = new PatrolMission({
+      id: uuidv4(),
+      name: missionName,
+      sideId: this.currentSideName,
+      assignedUnitIds: assignedUnits,
+      assignedArea: assignedArea,
+      active: true,
+    });
+    this.currentScenario.missions.push(patrolMission);
+  }
+
   getSampleWeapon(
     quantity: number,
     lethality: number,
@@ -871,6 +888,7 @@ export default class Game {
     if (activePatrolMissions.length < 1) return;
 
     activePatrolMissions.forEach((mission) => {
+      if (mission.assignedArea.length < 3) return;
       mission.assignedUnitIds.forEach((unitId) => {
         const unit = this.currentScenario.getAircraft(unitId);
         if (unit) {
