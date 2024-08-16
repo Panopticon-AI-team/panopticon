@@ -1260,7 +1260,8 @@ export default function ScenarioMap({
       aircraftSpeed,
       aircraftWeaponQuantity,
       aircraftCurrentFuel,
-      aircraftFuelRate
+      aircraftFuelRate,
+      game.getSampleWeapon(aircraftWeaponQuantity, 0.25)
     );
     featureLabelLayer.updateFeatureLabelFeature(aircraftId, aircraftName);
   }

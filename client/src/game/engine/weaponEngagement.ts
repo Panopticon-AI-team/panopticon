@@ -87,9 +87,9 @@ export function launchWeapon(
 ) {
   if (origin.weapons.length === 0) return;
 
-  const weaponWithMaxRangePrototype = origin.weapons.reduce((a, b) =>
-    a.range > b.range ? a : b
-  );
+  const weaponWithMaxRangePrototype = origin.getWeaponWithHighestRange();
+  if (!weaponWithMaxRangePrototype) return;
+
   const nextWeaponCoordinates = getNextCoordinates(
     origin.latitude,
     origin.longitude,
@@ -189,7 +189,12 @@ export function aircraftPursuit(currentScenario: Scenario, aircraft: Aircraft) {
     return;
   }
   if (aircraft.weapons.length < 1) return;
-  aircraft.route = [[target.latitude, target.longitude]];
+  aircraft.route = [
+    [
+      target.latitude - 0.1 < -90 ? target.latitude : target.latitude - 0.1,
+      target.longitude - 0.1 < -180 ? target.longitude : target.longitude - 0.1,
+    ],
+  ];
   aircraft.heading = getBearingBetweenTwoPoints(
     aircraft.latitude,
     aircraft.longitude,
