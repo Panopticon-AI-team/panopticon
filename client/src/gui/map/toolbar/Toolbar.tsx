@@ -58,7 +58,7 @@ interface ToolBarProps {
   toggleBaseMapLayer: () => void;
   keyboardShortcutsEnabled: boolean;
   toggleMissionCreator: () => void;
-  toggleMissionViewer: () => void;
+  toggleMissionEditor: () => void;
 }
 
 const formatSideName = (sideName: string) => {
@@ -493,9 +493,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           <Button
             variant="contained"
             sx={toggleStyle}
-            onClick={props.toggleMissionViewer}
+            onClick={props.toggleMissionEditor}
           >
-            Mission Viewer
+            Mission Editor
           </Button>
         </Stack>
         <Stack spacing={1} direction="column" sx={stackStyle}>

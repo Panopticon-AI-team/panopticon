@@ -8,6 +8,8 @@ import { colorPalette } from "../../../utils/constants";
 import EditorSelector from "./EditorSelector";
 import EditorTextInputBox from "./EditorTextInputBox";
 import { Button } from "@mui/material";
+import PatrolMission from "../../../game/mission/PatrolMission";
+import Aircraft from "../../../game/units/Aircraft";
 
 const useStyles = makeStyles({
   cardHeaderRoot: {
@@ -22,40 +24,25 @@ const useStyles = makeStyles({
     flexDirection: "column",
     rowGap: "10px",
   },
-  createButton: {
+  deleteMissionButton: {
     color: colorPalette.white,
     borderRadius: "10px",
   },
   closeButton: { position: "absolute", top: "0", right: "0" },
 });
 
-export type Object = {
-  id: string;
-  name: string;
-};
-
 interface MissionEditorProps {
-  units: Object[];
-  referencePoints: Object[];
+  missions: PatrolMission[];
+  aircraft: Aircraft[];
+  deleteMission: (missionId: string) => void;
   handleCloseOnMap: () => void;
-  createPatrolMission: (
-    missionName: string,
-    assignedUnits: string[],
-    referencePoints: string[]
-  ) => void;
 }
-
-const missionTypes = ["Patrol", "Strike", "Refueling"];
 
 const MissionEditor = (props: MissionEditorProps) => {
   const classes = useStyles();
-  const [selectedMissionType, setSelectedMissionType] =
-    useState<string>("Patrol");
-  const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
-  const [selectedReferencePoints, setSelectedReferencePoints] = useState<
-    string[]
-  >([]);
-  const [missionName, setMissionName] = useState<string>("");
+  const [selectedMission, setSelectedMission] = useState<PatrolMission>(
+    props.missions[0]
+  );
 
   const cardStyle = {
     minWidth: "400px",
@@ -65,82 +52,54 @@ const MissionEditor = (props: MissionEditorProps) => {
     borderRadius: "10px",
   };
 
-  const handleCreatePatrolMission = () => {
-    props.createPatrolMission(
-      missionName,
-      selectedUnits,
-      selectedReferencePoints
-    );
-  };
-
   const cardContent = () => {
-    const sortedUnits = props.units.sort((a, b) => {
-      return a.name.localeCompare(b.name);
-    });
-    const sortedReferencePoints = props.referencePoints.sort((a, b) => {
-      return a.name.localeCompare(b.name);
-    });
-
+    const missionIds = props.missions.map((mission) => mission.id);
+    const missionNames = props.missions.map((mission) => mission.name);
     return (
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <EditorSelector
-          selectId={"mission-type-selector"}
-          caption={"Type"}
-          optionIds={missionTypes}
-          optionNames={missionTypes}
-          selectedOption={selectedMissionType}
-          onChange={(option) => {
-            setSelectedMissionType(option);
+          selectId={"mission-viewer-mission-selector"}
+          caption={"Mission"}
+          optionIds={missionIds}
+          optionNames={missionNames}
+          selectedOption={selectedMission.id}
+          onChange={(newSelectedMission) => {
+            setSelectedMission(
+              props.missions.find(
+                (mission) => mission.id === newSelectedMission
+              ) as PatrolMission
+            );
           }}
         />
         <EditorTextInputBox
-          caption={"Name"}
-          currentText={missionName}
-          onChange={(newMissionName) => {
-            setMissionName(newMissionName);
-          }}
+          caption={"Assigned Units"}
+          currentText={props.aircraft
+            .filter((aircraft) =>
+              selectedMission.assignedUnitIds.includes(aircraft.id)
+            )
+            .map((aircraft) => aircraft.name)
+            .join(", ")}
+          onChange={() => {}}
         />
-        <EditorSelector
-          selectId={"mission-creator-unit-selector"}
-          caption={"Units"}
-          optionIds={sortedUnits.map((unit) => unit.id)}
-          optionNames={sortedUnits.map((unit) => unit.name)}
-          selectedOption={selectedUnits}
-          onChange={() => {
-            const unitsSelector = document.getElementById(
-              "mission-creator-unit-selector"
-            ) as HTMLSelectElement;
-            const selectedOptions = Array.from(
-              unitsSelector.selectedOptions
-            ).map((option) => option.value);
-            setSelectedUnits(selectedOptions);
-          }}
-          multiple={true}
-        />
-        <EditorSelector
-          selectId={"mission-creator-area-selector"}
-          caption={"Area"}
-          optionIds={sortedReferencePoints.map((point) => point.id)}
-          optionNames={sortedReferencePoints.map((point) => point.name)}
-          selectedOption={selectedReferencePoints}
-          onChange={() => {
-            const pointsSelector = document.getElementById(
-              "mission-creator-area-selector"
-            ) as HTMLSelectElement;
-            const selectedOptions = Array.from(
-              pointsSelector.selectedOptions
-            ).map((option) => option.value);
-            setSelectedReferencePoints(selectedOptions);
-          }}
-          multiple={true}
+        <EditorTextInputBox
+          caption={"Assigned Area"}
+          currentText={selectedMission.assignedArea
+            .map(
+              (referencePoint) =>
+                `[${referencePoint[1].toFixed(2)}, ${referencePoint[0].toFixed(
+                  2
+                )}]`
+            )
+            .join(", ")}
+          onChange={() => {}}
         />
         <Button
           variant="contained"
-          color="primary"
-          classes={{ root: classes.createButton }}
-          onClick={handleCreatePatrolMission}
+          color="error"
+          className={classes.deleteMissionButton}
+          onClick={() => props.deleteMission(selectedMission.id)}
         >
-          Create
+          Delete
         </Button>
       </CardContent>
     );
@@ -158,7 +117,7 @@ const MissionEditor = (props: MissionEditorProps) => {
       <Draggable>
         <Card sx={cardStyle}>
           <CardHeader
-            title={"Mission Creator"}
+            title={"Mission Viewer"}
             classes={{
               root: classes.cardHeaderRoot,
             }}

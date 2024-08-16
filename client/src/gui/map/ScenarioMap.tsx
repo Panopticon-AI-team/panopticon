@@ -57,8 +57,8 @@ import {
 } from "../../game/db/UnitDb";
 import ReferencePointCard from "./featureCards/ReferencePointCard";
 import ReferencePoint from "../../game/units/ReferencePoint";
+import MissionCreator from "./missionEditor/MissionCreator";
 import MissionEditor from "./missionEditor/MissionEditor";
-import MissionViewer from "./missionEditor/MissionViewer";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -159,8 +159,8 @@ export default function ScenarioMap({
   const [referencePointVisible, setReferencePointVisible] = useState(true);
   const [keyboardShortcutsEnabled, setKeyboardShortcutsEnabled] =
     useState(true);
-  const [missionEditorActive, setMissionCreatorActive] = useState(false);
-  const [missionViewerActive, setMissionViewerActive] = useState(false);
+  const [missionCreatorActive, setMissionCreatorActive] = useState(false);
+  const [missionEditorActive, setMissionEditorActive] = useState(false);
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
@@ -1474,10 +1474,11 @@ export default function ScenarioMap({
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
         toggleMissionCreator={() => {
           setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
-          setMissionCreatorActive(!missionEditorActive);
+          setMissionCreatorActive(!missionCreatorActive);
         }}
-        toggleMissionViewer={() => {
-          setMissionViewerActive(!missionViewerActive);
+        toggleMissionEditor={() => {
+          setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+          setMissionEditorActive(!missionEditorActive);
         }}
       />
 
@@ -1494,8 +1495,8 @@ export default function ScenarioMap({
       />
       <BottomCornerInfoDisplay />
 
-      {missionEditorActive && (
-        <MissionEditor
+      {missionCreatorActive && (
+        <MissionCreator
           units={game.currentScenario.aircraft.filter(
             (aircraft) => aircraft.sideName === game.currentSideName
           )}
@@ -1510,13 +1511,14 @@ export default function ScenarioMap({
         />
       )}
 
-      {missionViewerActive && game.currentScenario.missions.length > 0 && (
-        <MissionViewer
+      {missionEditorActive && game.currentScenario.missions.length > 0 && (
+        <MissionEditor
           missions={game.currentScenario.missions}
           aircraft={game.currentScenario.aircraft}
           deleteMission={handleDeleteMission}
           handleCloseOnMap={() => {
-            setMissionViewerActive(false);
+            setKeyboardShortcutsEnabled(true);
+            setMissionEditorActive(false);
           }}
         />
       )}
