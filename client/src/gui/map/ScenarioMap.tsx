@@ -57,6 +57,8 @@ import {
 } from "../../game/db/UnitDb";
 import ReferencePointCard from "./featureCards/ReferencePointCard";
 import ReferencePoint from "../../game/units/ReferencePoint";
+import MissionCreator from "./missionEditor/MissionCreator";
+import MissionEditor from "./missionEditor/MissionEditor";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -157,6 +159,8 @@ export default function ScenarioMap({
   const [referencePointVisible, setReferencePointVisible] = useState(true);
   const [keyboardShortcutsEnabled, setKeyboardShortcutsEnabled] =
     useState(true);
+  const [missionCreatorActive, setMissionCreatorActive] = useState(false);
+  const [missionEditorActive, setMissionEditorActive] = useState(false);
   const setCurrentScenarioTimeToContext = useContext(
     SetCurrentScenarioTimeContext
   );
@@ -1059,6 +1063,55 @@ export default function ScenarioMap({
     }
   }
 
+  function handleCreatePatrolMission(
+    missionName: string,
+    assignedUnits: string[],
+    referencePoints: string[]
+  ) {
+    if (referencePoints.length < 3) return;
+    const assignedArea = [];
+    for (let referencePointId of referencePoints) {
+      const referencePoint =
+        game.currentScenario.getReferencePoint(referencePointId);
+      if (referencePoint) {
+        assignedArea.push([referencePoint.latitude, referencePoint.longitude]);
+      }
+    }
+    game.createPatrolMission(missionName, assignedUnits, assignedArea);
+  }
+
+  function handleUpdatePatrolMission(
+    missionId: string,
+    missionName?: string,
+    assignedUnits?: string[],
+    referencePoints?: string[]
+  ) {
+    if (referencePoints && referencePoints.length < 3) return;
+    const assignedArea = [];
+    if (referencePoints) {
+      for (let referencePointId of referencePoints) {
+        const referencePoint =
+          game.currentScenario.getReferencePoint(referencePointId);
+        if (referencePoint) {
+          assignedArea.push([
+            referencePoint.latitude,
+            referencePoint.longitude,
+          ]);
+        }
+      }
+    }
+    game.updatePatrolMission(
+      missionId,
+      missionName,
+      assignedUnits,
+      assignedArea
+    );
+  }
+
+  function handleDeleteMission(missionId: string) {
+    game.deleteMission(missionId);
+  }
+
   function queueUnitForTeleport(unitId: string) {
     game.selectedUnitId = unitId;
     teleportingUnit = true;
@@ -1447,6 +1500,19 @@ export default function ScenarioMap({
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
+        toggleMissionCreator={() => {
+          setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+          setMissionCreatorActive(!missionCreatorActive);
+        }}
+        toggleMissionEditor={() => {
+          if (
+            !missionEditorActive &&
+            game.currentScenario.missions.length === 0
+          )
+            return;
+          setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+          setMissionEditorActive(!missionEditorActive);
+        }}
       />
 
       <LayerVisibilityPanelToggle
@@ -1461,6 +1527,47 @@ export default function ScenarioMap({
         referencePointVisibility={referencePointVisible}
       />
       <BottomCornerInfoDisplay />
+
+      {missionCreatorActive && (
+        <MissionCreator
+          aircraft={game.currentScenario.aircraft.filter(
+            (aircraft) =>
+              aircraft.sideName === game.currentSideName &&
+              game.currentScenario.missions
+                .map((mission) => mission.assignedUnitIds)
+                .flat()
+                .indexOf(aircraft.id) === -1
+          )}
+          referencePoints={game.currentScenario.referencePoints.filter(
+            (referencePoint) => referencePoint.sideName === game.currentSideName
+          )}
+          handleCloseOnMap={() => {
+            setKeyboardShortcutsEnabled(true);
+            setMissionCreatorActive(false);
+          }}
+          createPatrolMission={handleCreatePatrolMission}
+        />
+      )}
+
+      {missionEditorActive && game.currentScenario.missions.length > 0 && (
+        <MissionEditor
+          missions={game.currentScenario.missions.filter(
+            (mission) => mission.sideId === game.currentSideName
+          )}
+          aircraft={game.currentScenario.aircraft.filter(
+            (aircraft) => aircraft.sideName === game.currentSideName
+          )}
+          referencePoints={game.currentScenario.referencePoints.filter(
+            (referencePoint) => referencePoint.sideName === game.currentSideName
+          )}
+          updatePatrolMission={handleUpdatePatrolMission}
+          deleteMission={handleDeleteMission}
+          handleCloseOnMap={() => {
+            setKeyboardShortcutsEnabled(true);
+            setMissionEditorActive(false);
+          }}
+        />
+      )}
 
       <div ref={mapId} className="map"></div>
 

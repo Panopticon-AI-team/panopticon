@@ -21,6 +21,7 @@ import Weapon from "./units/Weapon";
 import { GAME_SPEED_DELAY_MS } from "../utils/constants";
 import Ship from "./units/Ship";
 import ReferencePoint from "./units/ReferencePoint";
+import PatrolMission from "./mission/PatrolMission";
 
 interface IMapView {
   defaultCenter: number[];
@@ -350,6 +351,45 @@ export default class Game {
         }
       }
     });
+  }
+
+  createPatrolMission(
+    missionName: string,
+    assignedUnits: string[],
+    assignedArea: number[][]
+  ) {
+    if (assignedArea.length < 3) return;
+    const patrolMission = new PatrolMission({
+      id: uuidv4(),
+      name: missionName,
+      sideId: this.currentSideName,
+      assignedUnitIds: assignedUnits,
+      assignedArea: assignedArea,
+      active: true,
+    });
+    this.currentScenario.missions.push(patrolMission);
+  }
+
+  updatePatrolMission(
+    missionId: string,
+    missionName?: string,
+    assignedUnits?: string[],
+    assignedArea?: number[][]
+  ) {
+    const patrolMission = this.currentScenario.getMission(missionId);
+    if (patrolMission) {
+      if (missionName && missionName !== "") patrolMission.name = missionName;
+      if (assignedUnits && assignedUnits.length > 0)
+        patrolMission.assignedUnitIds = assignedUnits;
+      if (assignedArea && assignedArea.length > 2)
+        patrolMission.assignedArea = assignedArea;
+    }
+  }
+
+  deleteMission(missionId: string) {
+    this.currentScenario.missions = this.currentScenario.missions.filter(
+      (mission) => mission.id !== missionId
+    );
   }
 
   getSampleWeapon(
@@ -786,6 +826,19 @@ export default class Game {
       });
       loadedScenario.referencePoints.push(newReferencePoint);
     });
+
+    savedScenario.missions?.forEach((mission: PatrolMission) => {
+      const newMission = new PatrolMission({
+        id: mission.id,
+        name: mission.name,
+        sideId: mission.sideId,
+        assignedUnitIds: mission.assignedUnitIds,
+        assignedArea: mission.assignedArea,
+        active: mission.active,
+      });
+      loadedScenario.missions.push(newMission);
+    });
+
     this.currentScenario = loadedScenario;
   }
 
@@ -833,6 +886,38 @@ export default class Game {
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
             launchWeapon(this.currentScenario, ship, weapon);
+          }
+        }
+      });
+    });
+  }
+
+  updateUnitsOnPatrolMission() {
+    const activePatrolMissions = this.currentScenario.missions.filter(
+      (mission) => mission.active
+    );
+    if (activePatrolMissions.length < 1) return;
+
+    activePatrolMissions.forEach((mission) => {
+      if (mission.assignedArea.length < 3) return;
+      mission.assignedUnitIds.forEach((unitId) => {
+        const unit = this.currentScenario.getAircraft(unitId);
+        if (unit) {
+          if (unit.route.length === 0) {
+            const randomWaypointInPatrolArea =
+              mission.generateRandomCoordinatesWithinPatrolArea();
+            unit.route.push(randomWaypointInPatrolArea);
+          } else if (unit.route.length > 0) {
+            if (
+              !mission.checkIfCoordinatesIsWithinPatrolArea(
+                unit.route[unit.route.length - 1]
+              )
+            ) {
+              unit.route = [];
+              const randomWaypointInPatrolArea =
+                mission.generateRandomCoordinatesWithinPatrolArea();
+              unit.route.push(randomWaypointInPatrolArea);
+            }
           }
         }
       });
@@ -953,6 +1038,8 @@ export default class Game {
 
     this.facilityAutoDefense();
     this.shipAutoDefense();
+
+    this.updateUnitsOnPatrolMission();
 
     this.currentScenario.weapons.forEach((weapon) => {
       weaponEngagement(this.currentScenario, weapon);
