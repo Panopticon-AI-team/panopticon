@@ -7,9 +7,10 @@ import { makeStyles } from "@material-ui/styles";
 import { colorPalette } from "../../../utils/constants";
 import EditorSelector from "./EditorSelector";
 import EditorTextInputBox from "./EditorTextInputBox";
-import { Button } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import PatrolMission from "../../../game/mission/PatrolMission";
 import Aircraft from "../../../game/units/Aircraft";
+import ReferencePoint from "../../../game/units/ReferencePoint";
 
 const useStyles = makeStyles({
   cardHeaderRoot: {
@@ -24,7 +25,10 @@ const useStyles = makeStyles({
     flexDirection: "column",
     rowGap: "10px",
   },
-  deleteMissionButton: {
+  bottomButtonsStack: {
+    justifyContent: "center",
+  },
+  editorButton: {
     color: colorPalette.white,
     borderRadius: "10px",
   },
@@ -34,15 +38,57 @@ const useStyles = makeStyles({
 interface MissionEditorProps {
   missions: PatrolMission[];
   aircraft: Aircraft[];
+  referencePoints: ReferencePoint[];
+  updatePatrolMission: (
+    missionId: string,
+    missionName: string,
+    assignedUnits: string[],
+    referencePoints: string[]
+  ) => void;
   deleteMission: (missionId: string) => void;
   handleCloseOnMap: () => void;
 }
+
+const missionTypes = ["Patrol"];
+
+const findReferencePointsForAssignedArea = (
+  area: number[][],
+  referencePoints: ReferencePoint[]
+): string[] => {
+  return area.map((coordinates) => {
+    const searchedReferencePoint = referencePoints.find(
+      (referencePoint) =>
+        referencePoint.latitude === coordinates[0] &&
+        referencePoint.longitude === coordinates[1]
+    );
+    return searchedReferencePoint ? searchedReferencePoint.id : "";
+  });
+};
+
+const parseSelectedMissionType = (selectedMission: PatrolMission): string => {
+  return selectedMission instanceof PatrolMission ? "Patrol" : "";
+};
 
 const MissionEditor = (props: MissionEditorProps) => {
   const classes = useStyles();
   const [selectedMission, setSelectedMission] = useState<PatrolMission>(
     props.missions[0]
   );
+  const [selectedMissionType, setSelectedMissionType] = useState<string>(
+    parseSelectedMissionType(selectedMission)
+  );
+  const [selectedAircraft, setSelectedAircraft] = useState<string[]>(
+    selectedMission.assignedUnitIds
+  );
+  const [selectedReferencePoints, setSelectedReferencePoints] = useState<
+    string[]
+  >(
+    findReferencePointsForAssignedArea(
+      selectedMission.assignedArea,
+      props.referencePoints
+    )
+  );
+  const [missionName, setMissionName] = useState<string>(selectedMission.name);
 
   const cardStyle = {
     minWidth: "400px",
@@ -52,55 +98,148 @@ const MissionEditor = (props: MissionEditorProps) => {
     borderRadius: "10px",
   };
 
+  const validateMissionPropertiesInput = () => {
+    if (missionName === "") {
+      alert("Mission name cannot be empty");
+      return false;
+    }
+    if (selectedAircraft.length === 0) {
+      alert("Please select at least one unit");
+      return false;
+    }
+    if (
+      selectedMission instanceof PatrolMission &&
+      selectedReferencePoints.length < 3
+    ) {
+      alert("Please select at least three reference points to define an area");
+      return false;
+    }
+    return true;
+  };
+
+  const handleDeleteMission = () => {
+    props.deleteMission(selectedMission.id);
+    props.handleCloseOnMap();
+  };
+
+  const handleUpdateMission = () => {
+    if (!validateMissionPropertiesInput()) return;
+    props.updatePatrolMission(
+      selectedMission.id,
+      missionName,
+      selectedAircraft,
+      selectedReferencePoints
+    );
+    props.handleCloseOnMap();
+  };
+
   const cardContent = () => {
     const missionIds = props.missions.map((mission) => mission.id);
     const missionNames = props.missions.map((mission) => mission.name);
+    const sortedAircraft = [...props.aircraft].sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+    const sortedReferencePoints = [...props.referencePoints].sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
     return (
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <EditorSelector
-          selectId={"mission-viewer-mission-selector"}
+          selectId={"mission-editor-mission-selector"}
           caption={"Mission"}
           optionIds={missionIds}
           optionNames={missionNames}
           selectedOption={selectedMission.id}
           onChange={(newSelectedMission) => {
-            setSelectedMission(
-              props.missions.find(
-                (mission) => mission.id === newSelectedMission
-              ) as PatrolMission
+            const searchedSelectedMission = props.missions.find(
+              (mission) => mission.id === newSelectedMission
+            );
+            if (!searchedSelectedMission) return;
+            setSelectedMission(searchedSelectedMission);
+            setMissionName(searchedSelectedMission.name);
+            setSelectedAircraft(searchedSelectedMission.assignedUnitIds);
+            setSelectedReferencePoints(
+              findReferencePointsForAssignedArea(
+                searchedSelectedMission.assignedArea,
+                props.referencePoints
+              )
+            );
+            setSelectedMissionType(
+              parseSelectedMissionType(searchedSelectedMission)
             );
           }}
         />
-        <EditorTextInputBox
-          caption={"Assigned Units"}
-          currentText={props.aircraft
-            .filter((aircraft) =>
-              selectedMission.assignedUnitIds.includes(aircraft.id)
-            )
-            .map((aircraft) => aircraft.name)
-            .join(", ")}
+        <EditorSelector
+          selectId={"mission-editor-type-selector"}
+          caption={"Type"}
+          optionIds={missionTypes}
+          optionNames={missionTypes}
+          selectedOption={selectedMissionType}
           onChange={() => {}}
         />
         <EditorTextInputBox
-          caption={"Assigned Area"}
-          currentText={selectedMission.assignedArea
-            .map(
-              (referencePoint) =>
-                `[${referencePoint[1].toFixed(2)}, ${referencePoint[0].toFixed(
-                  2
-                )}]`
-            )
-            .join(", ")}
-          onChange={() => {}}
+          caption={"Name"}
+          currentText={missionName}
+          onChange={(newMissionName) => {
+            setMissionName(newMissionName);
+          }}
         />
-        <Button
-          variant="contained"
-          color="error"
-          className={classes.deleteMissionButton}
-          onClick={() => props.deleteMission(selectedMission.id)}
+        <EditorSelector
+          selectId={"mission-editor-unit-selector"}
+          caption={"Units"}
+          optionIds={sortedAircraft.map((unit) => unit.id)}
+          optionNames={sortedAircraft.map((unit) => unit.name)}
+          selectedOption={selectedAircraft}
+          onChange={() => {
+            const aircraftSelector = document.getElementById(
+              "mission-editor-unit-selector"
+            ) as HTMLSelectElement;
+            const selectedOptions = Array.from(
+              aircraftSelector.selectedOptions
+            ).map((option) => option.value);
+            setSelectedAircraft(selectedOptions);
+          }}
+          multiple={true}
+        />
+        <EditorSelector
+          selectId={"mission-editor-area-selector"}
+          caption={"Area"}
+          optionIds={sortedReferencePoints.map((point) => point.id)}
+          optionNames={sortedReferencePoints.map((point) => point.name)}
+          selectedOption={selectedReferencePoints}
+          onChange={() => {
+            const pointsSelector = document.getElementById(
+              "mission-editor-area-selector"
+            ) as HTMLSelectElement;
+            const selectedOptions = Array.from(
+              pointsSelector.selectedOptions
+            ).map((option) => option.value);
+            setSelectedReferencePoints(selectedOptions);
+          }}
+          multiple={true}
+        />
+        <Stack
+          direction="row"
+          spacing={2}
+          className={classes.bottomButtonsStack}
         >
-          Delete
-        </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.editorButton}
+            onClick={handleUpdateMission}
+          >
+            UPDATE
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            className={classes.editorButton}
+            onClick={handleDeleteMission}
+          >
+            Delete
+          </Button>
+        </Stack>
       </CardContent>
     );
   };

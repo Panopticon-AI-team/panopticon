@@ -370,6 +370,22 @@ export default class Game {
     this.currentScenario.missions.push(patrolMission);
   }
 
+  updatePatrolMission(
+    missionId: string,
+    missionName?: string,
+    assignedUnits?: string[],
+    assignedArea?: number[][]
+  ) {
+    const patrolMission = this.currentScenario.getMission(missionId);
+    if (patrolMission) {
+      if (missionName && missionName !== "") patrolMission.name = missionName;
+      if (assignedUnits && assignedUnits.length > 0)
+        patrolMission.assignedUnitIds = assignedUnits;
+      if (assignedArea && assignedArea.length > 2)
+        patrolMission.assignedArea = assignedArea;
+    }
+  }
+
   deleteMission(missionId: string) {
     this.currentScenario.missions = this.currentScenario.missions.filter(
       (mission) => mission.id !== missionId

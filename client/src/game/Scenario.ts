@@ -100,6 +100,10 @@ export default class Scenario {
     );
   }
 
+  getMission(missionId: string | null): PatrolMission | undefined {
+    return this.missions.find((mission) => mission.id === missionId);
+  }
+
   updateAircraft(
     aircraftId: string,
     aircraftName: string,

@@ -8,6 +8,8 @@ import { colorPalette } from "../../../utils/constants";
 import EditorSelector from "./EditorSelector";
 import EditorTextInputBox from "./EditorTextInputBox";
 import { Button } from "@mui/material";
+import Aircraft from "../../../game/units/Aircraft";
+import ReferencePoint from "../../../game/units/ReferencePoint";
 
 const useStyles = makeStyles({
   cardHeaderRoot: {
@@ -35,8 +37,8 @@ export type Object = {
 };
 
 interface MissionCreatorProps {
-  units: Object[];
-  referencePoints: Object[];
+  aircraft: Aircraft[];
+  referencePoints: ReferencePoint[];
   handleCloseOnMap: () => void;
   createPatrolMission: (
     missionName: string,
@@ -51,7 +53,7 @@ const MissionCreator = (props: MissionCreatorProps) => {
   const classes = useStyles();
   const [selectedMissionType, setSelectedMissionType] =
     useState<string>("Patrol");
-  const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
+  const [selectedAircraft, setSelectedAircraft] = useState<string[]>([]);
   const [selectedReferencePoints, setSelectedReferencePoints] = useState<
     string[]
   >([]);
@@ -70,7 +72,7 @@ const MissionCreator = (props: MissionCreatorProps) => {
       alert("Mission name cannot be empty");
       return false;
     }
-    if (selectedUnits.length === 0) {
+    if (selectedAircraft.length === 0) {
       alert("Please select at least one unit");
       return false;
     }
@@ -88,14 +90,14 @@ const MissionCreator = (props: MissionCreatorProps) => {
     if (!validateMissionPropertiesInput()) return;
     props.createPatrolMission(
       missionName,
-      selectedUnits,
+      selectedAircraft,
       selectedReferencePoints
     );
     props.handleCloseOnMap();
   };
 
   const cardContent = () => {
-    const sortedUnits = [...props.units].sort((a, b) => {
+    const sortedAircraft = [...props.aircraft].sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
     const sortedReferencePoints = [...props.referencePoints].sort((a, b) => {
@@ -105,7 +107,7 @@ const MissionCreator = (props: MissionCreatorProps) => {
     return (
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <EditorSelector
-          selectId={"mission-type-selector"}
+          selectId={"mission-creator-type-selector"}
           caption={"Type"}
           optionIds={missionTypes}
           optionNames={missionTypes}
@@ -124,17 +126,17 @@ const MissionCreator = (props: MissionCreatorProps) => {
         <EditorSelector
           selectId={"mission-creator-unit-selector"}
           caption={"Units"}
-          optionIds={sortedUnits.map((unit) => unit.id)}
-          optionNames={sortedUnits.map((unit) => unit.name)}
-          selectedOption={selectedUnits}
+          optionIds={sortedAircraft.map((unit) => unit.id)}
+          optionNames={sortedAircraft.map((unit) => unit.name)}
+          selectedOption={selectedAircraft}
           onChange={() => {
-            const unitsSelector = document.getElementById(
+            const aircraftSelector = document.getElementById(
               "mission-creator-unit-selector"
             ) as HTMLSelectElement;
             const selectedOptions = Array.from(
-              unitsSelector.selectedOptions
+              aircraftSelector.selectedOptions
             ).map((option) => option.value);
-            setSelectedUnits(selectedOptions);
+            setSelectedAircraft(selectedOptions);
           }}
           multiple={true}
         />
