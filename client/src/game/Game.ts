@@ -937,7 +937,8 @@ export default class Game {
           }
         }
       });
-      aircraftPursuit(this.currentScenario, aircraft);
+      if (aircraft.targetId && aircraft.targetId !== "")
+        aircraftPursuit(this.currentScenario, aircraft);
     });
   }
 
