@@ -181,3 +181,19 @@ export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
     );
   }
 }
+
+export function aircraftPursuit(currentScenario: Scenario, aircraft: Aircraft) {
+  const target = currentScenario.getAircraft(aircraft.targetId);
+  if (!target) {
+    aircraft.targetId = "";
+    return;
+  }
+  if (aircraft.weapons.length < 1) return;
+  aircraft.route = [[target.latitude, target.longitude]];
+  aircraft.heading = getBearingBetweenTwoPoints(
+    aircraft.latitude,
+    aircraft.longitude,
+    target.latitude,
+    target.longitude
+  );
+}
