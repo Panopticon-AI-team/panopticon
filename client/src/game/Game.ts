@@ -892,6 +892,41 @@ export default class Game {
     });
   }
 
+  aircraftAirToAirEngagement() {
+    this.currentScenario.aircraft.forEach((aircraft) => {
+      if (aircraft.weapons.length < 1) return;
+      const aircraftWeaponWithMaxRange = aircraft.weapons.reduce((a, b) =>
+        a.range > b.range ? a : b
+      );
+      this.currentScenario.aircraft.forEach((enemyAircraft) => {
+        if (aircraft.sideName !== enemyAircraft.sideName) {
+          if (
+            checkIfThreatIsWithinRange(
+              enemyAircraft,
+              aircraftWeaponWithMaxRange
+            ) &&
+            checkTargetTrackedByCount(this.currentScenario, enemyAircraft) < 10
+          ) {
+            launchWeapon(this.currentScenario, aircraft, enemyAircraft);
+          }
+        }
+      });
+      this.currentScenario.weapons.forEach((enemyWeapon) => {
+        if (aircraft.sideName !== enemyWeapon.sideName) {
+          if (
+            checkIfThreatIsWithinRange(
+              enemyWeapon,
+              aircraftWeaponWithMaxRange
+            ) &&
+            checkTargetTrackedByCount(this.currentScenario, enemyWeapon) < 5
+          ) {
+            launchWeapon(this.currentScenario, aircraft, enemyWeapon);
+          }
+        }
+      });
+    });
+  }
+
   updateUnitsOnPatrolMission() {
     const activePatrolMissions = this.currentScenario.missions.filter(
       (mission) => mission.active
@@ -920,6 +955,27 @@ export default class Game {
             }
           }
         }
+      });
+    });
+  }
+
+  updateWeaponPositions() {
+    this.currentScenario.aircraft.forEach((aircraft) => {
+      aircraft.weapons.forEach((weapon) => {
+        weapon.latitude = aircraft.latitude;
+        weapon.longitude = aircraft.longitude;
+      });
+    });
+    this.currentScenario.facilities.forEach((facility) => {
+      facility.weapons.forEach((weapon) => {
+        weapon.latitude = facility.latitude;
+        weapon.longitude = facility.longitude;
+      });
+    });
+    this.currentScenario.ships.forEach((ship) => {
+      ship.weapons.forEach((weapon) => {
+        weapon.latitude = ship.latitude;
+        weapon.longitude = ship.longitude;
       });
     });
   }
@@ -1038,6 +1094,7 @@ export default class Game {
 
     this.facilityAutoDefense();
     this.shipAutoDefense();
+    this.aircraftAirToAirEngagement();
 
     this.updateUnitsOnPatrolMission();
 
@@ -1047,6 +1104,7 @@ export default class Game {
 
     this.updateAllAircraftPosition();
     this.updateAllShipPosition();
+    this.updateWeaponPositions();
   }
 
   _getObservation(): Scenario {

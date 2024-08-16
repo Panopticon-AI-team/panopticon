@@ -22,15 +22,15 @@ type Target = Aircraft | Facility | Weapon | Airbase | Ship;
 
 export function checkIfThreatIsWithinRange(
   threat: Aircraft | Weapon,
-  defender: Facility | Ship
+  defender: Facility | Ship | Weapon
 ): boolean {
   const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
   const defenderRangeGeometry = new Circle(
-    fromLonLat([defender.longitude, defender.latitude], projection!!),
+    fromLonLat([defender.longitude, defender.latitude], projection!),
     defender.range * NAUTICAL_MILES_TO_METERS
   );
   return defenderRangeGeometry.intersectsCoordinate(
-    fromLonLat([threat.longitude, threat.latitude], projection!!)
+    fromLonLat([threat.longitude, threat.latitude], projection!)
   );
 }
 
@@ -87,41 +87,43 @@ export function launchWeapon(
 ) {
   if (origin.weapons.length === 0) return;
 
-  const weaponPrototype = origin.weapons[0];
+  const weaponWithMaxRangePrototype = origin.weapons.reduce((a, b) =>
+    a.range > b.range ? a : b
+  );
   const nextWeaponCoordinates = getNextCoordinates(
     origin.latitude,
     origin.longitude,
     target.latitude,
     target.longitude,
-    weaponPrototype.speed
+    weaponWithMaxRangePrototype.speed
   );
   const nextWeaponLatitude = nextWeaponCoordinates[0];
   const nextWeaponLongitude = nextWeaponCoordinates[1];
   const newWeapon = new Weapon({
     id: uuidv4(),
-    name: weaponPrototype.name,
+    name: weaponWithMaxRangePrototype.name,
     sideName: origin.sideName,
-    className: weaponPrototype.className,
+    className: weaponWithMaxRangePrototype.className,
     latitude: nextWeaponLatitude,
     longitude: nextWeaponLongitude,
-    altitude: weaponPrototype.altitude,
+    altitude: weaponWithMaxRangePrototype.altitude,
     heading: getBearingBetweenTwoPoints(
       nextWeaponLatitude,
       nextWeaponLongitude,
       target.latitude,
       target.longitude
     ),
-    speed: weaponPrototype.speed,
-    currentFuel: weaponPrototype.currentFuel,
-    maxFuel: weaponPrototype.maxFuel,
-    fuelRate: weaponPrototype.fuelRate,
-    range: weaponPrototype.range,
+    speed: weaponWithMaxRangePrototype.speed,
+    currentFuel: weaponWithMaxRangePrototype.currentFuel,
+    maxFuel: weaponWithMaxRangePrototype.maxFuel,
+    fuelRate: weaponWithMaxRangePrototype.fuelRate,
+    range: weaponWithMaxRangePrototype.range,
     route: [[target.latitude, target.longitude]],
-    sideColor: weaponPrototype.sideColor,
+    sideColor: weaponWithMaxRangePrototype.sideColor,
     targetId: target.id,
-    lethality: weaponPrototype.lethality,
-    maxQuantity: weaponPrototype.maxQuantity,
-    currentQuantity: weaponPrototype.currentQuantity,
+    lethality: weaponWithMaxRangePrototype.lethality,
+    maxQuantity: weaponWithMaxRangePrototype.maxQuantity,
+    currentQuantity: weaponWithMaxRangePrototype.currentQuantity,
   });
   currentScenario.weapons.push(newWeapon);
   origin.weapons[0].currentQuantity -= 1;

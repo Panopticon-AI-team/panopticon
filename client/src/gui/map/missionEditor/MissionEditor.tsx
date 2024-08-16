@@ -256,7 +256,7 @@ const MissionEditor = (props: MissionEditorProps) => {
       <Draggable>
         <Card sx={cardStyle}>
           <CardHeader
-            title={"Mission Viewer"}
+            title={"Mission Editor"}
             classes={{
               root: classes.cardHeaderRoot,
             }}
