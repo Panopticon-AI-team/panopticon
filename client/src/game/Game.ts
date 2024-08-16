@@ -10,6 +10,7 @@ import {
   getDistanceBetweenTwoPoints,
 } from "../utils/utils";
 import {
+  aircraftPursuit,
   checkIfThreatIsWithinRange,
   checkTargetTrackedByCount,
   launchWeapon,
@@ -85,6 +86,7 @@ export default class Game {
       weapons: [this.getSampleWeapon(10, 0.25)],
       homeBaseId: "",
       rtb: false,
+      targetId: "",
     });
     this.currentScenario.aircraft.push(aircraft);
     return aircraft;
@@ -288,6 +290,7 @@ export default class Game {
           weapons: aircraft.weapons,
           homeBaseId: aircraft.homeBaseId,
           rtb: false,
+          targetId: aircraft.targetId,
         });
         this.currentScenario.aircraft.push(newAircraft);
         return newAircraft;
@@ -588,6 +591,7 @@ export default class Game {
           weapons: aircraft.weapons,
           homeBaseId: homeBase.id,
           rtb: false,
+          targetId: aircraft.targetId,
         });
         homeBase.aircraft.push(newAircraft);
         this.removeAircraft(aircraft.id);
@@ -678,6 +682,7 @@ export default class Game {
         ],
         homeBaseId: aircraft.homeBaseId,
         rtb: aircraft.rtb,
+        targetId: aircraft.targetId ?? "",
       });
       loadedScenario.aircraft.push(newAircraft);
     });
@@ -706,6 +711,7 @@ export default class Game {
           ],
           homeBaseId: aircraft.homeBaseId,
           rtb: aircraft.rtb,
+          targetId: aircraft.targetId ?? "",
         });
         airbaseAircraft.push(newAircraft);
       });
@@ -788,6 +794,7 @@ export default class Game {
           ],
           homeBaseId: aircraft.homeBaseId,
           rtb: aircraft.rtb,
+          targetId: aircraft.targetId ?? "",
         });
         shipAircraft.push(newAircraft);
       });
@@ -857,6 +864,7 @@ export default class Game {
       this.currentScenario.weapons.forEach((weapon) => {
         if (facility.sideName !== weapon.sideName) {
           if (
+            weapon.targetId === facility.id &&
             checkIfThreatIsWithinRange(weapon, facility) &&
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
@@ -882,6 +890,7 @@ export default class Game {
       this.currentScenario.weapons.forEach((weapon) => {
         if (ship.sideName !== weapon.sideName) {
           if (
+            weapon.targetId === ship.id &&
             checkIfThreatIsWithinRange(weapon, ship) &&
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
@@ -889,6 +898,47 @@ export default class Game {
           }
         }
       });
+    });
+  }
+
+  aircraftAirToAirEngagement() {
+    this.currentScenario.aircraft.forEach((aircraft) => {
+      if (aircraft.weapons.length < 1) return;
+      const aircraftWeaponWithMaxRange = aircraft.getWeaponWithHighestRange();
+      if (!aircraftWeaponWithMaxRange) return;
+      this.currentScenario.aircraft.forEach((enemyAircraft) => {
+        if (
+          aircraft.sideName !== enemyAircraft.sideName &&
+          (aircraft.targetId === "" || aircraft.targetId === enemyAircraft.id)
+        ) {
+          if (
+            checkIfThreatIsWithinRange(
+              enemyAircraft,
+              aircraftWeaponWithMaxRange
+            ) &&
+            checkTargetTrackedByCount(this.currentScenario, enemyAircraft) < 1
+          ) {
+            launchWeapon(this.currentScenario, aircraft, enemyAircraft);
+            aircraft.targetId = enemyAircraft.id;
+          }
+        }
+      });
+      this.currentScenario.weapons.forEach((enemyWeapon) => {
+        if (aircraft.sideName !== enemyWeapon.sideName) {
+          if (
+            enemyWeapon.targetId === aircraft.id &&
+            checkIfThreatIsWithinRange(
+              enemyWeapon,
+              aircraftWeaponWithMaxRange
+            ) &&
+            checkTargetTrackedByCount(this.currentScenario, enemyWeapon) < 1
+          ) {
+            launchWeapon(this.currentScenario, aircraft, enemyWeapon);
+          }
+        }
+      });
+      if (aircraft.targetId && aircraft.targetId !== "")
+        aircraftPursuit(this.currentScenario, aircraft);
     });
   }
 
@@ -920,6 +970,27 @@ export default class Game {
             }
           }
         }
+      });
+    });
+  }
+
+  updateOnBoardWeaponPositions() {
+    this.currentScenario.aircraft.forEach((aircraft) => {
+      aircraft.weapons.forEach((weapon) => {
+        weapon.latitude = aircraft.latitude;
+        weapon.longitude = aircraft.longitude;
+      });
+    });
+    this.currentScenario.facilities.forEach((facility) => {
+      facility.weapons.forEach((weapon) => {
+        weapon.latitude = facility.latitude;
+        weapon.longitude = facility.longitude;
+      });
+    });
+    this.currentScenario.ships.forEach((ship) => {
+      ship.weapons.forEach((weapon) => {
+        weapon.latitude = ship.latitude;
+        weapon.longitude = ship.longitude;
       });
     });
   }
@@ -1038,6 +1109,7 @@ export default class Game {
 
     this.facilityAutoDefense();
     this.shipAutoDefense();
+    this.aircraftAirToAirEngagement();
 
     this.updateUnitsOnPatrolMission();
 
@@ -1047,6 +1119,7 @@ export default class Game {
 
     this.updateAllAircraftPosition();
     this.updateAllShipPosition();
+    this.updateOnBoardWeaponPositions();
   }
 
   _getObservation(): Scenario {

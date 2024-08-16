@@ -46,4 +46,9 @@ export default class Facility {
     });
     return sum;
   }
+
+  getWeaponWithHighestRange(): Weapon | undefined {
+    if (this.weapons.length === 0) return;
+    return this.weapons.reduce((a, b) => (a.range > b.range ? a : b));
+  }
 }

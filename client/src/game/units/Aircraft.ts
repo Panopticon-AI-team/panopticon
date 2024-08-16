@@ -21,6 +21,7 @@ interface IAircraft {
   weapons?: Weapon[];
   homeBaseId?: string;
   rtb?: boolean;
+  targetId?: string;
 }
 
 export default class Aircraft {
@@ -43,6 +44,7 @@ export default class Aircraft {
   weapons: Weapon[];
   homeBaseId: string;
   rtb: boolean;
+  targetId: string;
 
   constructor(parameters: IAircraft) {
     this.id = parameters.id;
@@ -64,6 +66,7 @@ export default class Aircraft {
     this.weapons = parameters.weapons ?? [];
     this.homeBaseId = parameters.homeBaseId ?? "";
     this.rtb = parameters.rtb ?? false;
+    this.targetId = parameters.targetId ?? "";
   }
 
   getTotalWeaponQuantity(): number {
@@ -72,5 +75,10 @@ export default class Aircraft {
       sum += weapon.currentQuantity;
     });
     return sum;
+  }
+
+  getWeaponWithHighestRange(): Weapon | undefined {
+    if (this.weapons.length === 0) return;
+    return this.weapons.reduce((a, b) => (a.range > b.range ? a : b));
   }
 }
