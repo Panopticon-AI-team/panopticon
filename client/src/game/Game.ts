@@ -857,6 +857,7 @@ export default class Game {
       this.currentScenario.weapons.forEach((weapon) => {
         if (facility.sideName !== weapon.sideName) {
           if (
+            weapon.targetId === facility.id &&
             checkIfThreatIsWithinRange(weapon, facility) &&
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
@@ -882,6 +883,7 @@ export default class Game {
       this.currentScenario.weapons.forEach((weapon) => {
         if (ship.sideName !== weapon.sideName) {
           if (
+            weapon.targetId === ship.id &&
             checkIfThreatIsWithinRange(weapon, ship) &&
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
@@ -905,7 +907,7 @@ export default class Game {
               enemyAircraft,
               aircraftWeaponWithMaxRange
             ) &&
-            checkTargetTrackedByCount(this.currentScenario, enemyAircraft) < 10
+            checkTargetTrackedByCount(this.currentScenario, enemyAircraft) < 1
           ) {
             launchWeapon(this.currentScenario, aircraft, enemyAircraft);
           }
@@ -914,11 +916,12 @@ export default class Game {
       this.currentScenario.weapons.forEach((enemyWeapon) => {
         if (aircraft.sideName !== enemyWeapon.sideName) {
           if (
+            enemyWeapon.targetId === aircraft.id &&
             checkIfThreatIsWithinRange(
               enemyWeapon,
               aircraftWeaponWithMaxRange
             ) &&
-            checkTargetTrackedByCount(this.currentScenario, enemyWeapon) < 5
+            checkTargetTrackedByCount(this.currentScenario, enemyWeapon) < 1
           ) {
             launchWeapon(this.currentScenario, aircraft, enemyWeapon);
           }
