@@ -14,15 +14,20 @@ import {
   checkIfThreatIsWithinRange,
   checkTargetTrackedByCount,
   launchWeapon,
+  routeAircraftToStrikePosition,
   weaponEngagement,
 } from "./engine/weaponEngagement";
 import Airbase from "./units/Airbase";
 import Side from "./Side";
 import Weapon from "./units/Weapon";
-import { GAME_SPEED_DELAY_MS } from "../utils/constants";
+import {
+  GAME_SPEED_DELAY_MS,
+  NAUTICAL_MILES_TO_METERS,
+} from "../utils/constants";
 import Ship from "./units/Ship";
 import ReferencePoint from "./units/ReferencePoint";
 import PatrolMission from "./mission/PatrolMission";
+import StrikeMission from "./mission/StrikeMission";
 
 interface IMapView {
   defaultCenter: number[];
@@ -379,13 +384,45 @@ export default class Game {
     assignedUnits?: string[],
     assignedArea?: number[][]
   ) {
-    const patrolMission = this.currentScenario.getMission(missionId);
+    const patrolMission = this.currentScenario.getPatrolMission(missionId);
     if (patrolMission) {
       if (missionName && missionName !== "") patrolMission.name = missionName;
       if (assignedUnits && assignedUnits.length > 0)
         patrolMission.assignedUnitIds = assignedUnits;
       if (assignedArea && assignedArea.length > 2)
         patrolMission.assignedArea = assignedArea;
+    }
+  }
+
+  createStrikeMission(
+    missionName: string,
+    assignedAttackers: string[],
+    assignedTargets: string[]
+  ) {
+    const strikeMission = new StrikeMission({
+      id: uuidv4(),
+      name: missionName,
+      sideId: this.currentSideName,
+      assignedUnitIds: assignedAttackers,
+      assignedTargetIds: assignedTargets,
+      active: true,
+    });
+    this.currentScenario.missions.push(strikeMission);
+  }
+
+  updateStrikeMission(
+    missionId: string,
+    missionName?: string,
+    assignedAttackers?: string[],
+    assignedTargets?: string[]
+  ) {
+    const strikeMission = this.currentScenario.getStrikeMission(missionId);
+    if (strikeMission) {
+      if (missionName && missionName !== "") strikeMission.name = missionName;
+      if (assignedAttackers && assignedAttackers.length > 0)
+        strikeMission.assignedUnitIds = assignedAttackers;
+      if (assignedTargets && assignedTargets.length > 0)
+        strikeMission.assignedTargetIds = assignedTargets;
     }
   }
 
@@ -943,9 +980,9 @@ export default class Game {
   }
 
   updateUnitsOnPatrolMission() {
-    const activePatrolMissions = this.currentScenario.missions.filter(
-      (mission) => mission.active
-    );
+    const activePatrolMissions = this.currentScenario
+      .getAllPatrolMissions()
+      .filter((mission) => mission.active);
     if (activePatrolMissions.length < 1) return;
 
     activePatrolMissions.forEach((mission) => {
@@ -968,6 +1005,53 @@ export default class Game {
                 mission.generateRandomCoordinatesWithinPatrolArea();
               unit.route.push(randomWaypointInPatrolArea);
             }
+          }
+        }
+      });
+    });
+  }
+
+  updateUnitsOnStrikeMission() {
+    const activeStrikeMissions = this.currentScenario
+      .getAllStrikeMissions()
+      .filter((mission) => mission.active);
+    if (activeStrikeMissions.length < 1) return;
+
+    activeStrikeMissions.forEach((mission) => {
+      mission.assignedUnitIds.forEach((attackerId) => {
+        const attacker = this.currentScenario.getAircraft(attackerId);
+        if (attacker) {
+          const target =
+            this.currentScenario.getFacility(mission.assignedTargetIds[0]) ||
+            this.currentScenario.getShip(mission.assignedTargetIds[0]) ||
+            this.currentScenario.getAirbase(mission.assignedTargetIds[0]) ||
+            this.currentScenario.getAircraft(mission.assignedTargetIds[0]);
+          if (!target) return;
+          const distanceBetweenAttackerAndTargetNm =
+            (getDistanceBetweenTwoPoints(
+              attacker.latitude,
+              attacker.longitude,
+              target.latitude,
+              target.longitude
+            ) *
+              1000) /
+            NAUTICAL_MILES_TO_METERS;
+          const aircraftWeaponWithMaxRange =
+            attacker.getWeaponWithHighestRange();
+          if (!aircraftWeaponWithMaxRange) return;
+          if (
+            distanceBetweenAttackerAndTargetNm >
+            aircraftWeaponWithMaxRange.range * 1.1
+          ) {
+            routeAircraftToStrikePosition(
+              this.currentScenario,
+              attacker,
+              mission.assignedTargetIds[0],
+              aircraftWeaponWithMaxRange.range
+            );
+          } else {
+            launchWeapon(this.currentScenario, attacker, target);
+            attacker.targetId = target.id;
           }
         }
       });
@@ -1112,6 +1196,7 @@ export default class Game {
     this.aircraftAirToAirEngagement();
 
     this.updateUnitsOnPatrolMission();
+    this.updateUnitsOnStrikeMission();
 
     this.currentScenario.weapons.forEach((weapon) => {
       weaponEngagement(this.currentScenario, weapon);

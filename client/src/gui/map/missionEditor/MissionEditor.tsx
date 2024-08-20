@@ -11,6 +11,8 @@ import { Button, Stack } from "@mui/material";
 import PatrolMission from "../../../game/mission/PatrolMission";
 import Aircraft from "../../../game/units/Aircraft";
 import ReferencePoint from "../../../game/units/ReferencePoint";
+import StrikeMission from "../../../game/mission/StrikeMission";
+import { Target } from "../../../game/engine/weaponEngagement";
 
 const useStyles = makeStyles({
   cardHeaderRoot: {
@@ -36,14 +38,21 @@ const useStyles = makeStyles({
 });
 
 interface MissionEditorProps {
-  missions: PatrolMission[];
+  missions: (PatrolMission | StrikeMission)[];
   aircraft: Aircraft[];
   referencePoints: ReferencePoint[];
+  targets: Target[];
   updatePatrolMission: (
     missionId: string,
     missionName: string,
     assignedUnits: string[],
     referencePoints: string[]
+  ) => void;
+  updateStrikeMission: (
+    missionId: string,
+    missionName: string,
+    assignedUnits: string[],
+    targetIds: string[]
   ) => void;
   deleteMission: (missionId: string) => void;
   handleCloseOnMap: () => void;
@@ -65,15 +74,17 @@ const findReferencePointsForAssignedArea = (
   });
 };
 
-const parseSelectedMissionType = (selectedMission: PatrolMission): string => {
-  return selectedMission instanceof PatrolMission ? "Patrol" : "";
+const parseSelectedMissionType = (
+  selectedMission: PatrolMission | StrikeMission
+): string => {
+  return selectedMission instanceof PatrolMission ? "Patrol" : "Strike";
 };
 
 const MissionEditor = (props: MissionEditorProps) => {
   const classes = useStyles();
-  const [selectedMission, setSelectedMission] = useState<PatrolMission>(
-    props.missions[0]
-  );
+  const [selectedMission, setSelectedMission] = useState<
+    PatrolMission | StrikeMission
+  >(props.missions[0]);
   const [selectedMissionType, setSelectedMissionType] = useState<string>(
     parseSelectedMissionType(selectedMission)
   );
@@ -83,11 +94,14 @@ const MissionEditor = (props: MissionEditorProps) => {
   const [selectedReferencePoints, setSelectedReferencePoints] = useState<
     string[]
   >(
-    findReferencePointsForAssignedArea(
-      selectedMission.assignedArea,
-      props.referencePoints
-    )
+    selectedMission instanceof PatrolMission
+      ? findReferencePointsForAssignedArea(
+          selectedMission.assignedArea,
+          props.referencePoints
+        )
+      : []
   );
+  const [selectedTargets, setSelectedTargets] = useState<string[]>([]);
   const [missionName, setMissionName] = useState<string>(selectedMission.name);
 
   const cardStyle = {
@@ -114,6 +128,13 @@ const MissionEditor = (props: MissionEditorProps) => {
       alert("Please select at least three reference points to define an area");
       return false;
     }
+    if (
+      selectedMission instanceof StrikeMission &&
+      selectedTargets.length === 0
+    ) {
+      alert("Please select at least one target");
+      return false;
+    }
     return true;
   };
 
@@ -124,13 +145,68 @@ const MissionEditor = (props: MissionEditorProps) => {
 
   const handleUpdateMission = () => {
     if (!validateMissionPropertiesInput()) return;
-    props.updatePatrolMission(
-      selectedMission.id,
-      missionName,
-      selectedAircraft,
-      selectedReferencePoints
-    );
+    if (selectedMissionType === "Patrol") {
+      props.updatePatrolMission(
+        selectedMission.id,
+        missionName,
+        selectedAircraft,
+        selectedReferencePoints
+      );
+    } else if (selectedMissionType === "Strike") {
+      props.updateStrikeMission(
+        selectedMission.id,
+        missionName,
+        selectedAircraft,
+        selectedTargets
+      );
+    }
     props.handleCloseOnMap();
+  };
+
+  const patrolMissionEditorContent = (
+    sortedReferencePoints: ReferencePoint[]
+  ) => {
+    return (
+      <EditorSelector
+        selectId={"mission-editor-area-selector"}
+        caption={"Area"}
+        optionIds={sortedReferencePoints.map((point) => point.id)}
+        optionNames={sortedReferencePoints.map((point) => point.name)}
+        selectedOption={selectedReferencePoints}
+        onChange={() => {
+          const pointsSelector = document.getElementById(
+            "mission-editor-area-selector"
+          ) as HTMLSelectElement;
+          const selectedOptions = Array.from(
+            pointsSelector.selectedOptions
+          ).map((option) => option.value);
+          setSelectedReferencePoints(selectedOptions);
+        }}
+        multiple={true}
+      />
+    );
+  };
+
+  const StrikeMissionEditorContent = (sortedTargets: Target[]) => {
+    return (
+      <EditorSelector
+        selectId={"mission-editor-target-selector"}
+        caption={"Target"}
+        optionIds={sortedTargets.map((target) => target.id)}
+        optionNames={sortedTargets.map((target) => target.name)}
+        selectedOption={selectedTargets}
+        onChange={() => {
+          const pointsSelector = document.getElementById(
+            "mission-editor-target-selector"
+          ) as HTMLSelectElement;
+          const selectedOptions = Array.from(
+            pointsSelector.selectedOptions
+          ).map((option) => option.value);
+          setSelectedTargets(selectedOptions);
+        }}
+        multiple={true}
+      />
+    );
   };
 
   const cardContent = () => {
@@ -142,6 +218,19 @@ const MissionEditor = (props: MissionEditorProps) => {
     const sortedReferencePoints = [...props.referencePoints].sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
+    const sortedTargets = [...props.targets].sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+
+    let missionSpecificComponent = null;
+    if (selectedMissionType === "Patrol") {
+      missionSpecificComponent = patrolMissionEditorContent(
+        sortedReferencePoints
+      );
+    } else if (selectedMissionType === "Strike") {
+      missionSpecificComponent = StrikeMissionEditorContent(sortedTargets);
+    }
+
     return (
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <EditorSelector
@@ -158,12 +247,15 @@ const MissionEditor = (props: MissionEditorProps) => {
             setSelectedMission(searchedSelectedMission);
             setMissionName(searchedSelectedMission.name);
             setSelectedAircraft(searchedSelectedMission.assignedUnitIds);
-            setSelectedReferencePoints(
-              findReferencePointsForAssignedArea(
-                searchedSelectedMission.assignedArea,
-                props.referencePoints
-              )
-            );
+            searchedSelectedMission instanceof PatrolMission &&
+              setSelectedReferencePoints(
+                findReferencePointsForAssignedArea(
+                  searchedSelectedMission.assignedArea,
+                  props.referencePoints
+                )
+              );
+            searchedSelectedMission instanceof StrikeMission &&
+              setSelectedTargets(searchedSelectedMission.assignedTargetIds);
             setSelectedMissionType(
               parseSelectedMissionType(searchedSelectedMission)
             );
@@ -201,23 +293,7 @@ const MissionEditor = (props: MissionEditorProps) => {
           }}
           multiple={true}
         />
-        <EditorSelector
-          selectId={"mission-editor-area-selector"}
-          caption={"Area"}
-          optionIds={sortedReferencePoints.map((point) => point.id)}
-          optionNames={sortedReferencePoints.map((point) => point.name)}
-          selectedOption={selectedReferencePoints}
-          onChange={() => {
-            const pointsSelector = document.getElementById(
-              "mission-editor-area-selector"
-            ) as HTMLSelectElement;
-            const selectedOptions = Array.from(
-              pointsSelector.selectedOptions
-            ).map((option) => option.value);
-            setSelectedReferencePoints(selectedOptions);
-          }}
-          multiple={true}
-        />
+        {missionSpecificComponent}
         <Stack
           direction="row"
           spacing={2}

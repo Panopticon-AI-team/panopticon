@@ -10,6 +10,7 @@ import EditorTextInputBox from "./EditorTextInputBox";
 import { Button } from "@mui/material";
 import Aircraft from "../../../game/units/Aircraft";
 import ReferencePoint from "../../../game/units/ReferencePoint";
+import { Target } from "../../../game/engine/weaponEngagement";
 
 const useStyles = makeStyles({
   cardHeaderRoot: {
@@ -39,21 +40,28 @@ export type Object = {
 interface MissionCreatorProps {
   aircraft: Aircraft[];
   referencePoints: ReferencePoint[];
+  targets: Target[];
   handleCloseOnMap: () => void;
   createPatrolMission: (
     missionName: string,
     assignedUnits: string[],
     referencePoints: string[]
   ) => void;
+  createStrikeMission: (
+    missionName: string,
+    assignedUnits: string[],
+    targetIds: string[]
+  ) => void;
 }
 
-const missionTypes = ["Patrol"];
+const missionTypes = ["Patrol", "Strike"];
 
 const MissionCreator = (props: MissionCreatorProps) => {
   const classes = useStyles();
   const [selectedMissionType, setSelectedMissionType] =
     useState<string>("Patrol");
   const [selectedAircraft, setSelectedAircraft] = useState<string[]>([]);
+  const [selectedTargets, setSelectedTargets] = useState<string[]>([]);
   const [selectedReferencePoints, setSelectedReferencePoints] = useState<
     string[]
   >([]);
@@ -83,6 +91,10 @@ const MissionCreator = (props: MissionCreatorProps) => {
       alert("Please select at least three reference points to define an area");
       return false;
     }
+    if (selectedMissionType === "Strike" && selectedTargets.length === 0) {
+      alert("Please select at least one target");
+      return false;
+    }
     return true;
   };
 
@@ -96,6 +108,66 @@ const MissionCreator = (props: MissionCreatorProps) => {
     props.handleCloseOnMap();
   };
 
+  const handleCreateStrikeMission = () => {
+    if (!validateMissionPropertiesInput()) return;
+    props.createStrikeMission(missionName, selectedAircraft, selectedTargets);
+    props.handleCloseOnMap();
+  };
+
+  const handleCreateMission = () => {
+    if (selectedMissionType === "Patrol") {
+      handleCreatePatrolMission();
+    } else if (selectedMissionType === "Strike") {
+      handleCreateStrikeMission();
+    }
+  };
+
+  const patrolMissionCreatorContent = (
+    sortedReferencePoints: ReferencePoint[]
+  ) => {
+    return (
+      <EditorSelector
+        selectId={"mission-creator-area-selector"}
+        caption={"Area"}
+        optionIds={sortedReferencePoints.map((point) => point.id)}
+        optionNames={sortedReferencePoints.map((point) => point.name)}
+        selectedOption={selectedReferencePoints}
+        onChange={() => {
+          const pointsSelector = document.getElementById(
+            "mission-creator-area-selector"
+          ) as HTMLSelectElement;
+          const selectedOptions = Array.from(
+            pointsSelector.selectedOptions
+          ).map((option) => option.value);
+          setSelectedReferencePoints(selectedOptions);
+        }}
+        multiple={true}
+      />
+    );
+  };
+
+  const StrikeMissionCreatorContent = (sortedTargets: Target[]) => {
+    return (
+      <EditorSelector
+        selectId={"mission-creator-target-selector"}
+        caption={"Target"}
+        optionIds={sortedTargets.map((target) => target.id)}
+        optionNames={sortedTargets.map((target) => target.name)}
+        selectedOption={selectedTargets}
+        onChange={() => {
+          const pointsSelector = document.getElementById(
+            "mission-creator-target-selector"
+          ) as HTMLSelectElement;
+          const selectedOptions = Array.from(
+            pointsSelector.selectedOptions
+          ).map((option) => option.value);
+          setSelectedTargets(selectedOptions);
+        }}
+        multiple={true}
+      />
+    );
+  };
+
   const cardContent = () => {
     const sortedAircraft = [...props.aircraft].sort((a, b) => {
       return a.name.localeCompare(b.name);
@@ -103,6 +175,18 @@ const MissionCreator = (props: MissionCreatorProps) => {
     const sortedReferencePoints = [...props.referencePoints].sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
+    const sortedTargets = [...props.targets].sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+
+    let missionSpecificComponent = null;
+    if (selectedMissionType === "Patrol") {
+      missionSpecificComponent = patrolMissionCreatorContent(
+        sortedReferencePoints
+      );
+    } else if (selectedMissionType === "Strike") {
+      missionSpecificComponent = StrikeMissionCreatorContent(sortedTargets);
+    }
 
     return (
       <CardContent classes={{ root: classes.cardContentRoot }}>
@@ -140,28 +224,12 @@ const MissionCreator = (props: MissionCreatorProps) => {
           }}
           multiple={true}
         />
-        <EditorSelector
-          selectId={"mission-creator-area-selector"}
-          caption={"Area"}
-          optionIds={sortedReferencePoints.map((point) => point.id)}
-          optionNames={sortedReferencePoints.map((point) => point.name)}
-          selectedOption={selectedReferencePoints}
-          onChange={() => {
-            const pointsSelector = document.getElementById(
-              "mission-creator-area-selector"
-            ) as HTMLSelectElement;
-            const selectedOptions = Array.from(
-              pointsSelector.selectedOptions
-            ).map((option) => option.value);
-            setSelectedReferencePoints(selectedOptions);
-          }}
-          multiple={true}
-        />
+        {missionSpecificComponent}
         <Button
           variant="contained"
           color="primary"
           classes={{ root: classes.createButton }}
-          onClick={handleCreatePatrolMission}
+          onClick={handleCreateMission}
         >
           Create
         </Button>
