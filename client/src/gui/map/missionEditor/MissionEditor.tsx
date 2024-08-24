@@ -58,7 +58,7 @@ interface MissionEditorProps {
   handleCloseOnMap: () => void;
 }
 
-const missionTypes = ["Patrol"];
+const missionTypes = ["Patrol", "Strike"];
 
 const findReferencePointsForAssignedArea = (
   area: number[][],
@@ -204,7 +204,7 @@ const MissionEditor = (props: MissionEditorProps) => {
           ).map((option) => option.value);
           setSelectedTargets(selectedOptions);
         }}
-        multiple={true}
+        multiple={false}
       />
     );
   };

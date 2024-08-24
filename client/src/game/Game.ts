@@ -871,16 +871,28 @@ export default class Game {
       loadedScenario.referencePoints.push(newReferencePoint);
     });
 
-    savedScenario.missions?.forEach((mission: PatrolMission) => {
-      const newMission = new PatrolMission({
-        id: mission.id,
-        name: mission.name,
-        sideId: mission.sideId,
-        assignedUnitIds: mission.assignedUnitIds,
-        assignedArea: mission.assignedArea,
-        active: mission.active,
-      });
-      loadedScenario.missions.push(newMission);
+    savedScenario.missions?.forEach((mission: any) => {
+      if (mission.assignedArea) {
+        const newMission = new PatrolMission({
+          id: mission.id,
+          name: mission.name,
+          sideId: mission.sideId,
+          assignedUnitIds: mission.assignedUnitIds,
+          assignedArea: mission.assignedArea,
+          active: mission.active,
+        });
+        loadedScenario.missions.push(newMission);
+      } else {
+        const newMission = new StrikeMission({
+          id: mission.id,
+          name: mission.name,
+          sideId: mission.sideId,
+          assignedUnitIds: mission.assignedUnitIds,
+          assignedTargetIds: mission.assignedTargetIds,
+          active: mission.active,
+        });
+        loadedScenario.missions.push(newMission);
+      }
     });
 
     this.currentScenario = loadedScenario;
@@ -1018,6 +1030,7 @@ export default class Game {
     if (activeStrikeMissions.length < 1) return;
 
     activeStrikeMissions.forEach((mission) => {
+      if (mission.assignedTargetIds.length < 1) return;
       mission.assignedUnitIds.forEach((attackerId) => {
         const attacker = this.currentScenario.getAircraft(attackerId);
         if (attacker) {

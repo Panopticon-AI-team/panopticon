@@ -163,7 +163,7 @@ const MissionCreator = (props: MissionCreatorProps) => {
           ).map((option) => option.value);
           setSelectedTargets(selectedOptions);
         }}
-        multiple={true}
+        multiple={false}
       />
     );
   };
