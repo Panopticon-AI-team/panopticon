@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Projection, fromLonLat, get as getProjection } from "ol/proj";
+import { fromLonLat, get as getProjection } from "ol/proj";
 import {
   DEFAULT_OL_PROJECTION_CODE,
   NAUTICAL_MILES_TO_METERS,
@@ -13,12 +13,13 @@ import {
   getBearingBetweenTwoPoints,
   getDistanceBetweenTwoPoints,
   getNextCoordinates,
+  getTerminalCoordinatesFromDistanceAndBearing,
   randomFloat,
 } from "../../utils/utils";
 import Airbase from "../units/Airbase";
 import Ship from "../units/Ship";
 
-type Target = Aircraft | Facility | Weapon | Airbase | Ship;
+export type Target = Aircraft | Facility | Weapon | Airbase | Ship;
 
 export function checkIfThreatIsWithinRange(
   threat: Aircraft | Weapon,
@@ -201,4 +202,41 @@ export function aircraftPursuit(currentScenario: Scenario, aircraft: Aircraft) {
     target.latitude,
     target.longitude
   );
+}
+
+export function routeAircraftToStrikePosition(
+  currentScenario: Scenario,
+  aircraft: Aircraft,
+  targetId: string,
+  strikeRadiusNm: number
+) {
+  const target =
+    currentScenario.getFacility(targetId) ||
+    currentScenario.getShip(targetId) ||
+    currentScenario.getAirbase(targetId) ||
+    currentScenario.getAircraft(targetId);
+  if (!target) return;
+  if (aircraft.weapons.length < 1) return;
+
+  const bearingBetweenAircraftAndTarget = getBearingBetweenTwoPoints(
+    aircraft.latitude,
+    aircraft.longitude,
+    target.latitude,
+    target.longitude
+  );
+  const bearingBetweenTargetAndAircraft = getBearingBetweenTwoPoints(
+    target.latitude,
+    target.longitude,
+    aircraft.latitude,
+    aircraft.longitude
+  );
+  const strikeLocation = getTerminalCoordinatesFromDistanceAndBearing(
+    target.latitude,
+    target.longitude,
+    (strikeRadiusNm * NAUTICAL_MILES_TO_METERS) / 1000,
+    bearingBetweenTargetAndAircraft
+  );
+
+  aircraft.route = [[strikeLocation[0], strikeLocation[1]]];
+  aircraft.heading = bearingBetweenAircraftAndTarget;
 }

@@ -7,6 +7,8 @@ import Ship from "./units/Ship";
 import { getDistanceBetweenTwoPoints } from "../utils/utils";
 import ReferencePoint from "./units/ReferencePoint";
 import PatrolMission from "./mission/PatrolMission";
+import { Target } from "./engine/weaponEngagement";
+import StrikeMission from "./mission/StrikeMission";
 
 type HomeBase = Airbase | Ship;
 
@@ -41,7 +43,7 @@ export default class Scenario {
   airbases: Airbase[];
   weapons: Weapon[];
   referencePoints: ReferencePoint[];
-  missions: PatrolMission[];
+  missions: (PatrolMission | StrikeMission)[];
 
   constructor(parameters: IScenario) {
     this.id = parameters.id;
@@ -100,8 +102,28 @@ export default class Scenario {
     );
   }
 
-  getMission(missionId: string | null): PatrolMission | undefined {
-    return this.missions.find((mission) => mission.id === missionId);
+  getPatrolMission(missionId: string | null): PatrolMission | undefined {
+    return this.missions.find(
+      (mission) => mission.id === missionId && mission instanceof PatrolMission
+    ) as PatrolMission;
+  }
+
+  getStrikeMission(missionId: string | null): StrikeMission | undefined {
+    return this.missions.find(
+      (mission) => mission.id === missionId && mission instanceof StrikeMission
+    ) as StrikeMission;
+  }
+
+  getAllPatrolMissions(): PatrolMission[] {
+    return this.missions.filter(
+      (mission) => mission instanceof PatrolMission
+    ) as PatrolMission[];
+  }
+
+  getAllStrikeMissions(): StrikeMission[] {
+    return this.missions.filter(
+      (mission) => mission instanceof StrikeMission
+    ) as StrikeMission[];
   }
 
   updateAircraft(
@@ -228,5 +250,30 @@ export default class Scenario {
       });
       return closestBase;
     }
+  }
+
+  getAllTargetsFromEnemySides(sideName: string): Target[] {
+    const targets: Target[] = [];
+    this.aircraft.forEach((aircraft) => {
+      if (aircraft.sideName !== sideName) {
+        targets.push(aircraft);
+      }
+    });
+    this.facilities.forEach((facility) => {
+      if (facility.sideName !== sideName) {
+        targets.push(facility);
+      }
+    });
+    this.ships.forEach((ship) => {
+      if (ship.sideName !== sideName) {
+        targets.push(ship);
+      }
+    });
+    this.airbases.forEach((airbase) => {
+      if (airbase.sideName !== sideName) {
+        targets.push(airbase);
+      }
+    });
+    return targets;
   }
 }

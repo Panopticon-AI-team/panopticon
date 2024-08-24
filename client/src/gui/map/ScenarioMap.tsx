@@ -1108,6 +1108,23 @@ export default function ScenarioMap({
     );
   }
 
+  function handleCreateStrikeMission(
+    missionName: string,
+    assignedUnits: string[],
+    targetIds: string[]
+  ) {
+    game.createStrikeMission(missionName, assignedUnits, targetIds);
+  }
+
+  function handleUpdateStrikeMission(
+    missionId: string,
+    missionName?: string,
+    assignedUnits?: string[],
+    targetIds?: string[]
+  ) {
+    game.updateStrikeMission(missionId, missionName, assignedUnits, targetIds);
+  }
+
   function handleDeleteMission(missionId: string) {
     game.deleteMission(missionId);
   }
@@ -1539,6 +1556,9 @@ export default function ScenarioMap({
                 .flat()
                 .indexOf(aircraft.id) === -1
           )}
+          targets={game.currentScenario.getAllTargetsFromEnemySides(
+            game.currentSideName
+          )}
           referencePoints={game.currentScenario.referencePoints.filter(
             (referencePoint) => referencePoint.sideName === game.currentSideName
           )}
@@ -1547,6 +1567,7 @@ export default function ScenarioMap({
             setMissionCreatorActive(false);
           }}
           createPatrolMission={handleCreatePatrolMission}
+          createStrikeMission={handleCreateStrikeMission}
         />
       )}
 
@@ -1561,7 +1582,11 @@ export default function ScenarioMap({
           referencePoints={game.currentScenario.referencePoints.filter(
             (referencePoint) => referencePoint.sideName === game.currentSideName
           )}
+          targets={game.currentScenario.getAllTargetsFromEnemySides(
+            game.currentSideName
+          )}
           updatePatrolMission={handleUpdatePatrolMission}
+          updateStrikeMission={handleUpdateStrikeMission}
           deleteMission={handleDeleteMission}
           handleCloseOnMap={() => {
             setKeyboardShortcutsEnabled(true);
