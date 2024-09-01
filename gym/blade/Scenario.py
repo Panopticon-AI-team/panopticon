@@ -7,10 +7,11 @@ from blade.units.ReferencePoint import ReferencePoint
 from blade.Side import Side
 from blade.mission.PatrolMission import PatrolMission
 from blade.mission.StrikeMission import StrikeMission
-from blade.engine.weaponEngagement import Target
 from blade.utils.utils import get_distance_between_two_points
 
 HomeBase = Airbase | Ship
+
+Target = Aircraft | Facility | Weapon | Airbase | Ship
 
 
 class Scenario:

@@ -7,8 +7,8 @@ from blade.Scenario import Scenario
 from shapely.geometry import Point
 from uuid import uuid4
 
-from gym.blade.utils.constants import NAUTICAL_MILES_TO_METERS
-from gym.blade.utils.utils import (
+from blade.utils.constants import NAUTICAL_MILES_TO_METERS
+from blade.utils.utils import (
     get_bearing_between_two_points,
     get_distance_between_two_points,
     get_next_coordinates,
