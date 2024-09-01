@@ -1,7 +1,18 @@
+import json
+from uuid import uuid4
 from typing import Tuple
 from blade.units.Aircraft import Aircraft
+from blade.units.Airbase import Airbase
+from blade.units.Facility import Facility
+from blade.units.Ship import Ship
+from blade.units.Weapon import Weapon
+from blade.units.ReferencePoint import ReferencePoint
+from blade.mission.PatrolMission import PatrolMission
+from blade.mission.StrikeMission import StrikeMission
 from blade.Scenario import Scenario
+from blade.Side import Side
 
+from blade.utils.constants import NAUTICAL_MILES_TO_METERS
 from blade.utils.utils import (
     get_bearing_between_two_points,
     get_next_coordinates,
@@ -15,7 +26,6 @@ from blade.engine.weaponEngagement import (
     route_aircraft_to_strike_position,
     weapon_engagement,
 )
-from blade.utils.constants import NAUTICAL_MILES_TO_METERS
 
 
 class Game:
@@ -25,6 +35,266 @@ class Game:
         self.current_side_name = ""
         self.scenario_paused = True
         self.current_attacker_id = ""
+
+    def get_sample_weapon(
+        self, quantity: int, lethality: float, side_name: str
+    ) -> Weapon:
+        current_side_name = (
+            side_name if side_name is not None else self.current_side_name
+        )
+        side_color = self.current_scenario.get_side_color(current_side_name)
+        return Weapon(
+            id=uuid4(),
+            name="Sample Weapon",
+            side_name=current_side_name,
+            class_name="Sample Weapon",
+            latitude=0.0,
+            longitude=0.0,
+            altitude=10000.0,
+            heading=90.0,
+            speed=1000.0,
+            current_fuel=5000.0,
+            max_fuel=5000.0,
+            fuel_rate=5000.0,
+            range=100.0,
+            side_color=side_color,
+            target_id=None,
+            lethality=lethality,
+            max_quantity=quantity,
+            current_quantity=quantity,
+        )
+
+    def load_scenario(self, scenario_string: str) -> None:
+        import_object = json.loads(scenario_string)
+        self.current_side_name = import_object["currentSideName"]
+
+        saved_scenario = import_object["currentScenario"]
+        saved_sides = []
+        for side in saved_scenario["sides"]:
+            saved_sides.append(
+                Side(
+                    id=side["id"],
+                    name=side["name"],
+                    total_score=side["totalScore"],
+                    side_color=side["sideColor"],
+                )
+            )
+        loaded_scenario = Scenario(
+            id=saved_scenario["id"],
+            name=saved_scenario["name"],
+            start_time=saved_scenario["startTime"],
+            current_time=saved_scenario["currentTime"],
+            duration=saved_scenario["duration"],
+            sides=saved_sides,
+            time_compression=saved_scenario["timeCompression"],
+        )
+        for aircraft in saved_scenario["aircraft"]:
+            loaded_scenario.aircraft.append(
+                Aircraft(
+                    id=aircraft["id"],
+                    name=aircraft["name"],
+                    side_name=aircraft["sideName"],
+                    class_name=aircraft["className"],
+                    latitude=aircraft["latitude"],
+                    longitude=aircraft["longitude"],
+                    altitude=aircraft["altitude"],
+                    heading=aircraft["heading"],
+                    speed=aircraft["speed"],
+                    current_fuel=aircraft["currentFuel"],
+                    max_fuel=aircraft["maxFuel"],
+                    fuel_rate=aircraft["fuelRate"],
+                    range=aircraft["range"],
+                    route=aircraft["route"],
+                    selected=aircraft["selected"],
+                    side_color=aircraft["sideColor"],
+                    weapons=(
+                        aircraft["weapons"]
+                        if aircraft["weapons"]
+                        else [self.get_sample_weapon(10, 0.25, aircraft["sideName"])]
+                    ),
+                    home_base_id=aircraft["homeBaseId"],
+                    rtb=aircraft["rtb"],
+                    target_id=aircraft["targetId"] if aircraft["targetId"] else "",
+                )
+            )
+        for airbase in saved_scenario["airbases"]:
+            airbase_aircraft = []
+            for aircraft in airbase["aircraft"]:
+                new_aircraft = Aircraft(
+                    id=aircraft["id"],
+                    name=aircraft["name"],
+                    side_name=aircraft["sideName"],
+                    class_name=aircraft["className"],
+                    latitude=aircraft["latitude"],
+                    longitude=aircraft["longitude"],
+                    altitude=aircraft["altitude"],
+                    heading=aircraft["heading"],
+                    speed=aircraft["speed"],
+                    current_fuel=aircraft["currentFuel"],
+                    max_fuel=aircraft["maxFuel"],
+                    fuel_rate=aircraft["fuelRate"],
+                    range=aircraft["range"],
+                    route=aircraft["route"],
+                    selected=aircraft["selected"],
+                    side_color=aircraft["sideColor"],
+                    weapons=(
+                        aircraft["weapons"]
+                        if aircraft["weapons"]
+                        else [self.get_sample_weapon(10, 0.25, aircraft["sideName"])]
+                    ),
+                    home_base_id=aircraft["homeBaseId"],
+                    rtb=aircraft["rtb"],
+                    target_id=aircraft["targetId"] if aircraft["targetId"] else "",
+                )
+                airbase_aircraft.append(new_aircraft)
+            loaded_scenario.airbases.append(
+                Airbase(
+                    id=airbase["id"],
+                    name=airbase["name"],
+                    side_name=airbase["sideName"],
+                    class_name=airbase["className"],
+                    latitude=airbase["latitude"],
+                    longitude=airbase["longitude"],
+                    altitude=airbase["altitude"],
+                    side_color=airbase["sideColor"],
+                    aircraft=airbase_aircraft,
+                )
+            )
+        for facility in saved_scenario["facilities"]:
+            loaded_scenario.facilities.append(
+                Facility(
+                    id=facility["id"],
+                    name=facility["name"],
+                    side_name=facility["sideName"],
+                    class_name=facility["className"],
+                    latitude=facility["latitude"],
+                    longitude=facility["longitude"],
+                    altitude=facility["altitude"],
+                    range=facility["range"],
+                    side_color=facility["sideColor"],
+                    weapons=(
+                        facility["weapons"]
+                        if facility["weapons"]
+                        else [self.get_sample_weapon(30, 0.1, facility["sideName"])]
+                    ),
+                )
+            )
+        for weapon in saved_scenario["weapons"]:
+            loaded_scenario.weapons.append(
+                Weapon(
+                    id=weapon["id"],
+                    name=weapon["name"],
+                    side_name=weapon["sideName"],
+                    class_name=weapon["className"],
+                    latitude=weapon["latitude"],
+                    longitude=weapon["longitude"],
+                    altitude=weapon["altitude"],
+                    heading=weapon["heading"],
+                    speed=weapon["speed"],
+                    current_fuel=weapon["currentFuel"],
+                    max_fuel=weapon["maxFuel"],
+                    fuel_rate=weapon["fuelRate"],
+                    range=weapon["range"],
+                    route=weapon["route"],
+                    side_color=weapon["sideColor"],
+                    target_id=weapon["targetId"],
+                    lethality=weapon["lethality"],
+                    max_quantity=weapon["maxQuantity"],
+                    current_quantity=weapon["currentQuantity"],
+                )
+            )
+        for ship in saved_scenario["ships"]:
+            ship_aircraft = []
+            for aircraft in ship["aircraft"]:
+                new_aircraft = Aircraft(
+                    id=aircraft["id"],
+                    name=aircraft["name"],
+                    side_name=aircraft["sideName"],
+                    class_name=aircraft["className"],
+                    latitude=aircraft["latitude"],
+                    longitude=aircraft["longitude"],
+                    altitude=aircraft["altitude"],
+                    heading=aircraft["heading"],
+                    speed=aircraft["speed"],
+                    current_fuel=aircraft["currentFuel"],
+                    max_fuel=aircraft["maxFuel"],
+                    fuel_rate=aircraft["fuelRate"],
+                    range=aircraft["range"],
+                    route=aircraft["route"],
+                    selected=aircraft["selected"],
+                    side_color=aircraft["sideColor"],
+                    weapons=(
+                        aircraft["weapons"]
+                        if aircraft["weapons"]
+                        else [self.get_sample_weapon(10, 0.25, aircraft["sideName"])]
+                    ),
+                    home_base_id=aircraft["homeBaseId"],
+                    rtb=aircraft["rtb"],
+                    target_id=aircraft["targetId"] if aircraft["targetId"] else "",
+                )
+                ship_aircraft.append(new_aircraft)
+            loaded_scenario.ships.append(
+                Ship(
+                    id=ship["id"],
+                    name=ship["name"],
+                    side_name=ship["sideName"],
+                    class_name=ship["className"],
+                    latitude=ship["latitude"],
+                    longitude=ship["longitude"],
+                    altitude=ship["altitude"],
+                    heading=ship["heading"],
+                    speed=ship["speed"],
+                    current_fuel=ship["currentFuel"],
+                    max_fuel=ship["maxFuel"],
+                    fuel_rate=ship["fuelRate"],
+                    range=ship["range"],
+                    route=ship["route"],
+                    side_color=ship["sideColor"],
+                    weapons=(
+                        ship["weapons"]
+                        if ship["weapons"]
+                        else [self.get_sample_weapon(30, 0.1, ship["sideName"])]
+                    ),
+                    aircraft=ship_aircraft,
+                )
+            )
+        for reference_point in saved_scenario["referencePoints"]:
+            loaded_scenario.reference_points.append(
+                ReferencePoint(
+                    id=reference_point["id"],
+                    name=reference_point["name"],
+                    side_name=reference_point["sideName"],
+                    latitude=reference_point["latitude"],
+                    longitude=reference_point["longitude"],
+                    altitude=reference_point["altitude"],
+                    side_color=reference_point["sideColor"],
+                )
+            )
+        for mission in saved_scenario["missions"]:
+            if "assignedArea" in mission.keys():
+                loaded_scenario.missions.append(
+                    PatrolMission(
+                        id=mission["id"],
+                        name=mission["name"],
+                        side_id=mission["sideId"],
+                        assigned_unit_ids=mission["assignedUnitIds"],
+                        assigned_area=mission["assignedArea"],
+                        active=mission["active"],
+                    )
+                )
+            else:
+                loaded_scenario.missions.append(
+                    StrikeMission(
+                        id=mission["id"],
+                        name=mission["name"],
+                        side_id=mission["sideId"],
+                        assigned_unit_ids=mission["assignedUnitIds"],
+                        assigned_target_ids=mission["assignedTargetIds"],
+                        active=mission["active"],
+                    )
+                )
+
+        self.current_scenario = loaded_scenario
 
     def remove_aircraft(self, aircraft_id: str) -> None:
         self.current_scenario.aircraft.remove(
