@@ -89,6 +89,36 @@ class Game:
             time_compression=saved_scenario["timeCompression"],
         )
         for aircraft in saved_scenario["aircraft"]:
+            aircraft_weapons = []
+            if aircraft["weapons"]:
+                for weapon in aircraft["weapons"]:
+                    aircraft_weapons.append(
+                        Weapon(
+                            id=weapon["id"],
+                            name=weapon["name"],
+                            side_name=weapon["sideName"],
+                            class_name=weapon["className"],
+                            latitude=weapon["latitude"],
+                            longitude=weapon["longitude"],
+                            altitude=weapon["altitude"],
+                            heading=weapon["heading"],
+                            speed=weapon["speed"],
+                            current_fuel=weapon["currentFuel"],
+                            max_fuel=weapon["maxFuel"],
+                            fuel_rate=weapon["fuelRate"],
+                            range=weapon["range"],
+                            route=weapon["route"],
+                            side_color=weapon["sideColor"],
+                            target_id=weapon["targetId"],
+                            lethality=weapon["lethality"],
+                            max_quantity=weapon["maxQuantity"],
+                            current_quantity=weapon["currentQuantity"],
+                        )
+                    )
+            else:
+                aircraft_weapons.append(
+                    self.get_sample_weapon(10, 0.25, aircraft["sideName"])
+                )
             loaded_scenario.aircraft.append(
                 Aircraft(
                     id=aircraft["id"],
@@ -107,11 +137,7 @@ class Game:
                     route=aircraft["route"],
                     selected=aircraft["selected"],
                     side_color=aircraft["sideColor"],
-                    weapons=(
-                        aircraft["weapons"]
-                        if aircraft["weapons"]
-                        else [self.get_sample_weapon(10, 0.25, aircraft["sideName"])]
-                    ),
+                    weapons=aircraft_weapons,
                     home_base_id=aircraft["homeBaseId"],
                     rtb=aircraft["rtb"],
                     target_id=aircraft["targetId"] if aircraft["targetId"] else "",
@@ -161,6 +187,36 @@ class Game:
                 )
             )
         for facility in saved_scenario["facilities"]:
+            facility_weapons = []
+            if facility["weapons"]:
+                for weapon in facility["weapons"]:
+                    facility_weapons.append(
+                        Weapon(
+                            id=weapon["id"],
+                            name=weapon["name"],
+                            side_name=weapon["sideName"],
+                            class_name=weapon["className"],
+                            latitude=weapon["latitude"],
+                            longitude=weapon["longitude"],
+                            altitude=weapon["altitude"],
+                            heading=weapon["heading"],
+                            speed=weapon["speed"],
+                            current_fuel=weapon["currentFuel"],
+                            max_fuel=weapon["maxFuel"],
+                            fuel_rate=weapon["fuelRate"],
+                            range=weapon["range"],
+                            route=weapon["route"],
+                            side_color=weapon["sideColor"],
+                            target_id=weapon["targetId"],
+                            lethality=weapon["lethality"],
+                            max_quantity=weapon["maxQuantity"],
+                            current_quantity=weapon["currentQuantity"],
+                        )
+                    )
+            else:
+                facility_weapons.append(
+                    self.get_sample_weapon(10, 0.25, facility["sideName"])
+                )
             loaded_scenario.facilities.append(
                 Facility(
                     id=facility["id"],
@@ -172,11 +228,7 @@ class Game:
                     altitude=facility["altitude"],
                     range=facility["range"],
                     side_color=facility["sideColor"],
-                    weapons=(
-                        facility["weapons"]
-                        if facility["weapons"]
-                        else [self.get_sample_weapon(30, 0.1, facility["sideName"])]
-                    ),
+                    weapons=facility_weapons,
                 )
             )
         for weapon in saved_scenario["weapons"]:
@@ -206,6 +258,36 @@ class Game:
         for ship in saved_scenario["ships"]:
             ship_aircraft = []
             for aircraft in ship["aircraft"]:
+                aircraft_weapons = []
+                if aircraft["weapons"]:
+                    for weapon in aircraft["weapons"]:
+                        aircraft_weapons.append(
+                            Weapon(
+                                id=weapon["id"],
+                                name=weapon["name"],
+                                side_name=weapon["sideName"],
+                                class_name=weapon["className"],
+                                latitude=weapon["latitude"],
+                                longitude=weapon["longitude"],
+                                altitude=weapon["altitude"],
+                                heading=weapon["heading"],
+                                speed=weapon["speed"],
+                                current_fuel=weapon["currentFuel"],
+                                max_fuel=weapon["maxFuel"],
+                                fuel_rate=weapon["fuelRate"],
+                                range=weapon["range"],
+                                route=weapon["route"],
+                                side_color=weapon["sideColor"],
+                                target_id=weapon["targetId"],
+                                lethality=weapon["lethality"],
+                                max_quantity=weapon["maxQuantity"],
+                                current_quantity=weapon["currentQuantity"],
+                            )
+                        )
+                else:
+                    aircraft_weapons.append(
+                        self.get_sample_weapon(10, 0.25, aircraft["sideName"])
+                    )
                 new_aircraft = Aircraft(
                     id=aircraft["id"],
                     name=aircraft["name"],
@@ -223,16 +305,40 @@ class Game:
                     route=aircraft["route"],
                     selected=aircraft["selected"],
                     side_color=aircraft["sideColor"],
-                    weapons=(
-                        aircraft["weapons"]
-                        if aircraft["weapons"]
-                        else [self.get_sample_weapon(10, 0.25, aircraft["sideName"])]
-                    ),
+                    weapons=aircraft_weapons,
                     home_base_id=aircraft["homeBaseId"],
                     rtb=aircraft["rtb"],
                     target_id=aircraft["targetId"] if aircraft["targetId"] else "",
                 )
                 ship_aircraft.append(new_aircraft)
+            ship_weapons = []
+            if ship["weapons"]:
+                for weapon in ship["weapons"]:
+                    ship_weapons.append(
+                        Weapon(
+                            id=weapon["id"],
+                            name=weapon["name"],
+                            side_name=weapon["sideName"],
+                            class_name=weapon["className"],
+                            latitude=weapon["latitude"],
+                            longitude=weapon["longitude"],
+                            altitude=weapon["altitude"],
+                            heading=weapon["heading"],
+                            speed=weapon["speed"],
+                            current_fuel=weapon["currentFuel"],
+                            max_fuel=weapon["maxFuel"],
+                            fuel_rate=weapon["fuelRate"],
+                            range=weapon["range"],
+                            route=weapon["route"],
+                            side_color=weapon["sideColor"],
+                            target_id=weapon["targetId"],
+                            lethality=weapon["lethality"],
+                            max_quantity=weapon["maxQuantity"],
+                            current_quantity=weapon["currentQuantity"],
+                        )
+                    )
+            else:
+                ship_weapons.append(self.get_sample_weapon(10, 0.25, ship["sideName"]))
             loaded_scenario.ships.append(
                 Ship(
                     id=ship["id"],
@@ -250,11 +356,7 @@ class Game:
                     range=ship["range"],
                     route=ship["route"],
                     side_color=ship["sideColor"],
-                    weapons=(
-                        ship["weapons"]
-                        if ship["weapons"]
-                        else [self.get_sample_weapon(30, 0.1, ship["sideName"])]
-                    ),
+                    weapons=ship_weapons,
                     aircraft=ship_aircraft,
                 )
             )
@@ -630,8 +732,8 @@ class Game:
     def _get_observation(self) -> Scenario:
         return self.current_scenario
 
-    def _get_info(self) -> None:
-        return None
+    def _get_info(self) -> dict:
+        return {}
 
     def step(self) -> Tuple[Scenario, float, bool, bool, None]:
         self.update_game_state()

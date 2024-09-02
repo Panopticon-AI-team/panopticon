@@ -78,7 +78,7 @@ def launch_weapon(
     new_weapon = Weapon(
         id=uuid4(),
         name=weapon_with_max_range_prototype.name,
-        side_id=origin.side_name,
+        side_name=origin.side_name,
         class_name=weapon_with_max_range_prototype.class_name,
         latitude=next_weapon_latitude,
         longitude=next_weapon_longitude,
@@ -92,6 +92,7 @@ def launch_weapon(
         speed=weapon_with_max_range_prototype.speed,
         current_fuel=weapon_with_max_range_prototype.current_fuel,
         max_fuel=weapon_with_max_range_prototype.max_fuel,
+        fuel_rate=weapon_with_max_range_prototype.fuel_rate,
         range=weapon_with_max_range_prototype.range,
         route=[[target.latitude, target.longitude]],
         side_color=weapon_with_max_range_prototype.side_color,
