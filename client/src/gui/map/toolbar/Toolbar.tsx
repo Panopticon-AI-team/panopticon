@@ -483,20 +483,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           </Tooltip>
           {addUnitSection()}
           {unitClassSelection}
-          <Button
-            variant="contained"
-            sx={toggleStyle}
-            onClick={props.toggleMissionCreator}
-          >
-            Mission Creator
-          </Button>
-          <Button
-            variant="contained"
-            sx={toggleStyle}
-            onClick={props.toggleMissionEditor}
-          >
-            Mission Editor
-          </Button>
         </Stack>
         <Stack spacing={1} direction="column" sx={stackStyle}>
           <Chip
@@ -520,6 +506,29 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               Add Unit
             </Button>
           </Tooltip>
+        </Stack>
+      </Stack>
+    );
+  };
+
+  const editMissionsSection = () => {
+    return (
+      <Stack spacing={2} direction="row" sx={stackStyle}>
+        <Stack spacing={1} direction="column" sx={stackStyle}>
+          <Button
+            variant="contained"
+            sx={toggleStyle}
+            onClick={props.toggleMissionCreator}
+          >
+            Mission Creator
+          </Button>
+          <Button
+            variant="contained"
+            sx={toggleStyle}
+            onClick={props.toggleMissionEditor}
+          >
+            Mission Editor
+          </Button>
         </Stack>
       </Stack>
     );
@@ -619,7 +628,14 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             title="Edit Scenario"
             content={editScenarioSection()}
             width={drawerWidth - 20}
-            height={200}
+            height={100}
+            open={true}
+          />
+          <ToolbarCollapsible
+            title="Edit Missions"
+            content={editMissionsSection()}
+            width={drawerWidth - 20}
+            height={60}
             open={true}
           />
           <ToolbarCollapsible
