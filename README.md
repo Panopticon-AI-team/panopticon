@@ -5,4 +5,9 @@ We hope to advance the state of the art in military AI research.
 
 Our code is released under the Apache 2.0 license.
 
-See panopticon-ai.com.
+See panopticon-ai.com and panopticon-ai.com/play for the platform.
+
+
+# How to Contribute 
+
+We are always looking for new contributors. Please message Luke at @orgulous or Minh at @duyminh1998 for more information, or check out our website at panopticon-ai.com
