@@ -10,5 +10,5 @@
 4. [gymnasium](https://gymnasium.farama.org/) is a dependency for users who want to use BLADE as a Gym environment. In this case, use `pip install .[gym]` or `pip install -e .[gym]` for setup.
 
 ## Run a demo
-1. Run the provided demo in `blade/scripts/demo.py`.
+1. Run the provided demo in `scripts/demo.py`.
 2. The demo will output a scenario file that can be viewed using the frontend GUI.
