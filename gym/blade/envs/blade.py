@@ -1,3 +1,4 @@
+import json
 import gymnasium as gym
 from gymnasium.spaces import Text
 
@@ -30,8 +31,11 @@ class BLADE(gym.Env):
         observation, reward, terminated, truncated, info = self.game.step(action = action)
         return observation, reward, terminated, truncated, info
     
-    def export_scenario(self):
-        return self.game.export_current_scenario()
+    def export_scenario(self, file_path:str = None):
+        if file_path == None:
+            file_path = f'{self.game.current_scenario.name}_end_state.json'
+        with open(file_path, 'w') as scenario_file:
+            json.dump(self.game.export_scenario(), scenario_file)
     
     def pretty_print(self, observation: Scenario = None):
         if (observation == None):

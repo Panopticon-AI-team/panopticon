@@ -767,7 +767,7 @@ class Game:
     def check_game_ended(self) -> bool:
         return False
 
-    def export_current_scenario(self) -> dict: 
+    def export_scenario(self) -> dict: 
         scenario_json_string = self.current_scenario.toJSON()
         scenario_json_no_underscores = to_camelcase(scenario_json_string)
 

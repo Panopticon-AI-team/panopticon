@@ -1,4 +1,3 @@
-import json
 import gymnasium
 import blade
 from blade.Game import Game
@@ -17,5 +16,4 @@ for _ in range(100):
     observation, reward, terminated, truncated, info = env.step(action=0)
     env.pretty_print(observation)
 
-with open(f'{game.current_scenario.name}_end_state.json', 'w') as scenario_file:
-    json.dump(env.export_scenario(), scenario_file)
+env.export_scenario()
