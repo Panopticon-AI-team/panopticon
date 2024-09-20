@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional
 from blade.utils.constants import DEFAULT_SIDE_COLOR
 
@@ -46,3 +47,10 @@ class Weapon:
         self.current_quantity = current_quantity
         self.route = route if route is not None else []
         self.side_color = side_color
+
+    def toJSON(self):
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__, 
+            sort_keys=True,
+            indent=4)

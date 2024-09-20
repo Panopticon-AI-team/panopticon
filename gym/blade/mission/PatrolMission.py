@@ -1,3 +1,4 @@
+import json
 from typing import List
 from random import random
 from shapely.geometry import Point, Polygon
@@ -37,3 +38,10 @@ class PatrolMission:
             + self.assigned_area[0][1],
         ]
         return random_coordinates
+
+    def toJSON(self):
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__ if hasattr(o, "__dict__") else "",
+            sort_keys=True,
+            indent=4)

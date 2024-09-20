@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional
 from blade.utils.constants import DEFAULT_SIDE_COLOR
 from blade.units.Aircraft import Aircraft
@@ -54,3 +55,10 @@ class Ship:
         if len(self.weapons) == 0:
             return None
         return max(self.weapons, key=lambda weapon: weapon.range)
+
+    def toJSON(self):
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__, 
+            sort_keys=True,
+            indent=4)

@@ -1,3 +1,5 @@
+import json
+
 from blade.units.Aircraft import Aircraft
 from blade.units.Ship import Ship
 from blade.units.Facility import Facility
@@ -17,11 +19,11 @@ Target = Aircraft | Facility | Weapon | Airbase | Ship
 class Scenario:
     def __init__(
         self,
-        id: str,
-        name: str,
-        start_time: int,
-        duration: int,
-        sides: list[Side],
+        id: str = "",
+        name: str = "",
+        start_time: int = 0,
+        duration: int = 1,
+        sides: list[Side] = [],
         current_time: int = None,
         time_compression: int = 1,
         aircraft: list[Aircraft] = None,
@@ -253,3 +255,10 @@ class Scenario:
             if airbase.side_name != side_name:
                 targets.append(airbase)
         return targets
+
+    def toJSON(self):
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__ if hasattr(o, "__dict__") else "",
+            sort_keys=True,
+            indent=4)

@@ -1,3 +1,4 @@
+import re
 import math
 import random
 from typing import List
@@ -115,3 +116,6 @@ def get_next_coordinates(
     return get_terminal_coordinates_from_distance_and_bearing(
         origin_latitude, origin_longitude, leg_distance, heading
     )
+
+def to_camelcase(s):
+    return re.sub(r'(?!^)_([a-zA-Z])', lambda m: m.group(1).upper(), s)

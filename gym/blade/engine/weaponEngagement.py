@@ -23,7 +23,7 @@ def check_if_threat_is_within_range(
     threat: Aircraft | Weapon, defender: Facility | Ship | Weapon
 ) -> bool:
     defender_geometry = Point([defender.latitude, defender.longitude]).buffer(
-        defender.range * NAUTICAL_MILES_TO_METERS
+        defender.range / 60 # rough conversion from nautical miles to degrees
     )
     threat_geometry = Point([threat.latitude, threat.longitude])
     return defender_geometry.contains(threat_geometry)
@@ -39,7 +39,7 @@ def check_target_tracked_by_count(current_scenario: Scenario, target: Target) ->
 
 def weapon_endgame(current_scenario: Scenario, weapon: Weapon, target: Target) -> bool:
     current_scenario.weapons.remove(weapon)
-    if random_float() <= weapon.lethality:
+    if random_float(0, 1) <= weapon.lethality:
         if isinstance(target, Aircraft):
             current_scenario.aircraft.remove(target)
         elif isinstance(target, Ship):

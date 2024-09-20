@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 from blade.utils.constants import DEFAULT_SIDE_COLOR
 
@@ -20,3 +21,10 @@ class ReferencePoint:
         self.longitude = longitude
         self.altitude = altitude
         self.side_color = side_color
+
+    def toJSON(self):
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__, 
+            sort_keys=True,
+            indent=4)

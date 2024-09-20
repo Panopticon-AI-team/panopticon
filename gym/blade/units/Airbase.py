@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional
 from blade.utils.constants import DEFAULT_SIDE_COLOR
 from blade.units.Aircraft import Aircraft
@@ -25,3 +26,10 @@ class Airbase:
         self.altitude = altitude  # FT ASL -- currently default
         self.side_color = side_color
         self.aircraft = aircraft if aircraft is not None else []
+
+    def toJSON(self):
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__, 
+            sort_keys=True,
+            indent=4)
