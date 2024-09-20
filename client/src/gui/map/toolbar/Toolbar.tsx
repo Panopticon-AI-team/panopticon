@@ -255,6 +255,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     handleAddUnitClick();
   };
 
+  const handleGodModeToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    props.game.toggleGodMode(event.target.checked);
+  };
+
   const keyboardEventHandler = (event: KeyboardEvent) => {
     const key = event.key;
     switch (key) {
@@ -486,6 +490,14 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           >
             Add Reference Point
           </Button>
+          <Stack spacing={1} direction="row" sx={stackStyle}>
+            <input
+              type="checkbox"
+              id="god-mode-checkbox"
+              onChange={handleGodModeToggle}
+            />
+            <label htmlFor="god-mode-checkbox">God Mode</label>
+          </Stack>
         </Stack>
         <Stack spacing={1} direction="column" sx={stackStyle}>
           <Chip
@@ -631,7 +643,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             title="Edit Scenario"
             content={editScenarioSection()}
             width={drawerWidth - 20}
-            height={175}
+            height={200}
             open={true}
           />
           <ToolbarCollapsible

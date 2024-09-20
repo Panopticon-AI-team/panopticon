@@ -393,6 +393,7 @@ export default function ScenarioMap({
     const currentSelectedFeatureSideName = feature.getProperties()?.sideName;
 
     if (
+      !game.godMode &&
       currentSelectedFeatureSideName &&
       currentSelectedFeatureSideName !== game.currentSideName
     )
