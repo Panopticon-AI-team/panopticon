@@ -61,7 +61,11 @@ const MissionCreator = (props: MissionCreatorProps) => {
   const [selectedMissionType, setSelectedMissionType] =
     useState<string>("Patrol");
   const [selectedAircraft, setSelectedAircraft] = useState<string[]>([]);
-  const [selectedTargets, setSelectedTargets] = useState<string[]>([]);
+  const [selectedTargets, setSelectedTargets] = useState<string[]>([
+    [...props.targets].sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    })[0].id,
+  ]);
   const [selectedReferencePoints, setSelectedReferencePoints] = useState<
     string[]
   >([]);
