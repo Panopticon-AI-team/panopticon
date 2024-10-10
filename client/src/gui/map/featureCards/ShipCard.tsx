@@ -300,7 +300,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
           onClick={_handleTeleportShip}
           startIcon={<TelegramIcon />}
         >
-          TELEPORT
+          EDIT LOCATION
         </Button>
         <Button
           variant="contained"

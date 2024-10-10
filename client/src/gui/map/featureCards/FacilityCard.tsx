@@ -188,7 +188,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
           onClick={_handleTeleportFacility}
           startIcon={<TelegramIcon />}
         >
-          TELEPORT
+          EDIT LOCATION
         </Button>
         <Button
           variant="contained"

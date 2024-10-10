@@ -232,9 +232,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       case "ship":
         props.addShipOnClick();
         break;
-      case "referencePoint":
-        props.addReferencePointOnClick();
-        break;
       default:
         break;
     }
@@ -256,6 +253,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   const handleUnitClassSelectorChange = (unitType: string) => {
     setUnitClassSelectorValue(unitType);
     handleAddUnitClick();
+  };
+
+  const handleGodModeToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    props.game.toggleGodMode(event.target.checked);
   };
 
   const keyboardEventHandler = (event: KeyboardEvent) => {
@@ -364,7 +365,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         <option value={"airbase"}>Airbase</option>
         <option value={"facility"}>SAM</option>
         <option value={"ship"}>Ship</option>
-        <option value={"referencePoint"}>Reference Point</option>
       </select>
     );
   };
@@ -486,17 +486,18 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           <Button
             variant="contained"
             sx={toggleStyle}
-            onClick={props.toggleMissionCreator}
+            onClick={props.addReferencePointOnClick}
           >
-            Mission Creator
+            Add Reference Point
           </Button>
-          <Button
-            variant="contained"
-            sx={toggleStyle}
-            onClick={props.toggleMissionEditor}
-          >
-            Mission Editor
-          </Button>
+          <Stack spacing={1} direction="row" sx={stackStyle}>
+            <input
+              type="checkbox"
+              id="god-mode-checkbox"
+              onChange={handleGodModeToggle}
+            />
+            <label htmlFor="god-mode-checkbox">God Mode</label>
+          </Stack>
         </Stack>
         <Stack spacing={1} direction="column" sx={stackStyle}>
           <Chip
@@ -520,6 +521,29 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               Add Unit
             </Button>
           </Tooltip>
+        </Stack>
+      </Stack>
+    );
+  };
+
+  const editMissionsSection = () => {
+    return (
+      <Stack spacing={2} direction="row" sx={stackStyle}>
+        <Stack spacing={1} direction="column" sx={stackStyle}>
+          <Button
+            variant="contained"
+            sx={toggleStyle}
+            onClick={props.toggleMissionCreator}
+          >
+            Mission Creator
+          </Button>
+          <Button
+            variant="contained"
+            sx={toggleStyle}
+            onClick={props.toggleMissionEditor}
+          >
+            Mission Editor
+          </Button>
         </Stack>
       </Stack>
     );
@@ -620,6 +644,13 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             content={editScenarioSection()}
             width={drawerWidth - 20}
             height={200}
+            open={true}
+          />
+          <ToolbarCollapsible
+            title="Edit Missions"
+            content={editMissionsSection()}
+            width={drawerWidth - 20}
+            height={60}
             open={true}
           />
           <ToolbarCollapsible

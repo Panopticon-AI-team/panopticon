@@ -393,6 +393,7 @@ export default function ScenarioMap({
     const currentSelectedFeatureSideName = feature.getProperties()?.sideName;
 
     if (
+      !game.godMode &&
       currentSelectedFeatureSideName &&
       currentSelectedFeatureSideName !== game.currentSideName
     )
@@ -1525,7 +1526,9 @@ export default function ScenarioMap({
         toggleMissionEditor={() => {
           if (
             !missionEditorActive &&
-            game.currentScenario.missions.length === 0
+            game.currentScenario.missions.filter(
+              (mission) => mission.sideId === game.currentSideName
+            ).length === 0
           )
             return;
           setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);

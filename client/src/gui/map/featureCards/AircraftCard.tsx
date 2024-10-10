@@ -316,7 +316,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           onClick={_handleTeleportAircraft}
           startIcon={<TelegramIcon />}
         >
-          TELEPORT
+          EDIT LOCATION
         </Button>
       </Stack>
     </Stack>

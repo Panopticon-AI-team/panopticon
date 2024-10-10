@@ -55,6 +55,7 @@ export default class Game {
   currentAttackerId: string = "";
   selectedUnitId: string = "";
   numberOfWaypoints: number = 50;
+  godMode: boolean = false;
 
   constructor(currentScenario: Scenario) {
     this.currentScenario = currentScenario;
@@ -896,6 +897,10 @@ export default class Game {
     });
 
     this.currentScenario = loadedScenario;
+  }
+
+  toggleGodMode(enabled: boolean = !this.godMode) {
+    this.godMode = enabled;
   }
 
   facilityAutoDefense() {

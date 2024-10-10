@@ -157,7 +157,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
           onClick={_handleTeleportAirbase}
           startIcon={<TelegramIcon />}
         >
-          TELEPORT
+          EDIT LOCATION
         </Button>
         <Button
           variant="contained"
