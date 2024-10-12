@@ -29,4 +29,11 @@ BLADE's state space is defined by the [Scenario](https://github.com/Panopticon-A
 
 ### Actions
 
-TBD
+BLADE's action space is defined by the functions provided by the [Game](https://github.com/Panopticon-AI-team/panopticon/blob/main/gym/blade/Game.py) class that modifies the underlying simulation. The list of functions are:
+
+```
+remove_aircraft(aircraft_id) // remove an aircraft from the scenario
+land_aircraft(aircraft_id) // command the aircraft to land at its homebase, or if it does not have a homebase, land at the nearest base
+```
+
+More will be added TBD
