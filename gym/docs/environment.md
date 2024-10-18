@@ -1,3 +1,5 @@
+## See [GitBook](https://docs.panopticon-ai.com/) for more detailed docs
+
 ## Environment Table of Contents
 
 - [BLADE](#blade)
