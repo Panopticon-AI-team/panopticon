@@ -539,10 +539,14 @@ class Game:
         self.update_all_ship_position()
         self.update_onboard_weapon_positions()
 
-    def handle_action(self, action) -> None:
-        if not action or action == "": return
+    def handle_action(self, action: list | str) -> None:
+        if not action or action == "" or len(action) == 0: return
         try:
-            exec(f"{"self." if "self." not in action else ""}{action}")
+            if isinstance(action, str): 
+                exec(f"{"self." if "self." not in action else ""}{action}")
+            elif isinstance(action, list):
+                for sub_action in action:
+                    exec(f"{"self." if "self." not in sub_action else ""}{sub_action}")
         except Exception as e:
             print(e)
 
