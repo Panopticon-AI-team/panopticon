@@ -21,7 +21,7 @@ class BLADE(gym.Env):
     def _get_info(self):
         return self.game._get_info()
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
         self.game.reset()
         observation = self._get_obs()
         info = self._get_info()
@@ -40,12 +40,4 @@ class BLADE(gym.Env):
     def pretty_print(self, observation: Scenario = None):
         if (observation == None):
             observation = self._get_obs()
-        current_side = self.game.current_side_name
-        aircraft = observation.aircraft
-        current_side_aircraft = [a for a in aircraft if a.side_name == current_side]
-        current_aircraft_info_string = "\n".join([a.toJSON() for a in current_side_aircraft])
-        print(
-            "Current Time: " + str(observation.current_time) + "\n" +
-            "Current Side: " + str(self.game.current_side_name) + "\n" +
-            current_aircraft_info_string
-        )
+        print("Current Time: " + str(observation.current_time))

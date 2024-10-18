@@ -539,6 +539,13 @@ class Game:
         self.update_all_ship_position()
         self.update_onboard_weapon_positions()
 
+    def handle_action(self, action) -> None:
+        if not action or action == "": return
+        try:
+            exec(f"{"self." if "self." not in action else ""}{action}")
+        except Exception as e:
+            print(e)
+
     def _get_observation(self) -> Scenario:
         return self.current_scenario
 
@@ -546,6 +553,7 @@ class Game:
         return {}
 
     def step(self, action) -> Tuple[Scenario, float, bool, bool, None]:
+        self.handle_action(action)
         self.update_game_state()
         terminated = False
         truncated = self.check_game_ended()
@@ -660,6 +668,36 @@ class Game:
         for airbase in saved_scenario["airbases"]:
             airbase_aircraft = []
             for aircraft in airbase["aircraft"]:
+                aircraft_weapons = []
+                if aircraft["weapons"]:
+                    for weapon in aircraft["weapons"]:
+                        aircraft_weapons.append(
+                            Weapon(
+                                id=weapon["id"],
+                                name=weapon["name"],
+                                side_name=weapon["sideName"],
+                                class_name=weapon["className"],
+                                latitude=weapon["latitude"],
+                                longitude=weapon["longitude"],
+                                altitude=weapon["altitude"],
+                                heading=weapon["heading"],
+                                speed=weapon["speed"],
+                                current_fuel=weapon["currentFuel"],
+                                max_fuel=weapon["maxFuel"],
+                                fuel_rate=weapon["fuelRate"],
+                                range=weapon["range"],
+                                route=weapon["route"],
+                                side_color=weapon["sideColor"],
+                                target_id=weapon["targetId"],
+                                lethality=weapon["lethality"],
+                                max_quantity=weapon["maxQuantity"],
+                                current_quantity=weapon["currentQuantity"],
+                            )
+                        )
+                else:
+                    aircraft_weapons.append(
+                        self.get_sample_weapon(10, 0.25, aircraft["sideName"])
+                    )
                 new_aircraft = Aircraft(
                     id=aircraft["id"],
                     name=aircraft["name"],
@@ -677,11 +715,7 @@ class Game:
                     route=aircraft["route"],
                     selected=aircraft["selected"],
                     side_color=aircraft["sideColor"],
-                    weapons=(
-                        aircraft["weapons"]
-                        if aircraft["weapons"]
-                        else [self.get_sample_weapon(10, 0.25, aircraft["sideName"])]
-                    ),
+                    weapons=aircraft_weapons,
                     home_base_id=aircraft["homeBaseId"],
                     rtb=aircraft["rtb"],
                     target_id=aircraft["targetId"] if "targetId" in aircraft.keys() else "",
