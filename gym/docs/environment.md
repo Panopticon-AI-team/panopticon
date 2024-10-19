@@ -3,7 +3,6 @@
 ## Environment Table of Contents
 
 - [BLADE](#blade)
-  - [What is BLADE](#what-is-blade)
 - [RL Environment](#rl-environment)
 - [Actions and Observations](#actions-and-observations)
   - [Observation](#observations)
@@ -12,8 +11,6 @@
 <!-- /TOC -->
 
 ## BLADE
-
-### What is BLADE
 
 Battlefield Learning Assessment and Decision-making Environment (BLADE) is a warfare simulation with an OpenAI Gymnasium implementation. BLADE is the engine that powers the [panopticon-ai webapp](https://app.panopticon-ai.com/). BLADE is implimented in both Python and Typescript. The Python implementation is considered the official implementation and is primarily used in conjunction with Gymnasium. The panopticon-ai webapp is powered by the Typescript implementation of the BLADE engine, but this will soon be deprecated and replaced by the Python implementation in a future milestone.
 
