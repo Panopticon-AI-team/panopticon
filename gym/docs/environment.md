@@ -76,5 +76,5 @@ handle_ship_attack(self, ship_id: str, target_id: str) -> None
 aircraft_return_to_base(self, aircraft_id: str) -> Aircraft | None
 
 # command the aircraft to land at its homebase, or if it does not have a homebase, land at the nearest base
-land_aircraft(aircraft_id) -> None
+land_aircraft(aircraft_id:str) -> None
 ```
