@@ -1,4 +1,4 @@
-## See [GitBook](https://docs.panopticon-ai.com/) for more detailed docs
+## See [GitBook](https://docs.panopticon-ai.com/gymnasium-environment) for more detailed docs
 
 ## Environment Table of Contents
 
