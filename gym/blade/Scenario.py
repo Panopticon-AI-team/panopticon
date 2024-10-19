@@ -216,11 +216,11 @@ class Scenario:
     def get_aircraft_homebase(self, aircraft_id: str) -> HomeBase | None:
         aircraft = self.get_aircraft(aircraft_id)
         if aircraft is not None:
-            base = self.get_airbase(aircraft.airbase_id)
+            base = self.get_airbase(aircraft.home_base_id)
             if base is not None:
                 return base
             else:
-                ship = self.get_ship(aircraft.ship_id)
+                ship = self.get_ship(aircraft.home_base_id)
                 if ship is not None:
                     return ship
         return None
