@@ -34,46 +34,46 @@ BLADE's action space is defined by the functions provided by the [Game](https://
 
 ```python
 # adds a reference point
-add_reference_point(self, reference_point_name: str, latitude: float, longitude: float) -> ReferencePoint
+add_reference_point(reference_point_name: str, latitude: float, longitude: float) -> ReferencePoint
 
 # removes a reference point
-remove_reference_point(self, reference_point_id: str) -> None
+remove_reference_point(reference_point_id: str) -> None
 
 # launches an aircraft from an airbase
-launch_aircraft_from_airbase(self, airbase_id: str) -> Aircraft | None
+launch_aircraft_from_airbase(airbase_id: str) -> Aircraft | None
 
 # launches an aircraft from a ship
-launch_aircraft_from_ship(self, ship_id: str) -> Aircraft | None
+launch_aircraft_from_ship(ship_id: str) -> Aircraft | None
 
 # creates a patrol mission where a list of aircraft patrols an area
-create_patrol_mission(self, mission_name: str, assigned_units: list[str], assigned_area: list[list[float]]) -> None
+create_patrol_mission(mission_name: str, assigned_units: list[str], assigned_area: list[list[float]]) -> None
 
 # updates a patrol mission with new parameters
-update_patrol_mission(self, mission_id: str, mission_name: str, assigned_units: list[str], assigned_area: list[list[float]]) -> None
+update_patrol_mission(mission_id: str, mission_name: str, assigned_units: list[str], assigned_area: list[list[float]]) -> None
 
 # creates a strike mission where a list of attackers strike a list of targets
-create_strike_mission(self, mission_name: str, assigned_attackers: list[str], assigned_targets: list[str]) -> None
+create_strike_mission(mission_name: str, assigned_attackers: list[str], assigned_targets: list[str]) -> None
 
 # updates a strike mission with new parameters
-update_strike_mission(self, mission_id: str, mission_name: str, assigned_attackers: list[str], assigned_targets: list[str]) -> None
+update_strike_mission(mission_id: str, mission_name: str, assigned_attackers: list[str], assigned_targets: list[str]) -> None
 
 # deletes a mission
-delete_mission(self, mission_id: str) -> None
+delete_mission(mission_id: str) -> None
 
 # assign a waypoint for an aircraft to reach
-move_aircraft(self, aircraft_id: str, new_latitude: float, new_longitude: float) -> Aircraft | None
+move_aircraft(aircraft_id: str, new_latitude: float, new_longitude: float) -> Aircraft | None
 
 # assign a waypoint for a ship to reach
-move_ship(self, ship_id: str, new_latitude: float, new_longitude: float) -> Ship | None
+move_ship(ship_id: str, new_latitude: float, new_longitude: float) -> Ship | None
 
 # launches a weapon from an aircraft to a target
-handle_aircraft_attack(self, aircraft_id: str, target_id: str) -> None
+handle_aircraft_attack(aircraft_id: str, target_id: str) -> None
 
 # launches a weapon from a ship to a target
-handle_ship_attack(self, ship_id: str, target_id: str) -> None
+handle_ship_attack(ship_id: str, target_id: str) -> None
 
 # directs an aircraft to return to its home base or the closest friendly base
-aircraft_return_to_base(self, aircraft_id: str) -> Aircraft | None
+aircraft_return_to_base(aircraft_id: str) -> Aircraft | None
 
 # command the aircraft to land at its homebase, or if it does not have a homebase, land at the nearest base
 land_aircraft(aircraft_id:str) -> None
