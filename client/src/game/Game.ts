@@ -56,6 +56,7 @@ export default class Game {
   selectedUnitId: string = "";
   numberOfWaypoints: number = 50;
   godMode: boolean = false;
+  eraserMode: boolean = false;
 
   constructor(currentScenario: Scenario) {
     this.currentScenario = currentScenario;
@@ -901,6 +902,10 @@ export default class Game {
 
   toggleGodMode(enabled: boolean = !this.godMode) {
     this.godMode = enabled;
+  }
+
+  toggleEraserMode(enabled: boolean = !this.eraserMode) {
+    this.eraserMode = enabled;
   }
 
   facilityAutoDefense() {
