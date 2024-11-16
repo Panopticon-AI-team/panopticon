@@ -1,1 +1,1 @@
-from blade.envs.blade import BLADE
+from blade.envs.blade import BLADE, SIMPLE_BLADE
