@@ -64,7 +64,7 @@ const MissionCreator = (props: MissionCreatorProps) => {
   const [selectedTargets, setSelectedTargets] = useState<string[]>([
     [...props.targets].sort((a, b) => {
       return a.name.localeCompare(b.name);
-    })[0].id,
+    })[0]?.id,
   ]);
   const [selectedReferencePoints, setSelectedReferencePoints] = useState<
     string[]
