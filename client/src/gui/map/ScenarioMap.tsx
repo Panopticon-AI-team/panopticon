@@ -404,6 +404,10 @@ export default function ScenarioMap({
         currentSelectedFeatureType === "aircraft" &&
         game.currentScenario.getAircraft(currentSelectedFeatureId)
       ) {
+        if (game.eraserMode) {
+          removeAircraft(currentSelectedFeatureId);
+          return;
+        }
         game.selectedUnitId = "";
         const aircraft = game.currentScenario.getAircraft(
           currentSelectedFeatureId
@@ -430,6 +434,10 @@ export default function ScenarioMap({
         currentSelectedFeatureType === "airbase" &&
         game.currentScenario.getAirbase(currentSelectedFeatureId)
       ) {
+        if (game.eraserMode) {
+          removeAirbase(currentSelectedFeatureId);
+          return;
+        }
         const airbaseGeometry = feature.getGeometry() as Point;
         const airbaseCoordinate = airbaseGeometry.getCoordinates();
         const airbasePixels = theMap.getPixelFromCoordinate(airbaseCoordinate);
@@ -443,6 +451,10 @@ export default function ScenarioMap({
         currentSelectedFeatureType === "facility" &&
         game.currentScenario.getFacility(currentSelectedFeatureId)
       ) {
+        if (game.eraserMode) {
+          removeFacility(currentSelectedFeatureId);
+          return;
+        }
         const facilityGeometry = feature.getGeometry() as Point;
         const facilityCoordinate = facilityGeometry.getCoordinates();
         const facilityPixels =
@@ -457,6 +469,10 @@ export default function ScenarioMap({
         currentSelectedFeatureType === "ship" &&
         game.currentScenario.getShip(currentSelectedFeatureId)
       ) {
+        if (game.eraserMode) {
+          removeShip(currentSelectedFeatureId);
+          return;
+        }
         game.selectedUnitId = "";
         const ship = game.currentScenario.getShip(currentSelectedFeatureId);
         if (ship) {
@@ -476,6 +492,10 @@ export default function ScenarioMap({
         currentSelectedFeatureType === "referencePoint" &&
         game.currentScenario.getReferencePoint(currentSelectedFeatureId)
       ) {
+        if (game.eraserMode) {
+          removeReferencePoint(currentSelectedFeatureId);
+          return;
+        }
         const referencePointGeometry = feature.getGeometry() as Point;
         const referencePointCoordinate =
           referencePointGeometry.getCoordinates();

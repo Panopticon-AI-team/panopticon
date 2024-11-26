@@ -259,6 +259,12 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     props.game.toggleGodMode(event.target.checked);
   };
 
+  const handleEraserModeToggle = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    props.game.toggleEraserMode(event.target.checked);
+  };
+
   const keyboardEventHandler = (event: KeyboardEvent) => {
     const key = event.key;
     switch (key) {
@@ -490,14 +496,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           >
             Add Reference Point
           </Button>
-          <Stack spacing={1} direction="row" sx={stackStyle}>
-            <input
-              type="checkbox"
-              id="god-mode-checkbox"
-              onChange={handleGodModeToggle}
-            />
-            <label htmlFor="god-mode-checkbox">God Mode</label>
-          </Stack>
         </Stack>
         <Stack spacing={1} direction="column" sx={stackStyle}>
           <Chip
@@ -521,6 +519,22 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               Add Unit
             </Button>
           </Tooltip>
+          <Stack spacing={1} direction="row" sx={stackStyle}>
+            <input
+              type="checkbox"
+              id="god-mode-checkbox"
+              onChange={handleGodModeToggle}
+            />
+            <label htmlFor="god-mode-checkbox">God Mode</label>
+          </Stack>
+          <Stack spacing={1} direction="row" sx={stackStyle}>
+            <input
+              type="checkbox"
+              id="eraser-mode-checkbox"
+              onChange={handleEraserModeToggle}
+            />
+            <label htmlFor="eraser-mode-checkbox">Eraser Mode</label>
+          </Stack>
         </Stack>
       </Stack>
     );
