@@ -1,10 +1,10 @@
 export const AircraftDb = [
   {
-    className: "F-35B Lightning II",
-    speed: 1043, // mph
-    maxFuel: 13500, // lbs
-    fuelRate: 1100, // gallons per hour
-    range: 900, // nm
+    className: "F-35A Lightning II",
+    speed: 1200, // mph https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/
+    maxFuel: 18498, // lbs https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/
+    fuelRate: 1000, // gallons per hour (No Source)
+    range: 1200, // nm https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/ 
   },
   {
     className: "KC-135R Stratotanker",
