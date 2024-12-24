@@ -1,353 +1,109 @@
 export const AircraftDb = [
+  // fuel rates are generated with AI - use with a grain of salt.
   {
     className: "F-35A Lightning II",
     speed: 1200, // mph https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/
     maxFuel: 18498, // lbs https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/
-    fuelRate: 1000, // gallons per hour (No Source)
+    fuelRate: 1000, // missing
     range: 1200, // nm https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/ 
   },
   {
     className: "KC-135R Stratotanker",
-    speed: 530,
-    maxFuel: 200000,
-    fuelRate: 15000,
-    range: 1500,
+    speed: 530, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/
+    maxFuel: 200000, // lbs https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/
+    fuelRate: 15000, // missing 
+    range: 1303, // 1303 NM, 1500 mi https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/
   },
   {
-    className: "A-10 Thunderbolt II",
-    speed: 439,
-    maxFuel: 11000,
-    fuelRate: 800,
-    range: 800,
+    className: "A-10C Thunderbolt II",
+    speed: 420, // mph https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/ 
+    maxFuel: 11000, // missing 
+    fuelRate: 800, // missing
+    range: 695, // nm https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/ 
   },
   {
     className: "B-2 Spirit",
-    speed: 628,
-    maxFuel: 167000,
-    fuelRate: 10000,
-    range: 6000,
+    speed: 650, // missing "high subsonic" 
+    maxFuel: 167000, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104482/b-2-spirit/
+    fuelRate: 10000, // missing
+    range: 6000, // missing "intercontinental"
   },
   {
     className: "F-22 Raptor",
-    speed: 1500,
-    maxFuel: 18000,
+    speed: 1500, // mph https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/
+    maxFuel: 18000, // lbs internal https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/
     fuelRate: 1000,
-    range: 1839,
+    range: 1600, // nm https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/ 
   },
   {
     className: "C-130 Hercules",
-    speed: 366,
-    maxFuel: 61360,
-    fuelRate: 1100,
-    range: 2361,
+    speed: 350, // mph, range from 350-410 https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/
+    maxFuel: 61360, // missing
+    fuelRate: 1100, // missing
+    range: 1700, // has range https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/
   },
   {
     className: "C-17 Globemaster III",
-    speed: 518,
-    maxFuel: 181054,
-    fuelRate: 20000,
-    range: 2785,
+    speed: 570, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1529726/c-17-globemaster-iii/
+    maxFuel: 181054, // missing
+    fuelRate: 20000, // missing
+    range: 2785, // "Global with in-flight refueling" missing
   },
   {
     className: "F-16 Fighting Falcon",
-    speed: 1500,
-    maxFuel: 7000,
-    fuelRate: 800,
-    range: 2002,
+    speed: 1500, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/
+    maxFuel: 12000, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/
+    fuelRate: 800, // missing
+    range: 1740, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/
   },
   {
     className: "F-15 Eagle",
-    speed: 1875,
-    maxFuel: 13455,
-    fuelRate: 1200,
-    range: 3450,
+    speed: 1875, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/
+    maxFuel: 36200, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/
+    fuelRate: 1200, // missing
+    range: 3000, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/
   },
   {
     className: "F/A-18 Hornet",
-    speed: 1190,
-    maxFuel: 14400,
-    fuelRate: 1250,
-    range: 1250,
-  },
-  {
-    className: "E-3 Sentry (AWACS)",
-    speed: 530,
-    maxFuel: 90000,
-    fuelRate: 5000,
-    range: 4000,
+    speed: 1381, // https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/ 
+    maxFuel: 14400, // missing
+    fuelRate: 1250, // missing
+    range: 1275, // https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/
   },
   {
     className: "B-52 Stratofortress",
-    speed: 650,
-    maxFuel: 312197,
-    fuelRate: 15000,
-    range: 8800,
-  },
-  {
-    className: "P-8 Poseidon",
-    speed: 564,
-    maxFuel: 34080,
-    fuelRate: 1000,
-    range: 1200,
-  },
-  {
-    className: "MQ-9 Reaper",
-    speed: 300,
-    maxFuel: 4000,
-    fuelRate: 200,
-    range: 1150,
-  },
-  {
-    className: "RQ-4 Global Hawk",
-    speed: 391,
-    maxFuel: 17300,
-    fuelRate: 700,
-    range: 12300,
-  },
-  {
-    className: "CH-47 Chinook",
-    speed: 196,
-    maxFuel: 1068,
-    fuelRate: 514,
-    range: 400,
-  },
-  {
-    className: "AH-64 Apache",
-    speed: 182,
-    maxFuel: 375,
-    fuelRate: 150,
-    range: 300,
-  },
-  {
-    className: "UH-60 Black Hawk",
-    speed: 183,
-    maxFuel: 360,
-    fuelRate: 150,
-    range: 320,
-  },
-  {
-    className: "V-22 Osprey",
-    speed: 277,
-    maxFuel: 12000,
-    fuelRate: 2400,
-    range: 879,
-  },
-  {
-    className: "MQ-1 Predator",
-    speed: 135,
-    maxFuel: 665,
-    fuelRate: 100,
-    range: 675,
-  },
-  {
-    className: "AV-8B Harrier II",
-    speed: 662,
-    maxFuel: 7500,
-    fuelRate: 1200,
-    range: 1000,
-  },
-  {
-    className: "EA-18G Growler",
-    speed: 1190,
-    maxFuel: 14400,
-    fuelRate: 1250,
-    range: 1200,
-  },
-  {
-    className: "T-38 Talon",
-    speed: 812,
-    maxFuel: 2067,
-    fuelRate: 600,
-    range: 1093,
-  },
-  {
-    className: "KC-10 Extender",
-    speed: 600,
-    maxFuel: 356000,
-    fuelRate: 20000,
-    range: 4400,
-  },
-  {
-    className: "P-3 Orion",
-    speed: 411,
-    maxFuel: 60000,
-    fuelRate: 1000,
-    range: 2380,
+    speed: 650, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/
+    maxFuel: 312197, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/
+    fuelRate: 15000, // missing
+    range: 8800, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/
   },
   {
     className: "F-4 Phantom II",
-    speed: 1473,
-    maxFuel: 13890,
-    fuelRate: 1200,
-    range: 1750,
-  },
-  {
-    className: "E-2 Hawkeye",
-    speed: 350,
-    maxFuel: 14280,
-    fuelRate: 500,
-    range: 1462,
-  },
-  {
-    className: "C-5 Galaxy",
-    speed: 518,
-    maxFuel: 332500,
-    fuelRate: 20000,
-    range: 5200,
+    speed: 1400, // https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/
+    maxFuel: 13890, // missing
+    fuelRate: 1200, // missing
+    range: 1750, // https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/
   },
   {
     className: "B-1B Lancer",
-    speed: 900,
-    maxFuel: 265274,
-    fuelRate: 18000,
-    range: 5100,
-  },
-  {
-    className: "C-141 Starlifter",
-    speed: 500,
-    maxFuel: 116000,
-    fuelRate: 10000,
-    range: 4000,
-  },
-  {
-    className: "E-8 Joint STARS",
-    speed: 530,
-    maxFuel: 160000,
-    fuelRate: 7000,
-    range: 9000,
-  },
-  {
-    className: "B-47 Stratojet",
-    speed: 607,
-    maxFuel: 53000,
-    fuelRate: 6000,
-    range: 4000,
-  },
-  {
-    className: "F-117 Nighthawk",
-    speed: 617,
-    maxFuel: 19000,
-    fuelRate: 1300,
-    range: 1070,
-  },
-  {
-    className: "SR-71 Blackbird",
-    speed: 2193,
-    maxFuel: 80000,
-    fuelRate: 8000,
-    range: 3200,
-  },
-  {
-    className: "U-2 Dragon Lady",
-    speed: 475,
-    maxFuel: 7750,
-    fuelRate: 500,
-    range: 7000,
-  },
-  {
-    className: "AC-130 Gunship",
-    speed: 300,
-    maxFuel: 60000,
-    fuelRate: 1200,
-    range: 1300,
-  },
-  {
-    className: "HH-60 Pave Hawk",
-    speed: 184,
-    maxFuel: 360,
-    fuelRate: 150,
-    range: 600,
-  },
-  {
-    className: "KC-46 Pegasus",
-    speed: 570,
-    maxFuel: 212299,
-    fuelRate: 10000,
-    range: 6385,
-  },
-  {
-    className: "T-6 Texan II",
-    speed: 364,
-    maxFuel: 2826,
-    fuelRate: 250,
-    range: 1037,
-  },
-  {
-    className: "RQ-7 Shadow",
-    speed: 138,
-    maxFuel: 110,
-    fuelRate: 10,
-    range: 68,
+    speed: 900, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/
+    maxFuel: 265274, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/
+    fuelRate: 18000, // missing
+    range: 5100, // "intercontinental" missing 
   },
   {
     className: "C-12 Huron",
-    speed: 333,
-    maxFuel: 5890,
-    fuelRate: 300,
-    range: 2290,
-  },
-  {
-    className: "T-1 Jayhawk",
-    speed: 538,
-    maxFuel: 6000,
-    fuelRate: 450,
-    range: 2222,
-  },
-  {
-    className: "EC-130H Compass Call",
-    speed: 299,
-    maxFuel: 60000,
-    fuelRate: 1200,
-    range: 2295,
-  },
-  {
-    className: "OV-10 Bronco",
-    speed: 288,
-    maxFuel: 3120,
-    fuelRate: 250,
-    range: 1240,
-  },
-  {
-    className: "C-21A Learjet",
-    speed: 530,
-    maxFuel: 6000,
-    fuelRate: 600,
-    range: 2306,
-  },
-  {
-    className: "T-45 Goshawk",
-    speed: 645,
-    maxFuel: 3255,
-    fuelRate: 500,
-    range: 900,
-  },
-  {
-    className: "A-6 Intruder",
-    speed: 644,
-    maxFuel: 30400,
-    fuelRate: 1200,
-    range: 2000,
+    speed: 284, // https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/
+    maxFuel: 4502, // https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/
+    fuelRate: 300, // missing
+    range: 1450, // https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/
   },
   {
     className: "F-14 Tomcat",
-    speed: 1544,
-    maxFuel: 16200,
-    fuelRate: 1800,
-    range: 1600,
-  },
-  {
-    className: "F-8 Crusader",
-    speed: 1225,
-    maxFuel: 9266,
-    fuelRate: 1200,
-    range: 1450,
-  },
-  {
-    className: "B-29 Superfortress",
-    speed: 357,
-    maxFuel: 20000,
-    fuelRate: 1000,
-    range: 3250,
+    speed: 1544, // https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html
+    maxFuel: 16200, // missing
+    fuelRate: 1800, // missing
+    range: 2085, // https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html
   },
 ];
 
@@ -375,12 +131,6 @@ export const AirbaseDb = [
     latitude: 46.0319,
     longitude: 12.5965,
     country: "Italy",
-  },
-  {
-    name: "Bagram Airfield",
-    latitude: 34.9462,
-    longitude: 69.265,
-    country: "Afghanistan",
   },
   {
     name: "Beale Air Force Base",
@@ -416,18 +166,6 @@ export const AirbaseDb = [
     name: "Elmendorf Air Force Base",
     latitude: 61.25,
     longitude: -149.8,
-    country: "USA",
-  },
-  {
-    name: "Elmendorf-Richardson",
-    latitude: 61.254,
-    longitude: -149.792,
-    country: "USA",
-  },
-  {
-    name: "Hickam Air Force Base",
-    latitude: 21.3169,
-    longitude: -157.9334,
     country: "USA",
   },
   {
@@ -656,489 +394,114 @@ export const AirbaseDb = [
 
 export const FacilityDb = [
   {
-    className: "9K330 Tor",
-    range: 6.5,
+    className: "S-400 Triumf",
+    range: 200 // No official source available, using 200 as the range
   },
   {
-    className: "9K37 Buk",
-    range: 22.7,
+    className: "S-300V4",
+    range: 200 // No official source available, using 200 as the range
   },
   {
-    className: "Arrow 2",
-    range: 48.6,
-  },
-  {
-    className: "Arrow 3",
-    range: 1296,
-  },
-  {
-    className: "Aster 15",
-    range: 16.2,
-  },
-  {
-    className: "Aster 30",
-    range: 64.8,
-  },
-  {
-    className: "Barak 1",
-    range: 6.5,
-  },
-  {
-    className: "Barak 8",
-    range: 37.8,
-  },
-  {
-    className: "Buk-M2",
-    range: 27,
+    className: "S-500 Prometey",
+    range: 200 // No official source available, using 200 as the range
   },
   {
     className: "Buk-M3",
-    range: 37.8,
+    range: 50 // No official source available, using 50 as the range
   },
   {
-    className: "CAMM",
-    range: 13.5,
-  },
-  {
-    className: "Crotale",
-    range: 5.4,
-  },
-  {
-    className: "David's Sling",
-    range: 162,
-  },
-  {
-    className: "FD-2000",
-    range: 108,
-  },
-  {
-    className: "HQ-16",
-    range: 21.6,
-  },
-  {
-    className: "HQ-22",
-    range: 91.8,
-  },
-  {
-    className: "HQ-9",
-    range: 108,
-  },
-  {
-    className: "Iron Dome",
-    range: 37.8,
-  },
-  {
-    className: "KS-1A",
-    range: 27,
-  },
-  {
-    className: "KS-1C",
-    range: 37.8,
-  },
-  {
-    className: "LY-80",
-    range: 21.6,
-  },
-  {
-    className: "MIM-104 Patriot",
-    range: 86.4,
-  },
-  {
-    className: "NASAMS",
-    range: 13.5,
-  },
-  {
-    className: "NASAMS 2",
-    range: 16.2,
+    className: "Tor-M2",
+    range: 10 // No official source available, using 10 as the range
   },
   {
     className: "Pantsir-S1",
-    range: 10.8,
+    range: 10 // No official source available, using 10 as the range
   },
   {
-    className: "QRSAM",
-    range: 16.2,
+    className: "HQ-9",
+    range: 200 // No official source available, using 200 as the range
   },
   {
-    className: "RIM-116 Rolling Airframe Missile",
-    range: 5.4,
+    className: "HQ-19",
+    range: 200 // No official source available, using 200 as the range
   },
   {
-    className: "RIM-162 ESSM",
-    range: 27,
+    className: "HQ-16",
+    range: 50 // No official source available, using 50 as the range
   },
   {
-    className: "RIM-174 ERAM (SM-6)",
-    range: 129.6,
+    className: "HQ-17",
+    range: 10 // No official source available, using 10 as the range
   },
   {
-    className: "RIM-7 Sea Sparrow",
-    range: 10.3,
+    className: "HQ-7",
+    range: 10 // No official source available, using 10 as the range
   },
   {
-    className: "S-125 Neva/Pechora",
-    range: 18.9,
-  },
-  {
-    className: "S-200 Angara",
-    range: 162,
-  },
-  {
-    className: "S-300",
-    range: 108,
-  },
-  {
-    className: "S-350E Vityaz",
-    range: 32.4,
-  },
-  {
-    className: "S-400",
-    range: 216,
-  },
-  {
-    className: "S-75 Dvina",
-    range: 24.3,
-  },
-  {
-    className: "SA-15 Gauntlet",
-    range: 6.5,
-  },
-  {
-    className: "SA-8 Gecko",
-    range: 6.5,
-  },
-  {
-    className: "SAMP/T",
-    range: 64.8,
-  },
-  {
-    className: "Sky Bow II",
-    range: 108,
-  },
-  {
-    className: "Skyguard Aspide",
-    range: 10.8,
-  },
-  {
-    className: "SPYDER",
-    range: 18.9,
-  },
-  {
-    className: "Standard Missile 2 (SM-2)",
-    range: 91.8,
+    className: "MIM-104 Patriot",
+    range: 200 // No official source available, using 200 as the range
   },
   {
     className: "THAAD",
-    range: 108,
+    range: 200 // No official source available, using 200 as the range
   },
   {
-    className: "Type 03 Chū-SAM",
-    range: 27,
+    className: "Aster 30",
+    range: 50 // No official source available, using 50 as the range
   },
   {
-    className: "Umkhonto",
-    range: 6.5,
+    className: "Barak 8",
+    range: 50 // No official source available, using 50 as the range
   },
   {
-    className: "VL MICA",
-    range: 10.8,
-  },
-  {
-    className: "Vityaz",
-    range: 32.4,
-  },
-  {
-    className: "ZRK-SD Kub",
-    range: 13,
-  },
+    className: "NASAMS",
+    range: 50 // No official source available, using 50 as the range
+  }
 ];
 
 export const ShipDb = [
+
+  // all values notional
   {
-    className: "Admiral Gorshkov Frigate",
-    speed: 30,
-    maxFuel: 410000,
-    fuelRate: 3000,
-    range: 4500,
+    className: "Aircraft Carrier",
+    speed: 35, // mph
+    maxFuel: 25200000, // lbs
+    fuelRate: 1000000, // lbs/hr
+    range: 8000 // NM
   },
   {
-    className: "Admiral Grigorovich Frigate",
-    speed: 30,
-    maxFuel: 400000,
-    fuelRate: 3000,
-    range: 4850,
+    className: "Destroyer",
+    speed: 40, // mph
+    maxFuel: 3500000, // lbs
+    fuelRate: 100000, // lbs/hr
+    range: 5000 // NM
   },
   {
-    className: "Akizuki Destroyer",
-    speed: 30,
-    maxFuel: 460000,
-    fuelRate: 3500,
-    range: 5000,
+    className: "Frigate",
+    speed: 35, // mph
+    maxFuel: 2800000, // lbs
+    fuelRate: 80000, // lbs/hr
+    range: 4500 // NM
   },
   {
-    className: "Alvaro de Bazan Frigate",
-    speed: 28,
-    maxFuel: 370000,
-    fuelRate: 2800,
-    range: 4500,
+    className: "Corvette",
+    speed: 32, // mph
+    maxFuel: 1400000, // lbs
+    fuelRate: 60000, // lbs/hr
+    range: 3500 // NM
   },
   {
-    className: "Arleigh Burke Destroyer",
-    speed: 30,
-    maxFuel: 400000,
-    fuelRate: 4000,
-    range: 4500,
+    className: "Amphibious Assault Ship",
+    speed: 25, // mph
+    maxFuel: 8400000, // lbs
+    fuelRate: 200000, // lbs/hr
+    range: 6000 // NM
   },
   {
-    className: "Atago Destroyer",
-    speed: 30,
-    maxFuel: 500000,
-    fuelRate: 4000,
-    range: 5000,
-  },
-  {
-    className: "Borei Submarine",
-    speed: 25,
-    maxFuel: 150000,
-    fuelRate: 500,
-    range: 8000,
-  },
-  {
-    className: "Charles de Gaulle Aircraft Carrier",
-    speed: 27,
-    maxFuel: 1800000,
-    fuelRate: 12000,
-    range: 8000,
-  },
-  {
-    className: "Chengdu Destroyer",
-    speed: 30,
-    maxFuel: 460000,
-    fuelRate: 3000,
-    range: 4500,
-  },
-  {
-    className: "Columbia Submarine",
-    speed: 20,
-    maxFuel: 160000,
-    fuelRate: 500,
-    range: 8000,
-  },
-  {
-    className: "Daring Destroyer",
-    speed: 29,
-    maxFuel: 500000,
-    fuelRate: 3500,
-    range: 7000,
-  },
-  {
-    className: "De Zeven Provinciën Frigate",
-    speed: 28,
-    maxFuel: 400000,
-    fuelRate: 3000,
-    range: 5000,
-  },
-  {
-    className: "Freedom Littoral Combat Ship",
-    speed: 45,
-    maxFuel: 310000,
-    fuelRate: 3500,
-    range: 3500,
-  },
-  {
-    className: "Gerald R. Ford Aircraft Carrier",
-    speed: 30,
-    maxFuel: 3000000,
-    fuelRate: 15000,
-    range: 12000,
-  },
-  {
-    className: "Hobart Destroyer",
-    speed: 28,
-    maxFuel: 400000,
-    fuelRate: 3000,
-    range: 4500,
-  },
-  {
-    className: "Horizon Frigate",
-    speed: 29,
-    maxFuel: 480000,
-    fuelRate: 3000,
-    range: 7000,
-  },
-  {
-    className: "Iowa Battleship",
-    speed: 33,
-    maxFuel: 2000000,
-    fuelRate: 15000,
-    range: 15000,
-  },
-  {
-    className: "Invincible Aircraft Carrier",
-    speed: 28,
-    maxFuel: 1000000,
-    fuelRate: 8000,
-    range: 7000,
-  },
-  {
-    className: "Iver Huitfeldt Frigate",
-    speed: 28,
-    maxFuel: 450000,
-    fuelRate: 3200,
-    range: 9000,
-  },
-  {
-    className: "Kidd Destroyer",
-    speed: 33,
-    maxFuel: 400000,
-    fuelRate: 4000,
-    range: 6000,
-  },
-  {
-    className: "Kirov Battle Cruiser",
-    speed: 32,
-    maxFuel: 3000000,
-    fuelRate: 12000,
-    range: 10000,
-  },
-  {
-    className: "King Sejong the Great Destroyer",
-    speed: 30,
-    maxFuel: 550000,
-    fuelRate: 5000,
-    range: 5000,
-  },
-  {
-    className: "Kirov Cruiser",
-    speed: 32,
-    maxFuel: 3000000,
-    fuelRate: 15000,
-    range: 10000,
-  },
-  {
-    className: "Lafayette Frigate",
-    speed: 25,
-    maxFuel: 400000,
-    fuelRate: 3000,
-    range: 9000,
-  },
-  {
-    className: "Littoral Combat Ship",
-    speed: 45,
-    maxFuel: 310000,
-    fuelRate: 3500,
-    range: 3500,
-  },
-  {
-    className: "Nimitz Aircraft Carrier",
-    speed: 30,
-    maxFuel: 3000000,
-    fuelRate: 15000,
-    range: 12000,
-  },
-  {
-    className: "Ohio Submarine",
-    speed: 25,
-    maxFuel: 150000,
-    fuelRate: 500,
-    range: 8000,
-  },
-  {
-    className: "Oliver Hazard Perry Frigate",
-    speed: 29,
-    maxFuel: 353000,
-    fuelRate: 2500,
-    range: 4500,
-  },
-  {
-    className: "Osprey Minehunter",
-    speed: 12,
-    maxFuel: 100000,
-    fuelRate: 1500,
-    range: 1500,
-  },
-  {
-    className: "Queen Elizabeth Aircraft Carrier",
-    speed: 25,
-    maxFuel: 3000000,
-    fuelRate: 12000,
-    range: 10000,
-  },
-  {
-    className: "Seawolf Submarine",
-    speed: 25,
-    maxFuel: 150000,
-    fuelRate: 500,
-    range: 8000,
-  },
-  {
-    className: "Sierra Submarine",
-    speed: 32,
-    maxFuel: 150000,
-    fuelRate: 500,
-    range: 7200,
-  },
-  {
-    className: "Slava Cruiser",
-    speed: 32,
-    maxFuel: 2000000,
-    fuelRate: 8000,
-    range: 10000,
-  },
-  {
-    className: "Sovereign Submarine",
-    speed: 25,
-    maxFuel: 150000,
-    fuelRate: 500,
-    range: 8000,
-  },
-  {
-    className: "Ticonderoga Cruiser",
-    speed: 32,
-    maxFuel: 500000,
-    fuelRate: 4500,
-    range: 6000,
-  },
-  {
-    className: "Type 055 Destroyer",
-    speed: 30,
-    maxFuel: 600000,
-    fuelRate: 4000,
-    range: 6000,
-  },
-  {
-    className: "Type 23 Frigate",
-    speed: 28,
-    maxFuel: 450000,
-    fuelRate: 3000,
-    range: 7500,
-  },
-  {
-    className: "Type 45 Destroyer",
-    speed: 30,
-    maxFuel: 400000,
-    fuelRate: 3500,
-    range: 7000,
-  },
-  {
-    className: "Type 52D Destroyer",
-    speed: 30,
-    maxFuel: 460000,
-    fuelRate: 3500,
-    range: 4500,
-  },
-  {
-    className: "Udaloy Destroyer",
-    speed: 35,
-    maxFuel: 400000,
-    fuelRate: 4000,
-    range: 9000,
-  },
-  {
-    className: "Zumwalt Destroyer",
-    speed: 30,
-    maxFuel: 500000,
-    fuelRate: 4500,
-    range: 6000,
+    className: "Patrol Boat",
+    speed: 40, // mph
+    maxFuel: 350000, // lbs
+    fuelRate: 30000, // lbs/hr
+    range: 1500 // NM
   },
 ];
