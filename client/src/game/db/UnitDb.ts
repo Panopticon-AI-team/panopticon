@@ -4,7 +4,8 @@ export const AircraftDb = [
     className: "F-35A Lightning II",
     speed: 1200,
     maxFuel: 18498,
-    fuelRate: 1000, // nm 
+    fuelRate: 1000,
+    range: 1350,
     dataSource: {
       speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
       maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
