@@ -2,108 +2,287 @@ export const AircraftDb = [
   // fuel rates are generated with AI - use with a grain of salt.
   {
     className: "F-35A Lightning II",
-    speed: 1200, // mph https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/
-    maxFuel: 18498, // lbs https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/
-    fuelRate: 1000, // missing
-    range: 1200, // nm https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/ 
+    speed: 1200,
+    maxFuel: 18498,
+    fuelRate: 1000, // nm 
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
+      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "KC-135R Stratotanker",
-    speed: 530, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/
-    maxFuel: 200000, // lbs https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/
-    fuelRate: 15000, // missing 
-    range: 1303, // 1303 NM, 1500 mi https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/
+    speed: 530,
+    maxFuel: 200000,
+    fuelRate: 5000,
+    range: 1303,
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
+      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "A-10C Thunderbolt II",
-    speed: 420, // mph https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/ 
-    maxFuel: 11000, // missing 
-    fuelRate: 800, // missing
-    range: 695, // nm https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/ 
+    speed: 420,
+    maxFuel: 11000,
+    fuelRate: 1000,
+    range: 695,
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
+      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "B-2 Spirit",
-    speed: 650, // missing "high subsonic" 
-    maxFuel: 167000, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104482/b-2-spirit/
-    fuelRate: 10000, // missing
-    range: 6000, // missing "intercontinental"
+    speed: 650,
+    maxFuel: 166999,
+    fuelRate: 5000,
+    range: 6000,
+    dataSource: {
+      speedSrc: "high subsonic, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
+      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
+      FuelRateSrc: "missing",
+      rangeSrc: "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "F-22 Raptor",
-    speed: 1500, // mph https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/
-    maxFuel: 18000, // lbs internal https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/
+    speed: 1500,
+    maxFuel: 18000,
     fuelRate: 1000,
-    range: 1600, // nm https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/ 
+    range: 1600,
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
+      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "C-130 Hercules",
-    speed: 350, // mph, range from 350-410 https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/
-    maxFuel: 61360, // missing
-    fuelRate: 1100, // missing
-    range: 1700, // has range https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/
+    speed: 350,
+    maxFuel: 61360,
+    fuelRate: 5000,
+    range: 1700,
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/",
+      maxFuelSrc: "missing",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "C-17 Globemaster III",
-    speed: 570, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1529726/c-17-globemaster-iii/
-    maxFuel: 181054, // missing
-    fuelRate: 20000, // missing
-    range: 2785, // "Global with in-flight refueling" missing
+    speed: 570,
+    maxFuel: 181054,
+    fuelRate: 5000,
+    range: 2785,
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1529726/c-17-globemaster-iii/",
+      maxFuelSrc: "missing",
+      FuelRateSrc: "missing",
+      rangeSrc: "Global with in-flight refueling, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "F-16 Fighting Falcon",
-    speed: 1500, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/
-    maxFuel: 12000, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/
-    fuelRate: 800, // missing
-    range: 1740, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/
+    speed: 1500,
+    maxFuel: 12000,
+    fuelRate: 1000,
+    range: 1740,
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
+      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "F-15 Eagle",
-    speed: 1875, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/
-    maxFuel: 36200, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/
-    fuelRate: 1200, // missing
-    range: 3000, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/
+    speed: 1875,
+    maxFuel: 36200,
+    fuelRate: 1000,
+    range: 3000,
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
+      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "F/A-18 Hornet",
-    speed: 1381, // https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/ 
-    maxFuel: 14400, // missing
-    fuelRate: 1250, // missing
-    range: 1275, // https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/
+    speed: 1381,
+    maxFuel: 14400,
+    fuelRate: 1000,
+    range: 1275,
+    dataSource: {
+      speedSrc: "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/",
+      maxFuelSrc: "missing",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "B-52 Stratofortress",
-    speed: 650, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/
-    maxFuel: 312197, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/
-    fuelRate: 15000, // missing
-    range: 8800, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/
+    speed: 650,
+    maxFuel: 312197,
+    fuelRate: 5000,
+    range: 8800,
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
+      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "F-4 Phantom II",
-    speed: 1400, // https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/
-    maxFuel: 13890, // missing
-    fuelRate: 1200, // missing
-    range: 1750, // https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/
+    speed: 1400,
+    maxFuel: 13890,
+    fuelRate: 1000,
+    range: 1750,
+    dataSource: {
+      speedSrc: "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/",
+      maxFuelSrc: "missing",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "B-1B Lancer",
-    speed: 900, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/
-    maxFuel: 265274, // https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/
-    fuelRate: 18000, // missing
-    range: 5100, // "intercontinental" missing 
+    speed: 900,
+    maxFuel: 265274,
+    fuelRate: 5000,
+    range: 5100,
+    dataSource: {
+      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
+      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
+      FuelRateSrc: "missing",
+      rangeSrc: "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "C-12 Huron",
-    speed: 284, // https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/
-    maxFuel: 4502, // https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/
-    fuelRate: 300, // missing
-    range: 1450, // https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/
+    speed: 284,
+    maxFuel: 4502,
+    fuelRate: 300,
+    range: 1450,
+    dataSource: {
+      speedSrc: "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
+      maxFuelSrc: "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
   {
     className: "F-14 Tomcat",
-    speed: 1544, // https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html
-    maxFuel: 16200, // missing
-    fuelRate: 1800, // missing
-    range: 2085, // https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html
+    speed: 1544,
+    maxFuel: 16200,
+    fuelRate: 1000,
+    range: 2085,
+    dataSource: {
+      speedSrc: "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html",
+      maxFuelSrc: "missing",
+      FuelRateSrc: "missing",
+      rangeSrc: "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html"
+    },
+    units: {
+      speedUnit: "mph",
+      maxFuelUnit: "lbs",
+      fuelRateUnit: "gallons/hour",
+      rangeUnit: "nm"
+    }
   },
 ];
 
