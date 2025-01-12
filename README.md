@@ -5,7 +5,11 @@ We hope to advance the state of the art in military AI research.
 
 Our code is released under the Apache 2.0 license.
 
-See panopticon-ai.com and panopticon-ai.com/play for the platform.
+## Documentation
+
+See [docs](https://docs.panopticon-ai.com/) for full documentation.
+
+Platform: [our app](https://app.panopticon-ai.com/).
 
 ![image](https://github.com/user-attachments/assets/839cace4-dcbd-4abf-81b0-0b93afbfd8a8)
 
