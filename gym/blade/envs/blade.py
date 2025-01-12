@@ -4,14 +4,29 @@ from gymnasium.spaces import Text
 
 from blade.Game import Game
 from blade.Scenario import Scenario
-from blade.utils.constants import BLADE_ENV_OBSERVATION_SPACE_MAX_CHARACTERS, BLADE_ENV_ACTION_SPACE_MAX_CHARACTERS
+from blade.utils.constants import (
+    BLADE_ENV_OBSERVATION_SPACE_MAX_CHARACTERS,
+    BLADE_ENV_ACTION_SPACE_MAX_CHARACTERS,
+)
 
 
 class BLADE(gym.Env):
 
-    def __init__(self, render_mode=None, game:Game=None, observation_space=None, action_space=None, action_transform_fnc=None, observation_filter_fnc=None, reward_filter_fnc=None, termination_filter_fnc=None):
+    def __init__(
+        self,
+        render_mode=None,
+        game: Game = None,
+        observation_space=None,
+        action_space=None,
+        action_transform_fnc=None,
+        observation_filter_fnc=None,
+        reward_filter_fnc=None,
+        termination_filter_fnc=None,
+    ):
         if observation_space is None:
-            self.observation_space = Text(max_length=BLADE_ENV_OBSERVATION_SPACE_MAX_CHARACTERS)
+            self.observation_space = Text(
+                max_length=BLADE_ENV_OBSERVATION_SPACE_MAX_CHARACTERS
+            )
         else:
             self.observation_space = observation_space
         if action_space is None:
@@ -43,7 +58,7 @@ class BLADE(gym.Env):
     def step(self, action):
         if self.action_transform_fnc is not None:
             action = self.action_transform_fnc(self.game.current_scenario, action)
-        observation, reward, terminated, truncated, info = self.game.step(action = action)
+        observation, reward, terminated, truncated, info = self.game.step(action=action)
         if self.reward_filter_fnc is not None:
             reward = self.reward_filter_fnc(observation)
         if self.termination_filter_fnc is not None:
@@ -51,14 +66,14 @@ class BLADE(gym.Env):
         if self.observation_filter_fnc is not None:
             observation = self.observation_filter_fnc(observation)
         return observation, reward, terminated, truncated, info
-    
-    def export_scenario(self, file_path:str = None):
+
+    def export_scenario(self, file_path: str = None):
         if file_path == None:
-            file_path = f'{self.game.current_scenario.name}_end_state.json'
-        with open(file_path, 'w') as scenario_file:
+            file_path = f"{self.game.current_scenario.name}_end_state.json"
+        with open(file_path, "w") as scenario_file:
             json.dump(self.game.export_scenario(), scenario_file)
-    
+
     def pretty_print(self, observation: Scenario = None):
-        if (observation == None):
+        if observation == None:
             observation = self._get_obs()
         print("Current Time: " + str(observation.current_time))
