@@ -320,6 +320,11 @@ const MissionEditor = (props: MissionEditorProps) => {
     );
   };
 
+  // this is needed because of the Draggable component
+  // If running in React Strict mode, ReactDOM.findDOMNode() is deprecated.
+  // Unfortunately, in order for <Draggable> to work properly, we need raw access to the underlying DOM node.
+  const nodeRef = React.useRef(null);
+
   return (
     <div
       style={{
@@ -329,8 +334,10 @@ const MissionEditor = (props: MissionEditorProps) => {
         zIndex: "1001",
       }}
     >
-      <Draggable>
-        <Card sx={cardStyle}>
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment  */}
+      {/* @ts-ignore */}
+      <Draggable nodeRef={nodeRef}>
+        <Card sx={cardStyle} ref={nodeRef}>
           <CardHeader
             title={"Mission Editor"}
             classes={{

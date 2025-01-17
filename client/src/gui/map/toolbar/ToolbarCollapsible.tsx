@@ -11,7 +11,7 @@ import { colorPalette } from "../../../utils/constants";
 
 interface ToolbarCollapsibleProps {
   title: string;
-  content: JSX.Element;
+  content: React.JSX.Element;
   width: number;
   height: number;
   open: boolean;
