@@ -3,7 +3,7 @@ import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@mui/styles";
 import { colorPalette } from "../../../utils/constants";
 import EditorSelector from "./EditorSelector";
 import EditorTextInputBox from "./EditorTextInputBox";
