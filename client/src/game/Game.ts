@@ -464,13 +464,15 @@ export default class Game {
   moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {
     const aircraft = this.currentScenario.getAircraft(aircraftId);
     if (aircraft) {
-      aircraft.route = [[newLatitude, newLongitude]];
-      aircraft.heading = getBearingBetweenTwoPoints(
-        aircraft.latitude,
-        aircraft.longitude,
-        newLatitude,
-        newLongitude
-      );
+      aircraft.desiredRoute.push([newLatitude, newLongitude]);
+      if (aircraft.desiredRoute.length === 1) {
+        aircraft.heading = getBearingBetweenTwoPoints(
+          aircraft.latitude,
+          aircraft.longitude,
+          newLatitude,
+          newLongitude
+        );
+      }
       return aircraft;
     }
   }
@@ -1124,7 +1126,7 @@ export default class Game {
 
       const route = aircraft.route;
       if (route.length > 0) {
-        const nextWaypoint = route[route.length - 1];
+        const nextWaypoint = route[0];
         const nextWaypointLatitude = nextWaypoint[0];
         const nextWaypointLongitude = nextWaypoint[1];
         if (

@@ -271,23 +271,36 @@ export class RouteLayer extends FeatureLayer {
     this.layer.set("name", layerName);
   }
 
+  generateRouteWaypoints(
+    initialLatitude: number,
+    initialLongitude: number,
+    route: number[][]
+  ) {
+    const routeWaypoints = [
+      fromLonLat([initialLongitude, initialLatitude], this.projection),
+    ];
+    route.forEach((waypoint) => {
+      const waypointLatitude = waypoint[0];
+      const waypointLongitude = waypoint[1];
+      const formattedWaypoint = fromLonLat(
+        [waypointLongitude, waypointLatitude],
+        this.projection
+      );
+      routeWaypoints.push(formattedWaypoint);
+    });
+    return routeWaypoints;
+  }
+
   createRouteFeature(moveableUnit: GameEntityWithRoute) {
-    const moveableUnitLocation = fromLonLat(
-      [moveableUnit.longitude, moveableUnit.latitude],
-      this.projection
-    );
-    const destinationLatitude =
-      moveableUnit.route[moveableUnit.route.length - 1][0];
-    const destinationLongitude =
-      moveableUnit.route[moveableUnit.route.length - 1][1];
-    const destinationLocation = fromLonLat(
-      [destinationLongitude, destinationLatitude],
-      this.projection
+    const routeWaypoints = this.generateRouteWaypoints(
+      moveableUnit.latitude,
+      moveableUnit.longitude,
+      moveableUnit.desiredRoute
     );
     const moveableUnitRouteFeature = new Feature({
       type: "route",
       id: moveableUnit.id,
-      geometry: new LineString([moveableUnitLocation, destinationLocation]),
+      geometry: new LineString(routeWaypoints),
       sideColor: moveableUnit.sideColor,
     });
     moveableUnitRouteFeature.setId(moveableUnit.id);
@@ -319,21 +332,12 @@ export class RouteLayer extends FeatureLayer {
   updateRouteFeature(moveableUnit: GameEntityWithRoute) {
     const feature = this.findFeatureByKey("id", moveableUnit.id);
     if (feature && moveableUnit.route.length > 0) {
-      const moveableUnitLocation = fromLonLat(
-        [moveableUnit.longitude, moveableUnit.latitude],
-        this.projection
+      const routeWaypoints = this.generateRouteWaypoints(
+        moveableUnit.latitude,
+        moveableUnit.longitude,
+        moveableUnit.route
       );
-      const destinationLatitude =
-        moveableUnit.route[moveableUnit.route.length - 1][0];
-      const destinationLongitude =
-        moveableUnit.route[moveableUnit.route.length - 1][1];
-      const destinationLocation = fromLonLat(
-        [destinationLongitude, destinationLatitude],
-        this.projection
-      );
-      feature.setGeometry(
-        new LineString([moveableUnitLocation, destinationLocation])
-      );
+      feature.setGeometry(new LineString(routeWaypoints));
     }
   }
 }
