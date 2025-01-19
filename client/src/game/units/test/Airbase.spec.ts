@@ -1,5 +1,5 @@
-import Airbase from "../game/units/Airbase";
-import Aircraft from "../game/units/Aircraft";
+import Airbase from "@/game/units/Airbase";
+import Aircraft from "@/game/units/Aircraft";
 
 describe("Airbase", () => {
   test("an Airbase is instantiated correctly", () => {

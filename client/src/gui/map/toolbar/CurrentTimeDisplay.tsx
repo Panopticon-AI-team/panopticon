@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Chip } from "@mui/material";
-import { unixToLocalTime } from "../../../utils/utils";
-import { CurrentScenarioTimeContext } from "../contextProviders/ScenarioTimeProvider";
-import { colorPalette } from "../../../utils/constants";
+import { unixToLocalTime } from "@/utils/dateTimeFunctions";
+import { CurrentScenarioTimeContext } from "@/gui/map/contextProviders/ScenarioTimeProvider";
+import { colorPalette } from "@/utils/constants";
 
 const currentTimeChipStyle = {
   backgroundColor: colorPalette.lightGray,

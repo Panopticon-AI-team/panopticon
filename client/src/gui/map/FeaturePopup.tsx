@@ -4,7 +4,7 @@ import Popover from "@mui/material/Popover";
 interface FeaturePopupProps {
   anchorPositionTop: number;
   anchorPositionLeft: number;
-  content: JSX.Element;
+  content: React.JSX.Element;
   handleCloseOnMap: () => void;
 }
 

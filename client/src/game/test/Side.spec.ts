@@ -1,4 +1,4 @@
-import Side from "../game/Side";
+import Side from "@/game/Side";
 
 describe("Side", () => {
   test("a Side is instantiated correctly", () => {

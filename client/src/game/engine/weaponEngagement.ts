@@ -3,21 +3,21 @@ import { fromLonLat, get as getProjection } from "ol/proj";
 import {
   DEFAULT_OL_PROJECTION_CODE,
   NAUTICAL_MILES_TO_METERS,
-} from "../../utils/constants";
-import Aircraft from "../units/Aircraft";
-import Facility from "../units/Facility";
+} from "@/utils/constants";
+import Aircraft from "@/game/units/Aircraft";
+import Facility from "@/game/units/Facility";
 import { Circle } from "ol/geom";
-import Scenario from "../Scenario";
-import Weapon from "../units/Weapon";
+import Scenario from "@/game/Scenario";
+import Weapon from "@/game/units/Weapon";
 import {
   getBearingBetweenTwoPoints,
   getDistanceBetweenTwoPoints,
   getNextCoordinates,
   getTerminalCoordinatesFromDistanceAndBearing,
   randomFloat,
-} from "../../utils/utils";
-import Airbase from "../units/Airbase";
-import Ship from "../units/Ship";
+} from "@/utils/mapFunctions";
+import Airbase from "@/game/units/Airbase";
+import Ship from "@/game/units/Ship";
 
 export type Target = Aircraft | Facility | Weapon | Airbase | Ship;
 

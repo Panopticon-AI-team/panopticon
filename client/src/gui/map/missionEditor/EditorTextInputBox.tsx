@@ -1,35 +1,33 @@
-import { makeStyles } from "@material-ui/styles";
-import React from "react";
+import { styled } from "@mui/system";
 
+// Styled components
+const Row = styled("div")({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+});
+
+const Caption = styled("span")({
+  marginRight: "15px",
+});
+
+// Props
 interface EditorTextInputBoxProps {
   caption: string;
   currentText: string;
   onChange: (option: string) => void;
 }
 
-const useStyles = makeStyles({
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  caption: {
-    marginRight: "10px",
-  },
-});
-
 const EditorTextInputBox = (props: EditorTextInputBoxProps) => {
-  const classes = useStyles();
-
   return (
-    <div className={classes.row}>
-      <span className={classes.caption}>{props.caption}</span>
+    <Row>
+      <Caption>{props.caption}</Caption>
       <input
         type="text"
         value={props.currentText}
         onChange={(event) => props.onChange(event.target.value)}
       />
-    </div>
+    </Row>
   );
 };
 

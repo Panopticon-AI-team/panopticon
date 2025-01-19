@@ -1,11 +1,11 @@
-import Game from "../game/Game";
-import Scenario from "../game/Scenario";
-import Side from "../game/Side";
-import Aircraft from "../game/units/Aircraft";
-import Ship from "../game/units/Ship";
-import Airbase from "../game/units/Airbase";
-import Facility from "../game/units/Facility";
-import Weapon from "../game/units/Weapon";
+import Game from "@/game/Game";
+import Scenario from "@/game/Scenario";
+import Side from "@/game/Side";
+import Aircraft from "@/game/units/Aircraft";
+import Ship from "@/game/units/Ship";
+import Airbase from "@/game/units/Airbase";
+import Facility from "@/game/units/Facility";
+import Weapon from "@/game/units/Weapon";
 
 export function getTestUnits() {
   const sideBlue = new Side({

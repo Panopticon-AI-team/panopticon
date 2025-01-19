@@ -1,6 +1,6 @@
-import Ship from "../game/units/Ship";
-import Aircraft from "../game/units/Aircraft";
-import Weapon from "../game/units/Weapon";
+import Ship from "@/game/units/Ship";
+import Aircraft from "@/game/units/Aircraft";
+import Weapon from "@/game/units/Weapon";
 
 describe("Ship", () => {
   test("a Ship is instantiated correctly", () => {

@@ -1,5 +1,5 @@
-import { DEFAULT_SIDE_COLOR } from "../../utils/constants";
-import Weapon from "./Weapon";
+import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
+import Weapon from "@/game/units/Weapon";
 
 interface IAircraft {
   id: string;

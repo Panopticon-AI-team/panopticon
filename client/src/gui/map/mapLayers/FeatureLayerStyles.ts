@@ -1,15 +1,15 @@
 import { FeatureLike } from "ol/Feature.js";
 import { Style, Icon, Fill, Stroke, Text } from "ol/style.js";
 
-import { colorNameToColorArray, toRadians } from "../../../utils/utils";
+import { colorNameToColorArray, toRadians } from "@/utils/mapFunctions";
 
-import FlightIconSvg from "../../assets/flight_black_24dp.svg";
-import RadarIconSvg from "../../assets/radar_black_24dp.svg";
-import FlightTakeoffSvg from "../../assets/flight_takeoff_black_24dp.svg";
-import ChevronRightSvg from "../../assets/chevron_right_black_24dp.svg";
-import WeaponSvg from "../../assets/keyboard_double_arrow_up_black_24dp.svg";
-import DirectionsBoatSvg from "../../assets/directions_boat_black_24dp.svg";
-import PinDropSvg from "../../assets/pin_drop_24dp_E8EAED.svg";
+import FlightIconSvg from "@/gui/assets/flight_black_24dp.svg";
+import RadarIconSvg from "@/gui/assets/radar_black_24dp.svg";
+import FlightTakeoffSvg from "@/gui/assets/flight_takeoff_black_24dp.svg";
+import ChevronRightSvg from "@/gui/assets/chevron_right_black_24dp.svg";
+import WeaponSvg from "@/gui/assets/keyboard_double_arrow_up_black_24dp.svg";
+import DirectionsBoatSvg from "@/gui/assets/directions_boat_black_24dp.svg";
+import PinDropSvg from "@/gui/assets/pin_drop_24dp_E8EAED.svg";
 import { LineString, Point } from "ol/geom";
 
 export const aircraftStyle = function (feature: FeatureLike) {

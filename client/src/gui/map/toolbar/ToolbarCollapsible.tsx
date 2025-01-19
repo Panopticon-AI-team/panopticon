@@ -6,32 +6,29 @@ import Container from "@mui/material/Container";
 import CardContent from "@mui/material/CardContent";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { makeStyles } from "@material-ui/styles";
-import { colorPalette } from "../../../utils/constants";
+import { colorPalette } from "@/utils/constants";
+import { Typography } from "@mui/material";
 
 interface ToolbarCollapsibleProps {
   title: string;
-  content: JSX.Element;
+  content: React.JSX.Element;
   width: number;
   height: number;
   open: boolean;
 }
 
-const useStyles = makeStyles({
-  cardHeaderRoot: {
+export default function ToolbarCollapsible(
+  props: Readonly<ToolbarCollapsibleProps>
+) {
+  const [open, setOpen] = useState(props.open);
+
+  const cardHeaderStyle = {
     textAlign: "left",
     backgroundColor: colorPalette.white,
     color: "black",
     height: "5px",
     borderRadius: "10px",
-  },
-});
-
-export default function ToolbarCollapsible(
-  props: Readonly<ToolbarCollapsibleProps>
-) {
-  const [open, setOpen] = useState(props.open);
-  const classes = useStyles();
+  };
 
   const cardStyle = {
     minWidth: props.width,
@@ -51,12 +48,13 @@ export default function ToolbarCollapsible(
   return (
     <Card sx={cardStyle}>
       <CardHeader
-        title={props.title}
+        title={
+          <Typography variant="body1" component="span">
+            {props.title}
+          </Typography>
+        }
         avatar={open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-        classes={{
-          root: classes.cardHeaderRoot,
-        }}
-        titleTypographyProps={{ variant: "body1" }}
+        sx={cardHeaderStyle}
         onClick={() => {
           setOpen(!open);
         }}
