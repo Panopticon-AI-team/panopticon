@@ -1,4 +1,4 @@
-import Weapon from "../game/units/Weapon";
+import Weapon from "@/game/units/Weapon";
 
 describe("Weapon", () => {
   test("a Weapon is instantiated correctly", () => {

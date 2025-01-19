@@ -1,4 +1,4 @@
-import { getTestUnits } from "./helpers";
+import { getTestUnits } from "../../testing/helpers";
 
 describe("Scenario", () => {
   test("a Scenario is instantiated correctly", () => {

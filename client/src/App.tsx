@@ -1,19 +1,15 @@
-import React from "react";
 import { v4 as uuidv4 } from "uuid";
-
 import { get as getProjection, transform } from "ol/proj.js";
-
-import "./styles/App.css";
-import ScenarioMap from "./gui/map/ScenarioMap";
-import Side from "./game/Side";
-import Scenario from "./game/Scenario";
-import Game from "./game/Game";
-import { DEFAULT_OL_PROJECTION_CODE } from "./utils/constants";
-import defaultScenarioJson from "./scenarios/default_scenario.json";
-import SCSScenarioJson from "./scenarios/SCS.json";
-import { CurrentScenarioTimeProvider } from "./gui/map/contextProviders/ScenarioTimeProvider";
-import { CurrentGameStatusProvider } from "./gui/map/contextProviders/GameStatusProvider";
-import { CurrentMouseMapCoordinatesProvider } from "./gui/map/contextProviders/MouseMapCoordinatesProvider";
+import ScenarioMap from "@/gui/map/ScenarioMap";
+import Side from "@/game/Side";
+import Scenario from "@/game/Scenario";
+import Game from "@/game/Game";
+import { DEFAULT_OL_PROJECTION_CODE } from "@/utils/constants";
+import defaultScenarioJson from "@/scenarios/default_scenario.json"; // < To easily switch between default_scenario.json and SCS.json when testing. Ignore lint warning. Possible to resort to something else instead of having unsued import here ?
+import SCSScenarioJson from "@/scenarios/SCS.json";
+import { CurrentScenarioTimeProvider } from "@/gui/map/contextProviders/ScenarioTimeProvider";
+import { CurrentGameStatusProvider } from "@/gui/map/contextProviders/GameStatusProvider";
+import { CurrentMouseMapCoordinatesProvider } from "@/gui/map/contextProviders/MouseMapCoordinatesProvider";
 
 export default function App() {
   const sideBlue = new Side({

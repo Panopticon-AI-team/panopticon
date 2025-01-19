@@ -10,17 +10,12 @@ import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import { v4 as uuidv4 } from "uuid";
 
-import Game from "../../../game/Game";
-import {
-  AircraftDb,
-  AirbaseDb,
-  FacilityDb,
-  ShipDb,
-} from "../../../game/db/UnitDb";
-import { colorPalette } from "../../../utils/constants";
-import { ReactComponent as PanopticonLogoSvg } from "../../assets/panopticon.svg";
-import ToolbarCollapsible from "./ToolbarCollapsible";
-import CurrentActionContextDisplay from "./CurrentActionContextDisplay";
+import Game from "@/game/Game";
+import { AircraftDb, AirbaseDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
+import { colorPalette } from "@/utils/constants";
+import PanopticonLogoSvg from "@/gui/assets/panopticon.svg?react";
+import ToolbarCollapsible from "@/gui/map/toolbar/ToolbarCollapsible";
+import CurrentActionContextDisplay from "@/gui/map/toolbar/CurrentActionContextDisplay";
 
 const drawerWidth = 300;
 

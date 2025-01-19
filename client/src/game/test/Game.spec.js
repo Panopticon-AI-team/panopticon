@@ -1,4 +1,4 @@
-import { getTestGame } from "./helpers";
+import { getTestGame } from "../../testing/helpers";
 
 describe("aircraft rtb", () => {
   test("aircraft stops returning to airbase if airbase is deleted (bug #42)", () => {

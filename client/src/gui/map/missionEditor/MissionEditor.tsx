@@ -2,40 +2,15 @@ import React, { useState } from "react";
 import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import { makeStyles } from "@material-ui/styles";
-import { colorPalette } from "../../../utils/constants";
-import EditorSelector from "./EditorSelector";
-import EditorTextInputBox from "./EditorTextInputBox";
-import { Button, Stack } from "@mui/material";
-import PatrolMission from "../../../game/mission/PatrolMission";
-import Aircraft from "../../../game/units/Aircraft";
-import ReferencePoint from "../../../game/units/ReferencePoint";
-import StrikeMission from "../../../game/mission/StrikeMission";
-import { Target } from "../../../game/engine/weaponEngagement";
-
-const useStyles = makeStyles({
-  cardHeaderRoot: {
-    textAlign: "left",
-    backgroundColor: colorPalette.white,
-    color: "black",
-    height: "5px",
-    borderRadius: "10px",
-  },
-  cardContentRoot: {
-    display: "flex",
-    flexDirection: "column",
-    rowGap: "10px",
-  },
-  bottomButtonsStack: {
-    justifyContent: "center",
-  },
-  editorButton: {
-    color: colorPalette.white,
-    borderRadius: "10px",
-  },
-  closeButton: { position: "absolute", top: "0", right: "0" },
-});
+import { colorPalette } from "@/utils/constants";
+import EditorSelector from "@/gui/map/missionEditor/EditorSelector";
+import EditorTextInputBox from "@/gui/map/missionEditor/EditorTextInputBox";
+import { Button, CardContent, Stack, Typography } from "@mui/material";
+import PatrolMission from "@/game/mission/PatrolMission";
+import Aircraft from "@/game/units/Aircraft";
+import ReferencePoint from "@/game/units/ReferencePoint";
+import StrikeMission from "@/game/mission/StrikeMission";
+import { Target } from "@/game/engine/weaponEngagement";
 
 interface MissionEditorProps {
   missions: (PatrolMission | StrikeMission)[];
@@ -81,7 +56,6 @@ const parseSelectedMissionType = (
 };
 
 const MissionEditor = (props: MissionEditorProps) => {
-  const classes = useStyles();
   const [selectedMission, setSelectedMission] = useState<
     PatrolMission | StrikeMission
   >(props.missions[0]);
@@ -104,11 +78,41 @@ const MissionEditor = (props: MissionEditorProps) => {
   const [selectedTargets, setSelectedTargets] = useState<string[]>([]);
   const [missionName, setMissionName] = useState<string>(selectedMission.name);
 
+  const cardContentStyle = {
+    display: "flex",
+    flexDirection: "column",
+    rowGap: "10px",
+  };
+
+  const bottomButtonsStackStyle = {
+    display: "flex",
+    justifyContent: "center",
+  };
+
+  const editorButtonStyle = {
+    color: colorPalette.white,
+    borderRadius: "10px",
+  };
+
+  const closeButtonStyle = {
+    position: "absolute",
+    top: "0",
+    right: "0",
+  };
+
   const cardStyle = {
     minWidth: "400px",
     minHeight: "200px",
     backgroundColor: colorPalette.lightGray,
     boxShadow: "none",
+    borderRadius: "10px",
+  };
+
+  const cardHeaderStyle = {
+    textAlign: "left",
+    backgroundColor: colorPalette.white,
+    color: "black",
+    height: "5px",
     borderRadius: "10px",
   };
 
@@ -161,6 +165,31 @@ const MissionEditor = (props: MissionEditorProps) => {
       );
     }
     props.handleCloseOnMap();
+  };
+
+  const handleMissionChange = (newSelectedMission: string) => {
+    const searchedSelectedMission = props.missions.find(
+      (mission) => mission.id === newSelectedMission
+    );
+
+    if (!searchedSelectedMission) return;
+
+    setSelectedMission(searchedSelectedMission);
+    setMissionName(searchedSelectedMission.name);
+    setSelectedAircraft(searchedSelectedMission.assignedUnitIds);
+
+    if (searchedSelectedMission instanceof PatrolMission) {
+      setSelectedReferencePoints(
+        findReferencePointsForAssignedArea(
+          searchedSelectedMission.assignedArea,
+          props.referencePoints
+        )
+      );
+    } else if (searchedSelectedMission instanceof StrikeMission) {
+      setSelectedTargets(searchedSelectedMission.assignedTargetIds);
+    }
+
+    setSelectedMissionType(parseSelectedMissionType(searchedSelectedMission));
   };
 
   const patrolMissionEditorContent = (
@@ -232,34 +261,14 @@ const MissionEditor = (props: MissionEditorProps) => {
     }
 
     return (
-      <CardContent classes={{ root: classes.cardContentRoot }}>
+      <CardContent sx={cardContentStyle}>
         <EditorSelector
           selectId={"mission-editor-mission-selector"}
           caption={"Mission"}
           optionIds={missionIds}
           optionNames={missionNames}
           selectedOption={selectedMission.id}
-          onChange={(newSelectedMission) => {
-            const searchedSelectedMission = props.missions.find(
-              (mission) => mission.id === newSelectedMission
-            );
-            if (!searchedSelectedMission) return;
-            setSelectedMission(searchedSelectedMission);
-            setMissionName(searchedSelectedMission.name);
-            setSelectedAircraft(searchedSelectedMission.assignedUnitIds);
-            searchedSelectedMission instanceof PatrolMission &&
-              setSelectedReferencePoints(
-                findReferencePointsForAssignedArea(
-                  searchedSelectedMission.assignedArea,
-                  props.referencePoints
-                )
-              );
-            searchedSelectedMission instanceof StrikeMission &&
-              setSelectedTargets(searchedSelectedMission.assignedTargetIds);
-            setSelectedMissionType(
-              parseSelectedMissionType(searchedSelectedMission)
-            );
-          }}
+          onChange={handleMissionChange}
         />
         <EditorSelector
           selectId={"mission-editor-type-selector"}
@@ -294,24 +303,20 @@ const MissionEditor = (props: MissionEditorProps) => {
           multiple={true}
         />
         {missionSpecificComponent}
-        <Stack
-          direction="row"
-          spacing={2}
-          className={classes.bottomButtonsStack}
-        >
+        <Stack sx={bottomButtonsStackStyle} direction="row" spacing={2}>
           <Button
             variant="contained"
             color="primary"
-            className={classes.editorButton}
             onClick={handleUpdateMission}
+            sx={editorButtonStyle}
           >
             UPDATE
           </Button>
           <Button
             variant="contained"
             color="error"
-            className={classes.editorButton}
             onClick={handleDeleteMission}
+            sx={editorButtonStyle}
           >
             Delete
           </Button>
@@ -319,6 +324,11 @@ const MissionEditor = (props: MissionEditorProps) => {
       </CardContent>
     );
   };
+
+  // this is needed because of the Draggable component
+  // If running in React Strict mode, ReactDOM.findDOMNode() is deprecated.
+  // Unfortunately, in order for <Draggable> to work properly, we need raw access to the underlying DOM node.
+  const nodeRef = React.useRef(null);
 
   return (
     <div
@@ -329,14 +339,18 @@ const MissionEditor = (props: MissionEditorProps) => {
         zIndex: "1001",
       }}
     >
-      <Draggable>
-        <Card sx={cardStyle}>
+      <Draggable nodeRef={nodeRef}>
+        <Card sx={cardStyle} ref={nodeRef}>
+          <Button sx={closeButtonStyle} onClick={props.handleCloseOnMap}>
+            X
+          </Button>
           <CardHeader
-            title={"Mission Editor"}
-            classes={{
-              root: classes.cardHeaderRoot,
-            }}
-            titleTypographyProps={{ variant: "body1" }}
+            title={
+              <Typography variant="body1" component="span">
+                Mission Editor
+              </Typography>
+            }
+            sx={cardHeaderStyle}
             avatar={
               <Button
                 onClick={props.handleCloseOnMap}
@@ -345,7 +359,7 @@ const MissionEditor = (props: MissionEditorProps) => {
                 X
               </Button>
             }
-          ></CardHeader>
+          />
           {cardContent()}
         </Card>
       </Draggable>

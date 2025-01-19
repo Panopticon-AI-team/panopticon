@@ -4,15 +4,14 @@ import {
   getBearingBetweenTwoPoints,
   getDistanceBetweenTwoPoints,
   getTerminalCoordinatesFromDistanceAndBearing,
-  unixToLocalTime,
   colorNameToHex,
   colorNameToColorArray,
   randomFloat,
   randomInt,
-  generateRoute,
-  generateRouteRealistic,
   getNextCoordinates,
-} from "../utils/utils";
+} from "../mapFunctions";
+
+import { unixToLocalTime } from "../dateTimeFunctions";
 
 describe("testing distance math functions", () => {
   it.each([

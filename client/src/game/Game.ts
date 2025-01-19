@@ -1,14 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
 
-import Aircraft from "./units/Aircraft";
-import Facility from "./units/Facility";
-import Scenario from "./Scenario";
+import Aircraft from "@/game/units/Aircraft";
+import Facility from "@/game/units/Facility";
+import Scenario from "@/game/Scenario";
 
 import {
   getBearingBetweenTwoPoints,
   getNextCoordinates,
   getDistanceBetweenTwoPoints,
-} from "../utils/utils";
+} from "@/utils/mapFunctions";
 import {
   aircraftPursuit,
   checkIfThreatIsWithinRange,
@@ -16,18 +16,18 @@ import {
   launchWeapon,
   routeAircraftToStrikePosition,
   weaponEngagement,
-} from "./engine/weaponEngagement";
-import Airbase from "./units/Airbase";
-import Side from "./Side";
-import Weapon from "./units/Weapon";
+} from "@/game/engine/weaponEngagement";
+import Airbase from "@/game/units/Airbase";
+import Side from "@/game/Side";
+import Weapon from "@/game/units/Weapon";
 import {
   GAME_SPEED_DELAY_MS,
   NAUTICAL_MILES_TO_METERS,
-} from "../utils/constants";
-import Ship from "./units/Ship";
-import ReferencePoint from "./units/ReferencePoint";
-import PatrolMission from "./mission/PatrolMission";
-import StrikeMission from "./mission/StrikeMission";
+} from "@/utils/constants";
+import Ship from "@/game/units/Ship";
+import ReferencePoint from "@/game/units/ReferencePoint";
+import PatrolMission from "@/game/mission/PatrolMission";
+import StrikeMission from "@/game/mission/StrikeMission";
 
 interface IMapView {
   defaultCenter: number[];

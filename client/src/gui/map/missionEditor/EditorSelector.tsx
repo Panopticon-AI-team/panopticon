@@ -1,6 +1,21 @@
-import { makeStyles } from "@material-ui/styles";
-import React from "react";
+import { styled } from "@mui/system";
 
+// Styled components
+const Row = styled("div")({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+});
+
+const Caption = styled("span")({
+  marginRight: "15px",
+});
+
+const Selector = styled("select")({
+  width: "100%",
+});
+
+// Props
 interface EditorSelectorProps {
   selectId: string;
   caption: string;
@@ -11,41 +26,24 @@ interface EditorSelectorProps {
   multiple?: boolean;
 }
 
-const useStyles = makeStyles({
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  caption: {
-    marginRight: "15px",
-  },
-  selector: {
-    width: "100%",
-  },
-});
-
 const EditorSelector = (props: EditorSelectorProps) => {
-  const classes = useStyles();
-
   return (
-    <div className={classes.row}>
-      <span className={classes.caption}>{props.caption}</span>
-      <select
+    <Row>
+      <Caption>{props.caption}</Caption>
+      <Selector
         id={props.selectId}
         title={props.caption}
         value={props.selectedOption}
         onChange={(event) => props.onChange(event.target.value)}
         multiple={props.multiple ?? false}
-        className={classes.selector}
       >
         {props.optionIds.map((optionId, index) => (
           <option key={optionId} value={optionId}>
             {props.optionNames[index]}
           </option>
         ))}
-      </select>
-    </div>
+      </Selector>
+    </Row>
   );
 };
 

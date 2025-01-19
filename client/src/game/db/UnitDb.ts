@@ -7,17 +7,20 @@ export const AircraftDb = [
     fuelRate: 1000,
     range: 1350,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
-      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
+      maxFuelSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/"
+      rangeSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "KC-135R Stratotanker",
@@ -26,17 +29,20 @@ export const AircraftDb = [
     fuelRate: 5000,
     range: 1303,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
-      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
+      maxFuelSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/"
+      rangeSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "A-10C Thunderbolt II",
@@ -45,17 +51,20 @@ export const AircraftDb = [
     fuelRate: 1000,
     range: 695,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
-      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
+      maxFuelSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/"
+      rangeSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "B-2 Spirit",
@@ -64,17 +73,20 @@ export const AircraftDb = [
     fuelRate: 5000,
     range: 6000,
     dataSource: {
-      speedSrc: "high subsonic, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
-      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
+      speedSrc:
+        "high subsonic, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
+      maxFuelSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
       FuelRateSrc: "missing",
-      rangeSrc: "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/"
+      rangeSrc:
+        "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "F-22 Raptor",
@@ -83,17 +95,20 @@ export const AircraftDb = [
     fuelRate: 1000,
     range: 1600,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
-      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
+      maxFuelSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/"
+      rangeSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "C-130 Hercules",
@@ -102,17 +117,19 @@ export const AircraftDb = [
     fuelRate: 5000,
     range: 1700,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/",
       maxFuelSrc: "missing",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/"
+      rangeSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "C-17 Globemaster III",
@@ -121,17 +138,19 @@ export const AircraftDb = [
     fuelRate: 5000,
     range: 2785,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1529726/c-17-globemaster-iii/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1529726/c-17-globemaster-iii/",
       maxFuelSrc: "missing",
       FuelRateSrc: "missing",
-      rangeSrc: "Global with in-flight refueling, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/"
+      rangeSrc:
+        "Global with in-flight refueling, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "F-16 Fighting Falcon",
@@ -140,17 +159,20 @@ export const AircraftDb = [
     fuelRate: 1000,
     range: 1740,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
-      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
+      maxFuelSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/"
+      rangeSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "F-15 Eagle",
@@ -159,17 +181,20 @@ export const AircraftDb = [
     fuelRate: 1000,
     range: 3000,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
-      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
+      maxFuelSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/"
+      rangeSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "F/A-18 Hornet",
@@ -178,17 +203,19 @@ export const AircraftDb = [
     fuelRate: 1000,
     range: 1275,
     dataSource: {
-      speedSrc: "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/",
+      speedSrc:
+        "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/",
       maxFuelSrc: "missing",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/"
+      rangeSrc:
+        "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "B-52 Stratofortress",
@@ -197,17 +224,20 @@ export const AircraftDb = [
     fuelRate: 5000,
     range: 8800,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
-      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
+      maxFuelSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/"
+      rangeSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "F-4 Phantom II",
@@ -216,17 +246,19 @@ export const AircraftDb = [
     fuelRate: 1000,
     range: 1750,
     dataSource: {
-      speedSrc: "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/",
+      speedSrc:
+        "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/",
       maxFuelSrc: "missing",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/"
+      rangeSrc:
+        "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "B-1B Lancer",
@@ -235,17 +267,20 @@ export const AircraftDb = [
     fuelRate: 5000,
     range: 5100,
     dataSource: {
-      speedSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
-      maxFuelSrc: "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
+      speedSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
+      maxFuelSrc:
+        "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
       FuelRateSrc: "missing",
-      rangeSrc: "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/"
+      rangeSrc:
+        "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "C-12 Huron",
@@ -254,17 +289,20 @@ export const AircraftDb = [
     fuelRate: 300,
     range: 1450,
     dataSource: {
-      speedSrc: "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
-      maxFuelSrc: "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
+      speedSrc:
+        "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
+      maxFuelSrc:
+        "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/"
+      rangeSrc:
+        "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
   {
     className: "F-14 Tomcat",
@@ -273,17 +311,19 @@ export const AircraftDb = [
     fuelRate: 1000,
     range: 2085,
     dataSource: {
-      speedSrc: "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html",
+      speedSrc:
+        "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html",
       maxFuelSrc: "missing",
       FuelRateSrc: "missing",
-      rangeSrc: "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html"
+      rangeSrc:
+        "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html",
     },
     units: {
       speedUnit: "mph",
       maxFuelUnit: "lbs",
       fuelRateUnit: "gallons/hour",
-      rangeUnit: "nm"
-    }
+      rangeUnit: "nm",
+    },
   },
 ];
 
@@ -575,113 +615,112 @@ export const AirbaseDb = [
 export const FacilityDb = [
   {
     className: "S-400 Triumf",
-    range: 200 // No official source available, using 200 as the range
+    range: 200, // No official source available, using 200 as the range
   },
   {
     className: "S-300V4",
-    range: 200 // No official source available, using 200 as the range
+    range: 200, // No official source available, using 200 as the range
   },
   {
     className: "S-500 Prometey",
-    range: 200 // No official source available, using 200 as the range
+    range: 200, // No official source available, using 200 as the range
   },
   {
     className: "Buk-M3",
-    range: 50 // No official source available, using 50 as the range
+    range: 50, // No official source available, using 50 as the range
   },
   {
     className: "Tor-M2",
-    range: 10 // No official source available, using 10 as the range
+    range: 10, // No official source available, using 10 as the range
   },
   {
     className: "Pantsir-S1",
-    range: 10 // No official source available, using 10 as the range
+    range: 10, // No official source available, using 10 as the range
   },
   {
     className: "HQ-9",
-    range: 200 // No official source available, using 200 as the range
+    range: 200, // No official source available, using 200 as the range
   },
   {
     className: "HQ-19",
-    range: 200 // No official source available, using 200 as the range
+    range: 200, // No official source available, using 200 as the range
   },
   {
     className: "HQ-16",
-    range: 50 // No official source available, using 50 as the range
+    range: 50, // No official source available, using 50 as the range
   },
   {
     className: "HQ-17",
-    range: 10 // No official source available, using 10 as the range
+    range: 10, // No official source available, using 10 as the range
   },
   {
     className: "HQ-7",
-    range: 10 // No official source available, using 10 as the range
+    range: 10, // No official source available, using 10 as the range
   },
   {
     className: "MIM-104 Patriot",
-    range: 200 // No official source available, using 200 as the range
+    range: 200, // No official source available, using 200 as the range
   },
   {
     className: "THAAD",
-    range: 200 // No official source available, using 200 as the range
+    range: 200, // No official source available, using 200 as the range
   },
   {
     className: "Aster 30",
-    range: 50 // No official source available, using 50 as the range
+    range: 50, // No official source available, using 50 as the range
   },
   {
     className: "Barak 8",
-    range: 50 // No official source available, using 50 as the range
+    range: 50, // No official source available, using 50 as the range
   },
   {
     className: "NASAMS",
-    range: 50 // No official source available, using 50 as the range
-  }
+    range: 50, // No official source available, using 50 as the range
+  },
 ];
 
 export const ShipDb = [
-
   // all values notional
   {
     className: "Aircraft Carrier",
     speed: 35, // mph
     maxFuel: 25200000, // lbs
     fuelRate: 1000000, // lbs/hr
-    range: 8000 // NM
+    range: 8000, // NM
   },
   {
     className: "Destroyer",
     speed: 40, // mph
     maxFuel: 3500000, // lbs
     fuelRate: 100000, // lbs/hr
-    range: 5000 // NM
+    range: 5000, // NM
   },
   {
     className: "Frigate",
     speed: 35, // mph
     maxFuel: 2800000, // lbs
     fuelRate: 80000, // lbs/hr
-    range: 4500 // NM
+    range: 4500, // NM
   },
   {
     className: "Corvette",
     speed: 32, // mph
     maxFuel: 1400000, // lbs
     fuelRate: 60000, // lbs/hr
-    range: 3500 // NM
+    range: 3500, // NM
   },
   {
     className: "Amphibious Assault Ship",
     speed: 25, // mph
     maxFuel: 8400000, // lbs
     fuelRate: 200000, // lbs/hr
-    range: 6000 // NM
+    range: 6000, // NM
   },
   {
     className: "Patrol Boat",
     speed: 40, // mph
     maxFuel: 350000, // lbs
     fuelRate: 30000, // lbs/hr
-    range: 1500 // NM
+    range: 1500, // NM
   },
 ];

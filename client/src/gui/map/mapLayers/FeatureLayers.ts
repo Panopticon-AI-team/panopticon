@@ -5,13 +5,13 @@ import VectorSource from "ol/source/Vector.js";
 import { Projection, fromLonLat, get as getProjection } from "ol/proj";
 import { Style } from "ol/style";
 
-import Aircraft from "../../../game/units/Aircraft";
-import Facility from "../../../game/units/Facility";
-import Airbase from "../../../game/units/Airbase";
+import Aircraft from "@/game/units/Aircraft";
+import Facility from "@/game/units/Facility";
+import Airbase from "@/game/units/Airbase";
 import {
   DEFAULT_OL_PROJECTION_CODE,
   NAUTICAL_MILES_TO_METERS,
-} from "../../../utils/constants";
+} from "@/utils/constants";
 import {
   routeStyle,
   aircraftStyle,
@@ -22,11 +22,11 @@ import {
   featureLabelStyle,
   shipStyle,
   referencePointStyle,
-} from "./FeatureLayerStyles";
-import Weapon from "../../../game/units/Weapon";
+} from "@/gui/map/mapLayers/FeatureLayerStyles";
+import Weapon from "@/game/units/Weapon";
 import VectorLayer from "ol/layer/Vector";
-import Ship from "../../../game/units/Ship";
-import ReferencePoint from "../../../game/units/ReferencePoint";
+import Ship from "@/game/units/Ship";
+import ReferencePoint from "@/game/units/ReferencePoint";
 
 type GameEntity =
   | Aircraft

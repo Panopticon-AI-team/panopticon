@@ -1,5 +1,5 @@
-import Aircraft from "../game/units/Aircraft";
-import Weapon from "../game/units/Weapon";
+import Aircraft from "@/game/units/Aircraft";
+import Weapon from "@/game/units/Weapon";
 
 describe("Aircraft", () => {
   test("an Aircraft is instantiated correctly", () => {

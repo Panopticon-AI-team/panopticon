@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-
+import { useContext, useEffect, useRef, useState } from "react";
 import { Feature, MapBrowserEvent, Map as OlMap, Overlay } from "ol";
 import { unByKey } from "ol/Observable";
 import View from "ol/View";
@@ -17,24 +16,25 @@ import {
 } from "ol/proj";
 import VectorSource from "ol/source/Vector";
 import { getLength } from "ol/sphere.js";
-import Game from "../../game/Game";
-import Scenario from "../../game/Scenario";
+import Game from "@/game/Game";
+import Scenario from "@/game/Scenario";
 import {
   DEFAULT_OL_PROJECTION_CODE,
   NAUTICAL_MILES_TO_METERS,
-} from "../../utils/constants";
-import { delay, randomInt } from "../../utils/utils";
+} from "@/utils/constants";
+import { randomInt } from "@/utils/mapFunctions";
+import { delay } from "@/utils/dateTimeFunctions";
 import "../styles/ScenarioMap.css";
-import MultipleFeatureSelector from "./MultipleFeatureSelector";
-import { SetCurrentGameStatus } from "./contextProviders/GameStatusProvider";
-import { SetCurrentMouseMapCoordinates } from "./contextProviders/MouseMapCoordinatesProvider";
-import { SetCurrentScenarioTimeContext } from "./contextProviders/ScenarioTimeProvider";
-import AirbaseCard from "./featureCards/AirbaseCard";
-import AircraftCard from "./featureCards/AircraftCard";
-import FacilityCard from "./featureCards/FacilityCard";
-import ShipCard from "./featureCards/ShipCard";
-import BaseMapLayers from "./mapLayers/BaseMapLayers";
-import { routeDrawLineStyle } from "./mapLayers/FeatureLayerStyles";
+import MultipleFeatureSelector from "@/gui/map/MultipleFeatureSelector";
+import { SetCurrentGameStatus } from "@/gui/map/contextProviders/GameStatusProvider";
+import { SetCurrentMouseMapCoordinates } from "@/gui/map/contextProviders/MouseMapCoordinatesProvider";
+import { SetCurrentScenarioTimeContext } from "@/gui/map/contextProviders/ScenarioTimeProvider";
+import AirbaseCard from "@/gui/map/featureCards/AirbaseCard";
+import AircraftCard from "@/gui/map/featureCards/AircraftCard";
+import FacilityCard from "@/gui/map/featureCards/FacilityCard";
+import ShipCard from "@/gui/map/featureCards/ShipCard";
+import BaseMapLayers from "@/gui/map/mapLayers/BaseMapLayers";
+import { routeDrawLineStyle } from "@/gui/map/mapLayers/FeatureLayerStyles";
 import {
   AirbasesLayer,
   AircraftLayer,
@@ -45,20 +45,15 @@ import {
   ThreatRangeLayer,
   WeaponLayer,
   ReferencePointLayer,
-} from "./mapLayers/FeatureLayers";
-import BottomCornerInfoDisplay from "./toolbar/BottomCornerInfoDisplay";
-import LayerVisibilityPanelToggle from "./toolbar/LayerVisibilityToggle";
-import Toolbar from "./toolbar/Toolbar";
-import {
-  AircraftDb,
-  AirbaseDb,
-  FacilityDb,
-  ShipDb,
-} from "../../game/db/UnitDb";
-import ReferencePointCard from "./featureCards/ReferencePointCard";
-import ReferencePoint from "../../game/units/ReferencePoint";
-import MissionCreator from "./missionEditor/MissionCreator";
-import MissionEditor from "./missionEditor/MissionEditor";
+} from "@/gui/map/mapLayers/FeatureLayers";
+import BottomCornerInfoDisplay from "@/gui/map/toolbar/BottomCornerInfoDisplay";
+import LayerVisibilityPanelToggle from "@/gui/map/toolbar/LayerVisibilityToggle";
+import Toolbar from "@/gui/map//toolbar/Toolbar";
+import { AircraftDb, AirbaseDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
+import ReferencePointCard from "@/gui/map/featureCards/ReferencePointCard";
+import ReferencePoint from "@/game/units/ReferencePoint";
+import MissionCreator from "@/gui/map/missionEditor/MissionCreator";
+import MissionEditor from "@/gui/map/missionEditor/MissionEditor";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -705,7 +700,7 @@ export default function ScenarioMap({
     game.scenarioPaused = false;
     let gameEnded = game.checkGameEnded();
     while (!game.scenarioPaused && !gameEnded) {
-      const [observation, reward, terminated, truncated, info] =
+      const [_observation, _reward, terminated, truncated, _info] =
         stepGameAndDrawFrame();
 
       gameEnded = terminated || truncated;
@@ -1091,7 +1086,7 @@ export default function ScenarioMap({
   ) {
     if (referencePoints.length < 3) return;
     const assignedArea = [];
-    for (let referencePointId of referencePoints) {
+    for (const referencePointId of referencePoints) {
       const referencePoint =
         game.currentScenario.getReferencePoint(referencePointId);
       if (referencePoint) {
@@ -1110,7 +1105,7 @@ export default function ScenarioMap({
     if (referencePoints && referencePoints.length < 3) return;
     const assignedArea = [];
     if (referencePoints) {
-      for (let referencePointId of referencePoints) {
+      for (const referencePointId of referencePoints) {
         const referencePoint =
           game.currentScenario.getReferencePoint(referencePointId);
         if (referencePoint) {

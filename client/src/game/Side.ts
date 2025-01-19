@@ -1,4 +1,4 @@
-import { DEFAULT_SIDE_COLOR } from "../utils/constants";
+import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
 
 interface ISide {
   id: string;

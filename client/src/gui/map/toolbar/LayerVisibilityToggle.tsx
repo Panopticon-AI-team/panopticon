@@ -6,7 +6,7 @@ import CardActions from "@mui/material/CardActions";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import React, { useState } from "react";
-import { colorPalette } from "../../../utils/constants";
+import { colorPalette } from "@/utils/constants";
 
 interface LayerVisibilityPanelToggleProps {
   featureLabelVisibility: boolean;

@@ -1,14 +1,14 @@
-import Aircraft from "./units/Aircraft";
-import Airbase from "./units/Airbase";
-import Facility from "./units/Facility";
-import Side from "./Side";
-import Weapon from "./units/Weapon";
-import Ship from "./units/Ship";
-import { getDistanceBetweenTwoPoints } from "../utils/utils";
-import ReferencePoint from "./units/ReferencePoint";
-import PatrolMission from "./mission/PatrolMission";
-import { Target } from "./engine/weaponEngagement";
-import StrikeMission from "./mission/StrikeMission";
+import Aircraft from "@/game/units/Aircraft";
+import Airbase from "@/game/units/Airbase";
+import Facility from "@/game/units/Facility";
+import Side from "@/game/Side";
+import Weapon from "@/game/units/Weapon";
+import Ship from "@/game/units/Ship";
+import { getDistanceBetweenTwoPoints } from "@/utils/mapFunctions";
+import ReferencePoint from "@/game/units/ReferencePoint";
+import PatrolMission from "@/game/mission/PatrolMission";
+import { Target } from "@/game/engine/weaponEngagement";
+import StrikeMission from "@/game/mission/StrikeMission";
 
 type HomeBase = Airbase | Ship;
 

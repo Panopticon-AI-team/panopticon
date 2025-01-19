@@ -1,5 +1,5 @@
 import { fromLonLat, get as getProjection } from "ol/proj";
-import { DEFAULT_OL_PROJECTION_CODE } from "../../utils/constants";
+import { DEFAULT_OL_PROJECTION_CODE } from "@/utils/constants";
 import { Polygon } from "ol/geom";
 
 interface IPatrolMission {

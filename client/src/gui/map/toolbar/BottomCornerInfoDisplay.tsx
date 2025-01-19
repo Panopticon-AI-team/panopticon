@@ -1,8 +1,7 @@
-import React from "react";
 import { Stack } from "@mui/material";
 
-import CurrentMouseMapCoordinatesDisplay from "./CurrentMouseMapCoordinatesDisplay";
-import CurrentTimeDisplay from "./CurrentTimeDisplay";
+import CurrentMouseMapCoordinatesDisplay from "@/gui/map/toolbar/CurrentMouseMapCoordinatesDisplay";
+import CurrentTimeDisplay from "@/gui/map/toolbar/CurrentTimeDisplay";
 
 export default function BottomCornerInfoDisplay() {
   return (

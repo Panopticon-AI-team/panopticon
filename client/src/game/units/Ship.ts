@@ -1,6 +1,6 @@
-import { DEFAULT_SIDE_COLOR } from "../../utils/constants";
-import Aircraft from "./Aircraft";
-import Weapon from "./Weapon";
+import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
+import Aircraft from "@/game/units/Aircraft";
+import Weapon from "@/game/units/Weapon";
 
 interface IShip {
   id: string;

@@ -1,5 +1,5 @@
-import Facility from "../game/units/Facility";
-import Weapon from "../game/units/Weapon";
+import Facility from "@/game/units/Facility";
+import Weapon from "@/game/units/Weapon";
 
 describe("Facility", () => {
   test("a Facility is instantiated correctly", () => {

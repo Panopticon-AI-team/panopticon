@@ -1,36 +1,13 @@
 import React, { useState } from "react";
 import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import { makeStyles } from "@material-ui/styles";
-import { colorPalette } from "../../../utils/constants";
-import EditorSelector from "./EditorSelector";
-import EditorTextInputBox from "./EditorTextInputBox";
-import { Button } from "@mui/material";
-import Aircraft from "../../../game/units/Aircraft";
-import ReferencePoint from "../../../game/units/ReferencePoint";
-import { Target } from "../../../game/engine/weaponEngagement";
-
-const useStyles = makeStyles({
-  cardHeaderRoot: {
-    textAlign: "left",
-    backgroundColor: colorPalette.white,
-    color: "black",
-    height: "5px",
-    borderRadius: "10px",
-  },
-  cardContentRoot: {
-    display: "flex",
-    flexDirection: "column",
-    rowGap: "10px",
-  },
-  createButton: {
-    color: colorPalette.white,
-    borderRadius: "10px",
-  },
-  closeButton: { position: "absolute", top: "0", right: "0" },
-});
+import { colorPalette } from "@/utils/constants";
+import EditorSelector from "@/gui/map/missionEditor/EditorSelector";
+import EditorTextInputBox from "@/gui/map/missionEditor/EditorTextInputBox";
+import Aircraft from "@/game/units/Aircraft";
+import ReferencePoint from "@/game/units/ReferencePoint";
+import { Target } from "@/game/engine/weaponEngagement";
+import { Button, CardContent, CardHeader, Typography } from "@mui/material";
 
 export type Object = {
   id: string;
@@ -57,7 +34,6 @@ interface MissionCreatorProps {
 const missionTypes = ["Patrol", "Strike"];
 
 const MissionCreator = (props: MissionCreatorProps) => {
-  const classes = useStyles();
   const [selectedMissionType, setSelectedMissionType] =
     useState<string>("Patrol");
   const [selectedAircraft, setSelectedAircraft] = useState<string[]>([]);
@@ -70,6 +46,31 @@ const MissionCreator = (props: MissionCreatorProps) => {
     string[]
   >([]);
   const [missionName, setMissionName] = useState<string>("");
+
+  const cardContentStyle = {
+    display: "flex",
+    flexDirection: "column",
+    rowGap: "10px",
+  };
+
+  const createButtonStyle = {
+    color: colorPalette.white,
+    borderRadius: "10px",
+  };
+
+  const closeButtonStyle = {
+    position: "absolute",
+    top: "0",
+    right: "0",
+  };
+
+  const cardHeaderStyle = {
+    textAlign: "left",
+    backgroundColor: colorPalette.white,
+    color: "black",
+    height: "5px",
+    borderRadius: "10px",
+  };
 
   const cardStyle = {
     minWidth: "400px",
@@ -193,7 +194,7 @@ const MissionCreator = (props: MissionCreatorProps) => {
     }
 
     return (
-      <CardContent classes={{ root: classes.cardContentRoot }}>
+      <CardContent sx={cardContentStyle}>
         <EditorSelector
           selectId={"mission-creator-type-selector"}
           caption={"Type"}
@@ -231,8 +232,8 @@ const MissionCreator = (props: MissionCreatorProps) => {
         {missionSpecificComponent}
         <Button
           variant="contained"
+          sx={createButtonStyle}
           color="primary"
-          classes={{ root: classes.createButton }}
           onClick={handleCreateMission}
         >
           Create
@@ -240,6 +241,11 @@ const MissionCreator = (props: MissionCreatorProps) => {
       </CardContent>
     );
   };
+
+  // this is needed because of the Draggable component
+  // If running in React Strict mode, ReactDOM.findDOMNode() is deprecated.
+  // Unfortunately, in order for <Draggable> to work properly, we need raw access to the underlying DOM node.
+  const nodeRef = React.useRef(null);
 
   return (
     <div
@@ -250,23 +256,24 @@ const MissionCreator = (props: MissionCreatorProps) => {
         zIndex: "1001",
       }}
     >
-      <Draggable>
-        <Card sx={cardStyle}>
+      <Draggable nodeRef={nodeRef}>
+        <Card sx={cardStyle} ref={nodeRef}>
+          <Button sx={closeButtonStyle} onClick={props.handleCloseOnMap}>
+            X
+          </Button>
           <CardHeader
-            title={"Mission Creator"}
-            classes={{
-              root: classes.cardHeaderRoot,
-            }}
-            titleTypographyProps={{ variant: "body1" }}
+            title={
+              <Typography variant="body1" component="span">
+                Mission Creator
+              </Typography>
+            }
+            sx={cardHeaderStyle}
             avatar={
-              <Button
-                onClick={props.handleCloseOnMap}
-                style={{ position: "absolute", top: "0", right: "0" }}
-              >
+              <Button onClick={props.handleCloseOnMap} sx={closeButtonStyle}>
                 X
               </Button>
             }
-          ></CardHeader>
+          />
           {cardContent()}
         </Card>
       </Draggable>
