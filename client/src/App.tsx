@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "@/utils/generateUUID";
 import { get as getProjection, transform } from "ol/proj.js";
 import ScenarioMap from "@/gui/map/ScenarioMap";
 import Side from "@/game/Side";
@@ -13,17 +13,17 @@ import { CurrentMouseMapCoordinatesProvider } from "@/gui/map/contextProviders/M
 
 export default function App() {
   const sideBlue = new Side({
-    id: uuidv4(),
+    id: randomUUID(),
     name: "BLUE",
     sideColor: "blue",
   });
   const sideRed = new Side({
-    id: uuidv4(),
+    id: randomUUID(),
     name: "RED",
     sideColor: "red",
   });
   const currentScenario = new Scenario({
-    id: uuidv4(),
+    id: randomUUID(),
     name: "Test Scenario",
     startTime: 1699073110,
     currentTime: 1699073110,
