@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "@/utils/generateUUID";
 import { fromLonLat, get as getProjection } from "ol/proj";
 import {
   DEFAULT_OL_PROJECTION_CODE,
@@ -101,7 +101,7 @@ export function launchWeapon(
   const nextWeaponLatitude = nextWeaponCoordinates[0];
   const nextWeaponLongitude = nextWeaponCoordinates[1];
   const newWeapon = new Weapon({
-    id: uuidv4(),
+    id: randomUUID(),
     name: weaponWithMaxRangePrototype.name,
     sideName: origin.sideName,
     className: weaponWithMaxRangePrototype.className,

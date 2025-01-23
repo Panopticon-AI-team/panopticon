@@ -8,8 +8,7 @@ import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
-import { v4 as uuidv4 } from "uuid";
-
+import { randomUUID } from "@/utils/generateUUID";
 import Game from "@/game/Game";
 import { AircraftDb, AirbaseDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
 import { colorPalette } from "@/utils/constants";
@@ -123,7 +122,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   const exportScenario = () => {
     props.pauseOnClick();
     const exportObject = props.game.exportCurrentScenario();
-    const exportName = "panopticon_scenario_" + uuidv4();
+    const exportName = "panopticon_scenario_" + randomUUID();
     const dataStr =
       "data:text/json;charset=utf-8," + encodeURIComponent(exportObject);
     const downloadAnchorNode = document.createElement("a");

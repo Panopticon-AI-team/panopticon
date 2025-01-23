@@ -1,5 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
-
+import { randomUUID } from "@/utils/generateUUID";
 import Aircraft from "@/game/units/Aircraft";
 import Facility from "@/game/units/Facility";
 import Scenario from "@/game/Scenario";
@@ -76,7 +75,7 @@ export default class Game {
       return;
     }
     const aircraft = new Aircraft({
-      id: uuidv4(),
+      id: randomUUID(),
       name: aircraftName,
       sideName: this.currentSideName,
       className: className,
@@ -110,7 +109,7 @@ export default class Game {
     const airbase = this.currentScenario.getAirbase(airbaseId);
     if (airbase) {
       const aircraft = new Aircraft({
-        id: uuidv4(),
+        id: randomUUID(),
         name: aircraftName,
         sideName: this.currentSideName,
         className: className,
@@ -142,7 +141,7 @@ export default class Game {
       return;
     }
     const airbase = new Airbase({
-      id: uuidv4(),
+      id: randomUUID(),
       name: airbaseName,
       sideName: this.currentSideName,
       className: className,
@@ -164,7 +163,7 @@ export default class Game {
       return;
     }
     const referencePoint = new ReferencePoint({
-      id: uuidv4(),
+      id: randomUUID(),
       name: referencePointName,
       sideName: this.currentSideName,
       latitude: latitude,
@@ -221,7 +220,7 @@ export default class Game {
       return;
     }
     const facility = new Facility({
-      id: uuidv4(),
+      id: randomUUID(),
       name: facilityName,
       sideName: this.currentSideName,
       className: className,
@@ -250,7 +249,7 @@ export default class Game {
       return;
     }
     const ship = new Ship({
-      id: uuidv4(),
+      id: randomUUID(),
       name: shipName,
       sideName: this.currentSideName,
       className: className,
@@ -278,7 +277,7 @@ export default class Game {
       const aircraft = this.currentScenario.getAircraft(unitId);
       if (aircraft) {
         const newAircraft = new Aircraft({
-          id: uuidv4(),
+          id: randomUUID(),
           name: aircraft.name,
           sideName: aircraft.sideName,
           className: aircraft.className,
@@ -312,7 +311,7 @@ export default class Game {
     const ship = this.currentScenario.getShip(shipId);
     if (ship) {
       const aircraft = new Aircraft({
-        id: uuidv4(),
+        id: randomUUID(),
         name: aircraftName,
         sideName: this.currentSideName,
         className: className,
@@ -370,7 +369,7 @@ export default class Game {
   ) {
     if (assignedArea.length < 3) return;
     const patrolMission = new PatrolMission({
-      id: uuidv4(),
+      id: randomUUID(),
       name: missionName,
       sideId: this.currentSideName,
       assignedUnitIds: assignedUnits,
@@ -402,7 +401,7 @@ export default class Game {
     assignedTargets: string[]
   ) {
     const strikeMission = new StrikeMission({
-      id: uuidv4(),
+      id: randomUUID(),
       name: missionName,
       sideId: this.currentSideName,
       assignedUnitIds: assignedAttackers,
@@ -440,7 +439,7 @@ export default class Game {
     sideName: string = this.currentSideName
   ) {
     const weapon = new Weapon({
-      id: uuidv4(),
+      id: randomUUID(),
       name: "Sample Weapon",
       sideName: sideName,
       className: "Sample Weapon",
