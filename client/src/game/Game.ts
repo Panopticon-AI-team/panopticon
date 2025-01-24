@@ -615,11 +615,8 @@ export default class Game {
         if (homeBase) {
           if (aircraft.homeBaseId !== homeBase.id)
             aircraft.homeBaseId = homeBase.id;
-          return this.moveAircraft(
-            aircraftId,
-            homeBase.latitude,
-            homeBase.longitude
-          );
+          this.moveAircraft(aircraftId, homeBase.latitude, homeBase.longitude);
+          return this.commitRoute(aircraftId);
         }
       }
     }
