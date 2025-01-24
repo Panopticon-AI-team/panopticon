@@ -480,13 +480,15 @@ export default class Game {
   moveShip(shipId: string, newLatitude: number, newLongitude: number) {
     const ship = this.currentScenario.getShip(shipId);
     if (ship) {
-      ship.route = [[newLatitude, newLongitude]];
-      ship.heading = getBearingBetweenTwoPoints(
-        ship.latitude,
-        ship.longitude,
-        newLatitude,
-        newLongitude
-      );
+      ship.desiredRoute.push([newLatitude, newLongitude]);
+      if (ship.desiredRoute.length === 1) {
+        ship.heading = getBearingBetweenTwoPoints(
+          ship.latitude,
+          ship.longitude,
+          newLatitude,
+          newLongitude
+        );
+      }
       return ship;
     }
   }
@@ -1033,11 +1035,7 @@ export default class Game {
               mission.generateRandomCoordinatesWithinPatrolArea();
             unit.route.push(randomWaypointInPatrolArea);
           } else if (unit.route.length > 0) {
-            if (
-              !mission.checkIfCoordinatesIsWithinPatrolArea(
-                unit.route[unit.route.length - 1]
-              )
-            ) {
+            if (!mission.checkIfCoordinatesIsWithinPatrolArea(unit.route[0])) {
               unit.route = [];
               const randomWaypointInPatrolArea =
                 mission.generateRandomCoordinatesWithinPatrolArea();
@@ -1186,7 +1184,7 @@ export default class Game {
     this.currentScenario.ships.forEach((ship) => {
       const route = ship.route;
       if (route.length > 0) {
-        const nextWaypoint = route[route.length - 1];
+        const nextWaypoint = route[0];
         const nextWaypointLatitude = nextWaypoint[0];
         const nextWaypointLongitude = nextWaypoint[1];
         if (

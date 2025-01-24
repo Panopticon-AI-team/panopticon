@@ -308,17 +308,7 @@ export default function ScenarioMap({
         break;
       }
       case "moveShip": {
-        cleanUpRouteDrawLineAndMeasurementTooltip();
         moveShip(game.selectedUnitId, event.coordinate);
-        const ship = game.currentScenario.getShip(game.selectedUnitId);
-        if (ship) {
-          ship.selected = !ship.selected;
-          shipLayer.updateShipFeature(ship.id, ship.selected, ship.heading);
-        }
-        game.selectedUnitId = "";
-        setCurrentGameStatusToContext(
-          game.scenarioPaused ? "Scenario paused" : "Scenario playing"
-        );
         break;
       }
       case "teleportUnit": {
@@ -936,13 +926,7 @@ export default function ScenarioMap({
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const destinationLatitude = coordinates[1];
     const destinationLongitude = coordinates[0];
-    const shipQueuedForMovement = game.moveShip(
-      shipId,
-      destinationLatitude,
-      destinationLongitude
-    );
-    if (shipQueuedForMovement)
-      shipRouteLayer.addRouteFeature(shipQueuedForMovement);
+    game.moveShip(shipId, destinationLatitude, destinationLongitude);
   }
 
   function launchAircraftFromShip(shipId: string) {
