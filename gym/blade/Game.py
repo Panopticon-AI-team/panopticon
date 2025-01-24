@@ -128,7 +128,7 @@ class Game:
 
     def launch_aircraft_from_ship(self, ship_id: str) -> Aircraft | None:
         if not self.current_side_name: return None
-        
+
         ship = self.current_scenario.get_ship(ship_id)
         if ship and len(ship.aircraft) > 0:
             aircraft = ship.aircraft.pop(0)
@@ -194,22 +194,24 @@ class Game:
             mission for mission in self.current_scenario.missions if mission.id != mission_id
         ]
 
-    def move_aircraft(self, aircraft_id: str, new_latitude: float, new_longitude: float) -> Aircraft | None:
+    def move_aircraft(self, aircraft_id: str, new_coordinates: list) -> Aircraft | None:
         aircraft = self.current_scenario.get_aircraft(aircraft_id)
         if aircraft:
-            aircraft.route = [[new_latitude, new_longitude]]
-            aircraft.heading = get_bearing_between_two_points(
-                aircraft.latitude, aircraft.longitude, new_latitude, new_longitude
-            )
+            aircraft.route = []
+            for i in range(len(new_coordinates)):
+                new_latitude = new_coordinates[i][0]
+                new_longitude = new_coordinates[i][1]
+                aircraft.route.append([new_latitude, new_longitude])
             return aircraft
 
-    def move_ship(self, ship_id: str, new_latitude: float, new_longitude: float) -> Ship | None:
+    def move_ship(self, ship_id: str, new_coordinates: list) -> Ship | None:
         ship = self.current_scenario.get_ship(ship_id)
         if ship:
-            ship.route = [[new_latitude, new_longitude]]
-            ship.heading = get_bearing_between_two_points(
-                ship.latitude, ship.longitude, new_latitude, new_longitude
-            )
+            ship.route = []
+            for i in range(len(new_coordinates)):
+                new_latitude = new_coordinates[i][0]
+                new_longitude = new_coordinates[i][1]
+                ship.route.append([new_latitude, new_longitude])
             return ship
 
     def handle_aircraft_attack(self, aircraft_id: str, target_id: str) -> None:
@@ -238,7 +240,7 @@ class Game:
                     if aircraft.home_base_id != homebase.id:
                         aircraft.home_base_id = homebase.id
                     return self.move_aircraft(
-                        aircraft_id, homebase.latitude, homebase.longitude
+                        aircraft_id, [[homebase.latitude, homebase.longitude]]
                     )
 
     def facility_auto_defense(self) -> None:
@@ -347,7 +349,7 @@ class Game:
                     unit.route.append(random_waypoint_in_patrol_area)
                 elif len(unit.route) > 0:
                     if not mission.check_if_coordinates_is_within_patrol_area(
-                        unit.route[len(unit.route) - 1]
+                        unit.route[0]
                     ):
                         unit.route = []
                         random_waypoint_in_patrol_area = (
@@ -429,7 +431,7 @@ class Game:
             route = aircraft.route
             if len(route) < 1:
                 continue
-            next_waypoint = route[len(route) - 1]
+            next_waypoint = route[0]
             next_waypoint_latitude = next_waypoint[0]
             next_waypoint_longitude = next_waypoint[1]
             if (
@@ -471,7 +473,7 @@ class Game:
             route = ship.route
             if len(route) < 1:
                 continue
-            next_waypoint = route[len(route) - 1]
+            next_waypoint = route[0]
             next_waypoint_latitude = next_waypoint[0]
             next_waypoint_longitude = next_waypoint[1]
             if (

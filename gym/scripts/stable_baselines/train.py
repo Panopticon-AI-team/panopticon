@@ -42,7 +42,7 @@ def action_transform_fnc(observation: Scenario, action: np.ndarray):
     if DEBUG:
         print(f"log: {aircraft.black_box.get_last_log_pp()}")
 
-    action = f"move_aircraft('{aircraft.id}', {action[0]}, {action[1]})"
+    action = f"move_aircraft('{aircraft.id}', [[{action[0]}, {action[1]}]])"
     return action
 
 

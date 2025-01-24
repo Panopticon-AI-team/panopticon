@@ -61,10 +61,10 @@ update_strike_mission(mission_id: str, mission_name: str, assigned_attackers: li
 delete_mission(mission_id: str) -> None
 
 # assign a waypoint for an aircraft to reach
-move_aircraft(aircraft_id: str, new_latitude: float, new_longitude: float) -> Aircraft | None
+move_aircraft(aircraft_id: str, new_coordinates: list) -> Aircraft | None
 
 # assign a waypoint for a ship to reach
-move_ship(ship_id: str, new_latitude: float, new_longitude: float) -> Ship | None
+move_ship(ship_id: str, new_coordinates: list) -> Ship | None
 
 # launches a weapon from an aircraft to a target
 handle_aircraft_attack(aircraft_id: str, target_id: str) -> None
