@@ -491,6 +491,21 @@ export default class Game {
     }
   }
 
+  commitRoute(unitId: string) {
+    const aircraft = this.currentScenario.getAircraft(unitId);
+    if (aircraft) {
+      aircraft.route = aircraft.desiredRoute;
+      aircraft.desiredRoute = [];
+      return aircraft;
+    }
+    const ship = this.currentScenario.getShip(unitId);
+    if (ship) {
+      ship.route = ship.desiredRoute;
+      ship.desiredRoute = [];
+      return ship;
+    }
+  }
+
   teleportUnit(unitId: string, newLatitude: number, newLongitude: number) {
     const aircraft = this.currentScenario.getAircraft(unitId);
     if (aircraft) {

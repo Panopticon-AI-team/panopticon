@@ -295,7 +295,7 @@ export class RouteLayer extends FeatureLayer {
     const routeWaypoints = this.generateRouteWaypoints(
       moveableUnit.latitude,
       moveableUnit.longitude,
-      moveableUnit.desiredRoute
+      moveableUnit.route
     );
     const moveableUnitRouteFeature = new Feature({
       type: "route",

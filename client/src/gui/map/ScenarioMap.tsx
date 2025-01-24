@@ -958,13 +958,7 @@ export default function ScenarioMap({
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const destinationLatitude = coordinates[1];
     const destinationLongitude = coordinates[0];
-    const aircraftQueuedForMovement = game.moveAircraft(
-      aircraftId,
-      destinationLatitude,
-      destinationLongitude
-    );
-    if (aircraftQueuedForMovement)
-      aircraftRouteLayer.addRouteFeature(aircraftQueuedForMovement);
+    game.moveAircraft(aircraftId, destinationLatitude, destinationLongitude);
   }
 
   function teleportUnit(unitId: string, coordinates: number[]) {
@@ -1012,14 +1006,12 @@ export default function ScenarioMap({
     game.selectedUnitId = aircraftId;
     const aircraft = game.currentScenario.getAircraft(aircraftId);
     if (aircraft) {
-      aircraft.desiredRoute = [];
       aircraft.selected = true;
       aircraftLayer.updateAircraftFeature(
         aircraft.id,
         aircraft.selected,
         aircraft.heading
       );
-      aircraftRouteLayer.removeFeatureById(aircraft.id);
       addRouteMeasurementInteraction(
         fromLonLat(
           [aircraft.longitude, aircraft.latitude],
@@ -1193,70 +1185,8 @@ export default function ScenarioMap({
       shipRouteLayer.refresh(observation.ships);
       return;
     }
-
-    let routeDrawInteraction: Draw | undefined;
-    theMap.getInteractions().forEach((interaction) => {
-      if (interaction instanceof Draw) {
-        routeDrawInteraction = interaction;
-      }
-    });
-    if (
-      routeDrawInteraction &&
-      getSelectedFeatureType(game.selectedUnitId) === "aircraft"
-    ) {
-      // aircraftRouteLayer.refresh(
-      //   observation.aircraft.filter((aircraft) => {
-      //     return aircraft.id !== game.selectedUnitId;
-      //   })
-      // );
-      // shipRouteLayer.refresh(observation.ships);
-      // routeDrawInteraction.removeLastPoint();
-      // routeDrawInteraction.removeLastPoint();
-      // const aircraftQueuedForMovement = observation.aircraft.find(
-      //   (aircraft) => aircraft.id === game.selectedUnitId
-      // );
-      // if (aircraftQueuedForMovement) {
-      //   const aircraftNewCoordinates = fromLonLat(
-      //     [
-      //       aircraftQueuedForMovement.longitude,
-      //       aircraftQueuedForMovement.latitude,
-      //     ],
-      //     projection ?? defaultProjection!
-      //   );
-      //   routeDrawInteraction.appendCoordinates([
-      //     aircraftNewCoordinates,
-      //     mousePosition,
-      //   ]);
-      // }
-    } else if (
-      routeDrawInteraction &&
-      getSelectedFeatureType(game.selectedUnitId) === "ship"
-    ) {
-      shipRouteLayer.refresh(
-        observation.ships.filter((ship) => {
-          return ship.id !== game.selectedUnitId;
-        })
-      );
-      aircraftRouteLayer.refresh(observation.aircraft);
-      routeDrawInteraction.removeLastPoint();
-      routeDrawInteraction.removeLastPoint();
-      const shipQueuedForMovement = observation.ships.find(
-        (ship) => ship.id === game.selectedUnitId
-      );
-      if (shipQueuedForMovement) {
-        const shipNewCoordinates = fromLonLat(
-          [shipQueuedForMovement.longitude, shipQueuedForMovement.latitude],
-          projection ?? defaultProjection!
-        );
-        routeDrawInteraction.appendCoordinates([
-          shipNewCoordinates,
-          mousePosition,
-        ]);
-      }
-    } else {
-      aircraftRouteLayer.refresh(observation.aircraft);
-      shipRouteLayer.refresh(observation.ships);
-    }
+    aircraftRouteLayer.refresh(observation.aircraft);
+    shipRouteLayer.refresh(observation.ships);
   }
 
   function updateMapView(center: number[], zoom: number) {
@@ -1505,8 +1435,13 @@ export default function ScenarioMap({
           aircraft.selected,
           aircraft.heading
         );
-        aircraft.route = aircraft.desiredRoute;
       }
+      const ship = game.currentScenario.getShip(game.selectedUnitId);
+      if (ship) {
+        ship.selected = !ship.selected;
+        shipLayer.updateShipFeature(ship.id, ship.selected, ship.heading);
+      }
+      game.commitRoute(game.selectedUnitId);
       game.selectedUnitId = "";
       setCurrentGameStatusToContext(
         game.scenarioPaused ? "Scenario paused" : "Scenario playing"

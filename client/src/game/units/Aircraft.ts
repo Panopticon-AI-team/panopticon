@@ -22,6 +22,7 @@ interface IAircraft {
   homeBaseId?: string;
   rtb?: boolean;
   targetId?: string;
+  desiredRoute?: number[][];
 }
 
 export default class Aircraft {
@@ -68,7 +69,7 @@ export default class Aircraft {
     this.homeBaseId = parameters.homeBaseId ?? "";
     this.rtb = parameters.rtb ?? false;
     this.targetId = parameters.targetId ?? "";
-    this.desiredRoute = parameters.route ?? [];
+    this.desiredRoute = parameters.desiredRoute ?? [];
   }
 
   getTotalWeaponQuantity(): number {
