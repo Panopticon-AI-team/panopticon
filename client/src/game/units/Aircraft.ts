@@ -22,6 +22,7 @@ interface IAircraft {
   homeBaseId?: string;
   rtb?: boolean;
   targetId?: string;
+  desiredRoute?: number[][];
 }
 
 export default class Aircraft {
@@ -45,6 +46,7 @@ export default class Aircraft {
   homeBaseId: string;
   rtb: boolean;
   targetId: string;
+  desiredRoute: number[][] = [];
 
   constructor(parameters: IAircraft) {
     this.id = parameters.id;
@@ -67,6 +69,7 @@ export default class Aircraft {
     this.homeBaseId = parameters.homeBaseId ?? "";
     this.rtb = parameters.rtb ?? false;
     this.targetId = parameters.targetId ?? "";
+    this.desiredRoute = parameters.desiredRoute ?? [];
   }
 
   getTotalWeaponQuantity(): number {

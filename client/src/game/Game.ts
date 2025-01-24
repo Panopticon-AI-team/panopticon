@@ -464,13 +464,15 @@ export default class Game {
   moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {
     const aircraft = this.currentScenario.getAircraft(aircraftId);
     if (aircraft) {
-      aircraft.route = [[newLatitude, newLongitude]];
-      aircraft.heading = getBearingBetweenTwoPoints(
-        aircraft.latitude,
-        aircraft.longitude,
-        newLatitude,
-        newLongitude
-      );
+      aircraft.desiredRoute.push([newLatitude, newLongitude]);
+      if (aircraft.desiredRoute.length === 1) {
+        aircraft.heading = getBearingBetweenTwoPoints(
+          aircraft.latitude,
+          aircraft.longitude,
+          newLatitude,
+          newLongitude
+        );
+      }
       return aircraft;
     }
   }
@@ -478,13 +480,30 @@ export default class Game {
   moveShip(shipId: string, newLatitude: number, newLongitude: number) {
     const ship = this.currentScenario.getShip(shipId);
     if (ship) {
-      ship.route = [[newLatitude, newLongitude]];
-      ship.heading = getBearingBetweenTwoPoints(
-        ship.latitude,
-        ship.longitude,
-        newLatitude,
-        newLongitude
-      );
+      ship.desiredRoute.push([newLatitude, newLongitude]);
+      if (ship.desiredRoute.length === 1) {
+        ship.heading = getBearingBetweenTwoPoints(
+          ship.latitude,
+          ship.longitude,
+          newLatitude,
+          newLongitude
+        );
+      }
+      return ship;
+    }
+  }
+
+  commitRoute(unitId: string) {
+    const aircraft = this.currentScenario.getAircraft(unitId);
+    if (aircraft) {
+      aircraft.route = aircraft.desiredRoute;
+      aircraft.desiredRoute = [];
+      return aircraft;
+    }
+    const ship = this.currentScenario.getShip(unitId);
+    if (ship) {
+      ship.route = ship.desiredRoute;
+      ship.desiredRoute = [];
       return ship;
     }
   }
@@ -596,11 +615,8 @@ export default class Game {
         if (homeBase) {
           if (aircraft.homeBaseId !== homeBase.id)
             aircraft.homeBaseId = homeBase.id;
-          return this.moveAircraft(
-            aircraftId,
-            homeBase.latitude,
-            homeBase.longitude
-          );
+          this.moveAircraft(aircraftId, homeBase.latitude, homeBase.longitude);
+          return this.commitRoute(aircraftId);
         }
       }
     }
@@ -1016,11 +1032,7 @@ export default class Game {
               mission.generateRandomCoordinatesWithinPatrolArea();
             unit.route.push(randomWaypointInPatrolArea);
           } else if (unit.route.length > 0) {
-            if (
-              !mission.checkIfCoordinatesIsWithinPatrolArea(
-                unit.route[unit.route.length - 1]
-              )
-            ) {
+            if (!mission.checkIfCoordinatesIsWithinPatrolArea(unit.route[0])) {
               unit.route = [];
               const randomWaypointInPatrolArea =
                 mission.generateRandomCoordinatesWithinPatrolArea();
@@ -1124,7 +1136,7 @@ export default class Game {
 
       const route = aircraft.route;
       if (route.length > 0) {
-        const nextWaypoint = route[route.length - 1];
+        const nextWaypoint = route[0];
         const nextWaypointLatitude = nextWaypoint[0];
         const nextWaypointLongitude = nextWaypoint[1];
         if (
@@ -1169,7 +1181,7 @@ export default class Game {
     this.currentScenario.ships.forEach((ship) => {
       const route = ship.route;
       if (route.length > 0) {
-        const nextWaypoint = route[route.length - 1];
+        const nextWaypoint = route[0];
         const nextWaypointLatitude = nextWaypoint[0];
         const nextWaypointLongitude = nextWaypoint[1];
         if (

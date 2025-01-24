@@ -304,35 +304,11 @@ export default function ScenarioMap({
     );
     switch (mapClickContext) {
       case "moveAircraft": {
-        cleanUpRouteDrawLineAndMeasurementTooltip();
         moveAircraft(game.selectedUnitId, event.coordinate);
-        const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
-        if (aircraft) {
-          aircraft.selected = !aircraft.selected;
-          aircraftLayer.updateAircraftFeature(
-            aircraft.id,
-            aircraft.selected,
-            aircraft.heading
-          );
-        }
-        game.selectedUnitId = "";
-        setCurrentGameStatusToContext(
-          game.scenarioPaused ? "Scenario paused" : "Scenario playing"
-        );
         break;
       }
       case "moveShip": {
-        cleanUpRouteDrawLineAndMeasurementTooltip();
         moveShip(game.selectedUnitId, event.coordinate);
-        const ship = game.currentScenario.getShip(game.selectedUnitId);
-        if (ship) {
-          ship.selected = !ship.selected;
-          shipLayer.updateShipFeature(ship.id, ship.selected, ship.heading);
-        }
-        game.selectedUnitId = "";
-        setCurrentGameStatusToContext(
-          game.scenarioPaused ? "Scenario paused" : "Scenario playing"
-        );
         break;
       }
       case "teleportUnit": {
@@ -950,13 +926,7 @@ export default function ScenarioMap({
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const destinationLatitude = coordinates[1];
     const destinationLongitude = coordinates[0];
-    const shipQueuedForMovement = game.moveShip(
-      shipId,
-      destinationLatitude,
-      destinationLongitude
-    );
-    if (shipQueuedForMovement)
-      shipRouteLayer.addRouteFeature(shipQueuedForMovement);
+    game.moveShip(shipId, destinationLatitude, destinationLongitude);
   }
 
   function launchAircraftFromShip(shipId: string) {
@@ -972,13 +942,7 @@ export default function ScenarioMap({
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
     const destinationLatitude = coordinates[1];
     const destinationLongitude = coordinates[0];
-    const aircraftQueuedForMovement = game.moveAircraft(
-      aircraftId,
-      destinationLatitude,
-      destinationLongitude
-    );
-    if (aircraftQueuedForMovement)
-      aircraftRouteLayer.addRouteFeature(aircraftQueuedForMovement);
+    game.moveAircraft(aircraftId, destinationLatitude, destinationLongitude);
   }
 
   function teleportUnit(unitId: string, coordinates: number[]) {
@@ -1032,12 +996,12 @@ export default function ScenarioMap({
         aircraft.selected,
         aircraft.heading
       );
-      aircraftRouteLayer.removeFeatureById(aircraft.id);
       addRouteMeasurementInteraction(
         fromLonLat(
           [aircraft.longitude, aircraft.latitude],
           projection ?? defaultProjection!
-        )
+        ),
+        aircraft.sideColor
       );
       aircraft.rtb = false;
       setCurrentGameStatusToContext("Click on the map to move the aircraft");
@@ -1055,7 +1019,8 @@ export default function ScenarioMap({
         fromLonLat(
           [ship.longitude, ship.latitude],
           projection ?? defaultProjection!
-        )
+        ),
+        ship.sideColor
       );
       setCurrentGameStatusToContext("Click on the map to move the ship");
     }
@@ -1204,70 +1169,8 @@ export default function ScenarioMap({
       shipRouteLayer.refresh(observation.ships);
       return;
     }
-
-    let routeDrawInteraction: Draw | undefined;
-    theMap.getInteractions().forEach((interaction) => {
-      if (interaction instanceof Draw) {
-        routeDrawInteraction = interaction;
-      }
-    });
-    if (
-      routeDrawInteraction &&
-      getSelectedFeatureType(game.selectedUnitId) === "aircraft"
-    ) {
-      aircraftRouteLayer.refresh(
-        observation.aircraft.filter((aircraft) => {
-          return aircraft.id !== game.selectedUnitId;
-        })
-      );
-      shipRouteLayer.refresh(observation.ships);
-      routeDrawInteraction.removeLastPoint();
-      routeDrawInteraction.removeLastPoint();
-      const aircraftQueuedForMovement = observation.aircraft.find(
-        (aircraft) => aircraft.id === game.selectedUnitId
-      );
-      if (aircraftQueuedForMovement) {
-        const aircraftNewCoordinates = fromLonLat(
-          [
-            aircraftQueuedForMovement.longitude,
-            aircraftQueuedForMovement.latitude,
-          ],
-          projection ?? defaultProjection!
-        );
-        routeDrawInteraction.appendCoordinates([
-          aircraftNewCoordinates,
-          mousePosition,
-        ]);
-      }
-    } else if (
-      routeDrawInteraction &&
-      getSelectedFeatureType(game.selectedUnitId) === "ship"
-    ) {
-      shipRouteLayer.refresh(
-        observation.ships.filter((ship) => {
-          return ship.id !== game.selectedUnitId;
-        })
-      );
-      aircraftRouteLayer.refresh(observation.aircraft);
-      routeDrawInteraction.removeLastPoint();
-      routeDrawInteraction.removeLastPoint();
-      const shipQueuedForMovement = observation.ships.find(
-        (ship) => ship.id === game.selectedUnitId
-      );
-      if (shipQueuedForMovement) {
-        const shipNewCoordinates = fromLonLat(
-          [shipQueuedForMovement.longitude, shipQueuedForMovement.latitude],
-          projection ?? defaultProjection!
-        );
-        routeDrawInteraction.appendCoordinates([
-          shipNewCoordinates,
-          mousePosition,
-        ]);
-      }
-    } else {
-      aircraftRouteLayer.refresh(observation.aircraft);
-      shipRouteLayer.refresh(observation.ships);
-    }
+    aircraftRouteLayer.refresh(observation.aircraft);
+    shipRouteLayer.refresh(observation.ships);
   }
 
   function updateMapView(center: number[], zoom: number) {
@@ -1463,7 +1366,10 @@ export default function ScenarioMap({
     return output;
   };
 
-  function addRouteMeasurementInteraction(startCoordinates: number[]) {
+  function addRouteMeasurementInteraction(
+    startCoordinates: number[],
+    sideColor: string | undefined = undefined
+  ) {
     routeMeasurementDrawLine = new Draw({
       source: new VectorSource(),
       type: "LineString",
@@ -1475,9 +1381,12 @@ export default function ScenarioMap({
     createRouteMeasurementTooltip();
 
     routeMeasurementDrawLine.on("drawstart", function (event) {
+      const defaultColor = game.currentScenario.getSideColor(
+        game.currentSideName
+      );
       const drawLineFeature = event.feature;
       drawLineFeature.setProperties({
-        sideColor: game.currentScenario.getSideColor(game.currentSideName),
+        sideColor: sideColor ?? defaultColor,
       });
       routeMeasurementListener = drawLineFeature
         .getGeometry()
@@ -1493,11 +1402,35 @@ export default function ScenarioMap({
             routeMeasurementTooltipElement.innerHTML =
               formatRouteLengthDisplay(geom);
             routeMeasurementTooltipElement.style.color =
-              game.currentScenario.getSideColor(game.currentSideName);
+              sideColor ?? defaultColor;
             routeMeasurementTooltipElement.style.fontWeight = "bold";
           }
           routeMeasurementTooltip?.setPosition(tooltipCoord);
         });
+    });
+
+    routeMeasurementDrawLine.on("drawend", function (event) {
+      cleanUpRouteDrawLineAndMeasurementTooltip();
+      const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
+      if (aircraft) {
+        aircraft.selected = !aircraft.selected;
+        aircraftLayer.updateAircraftFeature(
+          aircraft.id,
+          aircraft.selected,
+          aircraft.heading
+        );
+      }
+      const ship = game.currentScenario.getShip(game.selectedUnitId);
+      if (ship) {
+        ship.selected = !ship.selected;
+        shipLayer.updateShipFeature(ship.id, ship.selected, ship.heading);
+      }
+      game.commitRoute(game.selectedUnitId);
+      game.selectedUnitId = "";
+      setCurrentGameStatusToContext(
+        game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+      );
+      refreshRouteLayer(game.currentScenario);
     });
 
     routeMeasurementDrawLine.appendCoordinates([startCoordinates]);

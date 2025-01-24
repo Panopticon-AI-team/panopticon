@@ -6,6 +6,7 @@ from blade.units.Weapon import Weapon
 
 
 class Ship:
+
     def __init__(
         self,
         id: str,
@@ -28,6 +29,7 @@ class Ship:
         side_color: str = DEFAULT_SIDE_COLOR,
         weapons: Optional[List[Weapon]] = None,
         aircraft: Optional[List[Aircraft]] = None,
+        desired_route: Optional[List[List[float]]] = None,
     ):
         self.id = id
         self.name = name
@@ -47,6 +49,7 @@ class Ship:
         self.side_color = side_color
         self.weapons = weapons if weapons is not None else []
         self.aircraft = aircraft if aircraft is not None else []
+        self.desired_route = desired_route if desired_route is not None else []
 
     def get_total_weapon_quantity(self) -> int:
         return sum([weapon.current_quantity for weapon in self.weapons])
@@ -57,8 +60,4 @@ class Ship:
         return max(self.weapons, key=lambda weapon: weapon.range)
 
     def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__, 
-            sort_keys=True,
-            indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)

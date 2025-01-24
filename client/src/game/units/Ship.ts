@@ -21,6 +21,7 @@ interface IShip {
   sideColor?: string;
   weapons?: Weapon[];
   aircraft?: Aircraft[];
+  desiredRoute?: number[][];
 }
 
 export default class Ship {
@@ -42,6 +43,7 @@ export default class Ship {
   sideColor: string;
   weapons: Weapon[];
   aircraft: Aircraft[];
+  desiredRoute: number[][] = [];
 
   constructor(parameters: IShip) {
     this.id = parameters.id;
@@ -62,6 +64,7 @@ export default class Ship {
     this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
     this.weapons = parameters.weapons ?? [];
     this.aircraft = parameters.aircraft ?? [];
+    this.desiredRoute = parameters.desiredRoute ?? [];
   }
 
   getTotalWeaponQuantity(): number {

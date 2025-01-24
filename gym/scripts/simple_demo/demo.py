@@ -19,9 +19,9 @@ def simple_scripted_agent(observation):
     sample_launch_aircraft_action = "launch_aircraft_from_airbase('05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3')"
     launched_aircraft_id = "fbcaa81c-bb50-470b-9e6d-81cd825b1fd0"
     first_target_position = [10.9, -22.7]
-    first_move_aircraft_action = f"move_aircraft('{launched_aircraft_id}', {first_target_position[0]}, {first_target_position[1]})"
+    first_move_aircraft_action = f"move_aircraft('{launched_aircraft_id}', [[{first_target_position[0]}, {first_target_position[1]}]])"
     second_target_position = [15.75, -8.97]
-    second_move_aircraft_action = f"move_aircraft('{launched_aircraft_id}', {second_target_position[0]}, {second_target_position[1]})"
+    second_move_aircraft_action = f"move_aircraft('{launched_aircraft_id}', [[{second_target_position[0]}, {second_target_position[1]}]])"
     red_target_id = "e0d4547d-9921-4580-bef9-5026f371cb9e"
     attack_target_action = f"handle_aircraft_attack('{launched_aircraft_id}', '{red_target_id}')"
     return_to_base_action = f"aircraft_return_to_base('{launched_aircraft_id}')"

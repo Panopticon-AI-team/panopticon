@@ -76,6 +76,7 @@ class BlackBox:
 
 
 class Aircraft:
+
     def __init__(
         self,
         id: str,
@@ -98,6 +99,7 @@ class Aircraft:
         home_base_id: Optional[str] = "",
         rtb: bool = False,
         target_id: Optional[str] = "",
+        desired_route: Optional[List[List[float]]] = None,
     ):
         self.id = id
         self.name = name
@@ -120,6 +122,7 @@ class Aircraft:
         self.rtb = rtb
         self.target_id = target_id if target_id is not None else ""
         self.black_box = BlackBox()
+        self.desired_route = desired_route if desired_route is not None else []
 
     def get_total_weapon_quantity(self) -> int:
         return sum([weapon.current_quantity for weapon in self.weapons])
