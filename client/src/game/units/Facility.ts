@@ -1,23 +1,13 @@
-import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
 import Weapon from "@/game/units/Weapon";
+import { BaseUnit, IUnit } from "@/game/units/BaseUnit";
 
-interface IFacility {
-  id: string;
-  name: string;
-  sideName: string;
+interface IFacility extends IUnit {
   className: string;
-  latitude: number;
-  longitude: number;
-  altitude: number;
   range: number;
-  sideColor?: string;
   weapons?: Weapon[];
 }
 
-export default class Facility {
-  id: string;
-  name: string;
-  sideName: string;
+export default class Facility extends BaseUnit {
   className: string;
   latitude: number = 0.0;
   longitude: number = 0.0;
@@ -27,16 +17,14 @@ export default class Facility {
   weapons: Weapon[] = [];
 
   constructor(parameters: IFacility) {
-    this.id = parameters.id;
-    this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    super(parameters);
     this.className = parameters.className;
-    this.latitude = parameters.latitude;
-    this.longitude = parameters.longitude;
-    this.altitude = parameters.altitude;
-    this.range = parameters.range;
-    this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
-    this.weapons = parameters.weapons ?? [];
+    this.latitude = parameters.latitude ?? this.latitude;
+    this.longitude = parameters.longitude ?? this.longitude;
+    this.altitude = parameters.altitude ?? this.altitude;
+    this.range = parameters.range ?? this.range;
+    this.sideColor = parameters.sideColor ?? this.sideColor;
+    this.weapons = parameters.weapons ?? this.weapons;
   }
 
   getTotalWeaponQuantity(): number {

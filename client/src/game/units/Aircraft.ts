@@ -1,14 +1,8 @@
-import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
 import Weapon from "@/game/units/Weapon";
+import { BaseUnit, IUnit } from "@/game/units/BaseUnit";
 
-interface IAircraft {
-  id: string;
-  name: string;
-  sideName: string;
+interface IAircraft extends IUnit {
   className: string;
-  latitude: number;
-  longitude: number;
-  altitude: number;
   heading: number;
   speed: number;
   currentFuel: number;
@@ -17,7 +11,6 @@ interface IAircraft {
   range: number;
   route?: number[][];
   selected?: boolean;
-  sideColor?: string;
   weapons?: Weapon[];
   homeBaseId?: string;
   rtb?: boolean;
@@ -25,14 +18,8 @@ interface IAircraft {
   desiredRoute?: number[][];
 }
 
-export default class Aircraft {
-  id: string;
-  name: string;
-  sideName: string;
+export default class Aircraft extends BaseUnit {
   className: string;
-  latitude: number;
-  longitude: number;
-  altitude: number; // FT ASL -- currently default -- need to reference from database
   heading: number;
   speed: number; // KTS -- currently default -- need to reference from database
   currentFuel: number;
@@ -41,7 +28,6 @@ export default class Aircraft {
   range: number; // NM -- currently default -- need to reference from database
   route: number[][];
   selected: boolean;
-  sideColor: string;
   weapons: Weapon[];
   homeBaseId: string;
   rtb: boolean;
@@ -49,13 +35,8 @@ export default class Aircraft {
   desiredRoute: number[][] = [];
 
   constructor(parameters: IAircraft) {
-    this.id = parameters.id;
-    this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    super(parameters);
     this.className = parameters.className;
-    this.latitude = parameters.latitude;
-    this.longitude = parameters.longitude;
-    this.altitude = parameters.altitude;
     this.heading = parameters.heading;
     this.speed = parameters.speed;
     this.currentFuel = parameters.currentFuel;
@@ -64,7 +45,6 @@ export default class Aircraft {
     this.range = parameters.range;
     this.route = parameters.route ?? [];
     this.selected = parameters.selected ?? false;
-    this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
     this.weapons = parameters.weapons ?? [];
     this.homeBaseId = parameters.homeBaseId ?? "";
     this.rtb = parameters.rtb ?? false;
