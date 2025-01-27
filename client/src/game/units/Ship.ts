@@ -1,15 +1,9 @@
-import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
 import Aircraft from "@/game/units/Aircraft";
 import Weapon from "@/game/units/Weapon";
+import { BaseUnit, IUnit } from "@/game/units/BaseUnit";
 
-interface IShip {
-  id: string;
-  name: string;
-  sideName: string;
+interface IShip extends IUnit {
   className: string;
-  latitude: number;
-  longitude: number;
-  altitude: number;
   heading: number;
   speed: number;
   currentFuel: number;
@@ -18,20 +12,13 @@ interface IShip {
   range: number;
   route?: number[][];
   selected?: boolean;
-  sideColor?: string;
   weapons?: Weapon[];
   aircraft?: Aircraft[];
   desiredRoute?: number[][];
 }
 
-export default class Ship {
-  id: string;
-  name: string;
-  sideName: string;
+export default class Ship extends BaseUnit {
   className: string;
-  latitude: number;
-  longitude: number;
-  altitude: number; // FT ASL -- currently default -- need to reference from database
   heading: number;
   speed: number; // KTS -- currently default -- need to reference from database
   currentFuel: number;
@@ -40,19 +27,13 @@ export default class Ship {
   range: number; // NM -- currently default -- need to reference from database
   route: number[][];
   selected: boolean;
-  sideColor: string;
   weapons: Weapon[];
   aircraft: Aircraft[];
   desiredRoute: number[][] = [];
 
   constructor(parameters: IShip) {
-    this.id = parameters.id;
-    this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    super(parameters);
     this.className = parameters.className;
-    this.latitude = parameters.latitude;
-    this.longitude = parameters.longitude;
-    this.altitude = parameters.altitude;
     this.heading = parameters.heading;
     this.speed = parameters.speed;
     this.currentFuel = parameters.currentFuel;
@@ -61,7 +42,6 @@ export default class Ship {
     this.range = parameters.range;
     this.route = parameters.route ?? [];
     this.selected = parameters.selected ?? false;
-    this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
     this.weapons = parameters.weapons ?? [];
     this.aircraft = parameters.aircraft ?? [];
     this.desiredRoute = parameters.desiredRoute ?? [];

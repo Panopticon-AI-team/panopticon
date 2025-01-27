@@ -9,6 +9,7 @@ import ReferencePoint from "@/game/units/ReferencePoint";
 import PatrolMission from "@/game/mission/PatrolMission";
 import { Target } from "@/game/engine/weaponEngagement";
 import StrikeMission from "@/game/mission/StrikeMission";
+import { Mission } from "@/game/mission/BaseMission";
 
 type HomeBase = Airbase | Ship;
 
@@ -29,6 +30,7 @@ interface IScenario {
   missions?: PatrolMission[];
 }
 
+// TODO: Add interfaces to implement
 export default class Scenario {
   id: string;
   name: string;
@@ -43,7 +45,7 @@ export default class Scenario {
   airbases: Airbase[];
   weapons: Weapon[];
   referencePoints: ReferencePoint[];
-  missions: (PatrolMission | StrikeMission)[];
+  missions: Mission[];
 
   constructor(parameters: IScenario) {
     this.id = parameters.id;

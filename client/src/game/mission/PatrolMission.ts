@@ -1,32 +1,19 @@
 import { fromLonLat, get as getProjection } from "ol/proj";
 import { DEFAULT_OL_PROJECTION_CODE } from "@/utils/constants";
+import { BaseMission, IMission } from "@/game/mission/BaseMission";
 import { Polygon } from "ol/geom";
 
-interface IPatrolMission {
-  id: string;
-  name: string;
-  sideId: string;
-  assignedUnitIds: string[];
+interface IPatrolMission extends IMission {
   assignedArea: number[][];
-  active: boolean;
 }
 
-export default class PatrolMission {
-  id: string;
-  name: string;
-  sideId: string;
-  assignedUnitIds: string[];
+export default class PatrolMission extends BaseMission {
   assignedArea: number[][];
-  active: boolean;
   patrolAreaGeometry: Polygon;
 
   constructor(parameters: IPatrolMission) {
-    this.id = parameters.id;
-    this.name = parameters.name;
-    this.sideId = parameters.sideId;
-    this.assignedUnitIds = parameters.assignedUnitIds;
+    super(parameters);
     this.assignedArea = parameters.assignedArea;
-    this.active = parameters.active;
     const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
     this.patrolAreaGeometry = new Polygon([
       this.assignedArea.map((coordinates) =>

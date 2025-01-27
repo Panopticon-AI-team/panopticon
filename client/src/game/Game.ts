@@ -2,7 +2,6 @@ import { randomUUID } from "@/utils/generateUUID";
 import Aircraft from "@/game/units/Aircraft";
 import Facility from "@/game/units/Facility";
 import Scenario from "@/game/Scenario";
-
 import {
   getBearingBetweenTwoPoints,
   getNextCoordinates,
@@ -27,6 +26,7 @@ import Ship from "@/game/units/Ship";
 import ReferencePoint from "@/game/units/ReferencePoint";
 import PatrolMission from "@/game/mission/PatrolMission";
 import StrikeMission from "@/game/mission/StrikeMission";
+import { Mission } from "@/game/mission/BaseMission";
 
 interface IMapView {
   defaultCenter: number[];
@@ -695,7 +695,7 @@ export default class Game {
     this.mapView = importObject.mapView;
 
     const savedScenario = importObject.currentScenario;
-    const savedSides = savedScenario.sides.map((side: any) => {
+    const savedSides = savedScenario.sides.map((side: Side) => {
       const newSide = new Side({
         id: side.id,
         name: side.name,
@@ -713,7 +713,7 @@ export default class Game {
       sides: savedSides,
       timeCompression: savedScenario.timeCompression,
     });
-    savedScenario.aircraft.forEach((aircraft: any) => {
+    savedScenario.aircraft.forEach((aircraft: Aircraft) => {
       const newAircraft = new Aircraft({
         id: aircraft.id,
         name: aircraft.name,
@@ -740,9 +740,9 @@ export default class Game {
       });
       loadedScenario.aircraft.push(newAircraft);
     });
-    savedScenario.airbases.forEach((airbase: any) => {
+    savedScenario.airbases.forEach((airbase: Airbase) => {
       const airbaseAircraft: Aircraft[] = [];
-      airbase.aircraft.forEach((aircraft: any) => {
+      airbase.aircraft.forEach((aircraft: Aircraft) => {
         const newAircraft = new Aircraft({
           id: aircraft.id,
           name: aircraft.name,
@@ -782,7 +782,7 @@ export default class Game {
       });
       loadedScenario.airbases.push(newAirbase);
     });
-    savedScenario.facilities.forEach((facility: any) => {
+    savedScenario.facilities.forEach((facility: Facility) => {
       const newFacility = new Facility({
         id: facility.id,
         name: facility.name,
@@ -799,7 +799,7 @@ export default class Game {
       });
       loadedScenario.facilities.push(newFacility);
     });
-    savedScenario.weapons.forEach((weapon: any) => {
+    savedScenario.weapons.forEach((weapon: Weapon) => {
       const newWeapon = new Weapon({
         id: weapon.id,
         name: weapon.name,
@@ -823,9 +823,9 @@ export default class Game {
       });
       loadedScenario.weapons.push(newWeapon);
     });
-    savedScenario.ships?.forEach((ship: any) => {
+    savedScenario.ships?.forEach((ship: Ship) => {
       const shipAircraft: Aircraft[] = [];
-      ship.aircraft.forEach((aircraft: any) => {
+      ship.aircraft.forEach((aircraft: Aircraft) => {
         const newAircraft = new Aircraft({
           id: aircraft.id,
           name: aircraft.name,
@@ -875,7 +875,7 @@ export default class Game {
       });
       loadedScenario.ships.push(newShip);
     });
-    savedScenario.referencePoints?.forEach((referencePoint: any) => {
+    savedScenario.referencePoints?.forEach((referencePoint: ReferencePoint) => {
       const newReferencePoint = new ReferencePoint({
         id: referencePoint.id,
         name: referencePoint.name,
@@ -887,28 +887,29 @@ export default class Game {
       });
       loadedScenario.referencePoints.push(newReferencePoint);
     });
-
-    savedScenario.missions?.forEach((mission: any) => {
-      if (mission.assignedArea) {
-        const newMission = new PatrolMission({
-          id: mission.id,
-          name: mission.name,
-          sideId: mission.sideId,
-          assignedUnitIds: mission.assignedUnitIds,
-          assignedArea: mission.assignedArea,
-          active: mission.active,
-        });
-        loadedScenario.missions.push(newMission);
+    savedScenario.missions?.forEach((mission: Mission) => {
+      const baseProps = {
+        id: mission.id,
+        name: mission.name,
+        sideId: mission.sideId,
+        assignedUnitIds: mission.assignedUnitIds,
+        active: mission.active,
+      };
+      if ("assignedArea" in mission) {
+        loadedScenario.missions.push(
+          new PatrolMission({
+            ...baseProps,
+            assignedArea: mission.assignedArea,
+          })
+        );
       } else {
-        const newMission = new StrikeMission({
-          id: mission.id,
-          name: mission.name,
-          sideId: mission.sideId,
-          assignedUnitIds: mission.assignedUnitIds,
-          assignedTargetIds: mission.assignedTargetIds,
-          active: mission.active,
-        });
-        loadedScenario.missions.push(newMission);
+        // Ok for now but may need to adjust and not assume that all non patrolMissions are StrikeMissions if simulation/game allows for more missions
+        loadedScenario.missions.push(
+          new StrikeMission({
+            ...baseProps,
+            assignedTargetIds: mission.assignedTargetIds,
+          })
+        );
       }
     });
 

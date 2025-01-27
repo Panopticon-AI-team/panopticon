@@ -1,26 +1,14 @@
-interface IStrikeMission {
-  id: string;
-  name: string;
-  sideId: string;
-  assignedUnitIds: string[];
+import { IMission, BaseMission } from "@/game/mission/BaseMission";
+
+interface IStrikeMission extends IMission {
   assignedTargetIds: string[];
-  active: boolean;
 }
 
-export default class StrikeMission {
-  id: string;
-  name: string;
-  sideId: string;
-  assignedUnitIds: string[];
+export default class StrikeMission extends BaseMission {
   assignedTargetIds: string[];
-  active: boolean;
 
   constructor(parameters: IStrikeMission) {
-    this.id = parameters.id;
-    this.name = parameters.name;
-    this.sideId = parameters.sideId;
-    this.assignedUnitIds = parameters.assignedUnitIds;
+    super(parameters);
     this.assignedTargetIds = parameters.assignedTargetIds;
-    this.active = parameters.active;
   }
 }

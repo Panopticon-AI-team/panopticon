@@ -11,9 +11,10 @@ import Aircraft from "@/game/units/Aircraft";
 import ReferencePoint from "@/game/units/ReferencePoint";
 import StrikeMission from "@/game/mission/StrikeMission";
 import { Target } from "@/game/engine/weaponEngagement";
+import { Mission } from "@/game/mission/BaseMission";
 
 interface MissionEditorProps {
-  missions: (PatrolMission | StrikeMission)[];
+  missions: Mission[];
   aircraft: Aircraft[];
   referencePoints: ReferencePoint[];
   targets: Target[];
