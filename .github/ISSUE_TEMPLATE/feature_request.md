@@ -1,28 +1,23 @@
 ---
-name: Feature request
-about: Suggest a feature for this project
-title: ''
+name: Feature Request
+about: Suggest a new feature for this project
+title: ""
 labels: enhancement
-assignees: ''
-
+assignees: ""
 ---
 
-# Why
-#### As a
+## Description
 
-#### I want
+<!-- Briefly describe the feature you’d like to see. -->
 
-#### So that
+## Why
 
+<!-- Explain the reason or benefit for having this feature. -->
 
-# Acceptance Criteria
-#### Given
-<!-- the current problem -->
+## Acceptance Criteria
 
-#### When
-<!-- we implement some feature -->
+<!-- List the key requirements or conditions that define success. -->
 
-#### Then
-<!-- we achieve some goal -->
+## Additional Context (optional)
 
-# Notes
+<!-- Add any other context, screenshots, or relevant details here. -->

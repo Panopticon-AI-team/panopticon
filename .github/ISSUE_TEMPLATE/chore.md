@@ -1,20 +1,23 @@
 ---
 name: Chore
-about: Improve the project in a way that does not directly impact the user
-title: ''
+about: Improvements that don't directly impact the end user
+title: ""
 labels: chore
-assignees: ''
-
+assignees: ""
 ---
 
-### We should
-<!-- do a thing not directly impacting the user -->
+## Description
 
-### Because
-<!-- Describe the value to be gained and/or risk to mitigate -->
+<!-- Briefly describe the task you need to perform. -->
 
-### Complexity
-<!-- Describe generally how complex the work could be -->
+## Why
 
-### Definition of Done
-<!-- Describe how to know we are ready to stop working on this (ie timebox, document, demo, etc) -->
+<!-- Explain why this chore is necessary or beneficial. -->
+
+## Complexity (optional)
+
+<!-- Estimate or discuss the level of effort or complexity involved. -->
+
+## Definition of Done
+
+<!-- Specify how to confirm the task is complete. -->
