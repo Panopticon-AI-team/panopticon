@@ -1,20 +1,23 @@
 ---
 name: Spike
-about: Learn more about a topic to mitigate risk
-title: ''
+about: Research or investigate a topic to inform future decisions
+title: ""
 labels: spike
-assignees: ''
-
+assignees: ""
 ---
 
-### We need to know more about
-<!-- Describe the subject generally -->
+## Description
 
-### So that
-<!-- Describe the decision(s) to be made based on the results of the research -->
+<!-- Briefly describe what you need to explore or investigate. -->
 
-### Specifically 
-<!-- List out the specific questions we need answers to within a specific amount of time -->
+## Purpose
 
-### Questions to answer
-1.
+<!-- Explain why this exploration is needed and how it will inform future decisions. -->
+
+## Questions
+
+<!-- List the key questions you hope to answer. -->
+
+## Additional Context (optional)
+
+<!-- Include any other relevant details or references. -->
