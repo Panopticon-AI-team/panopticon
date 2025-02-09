@@ -1,0 +1,1 @@
+emcc --bind bindings/wasm/Embind.cpp src/units/Aircraft.cpp src/units/MovableUnit.cpp src/utils/GeoUtils.cpp src/utils/MathUtils.cpp -I./src -o emscripten_dist/simulation.js -s MODULARIZE=1 -s EXPORT_NAME=Module
