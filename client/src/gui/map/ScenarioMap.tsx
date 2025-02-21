@@ -244,7 +244,7 @@ export default function ScenarioMap({
     return featureType;
   }
 
-  function getMapClickContext(event: MapBrowserEvent<any>): string {
+  function getMapClickContext(event: MapBrowserEvent<MouseEvent>): string {
     let context = "default";
     const featuresAtPixel = getFeaturesAtPixel(
       theMap.getEventPixel(event.originalEvent)
@@ -297,7 +297,7 @@ export default function ScenarioMap({
     return context;
   }
 
-  function handleMapClick(event: MapBrowserEvent<any>) {
+  function handleMapClick(event: MapBrowserEvent<MouseEvent>) {
     const mapClickContext = getMapClickContext(event);
     const featuresAtPixel = getFeaturesAtPixel(
       theMap.getEventPixel(event.originalEvent)
@@ -687,7 +687,7 @@ export default function ScenarioMap({
 
   function stepGameForStepSize(
     stepSize: number
-  ): [Scenario, number, boolean, boolean, any] {
+  ): [Scenario, number, boolean, boolean, null] {
     let steps = 1;
     let [observation, reward, terminated, truncated, info] = game.step();
     while (steps < stepSize) {
@@ -697,7 +697,7 @@ export default function ScenarioMap({
     return [observation, reward, terminated, truncated, info];
   }
 
-  function stepGameAndDrawFrame() {
+  function stepGameAndDrawFrame(): [Scenario, number, boolean, boolean, null] {
     // const gameStepStartTime = new Date().getTime();
     const [observation, reward, terminated, truncated, info] =
       stepGameForStepSize(game.currentScenario.timeCompression);

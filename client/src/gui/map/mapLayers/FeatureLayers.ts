@@ -68,7 +68,7 @@ class FeatureLayer {
     this.featureCount = features.length;
   }
 
-  findFeatureByKey(key: string, value: any) {
+  findFeatureByKey(key: string, value: string | number | boolean) {
     return this.layerSource
       .getFeatures()
       .find((feature) => feature.getProperties()[key] === value);

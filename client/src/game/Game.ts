@@ -3,6 +3,9 @@ import Aircraft from "@/game/units/Aircraft";
 import Facility from "@/game/units/Facility";
 import Scenario from "@/game/Scenario";
 
+import IPatrolMission from "@/game/mission/PatrolMission"
+import IStrikeMission from "@/game/mission/StrikeMission"
+
 import {
   getBearingBetweenTwoPoints,
   getNextCoordinates,
@@ -27,6 +30,107 @@ import Ship from "@/game/units/Ship";
 import ReferencePoint from "@/game/units/ReferencePoint";
 import PatrolMission from "@/game/mission/PatrolMission";
 import StrikeMission from "@/game/mission/StrikeMission";
+
+interface ISavedWeapon {
+  id: string;
+  name: string;
+  sideName: string;
+  className: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  heading: number;
+  speed: number;
+  currentFuel: number;
+  maxFuel: number;
+  fuelRate: number;
+  range: number;
+  route: number[][];
+  sideColor: string;
+  targetId: string | null;
+  lethality: number;
+  maxQuantity: number;
+  currentQuantity: number;
+}
+
+interface ISavedAircraft {
+  id: string;
+  name: string;
+  sideName: string;
+  className: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  heading: number;
+  speed: number;
+  currentFuel: number;
+  maxFuel: number;
+  fuelRate: number;
+  range: number;
+  route: number[][];
+  selected: boolean;
+  sideColor: string;
+  weapons: ISavedWeapon[];
+  homeBaseId: string;
+  rtb: boolean;
+  targetId: string;
+}
+
+interface ISavedAirbase {
+  id: string;
+  name: string;
+  sideName: string;
+  className: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  sideColor: string;
+  aircraft: ISavedAircraft[];
+}
+
+interface ISavedFacility {
+  id: string;
+  name: string;
+  sideName: string;
+  className: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  range: number;
+  sideColor: string;
+  weapons: ISavedWeapon[];
+}
+
+interface ISavedShip {
+  id: string;
+  name: string;
+  sideName: string;
+  className: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  heading: number;
+  speed: number;
+  currentFuel: number;
+  maxFuel: number;
+  fuelRate: number;
+  range: number;
+  route: number[][];
+  selected: boolean;
+  sideColor: string;
+  weapons: ISavedWeapon[];
+  aircraft: ISavedAircraft[];
+}
+
+interface ISavedReferencePoint {
+  id: string;
+  name: string;
+  sideName: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  sideColor: string;
+}
 
 interface IMapView {
   defaultCenter: number[];
@@ -695,7 +799,7 @@ export default class Game {
     this.mapView = importObject.mapView;
 
     const savedScenario = importObject.currentScenario;
-    const savedSides = savedScenario.sides.map((side: any) => {
+    const savedSides = savedScenario.sides.map((side: { id: string; name: string; totalScore: number; sideColor: string }) => {
       const newSide = new Side({
         id: side.id,
         name: side.name,
@@ -713,7 +817,7 @@ export default class Game {
       sides: savedSides,
       timeCompression: savedScenario.timeCompression,
     });
-    savedScenario.aircraft.forEach((aircraft: any) => {
+    savedScenario.aircraft.forEach((aircraft: ISavedAircraft) => {
       const newAircraft = new Aircraft({
         id: aircraft.id,
         name: aircraft.name,
@@ -740,9 +844,9 @@ export default class Game {
       });
       loadedScenario.aircraft.push(newAircraft);
     });
-    savedScenario.airbases.forEach((airbase: any) => {
+    savedScenario.airbases.forEach((airbase: ISavedAirbase) => {
       const airbaseAircraft: Aircraft[] = [];
-      airbase.aircraft.forEach((aircraft: any) => {
+      airbase.aircraft.forEach((aircraft: ISavedAircraft) => {
         const newAircraft = new Aircraft({
           id: aircraft.id,
           name: aircraft.name,
@@ -782,7 +886,7 @@ export default class Game {
       });
       loadedScenario.airbases.push(newAirbase);
     });
-    savedScenario.facilities.forEach((facility: any) => {
+    savedScenario.facilities.forEach((facility: ISavedFacility) => {
       const newFacility = new Facility({
         id: facility.id,
         name: facility.name,
@@ -799,7 +903,7 @@ export default class Game {
       });
       loadedScenario.facilities.push(newFacility);
     });
-    savedScenario.weapons.forEach((weapon: any) => {
+    savedScenario.weapons.forEach((weapon: ISavedWeapon) => {
       const newWeapon = new Weapon({
         id: weapon.id,
         name: weapon.name,
@@ -823,9 +927,9 @@ export default class Game {
       });
       loadedScenario.weapons.push(newWeapon);
     });
-    savedScenario.ships?.forEach((ship: any) => {
+    savedScenario.ships?.forEach((ship: ISavedShip) => {
       const shipAircraft: Aircraft[] = [];
-      ship.aircraft.forEach((aircraft: any) => {
+      ship.aircraft.forEach((aircraft: ISavedAircraft) => {
         const newAircraft = new Aircraft({
           id: aircraft.id,
           name: aircraft.name,
@@ -875,7 +979,7 @@ export default class Game {
       });
       loadedScenario.ships.push(newShip);
     });
-    savedScenario.referencePoints?.forEach((referencePoint: any) => {
+    savedScenario.referencePoints?.forEach((referencePoint: ISavedReferencePoint) => {
       const newReferencePoint = new ReferencePoint({
         id: referencePoint.id,
         name: referencePoint.name,
@@ -888,8 +992,18 @@ export default class Game {
       loadedScenario.referencePoints.push(newReferencePoint);
     });
 
-    savedScenario.missions?.forEach((mission: any) => {
-      if (mission.assignedArea) {
+    /**
+     * type guard to determine if a mission is a PatrolMission or StrikeMission
+     *
+     * @param {IPatrolMission | IStrikeMission} mission - The mission object in question.
+     * @returns {mission is IPatrolMission} Type predicate - true if the mission is a PatrolMission; otherwise, false.
+     */
+    function isPatrolMission(mission: IPatrolMission | IStrikeMission): mission is IPatrolMission {
+      return (mission as IPatrolMission).assignedArea !== undefined;
+    }
+
+    savedScenario.missions?.forEach((mission: IPatrolMission | IStrikeMission) => {
+      if (isPatrolMission(mission)) {
         const newMission = new PatrolMission({
           id: mission.id,
           name: mission.name,
@@ -1249,7 +1363,11 @@ export default class Game {
     return null;
   }
 
-  step(): [Scenario, number, boolean, boolean, any] {
+  /*
+  'info' is functionally null right now.
+  Gymnasium API expects dictionary/map structure.
+  */
+  step(): [Scenario, number, boolean, boolean, null] { 
     this.updateGameState();
     const terminated = false;
     const truncated = this.checkGameEnded();
