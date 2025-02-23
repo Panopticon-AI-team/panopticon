@@ -61,6 +61,51 @@ export default class Game {
     this.currentScenario = currentScenario;
   }
 
+  async addCppAircraft() {
+    // @ts-ignore
+    Module().then((module) => {
+      const homeBaseId = "";
+      const rtb = false;
+      const targetId = "";
+
+      const heading = 0.0;
+      const speed = 0.0;
+      const currentFuel = 0.0;
+      const maxFuel = 0.0;
+      const fuelRate = 0.0;
+      const range = 0.0;
+      const route: any[] = [];
+
+      const id = "";
+      const name = "";
+      const className = "";
+      const sideId = "";
+      const coordinates = new module.Coordinates(1.0, 2.0, 3.0);
+      const selected = false;
+
+      // const aircraft = new module.Aircraft(
+      //   id,
+      //   name,
+      //   sideId,
+      //   className,
+      //   coordinates,
+      //   heading,
+      //   speed,
+      //   currentFuel,
+      //   maxFuel,
+      //   fuelRate,
+      //   range,
+      //   route,
+      //   selected,
+      //   homeBaseId,
+      //   rtb,
+      //   targetId
+      // );
+      console.log(coordinates);
+      // console.log(aircraft);
+    });
+  }
+
   addAircraft(
     aircraftName: string,
     className: string,
@@ -95,6 +140,7 @@ export default class Game {
       targetId: "",
     });
     this.currentScenario.aircraft.push(aircraft);
+    this.addCppAircraft();
     return aircraft;
   }
 

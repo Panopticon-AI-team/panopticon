@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { randomUUID } from "@/utils/generateUUID";
 import { get as getProjection, transform } from "ol/proj.js";
 import ScenarioMap from "@/gui/map/ScenarioMap";
@@ -11,7 +12,25 @@ import { CurrentScenarioTimeProvider } from "@/gui/map/contextProviders/Scenario
 import { CurrentGameStatusProvider } from "@/gui/map/contextProviders/GameStatusProvider";
 import { CurrentMouseMapCoordinatesProvider } from "@/gui/map/contextProviders/MouseMapCoordinatesProvider";
 
+import Simulation, { MainModule } from "emscripten_dist/simulation.js";
+import { runCppTests } from "./test/Simulation.cpp.ts";
+
 export default function App() {
+  const [simulationCppModule, setSimulationCppModule] =
+    useState<MainModule | null>(null);
+  useEffect(() => {
+    Simulation().then((module) => {
+      setSimulationCppModule(module);
+    });
+  }, []);
+
+  if (simulationCppModule === null) {
+    console.log("Simulation module not loaded yet.");
+    return null;
+  }
+
+  runCppTests();
+
   const sideBlue = new Side({
     id: randomUUID(),
     name: "BLUE",
