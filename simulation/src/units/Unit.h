@@ -9,14 +9,16 @@ struct UnitParameters
     std::string name;
     std::string className;
     std::string sideId;
-    Coordinates coordinates;
-    bool selected = false;
+    double latitude;
+    double longitude;
+    double altitude;
+    bool selected;
 };
 
 class Unit
 {
 public:
-    Unit(const UnitParameters &params) : m_id(params.id), m_name(params.name), m_className(params.className), m_sideId(params.sideId), m_coordinates(params.coordinates), m_selected(params.selected) {};
+    Unit(const UnitParameters &params) : m_id(params.id), m_name(params.name), m_className(params.className), m_sideId(params.sideId), m_coordinates(params.latitude, params.longitude, params.altitude), m_selected(params.selected) {};
     virtual ~Unit() = default;
 
     const std::string &getId() const { return m_id; }
@@ -25,6 +27,13 @@ public:
     const std::string &getSideId() const { return m_sideId; }
     const Coordinates &getCoordinates() const { return m_coordinates; }
     bool isSelected() const { return m_selected; }
+
+    void setId(const std::string &id) { m_id = id; }
+    void setName(const std::string &name) { m_name = name; }
+    void setClassName(const std::string &className) { m_className = className; }
+    void setSideId(const std::string &sideId) { m_sideId = sideId; }
+    void setCoordinates(const Coordinates &coordinates) { m_coordinates = coordinates; }
+    void setSelected(bool selected) { m_selected = selected; }
 
     void setLatitude(double latitude) { m_coordinates.setLatitude(latitude); }
     void setLongitude(double longitude) { m_coordinates.setLongitude(longitude); }

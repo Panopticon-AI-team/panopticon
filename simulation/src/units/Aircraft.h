@@ -6,7 +6,7 @@
 struct AircraftParameters : public MovableUnitParameters
 {
     std::string homeBaseId;
-    bool rtb = false;
+    bool returnToBase = false;
     std::string targetId;
 };
 
@@ -17,15 +17,19 @@ public:
 
     virtual ~Aircraft() = default;
 
-    bool isRtb() const { return m_rtb; }
     const std::string &getHomeBaseId() const { return m_homeBaseId; }
+    bool isReturnToBase() const { return m_returnToBase; }
     const std::string &getTargetId() const { return m_targetId; }
 
-    bool handleRtb();
+    void setHomeBaseId(const std::string &homeBaseId) { m_homeBaseId = homeBaseId; }
+    void setReturnToBase(bool returnToBase) { m_returnToBase = returnToBase; }
+    void setTargetId(const std::string &targetId) { m_targetId = targetId; }
+
+    bool handleReturnToBase();
     void update(double dt) override;
 
 private:
     std::string m_homeBaseId;
-    bool m_rtb;
+    bool m_returnToBase;
     std::string m_targetId;
 };

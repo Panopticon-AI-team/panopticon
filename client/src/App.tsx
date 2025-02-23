@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { randomUUID } from "@/utils/generateUUID";
 import { get as getProjection, transform } from "ol/proj.js";
 import ScenarioMap from "@/gui/map/ScenarioMap";
@@ -11,7 +12,58 @@ import { CurrentScenarioTimeProvider } from "@/gui/map/contextProviders/Scenario
 import { CurrentGameStatusProvider } from "@/gui/map/contextProviders/GameStatusProvider";
 import { CurrentMouseMapCoordinatesProvider } from "@/gui/map/contextProviders/MouseMapCoordinatesProvider";
 
+import Simulation, {
+  Scenario as ScenarioCpp,
+} from "emscripten_dist/simulation.js";
+
 export default function App() {
+  const [scenario, setScenario] = useState<ScenarioCpp | undefined>(undefined);
+
+  Simulation().then((module) => {
+    const scenario = new module.Scenario({
+      id: "test",
+      name: "Test Scenario",
+      startTime: 1699073110,
+      currentTime: 1699073110,
+      durationSeconds: 14400,
+      timeCompression: 1,
+    });
+    const aircraftParameters = {
+      id: "test",
+      name: "Test Aircraft",
+      className: "test",
+      sideId: "test",
+      latitude: 0,
+      longitude: 0,
+      altitude: 0,
+      selected: false,
+      heading: 0,
+      speedKnots: 0,
+      currentFuelLbs: 0,
+      maxFuelLbs: 0,
+      fuelRateLbsPerHour: 0,
+      homeBaseId: "test",
+      returnToBase: false,
+      targetId: "test",
+    };
+    console.log(scenario);
+    console.log(scenario.currentTime);
+    scenario.update(1000);
+    console.log(scenario.currentTime);
+    scenario.addAircraft(aircraftParameters);
+    const aircraft = scenario.getAircraftByIdAndSideId("test", "est");
+    console.log(aircraft);
+    // print all aircraft in scenario
+    for (let i = 0; i < scenario.aircraft.size(); i++) {
+      console.log(scenario.aircraft.get(i));
+    }
+    // setScenario(scenario);
+  });
+
+  // useEffect(() => {
+  //   console.log(scenario);
+  // }, [scenario]);
+
   const sideBlue = new Side({
     id: randomUUID(),
     name: "BLUE",

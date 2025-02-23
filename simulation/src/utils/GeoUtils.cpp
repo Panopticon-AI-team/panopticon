@@ -5,13 +5,13 @@
 
 namespace simulation_utils
 {
-    double getBearingBetweenTwoPoints(double startLat, double startLon,
-                                      double destLat, double destLon)
+    double getBearingDegreesBetweenTwoPoints(double originLatitude, double originLongitude,
+                                             double destinationLatitude, double destinationLongitude)
     {
-        double lat1 = toRadians(startLat);
-        double lon1 = toRadians(startLon);
-        double lat2 = toRadians(destLat);
-        double lon2 = toRadians(destLon);
+        double lat1 = toRadians(originLatitude);
+        double lon1 = toRadians(originLongitude);
+        double lat2 = toRadians(destinationLatitude);
+        double lon2 = toRadians(destinationLongitude);
 
         double y = std::sin(lon2 - lon1) * std::cos(lat2);
         double x = std::cos(lat1) * std::sin(lat2) - std::sin(lat1) * std::cos(lat2) * std::cos(lon2 - lon1);
@@ -23,13 +23,13 @@ namespace simulation_utils
         return bearing;
     }
 
-    double getDistanceBetweenTwoPoints(double startLat, double startLon,
-                                       double destLat, double destLon)
+    double getDistanceKmBetweenTwoPoints(double originLatitude, double originLongitude,
+                                         double destinationLatitude, double destinationLongitude)
     {
-        double φ1 = toRadians(startLat);
-        double φ2 = toRadians(destLat);
-        double dLat = toRadians(destLat - startLat);
-        double dLon = toRadians(destLon - startLon);
+        double φ1 = toRadians(originLatitude);
+        double φ2 = toRadians(destinationLatitude);
+        double dLat = toRadians(destinationLatitude - originLatitude);
+        double dLon = toRadians(destinationLongitude - originLongitude);
 
         double a = std::sin(dLat / 2) * std::sin(dLat / 2) +
                    std::cos(φ1) * std::cos(φ2) *
@@ -41,12 +41,12 @@ namespace simulation_utils
     }
 
     std::array<double, 2> getTerminalCoordinatesFromDistanceAndBearing(
-        double startLat, double startLon,
+        double originLatitude, double originLongitude,
         double distanceKm, double bearingDeg)
     {
         double brng = toRadians(bearingDeg);
-        double lat1 = toRadians(startLat);
-        double lon1 = toRadians(startLon);
+        double lat1 = toRadians(originLatitude);
+        double lon1 = toRadians(originLongitude);
 
         double distRatio = distanceKm / EARTH_RADIUS_KM;
 
@@ -62,32 +62,32 @@ namespace simulation_utils
     }
 
     std::vector<std::array<double, 2>> generateRouteRealistic(
-        double originLat, double originLon,
-        double destLat, double destLon,
-        double platformSpeed // knots
+        double originLatitude, double originLongitude,
+        double destinationLatitude, double destinationLongitude,
+        double platformSpeedKnots // knots
     )
     {
         std::vector<std::array<double, 2>> route;
 
-        double heading = getBearingBetweenTwoPoints(originLat, originLon, destLat, destLon);
-        double totalDistanceKm = getDistanceBetweenTwoPoints(originLat, originLon, destLat, destLon);
+        double heading = getBearingDegreesBetweenTwoPoints(originLatitude, originLongitude, destinationLatitude, destinationLongitude);
+        double totalDistanceKm = getDistanceKmBetweenTwoPoints(originLatitude, originLongitude, destinationLatitude, destinationLongitude);
 
         // Convert totalDistance from KM to NM, then divide by speed (knots) to get hours
         double totalDistanceNm = totalDistanceKm * (1000 / NAUTICAL_MILES_TO_METERS);
-        double totalTimeHours = totalDistanceNm / platformSpeed;
+        double totalTimeHours = totalDistanceNm / platformSpeedKnots;
         int totalTimeSeconds = static_cast<int>(std::floor(totalTimeHours * 3600.0));
 
         if (totalTimeSeconds <= 0)
         {
             // Means we're extremely close or speed is 0 => just push destination
-            route.push_back({destLat, destLon});
+            route.push_back({destinationLatitude, destinationLongitude});
             return route;
         }
 
         double legDistanceKm = totalDistanceKm / totalTimeSeconds;
 
         std::array<double, 2> firstWp = getTerminalCoordinatesFromDistanceAndBearing(
-            originLat, originLon, legDistanceKm, heading);
+            originLatitude, originLongitude, legDistanceKm, heading);
         route.push_back(firstWp);
 
         for (int i = 1; i < totalTimeSeconds; ++i)
@@ -97,22 +97,22 @@ namespace simulation_utils
             route.push_back(newWp);
         }
 
-        route.push_back({destLat, destLon});
+        route.push_back({destinationLatitude, destinationLongitude});
         return route;
     }
 
     std::array<double, 2> getNextCoordinates(
-        double originLat, double originLon,
-        double destLat, double destLon,
-        double platformSpeed // knots
+        double originLatitude, double originLongitude,
+        double destinationLatitude, double destinationLongitude,
+        double platformSpeedKnots // knots
     )
     {
-        double heading = getBearingBetweenTwoPoints(originLat, originLon, destLat, destLon);
-        double totalDistanceKm = getDistanceBetweenTwoPoints(originLat, originLon, destLat, destLon);
+        double heading = getBearingDegreesBetweenTwoPoints(originLatitude, originLongitude, destinationLatitude, destinationLongitude);
+        double totalDistanceKm = getDistanceKmBetweenTwoPoints(originLatitude, originLongitude, destinationLatitude, destinationLongitude);
 
         // convert distance to NM, then time in hours
         double totalDistanceNm = totalDistanceKm * (1000 / NAUTICAL_MILES_TO_METERS);
-        double speedAbs = (platformSpeed < 0.0) ? -platformSpeed : platformSpeed;
+        double speedAbs = (platformSpeedKnots < 0.0) ? -platformSpeedKnots : platformSpeedKnots;
         double totalTimeHours = (speedAbs > 0.0) ? (totalDistanceNm / speedAbs) : 0.0;
         int totalTimeSeconds = static_cast<int>(std::floor(totalTimeHours * 3600.0));
 
@@ -120,13 +120,13 @@ namespace simulation_utils
         if (totalTimeSeconds <= 0)
         {
             // If we have no time, either we're extremely close or speed is zero
-            return {destLat, destLon};
+            return {destinationLatitude, destinationLongitude};
         }
 
         double legDistanceKm = totalDistanceKm / totalTimeSeconds;
 
         return getTerminalCoordinatesFromDistanceAndBearing(
-            originLat, originLon, legDistanceKm, heading);
+            originLatitude, originLongitude, legDistanceKm, heading);
     }
 
 } // namespace simulation_utils

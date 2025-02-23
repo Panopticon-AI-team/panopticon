@@ -1,16 +1,17 @@
 #include "Aircraft.h"
+#include "Airbase.h"
 #include "utils/GeoUtils.h"
 
 Aircraft::Aircraft(const AircraftParameters &params)
     : MovableUnit(params),
-      m_homeBaseId(params.homeBaseId), m_rtb(params.rtb), m_targetId(params.targetId)
+      m_homeBaseId(params.homeBaseId), m_returnToBase(params.returnToBase), m_targetId(params.targetId)
 {
 }
 
-bool Aircraft::handleRtb()
+bool Aircraft::handleReturnToBase()
 {
   // If the aircraft is returning to base (RTB)
-  if (m_rtb)
+  if (m_returnToBase)
   {
     // Base *aircraftHomeBase = nullptr;
 
@@ -28,7 +29,7 @@ bool Aircraft::handleRtb()
     //   const Coordinates &currentCoordinates = getCoordinates();
     //   const double currentLatitude = currentCoordinates.getLatitude();
     //   const double currentLongitude = currentCoordinates.getLongitude();
-    //   double distanceToBase = simulation_utils::getDistanceBetweenTwoPoints(
+    //   double distanceToBase = simulation_utils::getDistanceKmBetweenTwoPoints(
     //       currentLatitude,
     //       currentLongitude,
     //       aircraftHomeBase->getLatitude(),
@@ -46,8 +47,8 @@ bool Aircraft::handleRtb()
 
 void Aircraft::update(double dt)
 {
-  const bool currentlyRtb = handleRtb();
-  if (currentlyRtb)
+  const bool returningToBase = handleReturnToBase();
+  if (returningToBase)
   {
     return;
   }
