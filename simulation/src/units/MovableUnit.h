@@ -12,7 +12,6 @@ struct MovableUnitParameters : public UnitParameters
     double currentFuelLbs = 0.0;
     double maxFuelLbs = 0.0;
     double fuelRateLbsPerHour = 0.0; // lbs/hr
-    // std::vector<Coordinates> route;
 };
 
 class MovableUnit : public Unit
@@ -35,6 +34,11 @@ public:
     void setMaxFuelLbs(double maxFuelLbs) { m_maxFuelLbs = maxFuelLbs; }
     void setFuelRateLbsPerHour(double fuelRateLbsPerHour) { m_fuelRateLbsPerHour = fuelRateLbsPerHour; }
     void setRoute(const std::vector<Coordinates> &route) { m_route = route; }
+
+    void addPointToRoute(double latitude, double longitude, double altitude);
+    void clearFirstNPointsFromRoute(int count);
+    void clearLastNPointsFromRoute(int count);
+    void clearRoute();
 
     void update(double dt) override;
 

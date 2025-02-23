@@ -11,6 +11,33 @@ MovableUnit::MovableUnit(const MovableUnitParameters &params)
 {
 }
 
+void MovableUnit::addPointToRoute(
+    double latitude, double longitude, double altitude)
+{
+    m_route.emplace_back(latitude, longitude, altitude);
+}
+
+void MovableUnit::clearFirstNPointsFromRoute(int count)
+{
+    if (count > 0 && count <= m_route.size())
+    {
+        m_route.erase(m_route.begin(), m_route.begin() + count);
+    }
+}
+
+void MovableUnit::clearLastNPointsFromRoute(int count)
+{
+    if (count > 0 && count <= m_route.size())
+    {
+        m_route.erase(m_route.end() - count, m_route.end());
+    }
+}
+
+void MovableUnit::clearRoute()
+{
+    m_route.clear();
+}
+
 void MovableUnit::update(double dt)
 {
     if (!m_route.empty())

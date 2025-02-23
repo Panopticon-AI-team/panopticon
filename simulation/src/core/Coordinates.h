@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdexcept>
+
 class Coordinates
 {
 public:
@@ -11,8 +13,22 @@ public:
     double getLongitude() const { return m_longitude; }
     double getAltitude() const { return m_altitude; }
 
-    void setLatitude(double latitude) { m_latitude = latitude; }
-    void setLongitude(double longitude) { m_longitude = longitude; }
+    void setLatitude(double latitude)
+    {
+        if (latitude < -90.0 || latitude > 90.0)
+        {
+            throw std::invalid_argument("Latitude must be between -90 and 90 degrees");
+        }
+        m_latitude = latitude;
+    }
+    void setLongitude(double longitude)
+    {
+        if (longitude < -180.0 || longitude > 180.0)
+        {
+            throw std::invalid_argument("Longitude must be between -180 and 180 degrees");
+        }
+        m_longitude = longitude;
+    }
     void setAltitude(double altitude) { m_altitude = altitude; }
 
 private:
