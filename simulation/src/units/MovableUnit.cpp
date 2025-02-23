@@ -64,17 +64,18 @@ void MovableUnit::update(double dt)
         {
             // Move toward the next waypoint, based on speed & deltaTime
             // If speed is in knots, distance traveled in 'deltaTime' seconds is:
-            //   traveledDistance = m_speedKnots * (deltaTime / 3600.0)
-            const double traveledDistance = m_speedKnots * (dt / simulation_utils::SECONDS_PER_HOUR);
+            //   traveledDistanceNm = m_speedKnots * (deltaTime / 3600.0)
+            // const double traveledDistanceNm = m_speedKnots * (dt / simulation_utils::SECONDS_PER_HOUR);
+            // const double traveledDistanceKm = traveledDistanceNm * (simulation_utils::NAUTICAL_MILES_TO_METERS / 1000.0);
 
             // getNextCoordinates is a helper that returns the next lat/lon
-            // after moving 'traveledDistance' toward the target.
+            // after moving 'traveledDistanceKm' toward the target.
             std::array<double, 2> nextCoordinates = simulation_utils::getNextCoordinates(
                 currentLatitude,
                 currentLongitude,
                 nextWaypointLatitude,
                 nextWaypointLongitude,
-                traveledDistance);
+                m_speedKnots);
 
             setLatitude(nextCoordinates[0]);
             setLongitude(nextCoordinates[1]);

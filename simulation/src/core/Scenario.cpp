@@ -78,29 +78,3 @@ void Scenario::update(double dt)
         aircraft.update(stepSize);
     }
 }
-
-// Side *Scenario::getSide(const std::string &sideId)
-// {
-//     auto it = std::find_if(m_sides.begin(), m_sides.end(),
-//                            [&](const Side &s)
-//                            { return s.getId() == sideId; });
-//     return (it != m_sides.end()) ? &(*it) : nullptr;
-// }
-
-// Aircraft *Scenario::getAircraft(const std::string &sideId, const std::string &aircraftId)
-// {
-//     Side *side = getSide(sideId);
-//     if (!side)
-//         return nullptr;
-
-//     return side->findAircraft(aircraftId);
-// }
-
-// Airbase *Scenario::getAirbase(const std::string &sideId, const std::string &airbaseId)
-// {
-//     Side *side = getSide(sideId);
-//     if (!side)
-//         return nullptr;
-
-//     return side->findAirbase(airbaseId);
-// }

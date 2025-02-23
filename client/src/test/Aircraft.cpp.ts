@@ -16,7 +16,7 @@ export async function createAircraft(): Promise<Aircraft> {
     const maxFuelLbs = 2000;
     const fuelRateLbsPerHour = 5;
     const homeBaseId = "Test Home Base ID";
-    const returnToBase = true;
+    const returnToBase = false;
     const targetId = "Test Target ID";
     const aircraftConstructionParameters = {
       id: id,
