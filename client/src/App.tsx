@@ -29,7 +29,7 @@ export default function App() {
     return null;
   }
 
-  // runCppTests();
+  runCppTests();
 
   const sideBlue = new Side({
     id: randomUUID(),

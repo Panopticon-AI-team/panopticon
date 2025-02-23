@@ -14,6 +14,7 @@ EMSCRIPTEN_BINDINGS(SimulationModule)
 {
     register_vector<Aircraft>("VectorAircraft");
     register_vector<Coordinates>("VectorCoordinates");
+    register_vector<Side>("VectorSides");
 
     class_<Coordinates>("Coordinates")
         .constructor<>()
@@ -100,9 +101,27 @@ EMSCRIPTEN_BINDINGS(SimulationModule)
         .property("durationSeconds", &Scenario::getDurationSeconds, &Scenario::setDurationSeconds)
         .property("timeCompression", &Scenario::getTimeCompression, &Scenario::setTimeCompression)
         .property("aircraft", &Scenario::getAircraft, &Scenario::setAircraft)
+        .property("sides", &Scenario::getSides, &Scenario::setSides)
         // Class Methods
         .function("getAircraftByIdAndSideId", &Scenario::getAircraftByIdAndSideId, allow_raw_pointers())
         .function("addAircraft", &Scenario::addAircraft)
         .function("removeAircraft", &Scenario::removeAircraft)
+        .function("getSideById", &Scenario::getSideById, allow_raw_pointers())
+        .function("addSide", &Scenario::addSide)
+        .function("removeSide", &Scenario::removeSide)
         .function("update", &Scenario::update);
+
+    value_object<SideParameters>("SideParameters")
+        .field("id", &SideParameters::id)
+        .field("name", &SideParameters::name)
+        .field("color", &SideParameters::color)
+        .field("totalScore", &SideParameters::totalScore);
+
+    class_<Side>("Side")
+        .constructor<const SideParameters &>()
+        // Class Fields
+        .property("id", &Side::getId, &Side::setId)
+        .property("name", &Side::getName, &Side::setName)
+        .property("color", &Side::getColor, &Side::setColor)
+        .property("totalScore", &Side::getTotalScore, &Side::setTotalScore);
 }

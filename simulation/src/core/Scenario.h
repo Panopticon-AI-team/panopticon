@@ -29,7 +29,7 @@ public:
     double getCurrentTime() const { return m_currentTime; }
     double getDurationSeconds() const { return m_durationSeconds; }
     double getTimeCompression() const { return m_timeCompression; }
-    // const std::vector<Side> &getSides() const { return m_sides; }
+    const std::vector<Side> &getSides() const { return m_sides; }
     // const std::vector<Airbase> &getAirbases() const { return m_airbases; }
     const std::vector<Aircraft> &getAircraft() const { return m_aircraft; }
 
@@ -39,7 +39,7 @@ public:
     void setCurrentTime(double currentTime) { m_currentTime = currentTime; }
     void setDurationSeconds(double durationSeconds) { m_durationSeconds = durationSeconds; }
     void setTimeCompression(double timeCompression) { m_timeCompression = timeCompression; }
-    // void setSides(const std::vector<Side> &sides) { m_sides = sides; }
+    void setSides(const std::vector<Side> &sides) { m_sides = sides; }
     // void setAirbases(const std::vector<Airbase> &airbases) { m_airbases = airbases; }
     void setAircraft(const std::vector<Aircraft> &aircraft) { m_aircraft = aircraft; }
 
@@ -47,6 +47,11 @@ public:
     Aircraft *getAircraftByIdAndSideId(std::string sideId, const std::string &aircraftId);
     void addAircraft(const AircraftParameters &params);
     void removeAircraft(std::string sideId, const std::string &aircraftId);
+
+    std::vector<Side>::iterator getSideIterator(std::string sideId);
+    Side *getSideById(const std::string &sideId);
+    void addSide(const SideParameters &params);
+    void removeSide(const std::string &sideId);
 
     void update(double dt);
 

@@ -41,13 +41,13 @@ export async function createAircraft(): Promise<Aircraft> {
   });
 }
 
-export function createAircraftTest() {
+function createAircraftTest() {
   createAircraft().then((aircraft) => {
     console.log("createAircraftTest aircraft: ", aircraft);
   });
 }
 
-export function addPointToRouteTest() {
+function addPointToRouteTest() {
   createAircraft().then((aircraft) => {
     aircraft.addPointToRoute(7, 8, 9);
     const route = aircraft.route;
@@ -60,7 +60,7 @@ export function addPointToRouteTest() {
   });
 }
 
-export function clearFirstNPointsFromRouteTest() {
+function clearFirstNPointsFromRouteTest() {
   createAircraft().then((aircraft) => {
     aircraft.addPointToRoute(7, 8, 9);
     aircraft.addPointToRoute(10, 11, 12);
@@ -76,7 +76,7 @@ export function clearFirstNPointsFromRouteTest() {
   });
 }
 
-export function clearLastNPointsFromRouteTest() {
+function clearLastNPointsFromRouteTest() {
   createAircraft().then((aircraft) => {
     aircraft.addPointToRoute(7, 8, 9);
     aircraft.addPointToRoute(10, 11, 12);
@@ -92,7 +92,7 @@ export function clearLastNPointsFromRouteTest() {
   });
 }
 
-export function clearRouteTest() {
+function clearRouteTest() {
   createAircraft().then((aircraft) => {
     aircraft.addPointToRoute(7, 8, 9);
     aircraft.addPointToRoute(10, 11, 12);

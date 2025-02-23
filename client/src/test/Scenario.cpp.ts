@@ -1,5 +1,6 @@
 import Simulation, { Scenario } from "emscripten_dist/simulation.js";
 import { createAircraft } from "./Aircraft.cpp";
+import { createSide } from "./Side.cpp";
 
 async function createScenario(): Promise<Scenario> {
   const scenarioId = "Test ID";
@@ -22,13 +23,13 @@ async function createScenario(): Promise<Scenario> {
   });
 }
 
-export function createScenarioTest() {
+function createScenarioTest() {
   createScenario().then((scenario) => {
     console.log("createScenarioTest scenario: ", scenario);
   });
 }
 
-export function scenarioAddAircraftTest() {
+function scenarioAddAircraftTest() {
   createScenario().then(async (scenario) => {
     const sampleAircraft = await createAircraft();
     scenario.addAircraft({
@@ -57,7 +58,22 @@ export function scenarioAddAircraftTest() {
   });
 }
 
+function scenarioAddSideTest() {
+  createScenario().then(async (scenario) => {
+    const sampleSide = await createSide();
+    scenario.addSide({
+      id: sampleSide.id,
+      name: sampleSide.name,
+      color: sampleSide.color,
+      totalScore: sampleSide.totalScore,
+    });
+    const addedSide = scenario.getSideById(sampleSide.id);
+    console.log("scenarioAddSideTest side: ", addedSide);
+  });
+}
+
 export function scenarioCppTests() {
   createScenarioTest();
   scenarioAddAircraftTest();
+  scenarioAddSideTest();
 }

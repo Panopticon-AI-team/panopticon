@@ -29,6 +29,7 @@ public:
     const std::string &getColor() const { return m_color; }
     double getTotalScore() const { return m_totalScore; }
 
+    void setId(const std::string &id) { m_id = id; }
     void setName(const std::string &name) { m_name = name; }
     void setColor(const std::string &color) { m_color = color; }
     void setTotalScore(double totalScore) { m_totalScore = totalScore; }

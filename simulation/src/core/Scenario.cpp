@@ -38,6 +38,33 @@ void Scenario::removeAircraft(std::string sideId, const std::string &aircraftId)
     }
 }
 
+std::vector<Side>::iterator Scenario::getSideIterator(std::string sideId)
+{
+    return std::find_if(m_sides.begin(), m_sides.end(),
+                        [&](const Side &s)
+                        { return s.getId() == sideId; });
+}
+
+Side *Scenario::getSideById(const std::string &sideId)
+{
+    auto sideSearchResult = getSideIterator(sideId);
+    return (sideSearchResult != m_sides.end()) ? &(*sideSearchResult) : nullptr;
+}
+
+void Scenario::addSide(const SideParameters &params)
+{
+    m_sides.push_back(Side(params));
+}
+
+void Scenario::removeSide(const std::string &sideId)
+{
+    auto sideSearchResult = getSideIterator(sideId);
+    if (sideSearchResult != m_sides.end())
+    {
+        m_sides.erase(sideSearchResult);
+    }
+}
+
 void Scenario::update(double dt)
 {
     double stepSize = dt * m_timeCompression;
