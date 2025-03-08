@@ -7,11 +7,11 @@ import Game from "@/game/Game";
 import { DEFAULT_OL_PROJECTION_CODE } from "@/utils/constants";
 import defaultScenarioJson from "@/scenarios/default_scenario.json"; // < To easily switch between default_scenario.json and SCS.json when testing. Ignore lint warning. Possible to resort to something else instead of having unsued import here ?
 import SCSScenarioJson from "@/scenarios/SCS.json";
-import { CurrentScenarioTimeProvider } from "@/gui/map/contextProviders/ScenarioTimeProvider";
-import { CurrentGameStatusProvider } from "@/gui/map/contextProviders/GameStatusProvider";
-import { CurrentMouseMapCoordinatesProvider } from "@/gui/map/contextProviders/MouseMapCoordinatesProvider";
+import Box from "@mui/material/Box";
+import { useMediaQuery } from "@mui/material";
 
 export default function App() {
+  const isMobile = useMediaQuery("(max-width:600px)");
   const sideBlue = new Side({
     id: randomUUID(),
     name: "BLUE",
@@ -38,23 +38,18 @@ export default function App() {
   theGame.loadScenario(JSON.stringify(SCSScenarioJson)); // loads default scenario for easier testing
 
   return (
-    <div className="App">
-      <CurrentScenarioTimeProvider>
-        <CurrentGameStatusProvider>
-          <CurrentMouseMapCoordinatesProvider>
-            <ScenarioMap
-              center={transform(
-                theGame.mapView.currentCameraCenter,
-                "EPSG:4326",
-                DEFAULT_OL_PROJECTION_CODE
-              )}
-              zoom={theGame.mapView.currentCameraZoom}
-              game={theGame}
-              projection={projection}
-            ></ScenarioMap>
-          </CurrentMouseMapCoordinatesProvider>
-        </CurrentGameStatusProvider>
-      </CurrentScenarioTimeProvider>
-    </div>
+    <Box className="App" sx={{ display: "flex" }}>
+      <ScenarioMap
+        center={transform(
+          theGame.mapView.currentCameraCenter,
+          "EPSG:4326",
+          DEFAULT_OL_PROJECTION_CODE
+        )}
+        zoom={theGame.mapView.currentCameraZoom}
+        game={theGame}
+        projection={projection}
+        mobileView={isMobile}
+      />
+    </Box>
   );
 }

@@ -6,6 +6,7 @@ _Pull requests, bug reports, and all other forms of contribution are welcomed an
 
 - [Contribution Terms](#contribution-terms)
 - [Project Structure](#project-structure)
+  - [Client](#client)
 - [Opening an Issue](#inbox_tray-opening-an-issue)
 - [Feature Requests](#love_letter-feature-requests)
 - [Triaging Issues](#mag-triaging-issues)
@@ -34,32 +35,41 @@ See our [Support Guide](https://github.com/jessesquires/.github/blob/main/SUPPOR
 
 The project is divided into two directories: `client` and `gym`. `client` contains the source code for the web application, while `gym` contains the source code for the Gymnasium environment. As of this writing, both `client` and `gym` have their separate copy of the simulation engine, which is written in Typescript for the web application and Python for the Gymnasium environment. In the future, we will integrate these two implementations.
 
+### Client
+
 We use [React](https://react.dev/) and [OpenLayers](https://openlayers.org/) as the basis for the web application. Within the web application source code, the important folders are:
 
 - `game`: the simulation engine. `gym` also has a copy of this engine but written in Python.
 - `gui`: code for the map, the toolbar, and any other front-end functionalities.
 - `scenarios`: contains example scenario files in JSON format.
 - `styles`: contains styling for the web application.
-- `tests`: contains tests.
+  - `index.css`: The global stylesheet for the web application, defining base styles.
+  - `ScenarioMap.css`: contains styling for the map.
+- `testing`: contains files and configurations related to unit and integration tests for the web application. **Note:** `/test` folders found throughout `/client` contain unit tests for the respective code in which they are located.
+  - `helpers.ts`: contains utility functions and mock data used to support tests.
+  - `setup.ts`: a configuration file that sets up the testing environment, such as initializing testing libraries, global mocks, or configurations required before running tests.
 - `utils`: contains helper functions and constants.
 
 Since the simulation engine is relevant to both the `client` and `gym` code, we will discuss it later. We proceed with a breakdown of the code in `gui`, which is further organized into:
 
-- `assets`: contains SVG files of icons that show up on the map.
-- `map`: contains code for the map and the toolbar.
-  - `contextProviders`: contains context providers like mouse position, current scenario time, and current simulation status.
-  - `featureCards`: contains components for the various popups (called Cards) that appear when the user selects a map feature (like an aircraft or a ship).
+- `assets`: contains various types of files. For example, media, config, fonts, and so on.
+- `contexts`: contains context that manage global state and provide shared data or functions. These contexts are used by components in `/gui/providers` to supply the necessary values throughout the component tree.
+- `map`: contains code for the map and includes subfolders with related components.
+  - `feature`: contains the various popups (called Cards) that appear when the user selects a map feature (like an aircraft or a ship). It can also contain components that are part of or related to features.
   - `mapLayers`: contains the various map layers such as the base map layers and the various feature layers (e.g. aircraft, ship, routes, range rings, labels, etc.).
-  - `missionEditor`: contains code for the mission creator and editor menus.
+  - `mission`: contains code for the mission creator and editor form/card. It can also contain components that are part of or related to missions.
   - `toolbar`: contains code for the toolbar.
   - `FeaturePopup.tsx`: base component for the popup that appears when the user selects a map feature.
   - `MultipleFeatureSelector.tsx`: handles the case when the user clicks on more than one map feature.
   - `ScenarioMap.tsx`: the main file responsible for rendering the map, the map layers, and the toolbar.
-- `styles`: contains styling for the map.
+- `providers`: Contains components that take context in `/gui/contexts` and supply global state, shared data, or functions to child components. These components make context values accessible throughout the component tree.
+- `shared`: contains reusable utilities, hooks, and components.
+  - `ui`: contains reusable UI components such as text fields, buttons, and so on.
 
 The simulation engine is housed in `client/src/game` for the web application and in `gym/blade` for the Gymnasium environment. The project structure is:
 
 - `db`: the "database" which contains real/notional data for several units (i.e. aircraft, bases, SAMs, etc.).
+  - `models`: contains data models that define the structure and shape of the real/notional data.
 - `engine`: contains logic specific to the underlying simulation engine (the only thing currently in here is weapon engagement logic).
 - `envs` (only in `gym`): contains code defining the Gymnasium environments.
 - `mission`: contains logic for missions.

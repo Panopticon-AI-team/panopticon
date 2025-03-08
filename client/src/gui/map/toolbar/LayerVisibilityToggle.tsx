@@ -49,11 +49,12 @@ export default function LayerVisibilityPanelToggle(
     lineHeight: "normal",
   };
   const openLayersPanelButtonStyle = {
-    border: 1,
+    border: `1px solid ${colorPalette.darkGray}`,
     backgroundColor: colorPalette.lightGray,
     borderRadius: "8px",
-    borderColor: "black",
-    borderWidth: "2px",
+    position: "absolute",
+    top: "4em",
+    right: "0.2em",
   };
   const layersVisibilityPanelStyle = {
     backgroundColor: colorPalette.lightGray,
@@ -134,16 +135,18 @@ export default function LayerVisibilityPanelToggle(
       <div
         style={{
           position: "absolute",
-          left: "25em",
           top: "1em",
+          right: "1em",
           fontSize: "small",
           zIndex: 1000,
         }}
       >
         <Box sx={openLayersPanelButtonStyle}>
-          <IconButton onClick={handleClick} size="medium">
-            <LayersIcon />
-          </IconButton>
+          <Tooltip title="Layer Controls" placement="left">
+            <IconButton disableRipple onClick={handleClick} size="medium">
+              <LayersIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
       </div>
 

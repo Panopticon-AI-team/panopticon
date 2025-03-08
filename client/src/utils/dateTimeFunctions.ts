@@ -24,6 +24,15 @@ export function unixToLocalTime(unixTimestamp: number): string {
   return formattedTime;
 }
 
+/**
+ * Get local date time
+ * @returns e.g 2020_05_12_T23:50:21.817Z
+ */
+export function getLocalDateTime(): string {
+  const now = new Date();
+  return now.toISOString();
+}
+
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

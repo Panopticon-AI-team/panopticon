@@ -28,6 +28,13 @@ import VectorLayer from "ol/layer/Vector";
 import Ship from "@/game/units/Ship";
 import ReferencePoint from "@/game/units/ReferencePoint";
 
+export type FeatureEntityState = {
+  id: string;
+  type: "aircraft" | "airbase" | "facility" | "referencePoint";
+  name: string;
+  sideColor: "blue" | "red";
+};
+
 type GameEntity =
   | Aircraft
   | Facility
@@ -68,7 +75,7 @@ class FeatureLayer {
     this.featureCount = features.length;
   }
 
-  findFeatureByKey(key: string, value: any) {
+  findFeatureByKey(key: string, value: string) {
     return this.layerSource
       .getFeatures()
       .find((feature) => feature.getProperties()[key] === value);

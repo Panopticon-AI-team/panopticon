@@ -7,11 +7,10 @@ import FeaturePopup from "@/gui/map/FeaturePopup";
 import Stack from "@mui/material/Stack";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
-import FlightIcon from "@/gui/assets/flight_black_24dp.svg?react";
-import RadarIcon from "@/gui/assets/radar_black_24dp.svg?react";
-import FlightTakeoffIcon from "@/gui/assets/flight_takeoff_black_24dp.svg?react";
-import PinDropIcon from "@/gui/assets/pin_drop_24dp_E8EAED.svg?react";
-
+import FlightIcon from "@/gui/assets/svg/flight_black_24dp.svg?react";
+import RadarIcon from "@/gui/assets/svg/radar_black_24dp.svg?react";
+import FlightTakeoffIcon from "@/gui/assets/svg/flight_takeoff_black_24dp.svg?react";
+import PinDropIcon from "@/gui/assets/svg/pin_drop_24dp_E8EAED.svg?react";
 import { Geometry } from "ol/geom";
 import { Feature } from "ol";
 

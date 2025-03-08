@@ -18,21 +18,24 @@ import VectorSource from "ol/source/Vector";
 import { getLength } from "ol/sphere.js";
 import Game from "@/game/Game";
 import Scenario from "@/game/Scenario";
+import "@/styles/ScenarioMap.css";
 import {
+  APP_DRAWER_WIDTH,
   DEFAULT_OL_PROJECTION_CODE,
   NAUTICAL_MILES_TO_METERS,
 } from "@/utils/constants";
+import { styled } from "@mui/material/styles";
 import { randomInt } from "@/utils/mapFunctions";
 import { delay } from "@/utils/dateTimeFunctions";
-import "../styles/ScenarioMap.css";
 import MultipleFeatureSelector from "@/gui/map/MultipleFeatureSelector";
-import { SetCurrentGameStatus } from "@/gui/map/contextProviders/GameStatusProvider";
-import { SetCurrentMouseMapCoordinates } from "@/gui/map/contextProviders/MouseMapCoordinatesProvider";
-import { SetCurrentScenarioTimeContext } from "@/gui/map/contextProviders/ScenarioTimeProvider";
-import AirbaseCard from "@/gui/map/featureCards/AirbaseCard";
-import AircraftCard from "@/gui/map/featureCards/AircraftCard";
-import FacilityCard from "@/gui/map/featureCards/FacilityCard";
-import ShipCard from "@/gui/map/featureCards/ShipCard";
+import { SetScenarioTimeContext } from "@/gui/contexts/ScenarioTimeContext";
+import { SetGameStatusContext } from "@/gui/contexts/GameStatusContext";
+import { SetMouseMapCoordinatesContext } from "@/gui/contexts/MouseMapCoordinatesContext";
+import { ToastContext } from "@/gui/contexts/ToastContext";
+import AirbaseCard from "@/gui/map/feature/AirbaseCard";
+import AircraftCard from "@/gui/map/feature/AircraftCard";
+import FacilityCard from "@/gui/map/feature/FacilityCard";
+import ShipCard from "@/gui/map/feature/ShipCard";
 import BaseMapLayers from "@/gui/map/mapLayers/BaseMapLayers";
 import { routeDrawLineStyle } from "@/gui/map/mapLayers/FeatureLayerStyles";
 import {
@@ -45,21 +48,25 @@ import {
   ThreatRangeLayer,
   WeaponLayer,
   ReferencePointLayer,
+  FeatureEntityState,
 } from "@/gui/map/mapLayers/FeatureLayers";
-import BottomCornerInfoDisplay from "@/gui/map/toolbar/BottomCornerInfoDisplay";
+import BottomInfoDisplay from "@/gui/map/toolbar/BottomInfoDisplay";
 import LayerVisibilityPanelToggle from "@/gui/map/toolbar/LayerVisibilityToggle";
-import Toolbar from "@/gui/map//toolbar/Toolbar";
+import Toolbar from "@/gui/map/toolbar/Toolbar";
 import { AircraftDb, AirbaseDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
-import ReferencePointCard from "@/gui/map/featureCards/ReferencePointCard";
+import ReferencePointCard from "@/gui/map/feature/ReferencePointCard";
 import ReferencePoint from "@/game/units/ReferencePoint";
-import MissionCreator from "@/gui/map/missionEditor/MissionCreator";
-import MissionEditor from "@/gui/map/missionEditor/MissionEditor";
+import MissionCreatorCard from "@/gui/map/mission/MissionCreatorCard";
+import MissionEditorCard from "@/gui/map/mission/MissionEditorCard";
+import BaseVectorLayer from "ol/layer/BaseVector";
+import VectorLayer from "ol/layer/Vector";
 
 interface ScenarioMapProps {
   zoom: number;
   center: number[];
   game: Game;
   projection?: Projection;
+  mobileView: boolean;
 }
 
 interface IOpenMultipleFeatureSelector {
@@ -69,14 +76,39 @@ interface IOpenMultipleFeatureSelector {
   features: Feature<Geometry>[];
 }
 
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
+  open?: boolean;
+}>(({ theme }) => ({
+  flexGrow: 1,
+  transition: theme.transitions.create("margin", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginLeft: `-${APP_DRAWER_WIDTH}px`,
+  variants: [
+    {
+      props: ({ open }) => open,
+      style: {
+        transition: theme.transitions.create("margin", {
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+      },
+    },
+  ],
+}));
+
 export default function ScenarioMap({
   zoom,
   center,
   game,
   projection,
+  mobileView,
 }: Readonly<ScenarioMapProps>) {
-  const mapId = useRef(null);
+  const mapRef = useRef<HTMLDivElement | null>(null);
   const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const [baseMapLayers, setBaseMapLayers] = useState(
     new BaseMapLayers(projection)
   );
@@ -108,6 +140,9 @@ export default function ScenarioMap({
   const [featureLabelLayer, setFeatureLabelLayer] = useState(
     new FeatureLabelLayer(projection, 4)
   );
+  const [featureEntitiesState, setFeatureEntitiesState] = useState<
+    FeatureEntityState[]
+  >([]);
   const [currentScenarioTimeCompression, setCurrentScenarioTimeCompression] =
     useState(game.currentScenario.timeCompression);
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
@@ -156,13 +191,22 @@ export default function ScenarioMap({
     useState(true);
   const [missionCreatorActive, setMissionCreatorActive] = useState(false);
   const [missionEditorActive, setMissionEditorActive] = useState(false);
-  const setCurrentScenarioTimeToContext = useContext(
-    SetCurrentScenarioTimeContext
-  );
-  const setCurrentGameStatusToContext = useContext(SetCurrentGameStatus);
+  const setCurrentScenarioTimeToContext = useContext(SetScenarioTimeContext);
+  const setCurrentGameStatusToContext = useContext(SetGameStatusContext);
   const setCurrentMouseMapCoordinatesToContext = useContext(
-    SetCurrentMouseMapCoordinates
+    SetMouseMapCoordinatesContext
   );
+  const toastContext = useContext(ToastContext);
+
+  const DrawerHeader = styled("div")(({ theme }) => ({
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 1),
+    minHeight: "auto",
+    margin: mobileView ? 0 : 16,
+    justifyContent: "flex-end",
+  }));
+
   let routeMeasurementDrawLine: Draw | null = null;
   let routeMeasurementTooltipElement: HTMLDivElement | null = null;
   let routeMeasurementTooltip: Overlay | null = null;
@@ -194,9 +238,10 @@ export default function ScenarioMap({
   const [theMap, setTheMap] = useState(map);
 
   useEffect(() => {
-    theMap.setTarget(mapId.current!);
+    theMap.setTarget(mapRef.current!);
     refreshAllLayers();
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    loadFeatureEntitiesState();
 
     return () => {
       if (!theMap) return;
@@ -244,7 +289,7 @@ export default function ScenarioMap({
     return featureType;
   }
 
-  function getMapClickContext(event: MapBrowserEvent<any>): string {
+  function getMapClickContext(event: MapBrowserEvent<MouseEvent>): string {
     let context = "default";
     const featuresAtPixel = getFeaturesAtPixel(
       theMap.getEventPixel(event.originalEvent)
@@ -297,7 +342,7 @@ export default function ScenarioMap({
     return context;
   }
 
-  function handleMapClick(event: MapBrowserEvent<any>) {
+  function handleMapClick(event: MapBrowserEvent<MouseEvent>) {
     const mapClickContext = getMapClickContext(event);
     const featuresAtPixel = getFeaturesAtPixel(
       theMap.getEventPixel(event.originalEvent)
@@ -500,13 +545,10 @@ export default function ScenarioMap({
   }
 
   function handleAddUnit(coordinates: number[]) {
-    const unitClassSelector = document.getElementById(
-      "unit-class-selector"
-    ) as HTMLSelectElement;
-    const selectedUnitClassName = unitClassSelector.value;
+    const unitClassSelected = game.selectedUnitClassName;
     if (game.addingAircraft) {
       const aircraftTemplate = AircraftDb.find(
-        (aircraft) => aircraft.className === selectedUnitClassName
+        (aircraft) => aircraft.className === unitClassSelected
       );
       addAircraft(
         coordinates,
@@ -519,7 +561,7 @@ export default function ScenarioMap({
       game.addingAircraft = false;
     } else if (game.addingFacility) {
       const facilityTemplate = FacilityDb.find(
-        (facility) => facility.className === selectedUnitClassName
+        (facility) => facility.className === unitClassSelected
       );
       addFacility(
         coordinates,
@@ -529,13 +571,13 @@ export default function ScenarioMap({
       game.addingFacility = false;
     } else if (game.addingAirbase) {
       const airbaseTemplate = AirbaseDb.find(
-        (airbase) => airbase.name === selectedUnitClassName
+        (airbase) => airbase.name === unitClassSelected
       );
       addAirbase(coordinates, airbaseTemplate?.name);
       game.addingAirbase = false;
     } else if (game.addingShip) {
       const shipTemplate = ShipDb.find(
-        (ship) => ship.className === selectedUnitClassName
+        (ship) => ship.className === unitClassSelected
       );
       addShip(
         coordinates,
@@ -553,6 +595,7 @@ export default function ScenarioMap({
     setCurrentGameStatusToContext(
       game.scenarioPaused ? "Scenario paused" : "Scenario playing"
     );
+    updateSelectedUnitClassName(null);
   }
 
   function getFeaturesAtPixel(pixel: Pixel): Feature[] {
@@ -584,7 +627,69 @@ export default function ScenarioMap({
     return selectedFeatures;
   }
 
-  function setAddingAircraft() {
+  function loadFeatureEntitiesState() {
+    if (!theMap) return;
+
+    const vectorLayers = theMap
+      .getLayers()
+      .getArray()
+      .filter(
+        (layer) =>
+          layer instanceof VectorLayer || layer instanceof BaseVectorLayer
+      );
+
+    const visibleFeaturesMap: Record<string, FeatureEntityState> = {};
+
+    const features = vectorLayers
+      .map((layer) => layer.getSource().getFeatures())
+      .flat();
+
+    for (const feature of features) {
+      if (
+        ["rangeRing", "route"].includes(feature.get("type")) ||
+        visibleFeaturesMap[feature.get("id")] !== undefined
+      ) {
+        continue;
+      }
+      visibleFeaturesMap[feature.get("id")] = {
+        id: feature.get("id"),
+        name: feature.get("name"),
+        type: feature.get("type").replaceAll("FeatureLabel", ""),
+        sideColor: feature.get("sideColor"),
+      };
+    }
+
+    setFeatureEntitiesState(Object.values(visibleFeaturesMap));
+  }
+
+  function handleFeatureEntityStateAction(
+    payload: Partial<FeatureEntityState>,
+    action: "add" | "remove"
+  ) {
+    if (action === "remove") {
+      setFeatureEntitiesState((prevFeatures) =>
+        prevFeatures.filter((feature) => feature.id !== payload.id)
+      );
+    }
+
+    if (action === "add") {
+      const existingFeature = featureEntitiesState.find(
+        (feature) => feature.id === payload.id
+      );
+      if (!existingFeature) {
+        setFeatureEntitiesState((prevFeatures) => [
+          payload as FeatureEntityState,
+          ...prevFeatures,
+        ]);
+      }
+    }
+  }
+
+  function updateSelectedUnitClassName(unitClassName: string | null) {
+    game.selectedUnitClassName = unitClassName;
+  }
+
+  function setAddingAircraft(unitClassName: string) {
     game.addingAircraft = !game.addingAircraft;
     game.addingFacility = false;
     game.addingAirbase = false;
@@ -592,14 +697,16 @@ export default function ScenarioMap({
     game.addingReferencePoint = false;
     if (game.addingAircraft) {
       setCurrentGameStatusToContext("Click on the map to add an aircraft");
+      updateSelectedUnitClassName(unitClassName);
     } else {
       setCurrentGameStatusToContext(
         game.scenarioPaused ? "Scenario paused" : "Scenario playing"
       );
+      updateSelectedUnitClassName(null);
     }
   }
 
-  function setAddingFacility() {
+  function setAddingFacility(unitClassName: string) {
     game.addingFacility = !game.addingFacility;
     game.addingAircraft = false;
     game.addingAirbase = false;
@@ -607,14 +714,16 @@ export default function ScenarioMap({
     game.addingReferencePoint = false;
     if (game.addingFacility) {
       setCurrentGameStatusToContext("Click on the map to add a facility");
+      updateSelectedUnitClassName(unitClassName);
     } else {
       setCurrentGameStatusToContext(
         game.scenarioPaused ? "Scenario paused" : "Scenario playing"
       );
+      updateSelectedUnitClassName(null);
     }
   }
 
-  function setAddingAirbase() {
+  function setAddingAirbase(unitClassName: string) {
     game.addingAirbase = !game.addingAirbase;
     game.addingAircraft = false;
     game.addingFacility = false;
@@ -622,14 +731,16 @@ export default function ScenarioMap({
     game.addingReferencePoint = false;
     if (game.addingAirbase) {
       setCurrentGameStatusToContext("Click on the map to add an airbase");
+      updateSelectedUnitClassName(unitClassName);
     } else {
       setCurrentGameStatusToContext(
         game.scenarioPaused ? "Scenario paused" : "Scenario playing"
       );
+      updateSelectedUnitClassName(null);
     }
   }
 
-  function setAddingShip() {
+  function setAddingShip(unitClassName: string) {
     game.addingShip = !game.addingShip;
     game.addingAircraft = false;
     game.addingFacility = false;
@@ -637,10 +748,12 @@ export default function ScenarioMap({
     game.addingReferencePoint = false;
     if (game.addingShip) {
       setCurrentGameStatusToContext("Click on the map to add a ship");
+      updateSelectedUnitClassName(unitClassName);
     } else {
       setCurrentGameStatusToContext(
         game.scenarioPaused ? "Scenario paused" : "Scenario playing"
       );
+      updateSelectedUnitClassName(null);
     }
   }
 
@@ -679,7 +792,8 @@ export default function ScenarioMap({
       const [_observation, _reward, terminated, truncated, _info] =
         stepGameAndDrawFrame();
 
-      gameEnded = terminated || truncated;
+      const status = terminated || truncated;
+      gameEnded = status as boolean;
 
       await delay(0);
     }
@@ -687,7 +801,7 @@ export default function ScenarioMap({
 
   function stepGameForStepSize(
     stepSize: number
-  ): [Scenario, number, boolean, boolean, any] {
+  ): [Scenario, number, boolean, boolean, null] {
     let steps = 1;
     let [observation, reward, terminated, truncated, info] = game.step();
     while (steps < stepSize) {
@@ -779,6 +893,15 @@ export default function ScenarioMap({
     );
     if (newAircraft) {
       aircraftLayer.addAircraftFeature(newAircraft);
+      handleFeatureEntityStateAction(
+        {
+          id: newAircraft.id,
+          name: newAircraft.name,
+          type: "aircraft",
+          sideColor: newAircraft.sideColor as "blue" | "red",
+        },
+        "add"
+      );
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(newAircraft);
     }
@@ -809,6 +932,7 @@ export default function ScenarioMap({
     );
     if (newFacility) {
       facilityLayer.addFacilityFeature(newFacility);
+      handleFeatureEntityStateAction({ id: newFacility.id }, "add");
       if (threatRangeVisible) threatRangeLayer.addRangeFeature(newFacility);
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(newFacility);
@@ -830,6 +954,15 @@ export default function ScenarioMap({
     );
     if (newAirbase) {
       airbasesLayer.addAirbaseFeature(newAirbase);
+      handleFeatureEntityStateAction(
+        {
+          id: newAirbase.id,
+          name: newAirbase.name,
+          type: "airbase",
+          sideColor: newAirbase.sideColor as "blue" | "red",
+        },
+        "add"
+      );
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(newAirbase);
     }
@@ -838,6 +971,7 @@ export default function ScenarioMap({
   function removeAirbase(airbaseId: string) {
     game.removeAirbase(airbaseId);
     airbasesLayer.removeFeatureById(airbaseId);
+    handleFeatureEntityStateAction({ id: airbaseId }, "remove");
     if (featureLabelVisible) featureLabelLayer.removeFeatureById(airbaseId);
   }
 
@@ -845,6 +979,7 @@ export default function ScenarioMap({
     game.removeFacility(facilityId);
     facilityLayer.removeFeatureById(facilityId);
     threatRangeLayer.removeFeatureById(facilityId);
+    handleFeatureEntityStateAction({ id: facilityId }, "remove");
     if (featureLabelVisible) featureLabelLayer.removeFeatureById(facilityId);
   }
 
@@ -852,6 +987,7 @@ export default function ScenarioMap({
     game.removeAircraft(aircraftId);
     aircraftLayer.removeFeatureById(aircraftId);
     aircraftRouteLayer.removeFeatureById(aircraftId);
+    handleFeatureEntityStateAction({ id: aircraftId }, "remove");
     if (featureLabelVisible) featureLabelLayer.removeFeatureById(aircraftId);
   }
 
@@ -865,6 +1001,15 @@ export default function ScenarioMap({
     );
     if (newReferencePoint) {
       referencePointLayer.addReferencePointFeature(newReferencePoint);
+      handleFeatureEntityStateAction(
+        {
+          id: newReferencePoint.id,
+          name: newReferencePoint.name,
+          type: "referencePoint",
+          sideColor: newReferencePoint.sideColor as "blue" | "red",
+        },
+        "add"
+      );
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(newReferencePoint);
     }
@@ -873,6 +1018,7 @@ export default function ScenarioMap({
   function removeReferencePoint(referencePointId: string) {
     game.removeReferencePoint(referencePointId);
     referencePointLayer.removeFeatureById(referencePointId);
+    handleFeatureEntityStateAction({ id: referencePointId }, "remove");
     if (featureLabelVisible)
       featureLabelLayer.removeFeatureById(referencePointId);
   }
@@ -902,6 +1048,15 @@ export default function ScenarioMap({
     );
     if (newShip) {
       shipLayer.addShipFeature(newShip);
+      handleFeatureEntityStateAction(
+        {
+          id: newShip.id,
+          name: newShip.name,
+          type: "facility",
+          sideColor: newShip.sideColor as "blue" | "red",
+        },
+        "add"
+      );
       if (threatRangeVisible) threatRangeLayer.addRangeFeature(newShip);
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(newShip);
@@ -919,6 +1074,7 @@ export default function ScenarioMap({
     shipLayer.removeFeatureById(shipId);
     shipRouteLayer.removeFeatureById(shipId);
     threatRangeLayer.removeFeatureById(shipId);
+    handleFeatureEntityStateAction({ id: shipId }, "remove");
     if (featureLabelVisible) featureLabelLayer.removeFeatureById(shipId);
   }
 
@@ -1059,6 +1215,10 @@ export default function ScenarioMap({
       }
     }
     game.createPatrolMission(missionName, assignedUnits, assignedArea);
+    toastContext?.addToast(
+      `Created patrol mission [${missionName}] successfully!`,
+      "success"
+    );
   }
 
   function handleUpdatePatrolMission(
@@ -1087,6 +1247,10 @@ export default function ScenarioMap({
       assignedUnits,
       assignedArea
     );
+    toastContext?.addToast(
+      `Updated patrol mission [${missionName}] successfully!`,
+      "success"
+    );
   }
 
   function handleCreateStrikeMission(
@@ -1095,6 +1259,10 @@ export default function ScenarioMap({
     targetIds: string[]
   ) {
     game.createStrikeMission(missionName, assignedUnits, targetIds);
+    toastContext?.addToast(
+      `Created strike mission [${missionName}] successfully!`,
+      "success"
+    );
   }
 
   function handleUpdateStrikeMission(
@@ -1104,10 +1272,15 @@ export default function ScenarioMap({
     targetIds?: string[]
   ) {
     game.updateStrikeMission(missionId, missionName, assignedUnits, targetIds);
+    toastContext?.addToast(
+      `Updated strike mission [${missionName}] successfully!`,
+      "success"
+    );
   }
 
   function handleDeleteMission(missionId: string) {
     game.deleteMission(missionId);
+    toastContext?.addToast(`Deleted mission successfully!`, "success");
   }
 
   function queueUnitForTeleport(unitId: string) {
@@ -1119,6 +1292,9 @@ export default function ScenarioMap({
   function switchCurrentSide() {
     game.switchCurrentSide();
     setCurrentSideName(game.currentSideName);
+    toastContext?.addToast(
+      `Side changed: ${game.currentSideName.toUpperCase()}`
+    );
   }
 
   function toggleScenarioTimeCompression() {
@@ -1436,9 +1612,20 @@ export default function ScenarioMap({
     routeMeasurementDrawLine.appendCoordinates([startCoordinates]);
   }
 
+  function handleDrawerOpen() {
+    setDrawerOpen(true);
+  }
+
+  function handleDrawerClose() {
+    setDrawerOpen(false);
+  }
+
   return (
-    <div>
+    <>
       <Toolbar
+        drawerOpen={drawerOpen}
+        openDrawer={handleDrawerOpen}
+        closeDrawer={handleDrawerClose}
         addAircraftOnClick={setAddingAircraft}
         addFacilityOnClick={setAddingFacility}
         addAirbaseOnClick={setAddingAirbase}
@@ -1471,6 +1658,7 @@ export default function ScenarioMap({
           setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
           setMissionCreatorActive(!missionCreatorActive);
         }}
+        featureEntitiesPlotted={featureEntitiesState}
         toggleMissionEditor={() => {
           if (
             !missionEditorActive &&
@@ -1482,6 +1670,7 @@ export default function ScenarioMap({
           setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
           setMissionEditorActive(!missionEditorActive);
         }}
+        mobileView={mobileView}
       />
 
       <LayerVisibilityPanelToggle
@@ -1495,10 +1684,11 @@ export default function ScenarioMap({
         toggleReferencePointVisibility={toggleReferencePointVisibility}
         referencePointVisibility={referencePointVisible}
       />
-      <BottomCornerInfoDisplay />
+
+      <BottomInfoDisplay mobileView={mobileView} />
 
       {missionCreatorActive && (
-        <MissionCreator
+        <MissionCreatorCard
           aircraft={game.currentScenario.aircraft.filter(
             (aircraft) =>
               aircraft.sideName === game.currentSideName &&
@@ -1522,8 +1712,9 @@ export default function ScenarioMap({
         />
       )}
 
+      {/** TODO:  Add selected mission param to 'toggleMissionEditor(...)'  - pass mission as prop here and prepopulate selected mission data instead */}
       {missionEditorActive && game.currentScenario.missions.length > 0 && (
-        <MissionEditor
+        <MissionEditorCard
           missions={game.currentScenario.missions.filter(
             (mission) => mission.sideId === game.currentSideName
           )}
@@ -1541,12 +1732,15 @@ export default function ScenarioMap({
           deleteMission={handleDeleteMission}
           handleCloseOnMap={() => {
             setKeyboardShortcutsEnabled(true);
-            setMissionEditorActive(false);
+            setMissionEditorActive(!missionEditorActive);
           }}
         />
       )}
 
-      <div ref={mapId} className="map"></div>
+      <Main open={drawerOpen}>
+        <DrawerHeader />
+        <div ref={mapRef} id="map"></div>
+      </Main>
 
       {openAirbaseCard.open && (
         <AirbaseCard
@@ -1672,6 +1866,6 @@ export default function ScenarioMap({
           }}
         />
       )}
-    </div>
+    </>
   );
 }
