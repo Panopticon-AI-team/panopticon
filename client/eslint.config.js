@@ -33,6 +33,13 @@ export default tseslint
         "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-extra-non-null-assertion": "off",
+        "@typescript-eslint/no-empty-object-type": [
+          "error",
+          {
+            allowInterfaces: "with-single-extends",
+            allowObjectTypes: "always",
+          },
+        ],
       },
     }
   )
