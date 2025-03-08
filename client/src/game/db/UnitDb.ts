@@ -1,4 +1,12 @@
-export const AircraftDb = [
+import { IAirbaseModel } from "@/game/db/models/Airbase";
+import { IAircraftModel } from "@/game/db/models/Aircraft";
+import { IFacilityModel } from "@/game/db/models/Facility";
+import { IShipModel } from "@/game/db/models/Ship";
+import Facility from "@/game/units/Facility";
+
+export type UnitModel = IAirbaseModel | IAircraftModel | Facility | IShipModel;
+
+export const AircraftDb: IAircraftModel[] = [
   // fuel rates are generated with AI - use with a grain of salt.
   {
     className: "F-35A Lightning II",
@@ -327,7 +335,7 @@ export const AircraftDb = [
   },
 ];
 
-export const AirbaseDb = [
+export const AirbaseDb: IAirbaseModel[] = [
   {
     name: "Al Udeid Air Base",
     latitude: 25.1175,
@@ -612,7 +620,7 @@ export const AirbaseDb = [
   },
 ];
 
-export const FacilityDb = [
+export const FacilityDb: IFacilityModel[] = [
   {
     className: "S-400 Triumf",
     range: 200, // No official source available, using 200 as the range
@@ -679,7 +687,7 @@ export const FacilityDb = [
   },
 ];
 
-export const ShipDb = [
+export const ShipDb: IShipModel[] = [
   // all values notional
   {
     className: "Aircraft Carrier",
