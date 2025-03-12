@@ -13,7 +13,6 @@ import TextField from "@/gui/shared/ui/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import TelegramIcon from "@mui/icons-material/Telegram";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   TableContainer,
   Paper,
@@ -327,7 +326,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <IconButton
+                    <Button
                       id="facility-feature-actions-button"
                       aria-controls={
                         open ? "facility-feature-actions-menu" : undefined
@@ -335,9 +334,12 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
                     >
-                      <MoreVertIcon sx={{ color: "white" }} />
-                    </IconButton>
+                      Actions
+                    </Button>
                   </Tooltip>
                   <Menu
                     id="facility-feature-actions-menu"
@@ -372,7 +374,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                 Type: {props.facility.className}
               </Typography>
               <Typography variant="caption">
-                Team:{" "}
+                Side:{" "}
                 <Typography
                   variant="caption"
                   component={"span"}

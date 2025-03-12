@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Chip } from "@mui/material";
 import { colorPalette } from "@/utils/constants";
-import { MouseMapCoordinatesContext } from "@/gui/contexts/MouseMapCoordinatesContext";
+import { MouseMapCoordinatesContext } from "@/gui/contextProviders/contexts/MouseMapCoordinatesContext";
 
 const mouseMapCoordinatesDisplayStyle = {
   backgroundColor: colorPalette.lightGray,

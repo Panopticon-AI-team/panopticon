@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Typography } from "@mui/material";
-import { GameStatusContext } from "@/gui/contexts/GameStatusContext";
+import { GameStatusContext } from "@/gui/contextProviders/contexts/GameStatusContext";
 
 const currentActionContextDisplayStyle = {
   textAlign: "center",

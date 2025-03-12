@@ -57,7 +57,7 @@ export default class Game {
   selectedUnitId: string = "";
   selectedUnitClassName: string | null = null;
   numberOfWaypoints: number = 50;
-  godMode: boolean = false;
+  godMode: boolean = true;
   eraserMode: boolean = false;
 
   constructor(currentScenario: Scenario) {

@@ -7,6 +7,7 @@ _Pull requests, bug reports, and all other forms of contribution are welcomed an
 - [Contribution Terms](#contribution-terms)
 - [Project Structure](#project-structure)
   - [Client](#client)
+  - [Gym](#gym)
 - [Opening an Issue](#inbox_tray-opening-an-issue)
 - [Feature Requests](#love_letter-feature-requests)
 - [Triaging Issues](#mag-triaging-issues)
@@ -53,7 +54,9 @@ We use [React](https://react.dev/) and [OpenLayers](https://openlayers.org/) as 
 Since the simulation engine is relevant to both the `client` and `gym` code, we will discuss it later. We proceed with a breakdown of the code in `gui`, which is further organized into:
 
 - `assets`: contains various types of files. For example, media, config, fonts, and so on.
-- `contexts`: contains context that manage global state and provide shared data or functions. These contexts are used by components in `/gui/providers` to supply the necessary values throughout the component tree.
+- `contextProviders`: contains code that manages application-wide context and providers for state management and dependencies.
+  - `contexts`: contains context that manage global state and provide shared data or functions. These contexts are used by components in `/gui/providers` to supply the necessary values throughout the component tree.
+  - `providers`: contains components that take context in `/gui/contexts` and supply global state, shared data, or functions to child components. These components make context values accessible throughout the component tree.
 - `map`: contains code for the map and includes subfolders with related components.
   - `feature`: contains the various popups (called Cards) that appear when the user selects a map feature (like an aircraft or a ship). It can also contain components that are part of or related to features.
   - `mapLayers`: contains the various map layers such as the base map layers and the various feature layers (e.g. aircraft, ship, routes, range rings, labels, etc.).
@@ -62,14 +65,14 @@ Since the simulation engine is relevant to both the `client` and `gym` code, we 
   - `FeaturePopup.tsx`: base component for the popup that appears when the user selects a map feature.
   - `MultipleFeatureSelector.tsx`: handles the case when the user clicks on more than one map feature.
   - `ScenarioMap.tsx`: the main file responsible for rendering the map, the map layers, and the toolbar.
-- `providers`: Contains components that take context in `/gui/contexts` and supply global state, shared data, or functions to child components. These components make context values accessible throughout the component tree.
 - `shared`: contains reusable utilities, hooks, and components.
   - `ui`: contains reusable UI components such as text fields, buttons, and so on.
+
+### Gym
 
 The simulation engine is housed in `client/src/game` for the web application and in `gym/blade` for the Gymnasium environment. The project structure is:
 
 - `db`: the "database" which contains real/notional data for several units (i.e. aircraft, bases, SAMs, etc.).
-  - `models`: contains data models that define the structure and shape of the real/notional data.
 - `engine`: contains logic specific to the underlying simulation engine (the only thing currently in here is weapon engagement logic).
 - `envs` (only in `gym`): contains code defining the Gymnasium environments.
 - `mission`: contains logic for missions.

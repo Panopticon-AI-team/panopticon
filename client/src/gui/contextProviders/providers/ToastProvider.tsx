@@ -1,12 +1,16 @@
 import { useState, useCallback } from "react";
-import { IToast, ToastContext, ToastType } from "@/gui/contexts/ToastContext";
+import {
+  Toast,
+  ToastContext,
+  ToastType,
+} from "@/gui/contextProviders/contexts/ToastContext";
 import { randomUUID } from "@/utils/generateUUID";
 import CloseIcon from "@mui/icons-material/Clear";
 import { Alert, IconButton } from "@mui/material";
 import { createPortal } from "react-dom";
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
-  const [toasts, setToasts] = useState<IToast[]>([]);
+  const [toasts, setToasts] = useState<Toast[]>([]);
   const toastContainerEl =
     document.getElementById("toast-container") || document.body || null;
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   ScenarioTimeContext,
   SetScenarioTimeContext,
-} from "@/gui/contexts/ScenarioTimeContext";
+} from "@/gui/contextProviders/contexts/ScenarioTimeContext";
 
 export const ScenarioTimeProvider = ({
   children,

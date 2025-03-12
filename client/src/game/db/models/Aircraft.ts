@@ -7,7 +7,7 @@ export interface IAircraftModel {
   dataSource: {
     speedSrc: string;
     maxFuelSrc: string;
-    FuelRateSrc: string;
+    fuelRateSrc: string;
     rangeSrc: string;
   };
   units: {

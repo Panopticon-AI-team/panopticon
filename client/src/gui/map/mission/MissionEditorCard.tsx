@@ -244,7 +244,7 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
           })}
           value={selectedTargets}
           onChange={(value) => {
-            setSelectedTargets(value as string[]);
+            setSelectedTargets([value] as string[]);
           }}
         />
       </FormControl>

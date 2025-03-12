@@ -48,7 +48,7 @@ import { getLocalDateTime } from "@/utils/dateTimeFunctions";
 import GitHubIcon from "@/gui/assets/img/github-mark.png";
 import EditIcon from "@mui/icons-material/Edit";
 import TextField from "@/gui/shared/ui/TextField";
-import { ToastContext } from "@/gui/contexts/ToastContext";
+import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 import { FeatureEntityState } from "@/gui/map/mapLayers/FeatureLayers";
 
@@ -175,6 +175,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     toastContext?.addToast("Scenario name updated successfully!", "success");
   };
 
+  const [selectedAircraftUnitClass, setSelectedAircraftUnitClass] =
+    useState<string>(AircraftDb[0].className);
   const [aircraftIconAnchorEl, setAircraftIconAnchorEl] =
     useState<null | HTMLElement>(null);
   const aircraftClassMenuOpen = Boolean(aircraftIconAnchorEl);
@@ -185,6 +187,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     setAircraftIconAnchorEl(null);
   };
 
+  const [selectedAirbaseUnitClass, setSelectedAirbaseUnitClass] =
+    useState<string>(AirbaseDb[0].name);
   const [airbaseIconAnchorEl, setAirbaseIconAnchorEl] =
     useState<null | HTMLElement>(null);
   const airbaseClassMenuOpen = Boolean(airbaseIconAnchorEl);
@@ -195,6 +199,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     setAirbaseIconAnchorEl(null);
   };
 
+  const [selectedSamUnitClass, setSelectedSamUnitClass] = useState<string>(
+    FacilityDb[0].className
+  );
   const [samIconAnchorEl, setSamIconAnchorEl] = useState<null | HTMLElement>(
     null
   );
@@ -206,6 +213,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     setSamIconAnchorEl(null);
   };
 
+  const [selectedShipUnitClass, setSelectedShipUnitClass] = useState<string>(
+    ShipDb[0].className
+  );
   const [shipIconAnchorEl, setShipIconAnchorEl] = useState<null | HTMLElement>(
     null
   );
@@ -269,11 +279,13 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     props.pauseOnClick();
     setScenarioPaused(true);
     const input = document.createElement("input");
+    input.style.display = "none";
     input.type = "file";
     input.accept = ".json";
     input.onchange = (event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (file) {
+        props.game.currentScenario.updateScenarioName(file.name);
         const reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = (readerEvent) => {
@@ -288,6 +300,16 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           props.updateCurrentSideName(props.game.currentSideName);
           props.refreshAllLayers();
           props.updateCurrentScenarioTimeToContext();
+          toastContext?.addToast(
+            "Scenario file uploaded successfully!",
+            "success"
+          );
+        };
+        reader.onerror = () => {
+          toastContext?.addToast(
+            "Failed to upload scenario file. Please try again later.",
+            "error"
+          );
         };
         setCurrentScenarioFile(file);
       }
@@ -350,18 +372,22 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   ) => {
     switch (unitType) {
       case "aircraft":
+        setSelectedAircraftUnitClass(unitClassName);
         props.addAircraftOnClick(unitClassName);
         handleAircraftIconClose();
         break;
       case "airbase":
+        setSelectedAirbaseUnitClass(unitClassName);
         props.addAirbaseOnClick(unitClassName);
         handleAirbaseClose();
         break;
       case "facility":
+        setSelectedSamUnitClass(unitClassName);
         props.addFacilityOnClick(unitClassName);
         handleSamIconClose();
         break;
       case "ship":
+        setSelectedShipUnitClass(unitClassName);
         props.addShipOnClick(unitClassName);
         handleShipIconClose();
         break;
@@ -403,6 +429,30 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         event.preventDefault();
         setSelectedSide((prevSide) => (prevSide === "blue" ? "red" : "blue"));
         props.switchCurrentSideOnClick();
+        break;
+      case "1":
+        event.preventDefault();
+        if (selectedAircraftUnitClass) {
+          props.addAircraftOnClick(selectedAircraftUnitClass);
+        }
+        break;
+      case "2":
+        event.preventDefault();
+        if (selectedAirbaseUnitClass) {
+          props.addAirbaseOnClick(selectedAirbaseUnitClass);
+        }
+        break;
+      case "3":
+        event.preventDefault();
+        if (selectedSamUnitClass) {
+          props.addFacilityOnClick(selectedSamUnitClass);
+        }
+        break;
+      case "4":
+        event.preventDefault();
+        if (selectedShipUnitClass) {
+          props.addShipOnClick(selectedShipUnitClass);
+        }
         break;
       case "5":
         event.preventDefault();
@@ -484,10 +534,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             : null
         }
       >
-        {/** Plot Aircraft Menu/Button */}
-        <Tooltip title="Plot Aircraft">
+        {/** Add Aircraft Menu/Button */}
+        <Tooltip title="Add Aircraft">
           <IconButton
-            id="plot-aircraft-icon-button"
+            id="add-aircraft-icon-button"
             aria-controls={
               aircraftClassMenuOpen ? "aircraft-classes-menu" : undefined
             }
@@ -508,7 +558,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           slotProps={{
             root: { sx: { ".MuiList-root": { padding: 0 } } },
             list: {
-              "aria-labelledby": "plot-aircraft-icon-button",
+              "aria-labelledby": "add-aircraft-icon-button",
             },
           }}
         >
@@ -533,6 +583,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               onClick={(_event: React.MouseEvent<HTMLElement>) =>
                 handleUnitClassSelect("aircraft", aircraft.className)
               }
+              selected={aircraft.className === selectedAircraftUnitClass}
               key={aircraft.className}
               value={aircraft.className}
             >
@@ -540,10 +591,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             </MenuItem>
           ))}
         </Menu>
-        {/** Plot Airbase Menu/Button */}
-        <Tooltip title="Plot Airbase">
+        {/** Add Airbase Menu/Button */}
+        <Tooltip title="Add Airbase">
           <IconButton
-            id="plot-airbase-icon-button"
+            id="add-airbase-icon-button"
             aria-controls={
               airbaseClassMenuOpen ? "airbase-classes-menu" : undefined
             }
@@ -564,7 +615,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           slotProps={{
             root: { sx: { ".MuiList-root": { padding: 0 } } },
             list: {
-              "aria-labelledby": "plot-airbase-icon-button",
+              "aria-labelledby": "add-airbase-icon-button",
             },
           }}
         >
@@ -590,6 +641,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               onClick={(_event: React.MouseEvent<HTMLElement>) =>
                 handleUnitClassSelect("airbase", airbase.name)
               }
+              selected={airbase.name === selectedAirbaseUnitClass}
               key={airbase.name}
               value={airbase.name}
             >
@@ -597,10 +649,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             </MenuItem>
           ))}
         </Menu>
-        {/** Plot Sam Menu/Button */}
-        <Tooltip title="Plot Sam">
+        {/** Add Sam Menu/Button */}
+        <Tooltip title="Add Sam">
           <IconButton
-            id="plot-sam-icon-button"
+            id="add-sam-icon-button"
             aria-controls={samClassMenuOpen ? "sam-classes-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={samClassMenuOpen ? "true" : undefined}
@@ -619,7 +671,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           slotProps={{
             root: { sx: { ".MuiList-root": { padding: 0 } } },
             list: {
-              "aria-labelledby": "plot-sam-icon-button",
+              "aria-labelledby": "add-sam-icon-button",
             },
           }}
         >
@@ -645,6 +697,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               onClick={(_event: React.MouseEvent<HTMLElement>) =>
                 handleUnitClassSelect("facility", facility.className)
               }
+              selected={facility.className === selectedSamUnitClass}
               key={facility.className}
               value={facility.className}
             >
@@ -652,10 +705,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             </MenuItem>
           ))}
         </Menu>
-        {/** Plot Ship Menu/Button */}
-        <Tooltip title="Plot Ship">
+        {/** Add Ship Menu/Button */}
+        <Tooltip title="Add Ship">
           <IconButton
-            id="plot-ship-icon-button"
+            id="add-ship-icon-button"
             aria-controls={shipClassMenuOpen ? "ship-classes-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={shipClassMenuOpen ? "true" : undefined}
@@ -674,7 +727,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           slotProps={{
             root: { sx: { ".MuiList-root": { padding: 0 } } },
             list: {
-              "aria-labelledby": "plot-ship-icon-button",
+              "aria-labelledby": "add-ship-icon-button",
             },
           }}
         >
@@ -700,6 +753,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               onClick={(_event: React.MouseEvent<HTMLElement>) =>
                 handleUnitClassSelect("ship", ship.className)
               }
+              selected={ship.className === selectedShipUnitClass}
               key={ship.className}
               value={ship.className}
             >
@@ -707,8 +761,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             </MenuItem>
           ))}
         </Menu>
-        {/** Plot Reference Point */}
-        <Tooltip title="Plot Reference Point">
+        {/** Add Reference Point */}
+        <Tooltip title="Add Reference Point">
           <IconButton onClick={props.addReferencePointOnClick}>
             <EntityIcon type="referencePoint" />
           </IconButton>
@@ -748,7 +802,11 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   const entitiesSection = () => {
     if (
       !entityFilterSelectedOptions.length ||
-      !props.featureEntitiesPlotted.length
+      !props.featureEntitiesPlotted.length ||
+      (entityFilterSelectedOptions.length &&
+        entityFilterSelectedOptions.every(
+          (option) => option === "blue" || option === "red"
+        ))
     ) {
       return <MenuItem disabled>No items available</MenuItem>;
     }
@@ -856,7 +914,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       >
         <MapToolbar variant="dense" sx={toolbarStyle} disableGutters>
           {props.drawerOpen ? (
-            <Tooltip title="Close Menu">
+            <Tooltip title="Close Drawer">
               <IconButton
                 color="inherit"
                 aria-label="close drawer"
@@ -873,7 +931,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               </IconButton>
             </Tooltip>
           ) : (
-            <Tooltip title="Open Menu">
+            <Tooltip title="Open Drawer">
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -1094,6 +1152,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                 spacing={2}
                 sx={{
                   justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 <Tooltip title="Step Scenario">
@@ -1176,7 +1235,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                   setEntityFilterSelectedOptions(updatedOptions);
                 },
               }}
-              open={true}
+              open={false}
             />
             <ToolbarCollapsible
               title="Missions"

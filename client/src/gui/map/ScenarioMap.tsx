@@ -28,10 +28,10 @@ import { styled } from "@mui/material/styles";
 import { randomInt } from "@/utils/mapFunctions";
 import { delay } from "@/utils/dateTimeFunctions";
 import MultipleFeatureSelector from "@/gui/map/MultipleFeatureSelector";
-import { SetScenarioTimeContext } from "@/gui/contexts/ScenarioTimeContext";
-import { SetGameStatusContext } from "@/gui/contexts/GameStatusContext";
-import { SetMouseMapCoordinatesContext } from "@/gui/contexts/MouseMapCoordinatesContext";
-import { ToastContext } from "@/gui/contexts/ToastContext";
+import { SetScenarioTimeContext } from "@/gui/contextProviders/contexts/ScenarioTimeContext";
+import { SetGameStatusContext } from "@/gui/contextProviders/contexts/GameStatusContext";
+import { SetMouseMapCoordinatesContext } from "@/gui/contextProviders/contexts/MouseMapCoordinatesContext";
+import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
 import AirbaseCard from "@/gui/map/feature/AirbaseCard";
 import AircraftCard from "@/gui/map/feature/AircraftCard";
 import FacilityCard from "@/gui/map/feature/FacilityCard";
@@ -1585,7 +1585,7 @@ export default function ScenarioMap({
         });
     });
 
-    routeMeasurementDrawLine.on("drawend", function (event) {
+    routeMeasurementDrawLine.on("drawend", function (_event) {
       cleanUpRouteDrawLineAndMeasurementTooltip();
       const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
       if (aircraft) {
@@ -1712,7 +1712,7 @@ export default function ScenarioMap({
         />
       )}
 
-      {/** TODO:  Add selected mission param to 'toggleMissionEditor(...)'  - pass mission as prop here and prepopulate selected mission data instead */}
+      {/** // TODO: Add selected mission param to 'toggleMissionEditor(...)'  - pass mission as prop here and prepopulate selected mission data instead */}
       {missionEditorActive && game.currentScenario.missions.length > 0 && (
         <MissionEditorCard
           missions={game.currentScenario.missions.filter(

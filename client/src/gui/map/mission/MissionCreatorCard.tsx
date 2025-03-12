@@ -63,7 +63,7 @@ const cardStyle = {
 const MissionCreatorCard = (props: MissionCreatorCardProps) => {
   const nodeRef = useRef(null);
   const [selectedMissionType, setSelectedMissionType] = useState<
-    "Patrol" | "Strike"
+    "Patrol" | "Strike" // TODO: Create enum for mission types
   >("Patrol");
   const [selectedAircraft, setSelectedAircraft] = useState<string[]>([]);
   const [selectedTargets, setSelectedTargets] = useState<string[]>([
@@ -163,7 +163,7 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
             };
           })}
           onChange={(value) => {
-            setSelectedTargets(value as string[]);
+            setSelectedTargets([value] as string[]);
           }}
         />
       </FormControl>

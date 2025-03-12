@@ -15,7 +15,6 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import AddIcon from "@mui/icons-material/Add";
 import FlightIcon from "@mui/icons-material/Flight";
 import TelegramIcon from "@mui/icons-material/Telegram";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   TableContainer,
   Paper,
@@ -280,7 +279,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <IconButton
+                    <Button
                       id="airbase-feature-actions-button"
                       aria-controls={
                         open ? "airbase-feature-actions-menu" : undefined
@@ -288,9 +287,12 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
                     >
-                      <MoreVertIcon sx={{ color: "white" }} />
-                    </IconButton>
+                      Actions
+                    </Button>
                   </Tooltip>
                   <Menu
                     id="airbase-feature-actions-menu"
@@ -325,7 +327,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
                 Type: {props.airbase.className}
               </Typography>
               <Typography variant="caption">
-                Team:{" "}
+                Side:{" "}
                 <Typography
                   variant="caption"
                   component={"span"}

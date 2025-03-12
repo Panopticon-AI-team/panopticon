@@ -16,7 +16,6 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import AddIcon from "@mui/icons-material/Add";
 import FlightIcon from "@mui/icons-material/Flight";
 import TelegramIcon from "@mui/icons-material/Telegram";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   TableContainer,
   Paper,
@@ -454,7 +453,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <IconButton
+                    <Button
                       id="ship-feature-actions-button"
                       aria-controls={
                         open ? "ship-feature-actions-menu" : undefined
@@ -462,9 +461,12 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
                     >
-                      <MoreVertIcon sx={{ color: "white" }} />
-                    </IconButton>
+                      Actions
+                    </Button>
                   </Tooltip>
                   <Menu
                     id="ship-feature-actions-menu"
@@ -499,7 +501,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
                 Type: {props.ship.className}
               </Typography>
               <Typography variant="caption">
-                Team:{" "}
+                Side:{" "}
                 <Typography
                   variant="caption"
                   component={"span"}

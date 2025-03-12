@@ -9,6 +9,7 @@ export interface IEntityIconProps {
   width?: number;
   height?: number;
   sideColor?: "blue" | "red";
+  defaultColor?: "white" | "black";
 }
 
 export default function EntityIcon({
@@ -16,14 +17,19 @@ export default function EntityIcon({
   width = 24,
   height = 24,
   sideColor,
-}: IEntityIconProps) {
+  defaultColor = "black",
+}: Readonly<IEntityIconProps>) {
   const getColorFilter = (color?: "blue" | "red") => {
-    if (color === "blue") {
-      return "invert(70%) sepia(69%) saturate(4532%) hue-rotate(220deg)";
-    } else if (color === "red") {
-      return "invert(70%) sepia(91%) saturate(2552%) hue-rotate(0deg)";
+    switch (color) {
+      case "blue":
+        return "invert(70%) sepia(69%) saturate(4532%) hue-rotate(220deg)";
+      case "red":
+        return "invert(70%) sepia(91%) saturate(2552%) hue-rotate(0deg)";
+      default:
+        return defaultColor === "white"
+          ? "brightness(100%) contrast(100%)"
+          : "brightness(0) contrast(100%)";
     }
-    return "brightness(0) contrast(100%)";
   };
 
   switch (type) {

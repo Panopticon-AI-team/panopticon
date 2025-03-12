@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   GameStatusContext,
   SetGameStatusContext,
-} from "@/gui/contexts/GameStatusContext";
+} from "@/gui/contextProviders/contexts/GameStatusContext";
 
 export const GameStatusProvider = ({
   children,
@@ -10,7 +10,7 @@ export const GameStatusProvider = ({
   children: React.ReactNode;
 }) => {
   const [currentGameStatus, setCurrentGameStatus] =
-    useState<string>("Scenario paused");
+    useState<string>("Scenario paused"); // TODO: Create enum for game statuses
 
   return (
     <GameStatusContext.Provider value={currentGameStatus}>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   MouseMapCoordinatesContext,
   SetMouseMapCoordinatesContext,
-} from "@/gui/contexts/MouseMapCoordinatesContext";
+} from "@/gui/contextProviders/contexts/MouseMapCoordinatesContext";
 
 export const MouseMapCoordinatesProvider = ({
   children,

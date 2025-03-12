@@ -15,7 +15,7 @@ export default function App() {
   const sideBlue = new Side({
     id: randomUUID(),
     name: "BLUE",
-    sideColor: "blue",
+    sideColor: "blue", // TODO: create enum for side colors
   });
   const sideRed = new Side({
     id: randomUUID(),

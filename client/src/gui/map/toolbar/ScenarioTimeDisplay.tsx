@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Chip } from "@mui/material";
 import { unixToLocalTime } from "@/utils/dateTimeFunctions";
 import { colorPalette } from "@/utils/constants";
-import { ScenarioTimeContext } from "@/gui/contexts/ScenarioTimeContext";
+import { ScenarioTimeContext } from "@/gui/contextProviders/contexts/ScenarioTimeContext";
 
 const scenarioTimeDisplayStyle = {
   backgroundColor: colorPalette.lightGray,

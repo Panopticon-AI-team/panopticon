@@ -12,7 +12,6 @@ import TextField from "@/gui/shared/ui/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import TelegramIcon from "@mui/icons-material/Telegram";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   TableContainer,
   Paper,
@@ -251,7 +250,7 @@ export default function ReferencePointCard(
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <IconButton
+                    <Button
                       id="reference-point-feature-actions-button"
                       aria-controls={
                         open
@@ -261,9 +260,12 @@ export default function ReferencePointCard(
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
                     >
-                      <MoreVertIcon sx={{ color: "white" }} />
-                    </IconButton>
+                      Actions
+                    </Button>
                   </Tooltip>
                   <Menu
                     id="reference-point-feature-actions-menu"
@@ -296,7 +298,7 @@ export default function ReferencePointCard(
               sx={{ color: colorPalette.lightGray }}
             >
               <Typography variant="caption">
-                Team:{" "}
+                Side:{" "}
                 <Typography
                   variant="caption"
                   component={"span"}
