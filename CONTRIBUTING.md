@@ -55,8 +55,8 @@ Since the simulation engine is relevant to both the `client` and `gym` code, we 
 
 - `assets`: contains various types of files. For example, media, config, fonts, and so on.
 - `contextProviders`: contains code that manages application-wide context and providers for state management and dependencies.
-  - `contexts`: contains context that manage global state and provide shared data or functions. These contexts are used by components in `/gui/providers` to supply the necessary values throughout the component tree.
-  - `providers`: contains components that take context in `/gui/contexts` and supply global state, shared data, or functions to child components. These components make context values accessible throughout the component tree.
+  - `contexts`: contains context that manage global state and provide shared data or functions. These contexts are used by components in `/contextProviders/providers` to supply the necessary values throughout the component tree.
+  - `providers`: contains components that take context in `/contextProviders/contexts` and supply global state, shared data, or functions to child components. These components make context values accessible throughout the component tree.
 - `map`: contains code for the map and includes subfolders with related components.
   - `feature`: contains the various popups (called Cards) that appear when the user selects a map feature (like an aircraft or a ship). It can also contain components that are part of or related to features.
   - `mapLayers`: contains the various map layers such as the base map layers and the various feature layers (e.g. aircraft, ship, routes, range rings, labels, etc.).
