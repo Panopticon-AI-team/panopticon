@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { Typography } from "@mui/material";
-import { CurrentGameStatus } from "@/gui/map/contextProviders/GameStatusProvider";
+import { GameStatusContext } from "@/gui/contextProviders/contexts/GameStatusContext";
 
-const currentActionContextStyle = {
+const currentActionContextDisplayStyle = {
   textAlign: "center",
   padding: "2px",
   color: "#4F4F4F",
@@ -12,10 +12,14 @@ const currentActionContextStyle = {
 };
 
 export default function CurrentActionContextDisplay() {
-  const CurrentGameStatusFromContext = useContext(CurrentGameStatus);
+  const CurrentGameStatusFromContext = useContext(GameStatusContext);
 
   return (
-    <Typography variant="body2" component="h6" sx={currentActionContextStyle}>
+    <Typography
+      variant="body2"
+      component="p"
+      sx={currentActionContextDisplayStyle}
+    >
       {CurrentGameStatusFromContext}
     </Typography>
   );

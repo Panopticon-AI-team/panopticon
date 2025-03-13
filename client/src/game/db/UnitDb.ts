@@ -1,4 +1,12 @@
-export const AircraftDb = [
+import { IAirbaseModel } from "@/game/db/models/Airbase";
+import { IAircraftModel } from "@/game/db/models/Aircraft";
+import { IFacilityModel } from "@/game/db/models/Facility";
+import { IShipModel } from "@/game/db/models/Ship";
+import Facility from "@/game/units/Facility";
+
+export type UnitModel = IAirbaseModel | IAircraftModel | Facility | IShipModel;
+
+export const AircraftDb: IAircraftModel[] = [
   // fuel rates are generated with AI - use with a grain of salt.
   {
     className: "F-35A Lightning II",
@@ -11,7 +19,7 @@ export const AircraftDb = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
       maxFuelSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
     },
@@ -33,7 +41,7 @@ export const AircraftDb = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
       maxFuelSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
     },
@@ -55,7 +63,7 @@ export const AircraftDb = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
       maxFuelSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
     },
@@ -77,7 +85,7 @@ export const AircraftDb = [
         "high subsonic, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
       maxFuelSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
     },
@@ -99,7 +107,7 @@ export const AircraftDb = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
       maxFuelSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
     },
@@ -120,7 +128,7 @@ export const AircraftDb = [
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/",
       maxFuelSrc: "missing",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/",
     },
@@ -141,7 +149,7 @@ export const AircraftDb = [
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1529726/c-17-globemaster-iii/",
       maxFuelSrc: "missing",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "Global with in-flight refueling, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
     },
@@ -163,7 +171,7 @@ export const AircraftDb = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
       maxFuelSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
     },
@@ -185,7 +193,7 @@ export const AircraftDb = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
       maxFuelSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
     },
@@ -206,7 +214,7 @@ export const AircraftDb = [
       speedSrc:
         "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/",
       maxFuelSrc: "missing",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/",
     },
@@ -228,7 +236,7 @@ export const AircraftDb = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
       maxFuelSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
     },
@@ -249,7 +257,7 @@ export const AircraftDb = [
       speedSrc:
         "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/",
       maxFuelSrc: "missing",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/",
     },
@@ -271,7 +279,7 @@ export const AircraftDb = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
       maxFuelSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
     },
@@ -293,7 +301,7 @@ export const AircraftDb = [
         "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
       maxFuelSrc:
         "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
     },
@@ -314,7 +322,7 @@ export const AircraftDb = [
       speedSrc:
         "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html",
       maxFuelSrc: "missing",
-      FuelRateSrc: "missing",
+      fuelRateSrc: "missing",
       rangeSrc:
         "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html",
     },
@@ -327,7 +335,7 @@ export const AircraftDb = [
   },
 ];
 
-export const AirbaseDb = [
+export const AirbaseDb: IAirbaseModel[] = [
   {
     name: "Al Udeid Air Base",
     latitude: 25.1175,
@@ -612,7 +620,7 @@ export const AirbaseDb = [
   },
 ];
 
-export const FacilityDb = [
+export const FacilityDb: IFacilityModel[] = [
   {
     className: "S-400 Triumf",
     range: 200, // No official source available, using 200 as the range
@@ -679,8 +687,9 @@ export const FacilityDb = [
   },
 ];
 
-export const ShipDb = [
+export const ShipDb: IShipModel[] = [
   // all values notional
+  // TODO: Add additional data fields for Ships in the database (e.g dataSource: {...}, units: {...})
   {
     className: "Aircraft Carrier",
     speed: 35, // mph

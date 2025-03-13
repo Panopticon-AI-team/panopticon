@@ -11,6 +11,7 @@ export const GAME_SPEED_DELAY_MS: { [key: number]: number } = {
   8: 125,
   100: 0,
 };
+export const APP_DRAWER_WIDTH = 300;
 export const colorPalette = {
   lightGray: "#E8E8E8",
   darkGray: "#9B9B9B",

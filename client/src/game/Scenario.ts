@@ -9,6 +9,7 @@ import ReferencePoint from "@/game/units/ReferencePoint";
 import PatrolMission from "@/game/mission/PatrolMission";
 import { Target } from "@/game/engine/weaponEngagement";
 import StrikeMission from "@/game/mission/StrikeMission";
+import { Mission } from "@/game/Game";
 
 type HomeBase = Airbase | Ship;
 
@@ -43,7 +44,7 @@ export default class Scenario {
   airbases: Airbase[];
   weapons: Weapon[];
   referencePoints: ReferencePoint[];
-  missions: (PatrolMission | StrikeMission)[];
+  missions: Mission[];
 
   constructor(parameters: IScenario) {
     this.id = parameters.id;
@@ -124,6 +125,10 @@ export default class Scenario {
     return this.missions.filter(
       (mission) => mission instanceof StrikeMission
     ) as StrikeMission[];
+  }
+
+  updateScenarioName(name: string): void {
+    this.name = name;
   }
 
   updateAircraft(

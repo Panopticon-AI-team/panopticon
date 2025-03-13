@@ -3,13 +3,13 @@ import { Style, Icon, Fill, Stroke, Text } from "ol/style.js";
 
 import { colorNameToColorArray, toRadians } from "@/utils/mapFunctions";
 
-import FlightIconSvg from "@/gui/assets/flight_black_24dp.svg";
-import RadarIconSvg from "@/gui/assets/radar_black_24dp.svg";
-import FlightTakeoffSvg from "@/gui/assets/flight_takeoff_black_24dp.svg";
-import ChevronRightSvg from "@/gui/assets/chevron_right_black_24dp.svg";
-import WeaponSvg from "@/gui/assets/keyboard_double_arrow_up_black_24dp.svg";
-import DirectionsBoatSvg from "@/gui/assets/directions_boat_black_24dp.svg";
-import PinDropSvg from "@/gui/assets/pin_drop_24dp_E8EAED.svg";
+import FlightIconSvg from "@/gui/assets/svg/flight_black_24dp.svg";
+import RadarIconSvg from "@/gui/assets/svg/radar_black_24dp.svg";
+import FlightTakeoffSvg from "@/gui/assets/svg/flight_takeoff_black_24dp.svg";
+import ChevronRightSvg from "@/gui/assets/svg/chevron_right_black_24dp.svg";
+import WeaponSvg from "@/gui/assets/svg/keyboard_double_arrow_up_black_24dp.svg";
+import DirectionsBoatSvg from "@/gui/assets/svg/directions_boat_black_24dp.svg";
+import PinDropSvg from "@/gui/assets/svg/pin_drop_24dp_E8EAED.svg";
 import { LineString, Point } from "ol/geom";
 
 export const aircraftStyle = function (feature: FeatureLike) {
@@ -128,7 +128,7 @@ export const weaponStyle = function (feature: FeatureLike) {
 export const featureLabelStyle = function (feature: FeatureLike) {
   return new Style({
     text: new Text({
-      font: "18px Calibri",
+      font: "16.5px Roboto, Helvetica, Arial, sans-serif",
       text: feature.getProperties().name,
       placement: "point",
       fill: new Fill({

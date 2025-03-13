@@ -6,14 +6,9 @@ import Button from "@mui/material/Button";
 import FeaturePopup from "@/gui/map/FeaturePopup";
 import Stack from "@mui/material/Stack";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
-import FlightIcon from "@/gui/assets/flight_black_24dp.svg?react";
-import RadarIcon from "@/gui/assets/radar_black_24dp.svg?react";
-import FlightTakeoffIcon from "@/gui/assets/flight_takeoff_black_24dp.svg?react";
-import PinDropIcon from "@/gui/assets/pin_drop_24dp_E8EAED.svg?react";
-
 import { Geometry } from "ol/geom";
 import { Feature } from "ol";
+import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 
 interface MultipleFeatureSelectorProps {
   features: Feature<Geometry>[];
@@ -40,21 +35,20 @@ export default function MultipleFeatureSelector({
     handleCloseOnMap();
   };
 
-  const getFeatureIcon = (featureType: string) => {
-    switch (featureType) {
-      case "airbase":
-        return <FlightTakeoffIcon />;
-      case "facility":
-        return <RadarIcon />;
-      case "aircraft":
-        return <FlightIcon />;
-      case "ship":
-        return <DirectionsBoatIcon />;
-      case "referencePoint":
-        return <PinDropIcon />;
-      default:
-        return <HelpOutlineIcon />;
+  const getFeatureIcon = (
+    // TODO: Create feature/entity type enum
+    featureType:
+      | "aircraft"
+      | "airbase"
+      | "ship"
+      | "facility"
+      | "referencePoint"
+      | undefined
+  ) => {
+    if (featureType) {
+      return <EntityIcon type={featureType} defaultColor="white" />;
     }
+    return <HelpOutlineIcon />;
   };
 
   const featureButtons = [];

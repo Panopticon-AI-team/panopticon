@@ -3,17 +3,26 @@ import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import { colorPalette } from "@/utils/constants";
-import EditorSelector from "@/gui/map/missionEditor/EditorSelector";
-import EditorTextInputBox from "@/gui/map/missionEditor/EditorTextInputBox";
-import { Button, CardContent, Stack, Typography } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+  Button,
+  CardContent,
+  FormControl,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import PatrolMission from "@/game/mission/PatrolMission";
 import Aircraft from "@/game/units/Aircraft";
 import ReferencePoint from "@/game/units/ReferencePoint";
 import StrikeMission from "@/game/mission/StrikeMission";
 import { Target } from "@/game/engine/weaponEngagement";
+import SelectField from "@/gui/shared/ui/SelectField";
+import TextField from "@/gui/shared/ui/TextField";
+import { Mission } from "@/game/Game";
 
-interface MissionEditorProps {
-  missions: (PatrolMission | StrikeMission)[];
+interface MissionEditorCardProps {
+  missions: Mission[];
   aircraft: Aircraft[];
   referencePoints: ReferencePoint[];
   targets: Target[];
@@ -35,6 +44,40 @@ interface MissionEditorProps {
 
 const missionTypes = ["Patrol", "Strike"];
 
+const cardContentStyle = {
+  display: "flex",
+  flexDirection: "column",
+  rowGap: "10px",
+};
+
+const closeButtonStyle = {
+  bottom: 5.5,
+};
+
+const cardStyle = {
+  minWidth: "400px",
+  maxWidth: "400px",
+  minHeight: "200px",
+  backgroundColor: colorPalette.lightGray,
+  boxShadow: "none",
+  borderRadius: "10px",
+};
+
+const cardHeaderStyle = {
+  backgroundColor: colorPalette.white,
+  color: "black",
+  height: "50px",
+};
+
+const bottomButtonsStackStyle = {
+  display: "flex",
+  justifyContent: "center",
+};
+
+const editorButtonStyle = {
+  color: colorPalette.white,
+};
+
 const findReferencePointsForAssignedArea = (
   area: number[][],
   referencePoints: ReferencePoint[]
@@ -49,16 +92,15 @@ const findReferencePointsForAssignedArea = (
   });
 };
 
-const parseSelectedMissionType = (
-  selectedMission: PatrolMission | StrikeMission
-): string => {
+const parseSelectedMissionType = (selectedMission: Mission): string => {
   return selectedMission instanceof PatrolMission ? "Patrol" : "Strike";
 };
 
-const MissionEditor = (props: MissionEditorProps) => {
-  const [selectedMission, setSelectedMission] = useState<
-    PatrolMission | StrikeMission
-  >(props.missions[0]);
+const MissionEditorCard = (props: MissionEditorCardProps) => {
+  const nodeRef = React.useRef(null);
+  const [selectedMission, setSelectedMission] = useState<Mission>(
+    props.missions[0]
+  );
   const [selectedMissionType, setSelectedMissionType] = useState<string>(
     parseSelectedMissionType(selectedMission)
   );
@@ -75,46 +117,12 @@ const MissionEditor = (props: MissionEditorProps) => {
         )
       : []
   );
-  const [selectedTargets, setSelectedTargets] = useState<string[]>([]);
+  const [selectedTargets, setSelectedTargets] = useState<string[]>(
+    selectedMission instanceof StrikeMission
+      ? selectedMission.assignedTargetIds
+      : []
+  );
   const [missionName, setMissionName] = useState<string>(selectedMission.name);
-
-  const cardContentStyle = {
-    display: "flex",
-    flexDirection: "column",
-    rowGap: "10px",
-  };
-
-  const bottomButtonsStackStyle = {
-    display: "flex",
-    justifyContent: "center",
-  };
-
-  const editorButtonStyle = {
-    color: colorPalette.white,
-    borderRadius: "10px",
-  };
-
-  const closeButtonStyle = {
-    position: "absolute",
-    top: "0",
-    right: "0",
-  };
-
-  const cardStyle = {
-    minWidth: "400px",
-    minHeight: "200px",
-    backgroundColor: colorPalette.lightGray,
-    boxShadow: "none",
-    borderRadius: "10px",
-  };
-
-  const cardHeaderStyle = {
-    textAlign: "left",
-    backgroundColor: colorPalette.white,
-    color: "black",
-    height: "5px",
-    borderRadius: "10px",
-  };
 
   const validateMissionPropertiesInput = () => {
     if (missionName === "") {
@@ -167,6 +175,10 @@ const MissionEditor = (props: MissionEditorProps) => {
     props.handleCloseOnMap();
   };
 
+  const handleClose = () => {
+    props.handleCloseOnMap();
+  };
+
   const handleMissionChange = (newSelectedMission: string) => {
     const searchedSelectedMission = props.missions.find(
       (mission) => mission.id === newSelectedMission
@@ -196,45 +208,46 @@ const MissionEditor = (props: MissionEditorProps) => {
     sortedReferencePoints: ReferencePoint[]
   ) => {
     return (
-      <EditorSelector
-        selectId={"mission-editor-area-selector"}
-        caption={"Area"}
-        optionIds={sortedReferencePoints.map((point) => point.id)}
-        optionNames={sortedReferencePoints.map((point) => point.name)}
-        selectedOption={selectedReferencePoints}
-        onChange={() => {
-          const pointsSelector = document.getElementById(
-            "mission-editor-area-selector"
-          ) as HTMLSelectElement;
-          const selectedOptions = Array.from(
-            pointsSelector.selectedOptions
-          ).map((option) => option.value);
-          setSelectedReferencePoints(selectedOptions);
-        }}
-        multiple={true}
-      />
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <SelectField
+          id="mission-editor-area-selector"
+          labelId="mission-editor-area-selector-label"
+          label="Area"
+          selectItems={sortedReferencePoints.map((item) => {
+            return {
+              name: item.name,
+              value: item.id,
+            };
+          })}
+          value={selectedReferencePoints}
+          onChange={(value) => {
+            setSelectedReferencePoints(value as string[]);
+          }}
+          multiple
+        />
+      </FormControl>
     );
   };
 
   const StrikeMissionEditorContent = (sortedTargets: Target[]) => {
     return (
-      <EditorSelector
-        selectId={"mission-editor-target-selector"}
-        caption={"Target"}
-        optionIds={sortedTargets.map((target) => target.id)}
-        optionNames={sortedTargets.map((target) => target.name)}
-        selectedOption={selectedTargets}
-        onChange={() => {
-          const pointsSelector = document.getElementById(
-            "mission-editor-target-selector"
-          ) as HTMLSelectElement;
-          const selectedOptions = Array.from(
-            pointsSelector.selectedOptions
-          ).map((option) => option.value);
-          setSelectedTargets(selectedOptions);
-        }}
-        multiple={false}
-      />
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <SelectField
+          id="mission-editor-target-selector"
+          labelId="mission-editor-target-selector-label"
+          label="Target"
+          selectItems={sortedTargets.map((item) => {
+            return {
+              name: item.name,
+              value: item.id,
+            };
+          })}
+          value={selectedTargets}
+          onChange={(value) => {
+            setSelectedTargets([value] as string[]);
+          }}
+        />
+      </FormControl>
     );
   };
 
@@ -262,49 +275,74 @@ const MissionEditor = (props: MissionEditorProps) => {
 
     return (
       <CardContent sx={cardContentStyle}>
-        <EditorSelector
-          selectId={"mission-editor-mission-selector"}
-          caption={"Mission"}
-          optionIds={missionIds}
-          optionNames={missionNames}
-          selectedOption={selectedMission.id}
-          onChange={handleMissionChange}
-        />
-        <EditorSelector
-          selectId={"mission-editor-type-selector"}
-          caption={"Type"}
-          optionIds={missionTypes}
-          optionNames={missionTypes}
-          selectedOption={selectedMissionType}
-          onChange={() => {}}
-        />
-        <EditorTextInputBox
-          caption={"Name"}
-          currentText={missionName}
-          onChange={(newMissionName) => {
-            setMissionName(newMissionName);
+        {/** Missions Select Field */}
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <SelectField
+            id="mission-editor-mission-selector"
+            label="Mission"
+            labelId="mission-editor-mission-selector-label"
+            selectItems={missionNames.map((item, index) => {
+              return {
+                name: item,
+                value: missionIds[index],
+              };
+            })}
+            value={selectedMission.id}
+            onChange={(value) => {
+              handleMissionChange(value as string);
+            }}
+          />
+        </FormControl>
+        {/** Mission Type Select Field */}
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <SelectField
+            id="mission-editor-type-selector"
+            label="Type"
+            labelId="mission-editor-type-selector-label"
+            selectItems={missionTypes.map((item) => {
+              return {
+                name: item,
+                value: item,
+              };
+            })}
+            value={selectedMissionType}
+            onChange={() => {}}
+          />
+        </FormControl>
+        {/** Mission Name Text Field */}
+        <TextField
+          id="mission-name"
+          label="Name"
+          value={missionName}
+          onChange={(event) => {
+            setMissionName(event.target.value);
           }}
         />
-        <EditorSelector
-          selectId={"mission-editor-unit-selector"}
-          caption={"Units"}
-          optionIds={sortedAircraft.map((unit) => unit.id)}
-          optionNames={sortedAircraft.map((unit) => unit.name)}
-          selectedOption={selectedAircraft}
-          onChange={() => {
-            const aircraftSelector = document.getElementById(
-              "mission-editor-unit-selector"
-            ) as HTMLSelectElement;
-            const selectedOptions = Array.from(
-              aircraftSelector.selectedOptions
-            ).map((option) => option.value);
-            setSelectedAircraft(selectedOptions);
-          }}
-          multiple={true}
-        />
+        {/** Mission Unit Select Field */}
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <SelectField
+            id="mission-editor-unit-selector"
+            label="Units"
+            labelId="mission-editor-unit-selector-label"
+            selectItems={sortedAircraft.map((item) => {
+              return {
+                name: item.name,
+                value: item.id,
+              };
+            })}
+            value={selectedAircraft}
+            onChange={(value) => {
+              setSelectedAircraft(value as string[]);
+            }}
+            multiple
+          />
+        </FormControl>
+        {/** Mission Specific Select Fields: Patrol Or Strike */}
         {missionSpecificComponent}
+        {/* Form Action/Buttons */}
         <Stack sx={bottomButtonsStackStyle} direction="row" spacing={2}>
           <Button
+            fullWidth
             variant="contained"
             color="primary"
             onClick={handleUpdateMission}
@@ -313,6 +351,7 @@ const MissionEditor = (props: MissionEditorProps) => {
             UPDATE
           </Button>
           <Button
+            fullWidth
             variant="contained"
             color="error"
             onClick={handleDeleteMission}
@@ -325,11 +364,6 @@ const MissionEditor = (props: MissionEditorProps) => {
     );
   };
 
-  // this is needed because of the Draggable component
-  // If running in React Strict mode, ReactDOM.findDOMNode() is deprecated.
-  // Unfortunately, in order for <Draggable> to work properly, we need raw access to the underlying DOM node.
-  const nodeRef = React.useRef(null);
-
   return (
     <div
       style={{
@@ -340,24 +374,23 @@ const MissionEditor = (props: MissionEditorProps) => {
       }}
     >
       <Draggable nodeRef={nodeRef}>
-        <Card sx={cardStyle} ref={nodeRef}>
-          <Button sx={closeButtonStyle} onClick={props.handleCloseOnMap}>
-            X
-          </Button>
+        <Card ref={nodeRef} sx={cardStyle}>
           <CardHeader
+            sx={cardHeaderStyle}
+            action={
+              <IconButton
+                type="button"
+                sx={closeButtonStyle}
+                onClick={handleClose}
+                aria-label="close"
+              >
+                <CloseIcon color="error" />
+              </IconButton>
+            }
             title={
-              <Typography variant="body1" component="span">
+              <Typography variant="body1" component="h1" sx={{ pl: 1 }}>
                 Mission Editor
               </Typography>
-            }
-            sx={cardHeaderStyle}
-            avatar={
-              <Button
-                onClick={props.handleCloseOnMap}
-                style={{ position: "absolute", top: "0", right: "0" }}
-              >
-                X
-              </Button>
             }
           />
           {cardContent()}
@@ -367,4 +400,4 @@ const MissionEditor = (props: MissionEditorProps) => {
   );
 };
 
-export default MissionEditor;
+export default MissionEditorCard;
