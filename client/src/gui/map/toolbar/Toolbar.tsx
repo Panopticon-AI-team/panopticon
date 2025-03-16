@@ -67,6 +67,7 @@ interface ToolBarProps {
   toggleScenarioTimeCompressionOnClick: () => void;
   switchCurrentSideOnClick: () => void;
   refreshAllLayers: () => void;
+  loadFeatureEntitiesState: () => void;
   updateMapView: (center: number[], zoom: number) => void;
   updateScenarioTimeCompression: (scenarioTimeCompression: number) => void;
   updateCurrentSideName: (currentSideName: string) => void;
@@ -119,7 +120,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     null
   );
   const [scenarioName, setScenarioName] = useState<string>(
-    props.game.currentScenario.name ?? "Test Scenario"
+    props.game.currentScenario.name ?? "Panopticon Scenario"
   );
   const [scenarioNameError, setScenarioNameError] = useState<boolean>(false);
   const [initialScenarioString, setInitialScenarioString] = useState<string>(
@@ -283,9 +284,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     input.type = "file";
     input.accept = ".json";
     input.onchange = (event) => {
+      input.remove();
       const file = (event.target as HTMLInputElement).files?.[0];
       if (file) {
-        props.game.currentScenario.updateScenarioName(file.name);
         const reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = (readerEvent) => {
@@ -298,16 +299,22 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             props.game.currentScenario.timeCompression
           );
           props.updateCurrentSideName(props.game.currentSideName);
+          props.game.currentScenario.updateScenarioName(
+            props.game.currentScenario.name
+          );
+          setScenarioName(props.game.currentScenario.name);
           props.refreshAllLayers();
           props.updateCurrentScenarioTimeToContext();
+          props.loadFeatureEntitiesState();
           toastContext?.addToast(
             "Scenario file uploaded successfully!",
             "success"
           );
         };
         reader.onerror = () => {
+          reader.abort();
           toastContext?.addToast(
-            "Failed to upload scenario file. Please try again later.",
+            "Failed to upload scenario file. Please refresh page or try again later.",
             "error"
           );
         };
@@ -333,8 +340,20 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           props.game.currentScenario.timeCompression
         );
         props.updateCurrentSideName(props.game.currentSideName);
+        props.game.currentScenario.updateScenarioName(
+          props.game.currentScenario.name
+        );
+        setScenarioName(props.game.currentScenario.name);
         props.refreshAllLayers();
         props.updateCurrentScenarioTimeToContext();
+        props.loadFeatureEntitiesState();
+      };
+      reader.onerror = () => {
+        reader.abort();
+        toastContext?.addToast(
+          "Failed to restart scenario. Please refresh page or try again later.",
+          "error"
+        );
       };
     } else {
       props.game.loadScenario(initialScenarioString);
@@ -346,8 +365,13 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         props.game.currentScenario.timeCompression
       );
       props.updateCurrentSideName(props.game.currentSideName);
+      props.game.currentScenario.updateScenarioName(
+        props.game.currentScenario.name
+      );
+      setScenarioName(props.game.currentScenario.name);
       props.refreshAllLayers();
       props.updateCurrentScenarioTimeToContext();
+      props.loadFeatureEntitiesState();
     }
   };
 

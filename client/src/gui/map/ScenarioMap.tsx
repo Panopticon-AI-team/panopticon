@@ -1637,6 +1637,7 @@ export default function ScenarioMap({
         toggleScenarioTimeCompressionOnClick={toggleScenarioTimeCompression}
         switchCurrentSideOnClick={switchCurrentSide}
         refreshAllLayers={refreshAllLayers}
+        loadFeatureEntitiesState={loadFeatureEntitiesState}
         updateMapView={updateMapView}
         updateScenarioTimeCompression={setCurrentScenarioTimeCompression}
         updateCurrentScenarioTimeToContext={() => {

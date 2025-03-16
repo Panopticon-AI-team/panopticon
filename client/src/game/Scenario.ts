@@ -48,7 +48,7 @@ export default class Scenario {
 
   constructor(parameters: IScenario) {
     this.id = parameters.id;
-    this.name = parameters.name;
+    this.name = parameters.name ?? `Panopticon Scenario`;
     this.startTime = parameters.startTime;
     this.currentTime = parameters.currentTime ?? parameters.startTime;
     this.duration = parameters.duration;
