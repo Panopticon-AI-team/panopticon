@@ -4,7 +4,7 @@
   "version": "0.2.0",
   "type": "module",
   "engines": {
-    "node": ">=18.20.7 <=23.9.0",
+    "node": ">=18.20.7 <=22.14.0",
     "npm": "9.6.3 || >=10.5.0 <=10.9.2"
   },
   "scripts": {
@@ -50,7 +50,7 @@
     "prettier": "^3.5.3",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.26.1",
-    "vite": "^6.2.1",
+    "vite": "^6.2.2",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.8"
