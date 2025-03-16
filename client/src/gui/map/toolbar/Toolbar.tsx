@@ -407,43 +407,42 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   };
 
   const keyboardEventHandler = (event: KeyboardEvent) => {
+    event.preventDefault();
     const key = event.key;
     switch (key) {
       case " ":
-        event.preventDefault();
         handlePlayClick();
         break;
+      case "e":
+        handleEraserModeToggle();
+        break;
+      case "f":
+        props.toggleScenarioTimeCompressionOnClick();
+        break;
+      case "g":
+        handleGodModeToggle();
+        break;
       case "n":
-        event.preventDefault();
         handleStepClick();
         break;
       case "r":
-        event.preventDefault();
         reloadScenario();
         break;
-      case "f":
-        event.preventDefault();
-        props.toggleScenarioTimeCompressionOnClick();
-        break;
       case "s":
-        event.preventDefault();
         setSelectedSide((prevSide) => (prevSide === "blue" ? "red" : "blue"));
         props.switchCurrentSideOnClick();
         break;
       case "1":
-        event.preventDefault();
         if (selectedAircraftUnitClass) {
           props.addAircraftOnClick(selectedAircraftUnitClass);
         }
         break;
       case "2":
-        event.preventDefault();
         if (selectedAirbaseUnitClass) {
           props.addAirbaseOnClick(selectedAirbaseUnitClass);
         }
         break;
       case "3":
-        event.preventDefault();
         if (selectedSamUnitClass) {
           props.addFacilityOnClick(selectedSamUnitClass);
         }
@@ -455,19 +454,18 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         }
         break;
       case "5":
-        event.preventDefault();
-        props.toggleBaseMapLayer();
+        props.addReferencePointOnClick();
         break;
       case "6":
-        event.preventDefault();
-        props.toggleRouteVisibility(!props.routeVisibility);
+        props.toggleBaseMapLayer();
         break;
       case "7":
-        event.preventDefault();
-        props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
+        props.toggleRouteVisibility(!props.routeVisibility);
         break;
       case "8":
-        event.preventDefault();
+        props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
+        break;
+      case "9":
         props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
         break;
       default:
