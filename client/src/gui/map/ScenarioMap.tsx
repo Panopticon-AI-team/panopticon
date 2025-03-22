@@ -108,7 +108,7 @@ export default function ScenarioMap({
 }: Readonly<ScenarioMapProps>) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(mobileView ? false : true);
   const [baseMapLayers, setBaseMapLayers] = useState(
     new BaseMapLayers(projection)
   );
