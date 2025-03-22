@@ -48,7 +48,7 @@ const closeButtonStyle = {
 const cardHeaderStyle = {
   backgroundColor: colorPalette.white,
   color: "black",
-  height: "50px",
+  height: "20px",
 };
 
 const cardStyle = {
