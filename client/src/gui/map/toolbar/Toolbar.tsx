@@ -482,17 +482,18 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   }
 
   const missionSection = () => {
-    if (
-      !props.game.currentScenario.missions ||
-      !Array.isArray(props.game.currentScenario.missions) ||
-      !props.game.currentScenario.missions.length
-    ) {
+    const missions = props.game.godMode
+      ? props.game.currentScenario.missions
+      : props.game.currentScenario.missions.filter(
+          (mission) => mission.sideId === props.game.currentSideName
+        );
+    if (!missions || !Array.isArray(missions) || !missions.length) {
       return <MenuItem disabled>No items available</MenuItem>;
     }
 
     return (
       <Stack spacing={1} direction="column">
-        {props.game.currentScenario.missions.map((mission) => (
+        {missions.map((mission) => (
           <Tooltip
             key={mission.id}
             placement="right"
