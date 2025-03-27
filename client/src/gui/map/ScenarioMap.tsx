@@ -60,7 +60,6 @@ import MissionCreatorCard from "@/gui/map/mission/MissionCreatorCard";
 import MissionEditorCard from "@/gui/map/mission/MissionEditorCard";
 import BaseVectorLayer from "ol/layer/BaseVector";
 import VectorLayer from "ol/layer/Vector";
-import PlaybackRecorder from "./playback/PlaybackRecorder";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -198,7 +197,6 @@ export default function ScenarioMap({
     SetMouseMapCoordinatesContext
   );
   const toastContext = useContext(ToastContext);
-  const playbackRecorder = new PlaybackRecorder();
 
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -778,17 +776,20 @@ export default function ScenarioMap({
 
   function handleRecordScenarioClick() {
     game.recordingScenario = true;
-    playbackRecorder.startRecording({
-      name: `${game.currentScenario.name} Recording`,
-      scenarioId: game.currentScenario.id,
-      scenarioName: game.currentScenario.name,
-      startTime: game.currentScenario.currentTime,
-    });
+    game.playbackRecorder.startRecording(
+      {
+        name: `${game.currentScenario.name} Recording`,
+        scenarioId: game.currentScenario.id,
+        scenarioName: game.currentScenario.name,
+        startTime: game.currentScenario.currentTime,
+      },
+      game.createScenarioCopy(game.currentScenario)
+    );
   }
 
   function handleStopRecordingScenarioClick() {
     game.recordingScenario = false;
-    playbackRecorder.exportRecording();
+    game.playbackRecorder.exportRecording();
   }
 
   function handleStepGameClick() {
@@ -839,7 +840,7 @@ export default function ScenarioMap({
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation);
     if (game.recordingScenario) {
-      playbackRecorder.recordFrame(observation);
+      game.playbackRecorder.recordFrame(game.createScenarioCopy(observation));
     }
     // const guiDrawElapsed = new Date().getTime() - guiDrawStartTime;
     // console.log('gameStepElapsed:', gameStepElapsed, 'guiDrawElapsed:', guiDrawElapsed)
