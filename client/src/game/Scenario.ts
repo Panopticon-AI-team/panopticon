@@ -127,6 +127,12 @@ export default class Scenario {
     ) as StrikeMission[];
   }
 
+  getMissionByAssignedUnitId(unitId: string): Mission | undefined {
+    return this.missions.find((mission) =>
+      mission.assignedUnitIds.includes(unitId)
+    );
+  }
+
   updateScenarioName(name: string): void {
     this.name = name;
   }

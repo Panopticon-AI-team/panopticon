@@ -35,6 +35,8 @@ import { colorPalette } from "@/utils/constants";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
+  currentMissionName: string | null;
+  toggleMissionEditor: () => void;
   handleDeleteAircraft: (aircraftId: string) => void;
   handleMoveAircraft: (aircraftId: string) => void;
   handleAircraftAttack: (aircraftId: string) => void;
@@ -287,6 +289,31 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
               </TableCell>
               <TableCell align="right" sx={tableValueCellStyle}>
                 {props.aircraft.getTotalWeaponQuantity()}
+              </TableCell>
+            </TableRow>
+            <TableRow sx={tableRowStyle}>
+              <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
+                Mission:
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  ...tableValueCellStyle,
+                  cursor: props.currentMissionName ? "pointer" : "default",
+                  textDecoration: props.currentMissionName
+                    ? "underline"
+                    : "none",
+                }}
+                onClick={
+                  props.currentMissionName
+                    ? () => {
+                        props.handleCloseOnMap();
+                        props.toggleMissionEditor();
+                      }
+                    : () => {}
+                }
+              >
+                {props.currentMissionName ?? "N/A"}
               </TableCell>
             </TableRow>
           </TableBody>

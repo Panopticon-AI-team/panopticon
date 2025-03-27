@@ -1280,6 +1280,21 @@ export default function ScenarioMap({
     toastContext?.addToast(`Deleted mission successfully!`, "success");
   }
 
+  function toggleMissionEditor() {
+    const currentSideId = game.currentScenario.getSide(
+      game.currentSideName
+    )?.id;
+    if (
+      !missionEditorActive &&
+      game.currentScenario.missions.filter(
+        (mission) => mission.sideId === currentSideId
+      ).length === 0
+    )
+      return;
+    setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+    setMissionEditorActive(!missionEditorActive);
+  }
+
   function queueUnitForTeleport(unitId: string) {
     game.selectedUnitId = unitId;
     teleportingUnit = true;
@@ -1658,20 +1673,7 @@ export default function ScenarioMap({
           setMissionCreatorActive(!missionCreatorActive);
         }}
         featureEntitiesPlotted={featureEntitiesState}
-        toggleMissionEditor={() => {
-          const currentSideId = game.currentScenario.getSide(
-            game.currentSideName
-          )?.id;
-          if (
-            !missionEditorActive &&
-            game.currentScenario.missions.filter(
-              (mission) => mission.sideId === currentSideId
-            ).length === 0
-          )
-            return;
-          setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
-          setMissionEditorActive(!missionEditorActive);
-        }}
+        toggleMissionEditor={toggleMissionEditor}
         mobileView={mobileView}
       />
 
@@ -1804,6 +1806,12 @@ export default function ScenarioMap({
             aircraft={
               game.currentScenario.getAircraft(openAircraftCard.aircraftId)!
             }
+            currentMissionName={
+              game.currentScenario.getMissionByAssignedUnitId(
+                openAircraftCard.aircraftId
+              )?.name ?? null
+            }
+            toggleMissionEditor={toggleMissionEditor}
             handleDeleteAircraft={removeAircraft}
             handleMoveAircraft={queueAircraftForMovement}
             handleAircraftAttack={handleAircraftAttack}
