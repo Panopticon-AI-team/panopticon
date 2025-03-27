@@ -1,13 +1,14 @@
 import { fromLonLat, get as getProjection } from "ol/proj";
 import { DEFAULT_OL_PROJECTION_CODE } from "@/utils/constants";
 import { Polygon } from "ol/geom";
+import ReferencePoint from "../units/ReferencePoint";
 
 interface IPatrolMission {
   id: string;
   name: string;
   sideId: string;
   assignedUnitIds: string[];
-  assignedArea: number[][];
+  assignedArea: ReferencePoint[];
   active: boolean;
 }
 
@@ -16,7 +17,7 @@ export default class PatrolMission {
   name: string;
   sideId: string;
   assignedUnitIds: string[];
-  assignedArea: number[][];
+  assignedArea: ReferencePoint[];
   active: boolean;
   patrolAreaGeometry: Polygon;
 
@@ -27,10 +28,20 @@ export default class PatrolMission {
     this.assignedUnitIds = parameters.assignedUnitIds;
     this.assignedArea = parameters.assignedArea;
     this.active = parameters.active;
+    this.patrolAreaGeometry = this.createPatrolAreaGeometry(
+      parameters.assignedArea
+    );
+  }
+
+  updatePatrolAreaGeometry(): void {
+    this.patrolAreaGeometry = this.createPatrolAreaGeometry(this.assignedArea);
+  }
+
+  createPatrolAreaGeometry(area: ReferencePoint[]): Polygon {
     const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
-    this.patrolAreaGeometry = new Polygon([
-      this.assignedArea.map((coordinates) =>
-        fromLonLat([coordinates[1], coordinates[0]], projection!!)
+    return new Polygon([
+      area.map((point) =>
+        fromLonLat([point.longitude, point.latitude], projection!!)
       ),
     ]);
   }
@@ -44,10 +55,12 @@ export default class PatrolMission {
 
   generateRandomCoordinatesWithinPatrolArea(): number[] {
     const randomCoordinates = [
-      Math.random() * (this.assignedArea[2][0] - this.assignedArea[0][0]) +
-        this.assignedArea[0][0],
-      Math.random() * (this.assignedArea[1][1] - this.assignedArea[0][1]) +
-        this.assignedArea[0][1],
+      Math.random() *
+        (this.assignedArea[2].latitude - this.assignedArea[0].latitude) +
+        this.assignedArea[0].latitude,
+      Math.random() *
+        (this.assignedArea[1].longitude - this.assignedArea[0].longitude) +
+        this.assignedArea[0].longitude,
     ];
     return randomCoordinates;
   }

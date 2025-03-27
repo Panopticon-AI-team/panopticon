@@ -1211,7 +1211,7 @@ export default function ScenarioMap({
       const referencePoint =
         game.currentScenario.getReferencePoint(referencePointId);
       if (referencePoint) {
-        assignedArea.push([referencePoint.latitude, referencePoint.longitude]);
+        assignedArea.push(referencePoint);
       }
     }
     game.createPatrolMission(missionName, assignedUnits, assignedArea);
@@ -1234,10 +1234,7 @@ export default function ScenarioMap({
         const referencePoint =
           game.currentScenario.getReferencePoint(referencePointId);
         if (referencePoint) {
-          assignedArea.push([
-            referencePoint.latitude,
-            referencePoint.longitude,
-          ]);
+          assignedArea.push(referencePoint);
         }
       }
     }
