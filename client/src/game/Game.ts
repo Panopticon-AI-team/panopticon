@@ -47,6 +47,7 @@ export default class Game {
   currentScenario: Scenario;
   currentSideName: string = "";
   scenarioPaused: boolean = true;
+  recordingScenario: boolean = false;
   addingAircraft: boolean = false;
   addingAirbase: boolean = false;
   addingFacility: boolean = false;

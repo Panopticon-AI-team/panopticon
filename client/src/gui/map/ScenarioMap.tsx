@@ -60,6 +60,7 @@ import MissionCreatorCard from "@/gui/map/mission/MissionCreatorCard";
 import MissionEditorCard from "@/gui/map/mission/MissionEditorCard";
 import BaseVectorLayer from "ol/layer/BaseVector";
 import VectorLayer from "ol/layer/Vector";
+import PlaybackRecorder from "./playback/PlaybackRecorder";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -197,6 +198,7 @@ export default function ScenarioMap({
     SetMouseMapCoordinatesContext
   );
   const toastContext = useContext(ToastContext);
+  const playbackRecorder = new PlaybackRecorder();
 
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -774,6 +776,21 @@ export default function ScenarioMap({
     }
   }
 
+  function handleRecordScenarioClick() {
+    game.recordingScenario = true;
+    playbackRecorder.startRecording({
+      name: `${game.currentScenario.name} Recording`,
+      scenarioId: game.currentScenario.id,
+      scenarioName: game.currentScenario.name,
+      startTime: game.currentScenario.currentTime,
+    });
+  }
+
+  function handleStopRecordingScenarioClick() {
+    game.recordingScenario = false;
+    playbackRecorder.exportRecording();
+  }
+
   function handleStepGameClick() {
     setGamePaused();
     stepGameAndDrawFrame();
@@ -821,6 +838,9 @@ export default function ScenarioMap({
 
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation);
+    if (game.recordingScenario) {
+      playbackRecorder.recordFrame(observation);
+    }
     // const guiDrawElapsed = new Date().getTime() - guiDrawStartTime;
     // console.log('gameStepElapsed:', gameStepElapsed, 'guiDrawElapsed:', guiDrawElapsed)
 
@@ -1291,7 +1311,7 @@ export default function ScenarioMap({
       ).length === 0
     )
       return;
-    setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+    setKeyboardShortcutsEnabled(missionEditorActive);
     setMissionEditorActive(!missionEditorActive);
   }
 
@@ -1648,6 +1668,8 @@ export default function ScenarioMap({
         stepOnClick={handleStepGameClick}
         pauseOnClick={handlePauseGameClick}
         toggleScenarioTimeCompressionOnClick={toggleScenarioTimeCompression}
+        recordScenarioOnClick={handleRecordScenarioClick}
+        stopRecordingScenarioOnClick={handleStopRecordingScenarioClick}
         switchCurrentSideOnClick={switchCurrentSide}
         refreshAllLayers={refreshAllLayers}
         updateMapView={updateMapView}
@@ -1669,7 +1691,7 @@ export default function ScenarioMap({
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
         toggleMissionCreator={() => {
-          setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+          setKeyboardShortcutsEnabled(missionCreatorActive);
           setMissionCreatorActive(!missionCreatorActive);
         }}
         featureEntitiesPlotted={featureEntitiesState}
