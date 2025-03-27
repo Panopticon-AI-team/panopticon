@@ -455,6 +455,14 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         setSelectedSide((prevSide) => (prevSide === "blue" ? "red" : "blue"));
         props.switchCurrentSideOnClick();
         break;
+      case "g":
+        event.preventDefault();
+        handleGodModeToggle();
+        break;
+      case "e":
+        event.preventDefault();
+        handleEraserModeToggle();
+        break;
       case "1":
         event.preventDefault();
         if (selectedAircraftUnitClass) {
@@ -481,17 +489,21 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         break;
       case "5":
         event.preventDefault();
-        props.toggleBaseMapLayer();
+        props.addReferencePointOnClick();
         break;
       case "6":
         event.preventDefault();
-        props.toggleRouteVisibility(!props.routeVisibility);
+        props.toggleBaseMapLayer();
         break;
       case "7":
         event.preventDefault();
-        props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
+        props.toggleRouteVisibility(!props.routeVisibility);
         break;
       case "8":
+        event.preventDefault();
+        props.toggleThreatRangeVisibility(!props.threatRangeVisibility);
+        break;
+      case "9":
         event.preventDefault();
         props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
         break;
