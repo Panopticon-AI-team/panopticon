@@ -909,7 +909,7 @@ export default function ScenarioMap({
 
   function addAircraftToAirbase(airbaseId: string) {
     const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = "F-22Z";
+    const className = AircraftDb[0].className;
     game.addAircraftToAirbase(aircraftName, className, airbaseId);
   }
 
@@ -1065,7 +1065,7 @@ export default function ScenarioMap({
 
   function addAircraftToShip(shipId: string) {
     const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = "F-22Z";
+    const className = AircraftDb[0].className;
     game.addAircraftToShip(aircraftName, className, shipId);
   }
 
