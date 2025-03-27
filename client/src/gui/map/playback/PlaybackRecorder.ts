@@ -201,6 +201,8 @@ class PlaybackRecorder {
         update.longitude = roundNumber(airbase.longitude);
       if (previousAirbase.altitude !== airbase.altitude)
         update.altitude = roundNumber(airbase.altitude);
+      //   if (previousAirbase.aircraft !== airbase.aircraft)
+      //     update.aircraft = airbase.aircraft;
       if (Object.keys(update).length > 1) airbaseUpdates.push(update);
     });
     return {
