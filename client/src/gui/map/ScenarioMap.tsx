@@ -1638,6 +1638,7 @@ export default function ScenarioMap({
         switchCurrentSideOnClick={switchCurrentSide}
         refreshAllLayers={refreshAllLayers}
         updateMapView={updateMapView}
+        loadFeatureEntitiesState={loadFeatureEntitiesState}
         updateScenarioTimeCompression={setCurrentScenarioTimeCompression}
         updateCurrentScenarioTimeToContext={() => {
           setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
