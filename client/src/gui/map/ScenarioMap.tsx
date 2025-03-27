@@ -1290,6 +1290,7 @@ export default function ScenarioMap({
   }
 
   function switchCurrentSide() {
+    if (missionEditorActive) setMissionEditorActive(false);
     game.switchCurrentSide();
     setCurrentSideName(game.currentSideName);
     toastContext?.addToast(
@@ -1661,10 +1662,13 @@ export default function ScenarioMap({
         }}
         featureEntitiesPlotted={featureEntitiesState}
         toggleMissionEditor={() => {
+          const currentSideId = game.currentScenario.getSide(
+            game.currentSideName
+          )?.id;
           if (
             !missionEditorActive &&
             game.currentScenario.missions.filter(
-              (mission) => mission.sideId === game.currentSideName
+              (mission) => mission.sideId === currentSideId
             ).length === 0
           )
             return;
@@ -1717,7 +1721,9 @@ export default function ScenarioMap({
       {missionEditorActive && game.currentScenario.missions.length > 0 && (
         <MissionEditorCard
           missions={game.currentScenario.missions.filter(
-            (mission) => mission.sideId === game.currentSideName
+            (mission) =>
+              mission.sideId ===
+              game.currentScenario.getSide(game.currentSideName)?.id
           )}
           aircraft={game.currentScenario.aircraft.filter(
             (aircraft) => aircraft.sideName === game.currentSideName

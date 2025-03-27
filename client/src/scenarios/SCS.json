@@ -63,7 +63,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "46e0ab0f-b49c-4961-b265-ce93dd163c21",
@@ -107,7 +108,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "ccfbdbf8-1519-444c-b934-0807773bdd69",
@@ -151,7 +153,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "ddcbcf6a-862b-49c8-8b9a-5b85df51f093",
@@ -195,7 +198,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "5746a756-4739-4375-8d53-0139d3cd9f3c",
@@ -239,7 +243,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "bb0ce824-4185-4f7b-9dd0-e6db279c50ca",
@@ -283,7 +288,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "f65cdc32-4a42-4e3e-b1d4-0bc9d2b3eba0",
@@ -327,7 +333,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "96d3dbcf-6de6-4253-b8b0-613cd1a8a192",
@@ -371,7 +378,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "7ec7f1fc-fc99-4387-be2a-c080c8725263",
@@ -415,7 +423,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "b5965b1e-0c02-463b-ac20-1674deb0c610",
@@ -459,7 +468,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "2b07be32-3c4e-41e2-b292-382b1528040f",
@@ -503,7 +513,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "06be133c-6070-43c2-99c6-6d1f3a9aaf39",
@@ -547,7 +558,98 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
+      },
+      {
+        "id": "6cf33b60-a5ea-465d-9eae-b04c0a9949b8",
+        "name": "Raptor #2444",
+        "sideName": "RED",
+        "className": "F-35A Lightning II",
+        "latitude": 21.3521645831416,
+        "longitude": 118.80530729360531,
+        "altitude": 10000,
+        "heading": 90,
+        "speed": 300,
+        "currentFuel": 100000,
+        "maxFuel": 100000,
+        "fuelRate": 5000,
+        "range": 100,
+        "route": [],
+        "selected": false,
+        "sideColor": "red",
+        "weapons": [
+          {
+            "id": "cf7ab15d-c88f-4d52-b6eb-c1c5c8563067",
+            "name": "Sample Weapon",
+            "sideName": "RED",
+            "className": "Sample Weapon",
+            "latitude": 0,
+            "longitude": 0,
+            "altitude": 10000,
+            "heading": 90,
+            "speed": 1000,
+            "currentFuel": 5000,
+            "maxFuel": 5000,
+            "fuelRate": 5000,
+            "range": 100,
+            "route": [],
+            "sideColor": "red",
+            "targetId": null,
+            "lethality": 0.25,
+            "maxQuantity": 10,
+            "currentQuantity": 10
+          }
+        ],
+        "homeBaseId": "ca9975c7-4efe-450f-bc39-9199c0ba711b",
+        "rtb": false,
+        "targetId": "",
+        "desiredRoute": []
+      },
+      {
+        "id": "06c2ecf8-4ab4-40ee-b038-3b5a24afa35a",
+        "name": "Raptor #3519",
+        "sideName": "RED",
+        "className": "F-35A Lightning II",
+        "latitude": 21.033468002306122,
+        "longitude": 117.68664226868127,
+        "altitude": 10000,
+        "heading": 90,
+        "speed": 300,
+        "currentFuel": 100000,
+        "maxFuel": 100000,
+        "fuelRate": 5000,
+        "range": 100,
+        "route": [],
+        "selected": false,
+        "sideColor": "red",
+        "weapons": [
+          {
+            "id": "f6ecebf6-2fbd-4088-8817-b6effd62b8ef",
+            "name": "Sample Weapon",
+            "sideName": "RED",
+            "className": "Sample Weapon",
+            "latitude": 0,
+            "longitude": 0,
+            "altitude": 10000,
+            "heading": 90,
+            "speed": 1000,
+            "currentFuel": 5000,
+            "maxFuel": 5000,
+            "fuelRate": 5000,
+            "range": 100,
+            "route": [],
+            "sideColor": "red",
+            "targetId": null,
+            "lethality": 0.25,
+            "maxQuantity": 10,
+            "currentQuantity": 10
+          }
+        ],
+        "homeBaseId": "ca9975c7-4efe-450f-bc39-9199c0ba711b",
+        "rtb": false,
+        "targetId": "",
+        "desiredRoute": []
       }
     ],
     "ships": [
@@ -634,7 +736,8 @@
             ],
             "homeBaseId": "ca9975c7-4efe-450f-bc39-9199c0ba711b",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "df930e6f-576e-4040-be36-0eb27d5f82ee",
@@ -678,7 +781,8 @@
             ],
             "homeBaseId": "ca9975c7-4efe-450f-bc39-9199c0ba711b",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "5a38a6bb-b5e4-406f-8424-d92aefc67c33",
@@ -722,97 +826,11 @@
             ],
             "homeBaseId": "ca9975c7-4efe-450f-bc39-9199c0ba711b",
             "rtb": false,
-            "targetId": ""
-          },
-          {
-            "id": "06c2ecf8-4ab4-40ee-b038-3b5a24afa35a",
-            "name": "Raptor #3519",
-            "sideName": "RED",
-            "className": "F-35A Lightning II",
-            "latitude": 16.4761862395075,
-            "longitude": 114.14897207900776,
-            "altitude": 10000,
-            "heading": 90,
-            "speed": 300,
-            "currentFuel": 100000,
-            "maxFuel": 100000,
-            "fuelRate": 5000,
-            "range": 100,
-            "route": [],
-            "selected": false,
-            "sideColor": "red",
-            "weapons": [
-              {
-                "id": "f6ecebf6-2fbd-4088-8817-b6effd62b8ef",
-                "name": "Sample Weapon",
-                "sideName": "RED",
-                "className": "Sample Weapon",
-                "latitude": 0,
-                "longitude": 0,
-                "altitude": 10000,
-                "heading": 90,
-                "speed": 1000,
-                "currentFuel": 5000,
-                "maxFuel": 5000,
-                "fuelRate": 5000,
-                "range": 100,
-                "route": [],
-                "sideColor": "red",
-                "targetId": null,
-                "lethality": 0.25,
-                "maxQuantity": 10,
-                "currentQuantity": 10
-              }
-            ],
-            "homeBaseId": "ca9975c7-4efe-450f-bc39-9199c0ba711b",
-            "rtb": false,
-            "targetId": ""
-          },
-          {
-            "id": "6cf33b60-a5ea-465d-9eae-b04c0a9949b8",
-            "name": "Raptor #2444",
-            "sideName": "RED",
-            "className": "F-35A Lightning II",
-            "latitude": 16.4761862395075,
-            "longitude": 114.14897207900776,
-            "altitude": 10000,
-            "heading": 90,
-            "speed": 300,
-            "currentFuel": 100000,
-            "maxFuel": 100000,
-            "fuelRate": 5000,
-            "range": 100,
-            "route": [],
-            "selected": false,
-            "sideColor": "red",
-            "weapons": [
-              {
-                "id": "cf7ab15d-c88f-4d52-b6eb-c1c5c8563067",
-                "name": "Sample Weapon",
-                "sideName": "RED",
-                "className": "Sample Weapon",
-                "latitude": 0,
-                "longitude": 0,
-                "altitude": 10000,
-                "heading": 90,
-                "speed": 1000,
-                "currentFuel": 5000,
-                "maxFuel": 5000,
-                "fuelRate": 5000,
-                "range": 100,
-                "route": [],
-                "sideColor": "red",
-                "targetId": null,
-                "lethality": 0.25,
-                "maxQuantity": 10,
-                "currentQuantity": 10
-              }
-            ],
-            "homeBaseId": "ca9975c7-4efe-450f-bc39-9199c0ba711b",
-            "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           }
-        ]
+        ],
+        "desiredRoute": []
       },
       {
         "id": "8e6ce884-1213-4b2a-a9b4-9947a4008418",
@@ -897,7 +915,8 @@
             ],
             "homeBaseId": "8e6ce884-1213-4b2a-a9b4-9947a4008418",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "ce9d95c7-3519-40cd-be00-c026a40cbe2c",
@@ -941,7 +960,8 @@
             ],
             "homeBaseId": "8e6ce884-1213-4b2a-a9b4-9947a4008418",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "4d9e8439-b8ea-4468-9065-c101bb9c7086",
@@ -985,7 +1005,8 @@
             ],
             "homeBaseId": "8e6ce884-1213-4b2a-a9b4-9947a4008418",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "25cd9c43-ff1b-43ff-94ee-c8ee9e38c3dc",
@@ -1029,7 +1050,8 @@
             ],
             "homeBaseId": "8e6ce884-1213-4b2a-a9b4-9947a4008418",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "054bd8d8-85be-40b1-9403-07d3cf44b124",
@@ -1073,9 +1095,11 @@
             ],
             "homeBaseId": "8e6ce884-1213-4b2a-a9b4-9947a4008418",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           }
-        ]
+        ],
+        "desiredRoute": []
       },
       {
         "id": "c58b330e-d5df-40e6-8730-c0ae11df9266",
@@ -1160,7 +1184,8 @@
             ],
             "homeBaseId": "c58b330e-d5df-40e6-8730-c0ae11df9266",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "ddfcabf8-53d3-47f2-aad9-fd2fb177a0d6",
@@ -1204,7 +1229,8 @@
             ],
             "homeBaseId": "c58b330e-d5df-40e6-8730-c0ae11df9266",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "87bd2a11-44af-48ea-9c8c-9fa6b99058b1",
@@ -1248,7 +1274,8 @@
             ],
             "homeBaseId": "c58b330e-d5df-40e6-8730-c0ae11df9266",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "1493d9c3-d7b4-449e-88a7-aa7988c88506",
@@ -1292,7 +1319,8 @@
             ],
             "homeBaseId": "c58b330e-d5df-40e6-8730-c0ae11df9266",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "abb9453e-3ad6-48bf-9bc5-cbca4ac7bac8",
@@ -1336,9 +1364,11 @@
             ],
             "homeBaseId": "c58b330e-d5df-40e6-8730-c0ae11df9266",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           }
-        ]
+        ],
+        "desiredRoute": []
       }
     ],
     "facilities": [
@@ -1532,7 +1562,8 @@
             ],
             "homeBaseId": "051f9203-d022-46de-80b0-ed21e5d5c119",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "659e46ba-db50-425d-b757-a91cc45c00aa",
@@ -1576,7 +1607,8 @@
             ],
             "homeBaseId": "051f9203-d022-46de-80b0-ed21e5d5c119",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "317c88c9-09c1-4b5d-9918-88962a291098",
@@ -1620,7 +1652,8 @@
             ],
             "homeBaseId": "051f9203-d022-46de-80b0-ed21e5d5c119",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           }
         ]
       },
@@ -1687,7 +1720,8 @@
             ],
             "homeBaseId": "82157516-dade-47b9-a21f-e69fd93e517d",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "2b528aad-f50b-40ea-bc63-fecda2993bc5",
@@ -1731,7 +1765,8 @@
             ],
             "homeBaseId": "82157516-dade-47b9-a21f-e69fd93e517d",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "0c8af935-a4ed-49fa-9a08-090555ce18a4",
@@ -1775,7 +1810,8 @@
             ],
             "homeBaseId": "82157516-dade-47b9-a21f-e69fd93e517d",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "f984484f-74d9-4970-8791-37c0f863733e",
@@ -1819,7 +1855,8 @@
             ],
             "homeBaseId": "82157516-dade-47b9-a21f-e69fd93e517d",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "cff70a8f-3338-4c06-97d9-f1080c9612a6",
@@ -1863,7 +1900,8 @@
             ],
             "homeBaseId": "82157516-dade-47b9-a21f-e69fd93e517d",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           }
         ]
       },
@@ -1919,7 +1957,8 @@
             ],
             "homeBaseId": "bf755a32-9aae-4f6a-8023-084d797daa62",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "97600c33-c7b1-4dce-8b1f-6cdfe8805a2d",
@@ -1963,7 +2002,8 @@
             ],
             "homeBaseId": "bf755a32-9aae-4f6a-8023-084d797daa62",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "14aafbeb-8cff-4da1-b7ca-8ef7cd2e44b1",
@@ -2007,7 +2047,8 @@
             ],
             "homeBaseId": "bf755a32-9aae-4f6a-8023-084d797daa62",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "e7ecb3f3-1539-4b13-83f5-f2e6496ebfca",
@@ -2051,7 +2092,8 @@
             ],
             "homeBaseId": "bf755a32-9aae-4f6a-8023-084d797daa62",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "5ac5070d-d229-41e7-be49-ace915c58fc1",
@@ -2095,7 +2137,8 @@
             ],
             "homeBaseId": "bf755a32-9aae-4f6a-8023-084d797daa62",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "26a08f67-96fe-4b95-8003-6de3e1786081",
@@ -2139,7 +2182,8 @@
             ],
             "homeBaseId": "bf755a32-9aae-4f6a-8023-084d797daa62",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           }
         ]
       },
@@ -2195,7 +2239,8 @@
             ],
             "homeBaseId": "2d74104f-03ac-4fdf-ad70-2fa81ac6d514",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "cba22b13-fbc0-4d6d-afb8-9f7db8768377",
@@ -2239,7 +2284,8 @@
             ],
             "homeBaseId": "2d74104f-03ac-4fdf-ad70-2fa81ac6d514",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "a8666a44-18eb-4060-a718-1e3f9a4fc640",
@@ -2283,7 +2329,8 @@
             ],
             "homeBaseId": "2d74104f-03ac-4fdf-ad70-2fa81ac6d514",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "6ec1d728-7938-4f7b-9bca-4dad3e13add7",
@@ -2327,7 +2374,8 @@
             ],
             "homeBaseId": "2d74104f-03ac-4fdf-ad70-2fa81ac6d514",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "76ea342b-7e87-48af-a136-426e548f219c",
@@ -2371,7 +2419,8 @@
             ],
             "homeBaseId": "2d74104f-03ac-4fdf-ad70-2fa81ac6d514",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           }
         ]
       }
@@ -2413,13 +2462,49 @@
         "longitude": 150.96692676017133,
         "altitude": 0,
         "sideColor": "blue"
+      },
+      {
+        "id": "072f4ade-e0cd-421e-82dd-d51a386ac09e",
+        "name": "Reference Point #2258",
+        "sideName": "RED",
+        "latitude": 22.791948007929392,
+        "longitude": 117.40697601245027,
+        "altitude": 0,
+        "sideColor": "red"
+      },
+      {
+        "id": "c2fdd901-9c10-4434-80a7-d0d0a7ff0ec2",
+        "name": "Reference Point #2966",
+        "sideName": "RED",
+        "latitude": 22.877863978290662,
+        "longitude": 120.26578663170056,
+        "altitude": 0,
+        "sideColor": "red"
+      },
+      {
+        "id": "94b605da-29da-439c-b5e5-427c9ee63e06",
+        "name": "Reference Point #4917",
+        "sideName": "RED",
+        "latitude": 20.306630458768197,
+        "longitude": 117.40697601245027,
+        "altitude": 0,
+        "sideColor": "red"
+      },
+      {
+        "id": "6517a3c7-5737-4191-b5a5-60c63fdd4784",
+        "name": "Reference Point #4529",
+        "sideName": "RED",
+        "latitude": 20.714088302828785,
+        "longitude": 120.20363857476035,
+        "altitude": 0,
+        "sideColor": "red"
       }
     ],
     "missions": [
       {
         "id": "a8ab936c-184b-42bf-aa83-abca31bb2e73",
         "name": "Andersen Patrol",
-        "sideId": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "assignedUnitIds": [
           "7bc96d3b-ffe7-4469-b976-893e7fa5deca",
           "46e0ab0f-b49c-4961-b265-ce93dd163c21"
@@ -2437,7 +2522,7 @@
           "dispatching_": null,
           "listeners_": null,
           "revision_": 1,
-          "ol_uid": "491",
+          "ol_uid": "10",
           "values_": null,
           "extent_": [null, null, null, null],
           "extentRevision_": -1,
@@ -2462,7 +2547,7 @@
       {
         "id": "4bc773f2-97cf-4404-b6f5-a50ac6c48fe1",
         "name": "Destroy Cici AB",
-        "sideId": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "assignedUnitIds": [
           "96d3dbcf-6de6-4253-b8b0-613cd1a8a192",
           "b5965b1e-0c02-463b-ac20-1674deb0c610",
@@ -2470,6 +2555,49 @@
         ],
         "assignedTargetIds": ["bf755a32-9aae-4f6a-8023-084d797daa62"],
         "active": true
+      },
+      {
+        "id": "5f6b761d-ee8c-4bb8-8840-2ddd74d080fb",
+        "name": "Coastal CAP",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
+        "assignedUnitIds": [
+          "6cf33b60-a5ea-465d-9eae-b04c0a9949b8",
+          "06c2ecf8-4ab4-40ee-b038-3b5a24afa35a"
+        ],
+        "assignedArea": [
+          [22.791948007929392, 117.40697601245027],
+          [22.877863978290662, 120.26578663170056],
+          [20.714088302828785, 120.20363857476035],
+          [20.306630458768197, 117.40697601245027]
+        ],
+        "active": true,
+        "patrolAreaGeometry": {
+          "disposed": false,
+          "pendingRemovals_": null,
+          "dispatching_": null,
+          "listeners_": null,
+          "revision_": 1,
+          "ol_uid": "11",
+          "values_": null,
+          "extent_": [null, null, null, null],
+          "extentRevision_": -1,
+          "simplifiedGeometryMaxMinSquaredTolerance": 0,
+          "simplifiedGeometryRevision": 0,
+          "layout": "XY",
+          "stride": 2,
+          "ends_": [8],
+          "flatInteriorPointRevision_": -1,
+          "flatInteriorPoint_": null,
+          "maxDelta_": -1,
+          "maxDeltaRevision_": -1,
+          "orientedRevision_": -1,
+          "orientedFlatCoordinates_": null,
+          "flatCoordinates": [
+            13069684.78528405, 2606877.5839218325, 13387926.127693396,
+            2617255.0190003994, 13381007.83764102, 2357819.1420362582,
+            13069684.78528405, 2309391.1116696196
+          ]
+        }
       }
     ]
   },
