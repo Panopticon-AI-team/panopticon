@@ -60,6 +60,10 @@ const cardStyle = {
   borderRadius: "10px",
 };
 
+const createPlaceholderMissionName = (missionType: "Patrol" | "Strike") => {
+  return `${missionType} Mission #${Math.floor(Math.random() * 1000)}`;
+};
+
 const MissionCreatorCard = (props: MissionCreatorCardProps) => {
   const nodeRef = useRef(null);
   const [selectedMissionType, setSelectedMissionType] = useState<
@@ -74,7 +78,9 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
   const [selectedReferencePoints, setSelectedReferencePoints] = useState<
     string[]
   >([]);
-  const [missionName, setMissionName] = useState<string>("");
+  const [missionName, setMissionName] = useState<string>(
+    createPlaceholderMissionName(selectedMissionType)
+  );
 
   const validateMissionPropertiesInput = () => {
     if (missionName === "") {
