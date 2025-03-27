@@ -24,7 +24,7 @@ export default function App() {
   });
   const currentScenario = new Scenario({
     id: randomUUID(),
-    name: "Test Scenario",
+    name: "New Scenario",
     startTime: 1699073110,
     currentTime: 1699073110,
     duration: 14400,

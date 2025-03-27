@@ -101,7 +101,7 @@ export function getTestUnits() {
   });
   const testScenario = new Scenario({
     id: "8",
-    name: "Test Scenario",
+    name: "New Scenario",
     startTime: 1699073110,
     currentTime: 1699073110,
     duration: 14400,

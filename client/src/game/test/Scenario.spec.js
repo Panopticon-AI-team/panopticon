@@ -11,7 +11,7 @@ describe("Scenario", () => {
       testWeapon,
     ] = getTestUnits();
     expect(testScenario.id).toBe("8");
-    expect(testScenario.name).toBe("Test Scenario");
+    expect(testScenario.name).toBe("New Scenario");
     expect(testScenario.startTime).toBe(1699073110);
     expect(testScenario.currentTime).toBe(1699073110);
     expect(testScenario.duration).toBe(14400);

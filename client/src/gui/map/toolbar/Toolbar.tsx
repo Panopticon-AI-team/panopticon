@@ -119,7 +119,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     null
   );
   const [scenarioName, setScenarioName] = useState<string>(
-    props.game.currentScenario.name ?? "Test Scenario"
+    props.game.currentScenario.name ?? "New Scenario"
   );
   const [scenarioNameError, setScenarioNameError] = useState<boolean>(false);
   const [initialScenarioString, setInitialScenarioString] = useState<string>(
