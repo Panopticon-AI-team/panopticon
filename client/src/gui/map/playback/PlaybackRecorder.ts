@@ -41,6 +41,15 @@ interface AircraftUpdate {
   targetId?: string;
 }
 
+interface AirbaseUpdate {
+  id: string;
+  name?: string;
+  latitude?: number;
+  longitude?: number;
+  altitude?: number;
+  aircraft?: Aircraft[];
+}
+
 interface ReferencePointUpdate {
   id: string;
   name?: string;
@@ -54,6 +63,9 @@ interface Change {
   newAircraft?: Aircraft[];
   deletedAircraftIds?: string[];
   aircraftUpdates?: AircraftUpdate[];
+  newAirbases?: Airbase[];
+  deletedAirbaseIds?: string[];
+  airbaseUpdates?: AirbaseUpdate[];
   newReferencePoints?: ReferencePoint[];
   deletedReferencePointIds?: string[];
   referencePointUpdates?: ReferencePointUpdate[];
@@ -81,6 +93,7 @@ class PlaybackRecorder {
     const change: Change = {
       currentTime: scenario.currentTime,
       newAircraft: scenario.aircraft,
+      newAirbases: scenario.airbases,
       newReferencePoints: scenario.referencePoints,
     };
     this.recordedSteps.push(change);
@@ -153,6 +166,50 @@ class PlaybackRecorder {
     };
   }
 
+  getAirbaseChanges(nextAirbases: Airbase[]) {
+    const previousAirbases = this.previousStep?.airbases ?? [];
+    const previousAirbaseIds = previousAirbases.map((airbase) => airbase.id);
+    const nextAirbaseIds = nextAirbases.map((airbase) => airbase.id);
+    // add new airbases
+    const newAirbases = nextAirbases.filter(
+      (airbase) => !previousAirbaseIds.includes(airbase.id)
+    );
+    // remove deleted airbases
+    const deletedAirbaseIds =
+      previousAirbases
+        .filter((airbase) => !nextAirbaseIds.includes(airbase.id))
+        .map((ab) => ab.id) ?? [];
+    // update other airbases
+    const updatedAirbases = nextAirbases.filter((airbase) =>
+      previousAirbaseIds.includes(airbase.id)
+    );
+    const airbaseUpdates: AirbaseUpdate[] = [];
+    updatedAirbases.forEach((airbase) => {
+      const previousAirbase = previousAirbases.find(
+        (ab) => ab.id === airbase.id
+      );
+      if (!previousAirbase) {
+        return;
+      }
+      const update: AirbaseUpdate = {
+        id: airbase.id,
+      };
+      if (previousAirbase.name !== airbase.name) update.name = airbase.name;
+      if (previousAirbase.latitude !== airbase.latitude)
+        update.latitude = roundNumber(airbase.latitude);
+      if (previousAirbase.longitude !== airbase.longitude)
+        update.longitude = roundNumber(airbase.longitude);
+      if (previousAirbase.altitude !== airbase.altitude)
+        update.altitude = roundNumber(airbase.altitude);
+      if (Object.keys(update).length > 1) airbaseUpdates.push(update);
+    });
+    return {
+      newAirbases,
+      deletedAirbaseIds,
+      airbaseUpdates,
+    };
+  }
+
   getReferencePointChanges(nextReferencePoints: ReferencePoint[]) {
     const previousReferencePoints = this.previousStep?.referencePoints ?? [];
     const previousReferencePointIds = previousReferencePoints.map(
@@ -210,6 +267,8 @@ class PlaybackRecorder {
     }
     const { newAircraft, deletedAircraftIds, aircraftUpdates } =
       this.getAircraftChanges(currentStep.aircraft);
+    const { newAirbases, deletedAirbaseIds, airbaseUpdates } =
+      this.getAirbaseChanges(currentStep.airbases);
     const {
       newReferencePoints,
       deletedReferencePointIds,
@@ -222,6 +281,10 @@ class PlaybackRecorder {
     if (deletedAircraftIds.length > 0)
       change.deletedAircraftIds = deletedAircraftIds;
     if (aircraftUpdates.length > 0) change.aircraftUpdates = aircraftUpdates;
+    if (newAirbases.length > 0) change.newAirbases = newAirbases;
+    if (deletedAirbaseIds.length > 0)
+      change.deletedAirbaseIds = deletedAirbaseIds;
+    if (airbaseUpdates.length > 0) change.airbaseUpdates = airbaseUpdates;
     if (newReferencePoints.length > 0)
       change.newReferencePoints = newReferencePoints;
     if (deletedReferencePointIds.length > 0)
