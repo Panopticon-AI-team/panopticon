@@ -368,7 +368,7 @@ export default class Game {
   createPatrolMission(
     missionName: string,
     assignedUnits: string[],
-    assignedArea: number[][]
+    assignedArea: ReferencePoint[]
   ) {
     if (assignedArea.length < 3) return;
     const currentSideId = this.currentScenario.getSide(
@@ -389,15 +389,17 @@ export default class Game {
     missionId: string,
     missionName?: string,
     assignedUnits?: string[],
-    assignedArea?: number[][]
+    assignedArea?: ReferencePoint[]
   ) {
     const patrolMission = this.currentScenario.getPatrolMission(missionId);
     if (patrolMission) {
       if (missionName && missionName !== "") patrolMission.name = missionName;
       if (assignedUnits && assignedUnits.length > 0)
         patrolMission.assignedUnitIds = assignedUnits;
-      if (assignedArea && assignedArea.length > 2)
+      if (assignedArea && assignedArea.length > 2) {
         patrolMission.assignedArea = assignedArea;
+        patrolMission.updatePatrolAreaGeometry();
+      }
     }
   }
 
@@ -554,6 +556,18 @@ export default class Game {
     if (referencePoint) {
       referencePoint.latitude = newLatitude;
       referencePoint.longitude = newLongitude;
+      this.currentScenario.missions.forEach((mission) => {
+        if (mission instanceof PatrolMission) {
+          if (
+            mission.assignedArea.some((point) => point.id === referencePoint.id)
+          ) {
+            mission.assignedArea = mission.assignedArea.map((point) =>
+              point.id === referencePoint.id ? referencePoint : point
+            );
+            mission.updatePatrolAreaGeometry();
+          }
+        }
+      });
       return referencePoint;
     }
   }
@@ -905,10 +919,23 @@ export default class Game {
         active: mission.active,
       };
       if ("assignedArea" in mission) {
+        const assignedArea: ReferencePoint[] = [];
+        mission.assignedArea.forEach((point) => {
+          const referencePoint = new ReferencePoint({
+            id: point.id,
+            name: point.name,
+            sideName: point.sideName,
+            latitude: point.latitude,
+            longitude: point.longitude,
+            altitude: point.altitude,
+            sideColor: point.sideColor,
+          });
+          assignedArea.push(referencePoint);
+        });
         loadedScenario.missions.push(
           new PatrolMission({
             ...baseProps,
-            assignedArea: mission.assignedArea,
+            assignedArea: assignedArea,
           })
         );
       } else {

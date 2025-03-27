@@ -78,20 +78,6 @@ const editorButtonStyle = {
   color: colorPalette.white,
 };
 
-const findReferencePointsForAssignedArea = (
-  area: number[][],
-  referencePoints: ReferencePoint[]
-): string[] => {
-  return area.map((coordinates) => {
-    const searchedReferencePoint = referencePoints.find(
-      (referencePoint) =>
-        referencePoint.latitude === coordinates[0] &&
-        referencePoint.longitude === coordinates[1]
-    );
-    return searchedReferencePoint ? searchedReferencePoint.id : "";
-  });
-};
-
 const parseSelectedMissionType = (selectedMission: Mission): string => {
   return selectedMission instanceof PatrolMission ? "Patrol" : "Strike";
 };
@@ -111,10 +97,7 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
     string[]
   >(
     selectedMission instanceof PatrolMission
-      ? findReferencePointsForAssignedArea(
-          selectedMission.assignedArea,
-          props.referencePoints
-        )
+      ? selectedMission.assignedArea.map((point) => point.id)
       : []
   );
   const [selectedTargets, setSelectedTargets] = useState<string[]>(
@@ -192,10 +175,7 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
 
     if (searchedSelectedMission instanceof PatrolMission) {
       setSelectedReferencePoints(
-        findReferencePointsForAssignedArea(
-          searchedSelectedMission.assignedArea,
-          props.referencePoints
-        )
+        searchedSelectedMission.assignedArea.map((point) => point.id)
       );
     } else if (searchedSelectedMission instanceof StrikeMission) {
       setSelectedTargets(searchedSelectedMission.assignedTargetIds);
