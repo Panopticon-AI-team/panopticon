@@ -557,15 +557,14 @@ export default class Game {
       referencePoint.latitude = newLatitude;
       referencePoint.longitude = newLongitude;
       this.currentScenario.missions.forEach((mission) => {
-        if (mission instanceof PatrolMission) {
-          if (
-            mission.assignedArea.some((point) => point.id === referencePoint.id)
-          ) {
-            mission.assignedArea = mission.assignedArea.map((point) =>
-              point.id === referencePoint.id ? referencePoint : point
-            );
-            mission.updatePatrolAreaGeometry();
-          }
+        if (
+          mission instanceof PatrolMission &&
+          mission.assignedArea.some((point) => point.id === referencePoint.id)
+        ) {
+          mission.assignedArea = mission.assignedArea.map((point) =>
+            point.id === referencePoint.id ? referencePoint : point
+          );
+          mission.updatePatrolAreaGeometry();
         }
       });
       return referencePoint;
