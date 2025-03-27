@@ -405,10 +405,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         Plot Course
       </ListItemButton>
       <ListItemButton onClick={_handleAircraftAttack}>
-        <RocketLaunchIcon
-          sx={{ mr: 0.5 }}
-          color={featureEntitySideColor === "primary" ? "error" : "primary"}
-        />
+        <RocketLaunchIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} />
         Attack
       </ListItemButton>
       <ListItemButton onClick={_handleAircraftRtb}>

@@ -375,10 +375,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
         Plot Course
       </ListItemButton>
       <ListItemButton onClick={_handleShipAttack}>
-        <RocketLaunchIcon
-          sx={{ mr: 0.5 }}
-          color={featureEntitySideColor === "primary" ? "error" : "primary"}
-        />
+        <RocketLaunchIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} />
         Attack
       </ListItemButton>
       <ListItemButton onClick={_handleAddAircraft}>
