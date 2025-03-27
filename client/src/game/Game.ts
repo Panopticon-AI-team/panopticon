@@ -371,10 +371,13 @@ export default class Game {
     assignedArea: number[][]
   ) {
     if (assignedArea.length < 3) return;
+    const currentSideId = this.currentScenario.getSide(
+      this.currentSideName
+    )?.id;
     const patrolMission = new PatrolMission({
       id: randomUUID(),
       name: missionName,
-      sideId: this.currentSideName,
+      sideId: currentSideId ?? this.currentSideName,
       assignedUnitIds: assignedUnits,
       assignedArea: assignedArea,
       active: true,
@@ -403,10 +406,13 @@ export default class Game {
     assignedAttackers: string[],
     assignedTargets: string[]
   ) {
+    const currentSideId = this.currentScenario.getSide(
+      this.currentSideName
+    )?.id;
     const strikeMission = new StrikeMission({
       id: randomUUID(),
       name: missionName,
-      sideId: this.currentSideName,
+      sideId: currentSideId ?? this.currentSideName,
       assignedUnitIds: assignedAttackers,
       assignedTargetIds: assignedTargets,
       active: true,

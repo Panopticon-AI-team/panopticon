@@ -1290,6 +1290,7 @@ export default function ScenarioMap({
   }
 
   function switchCurrentSide() {
+    if (missionEditorActive) setMissionEditorActive(false);
     game.switchCurrentSide();
     setCurrentSideName(game.currentSideName);
     toastContext?.addToast(
@@ -1661,10 +1662,13 @@ export default function ScenarioMap({
         }}
         featureEntitiesPlotted={featureEntitiesState}
         toggleMissionEditor={() => {
+          const currentSideId = game.currentScenario.getSide(
+            game.currentSideName
+          )?.id;
           if (
             !missionEditorActive &&
             game.currentScenario.missions.filter(
-              (mission) => mission.sideId === game.currentSideName
+              (mission) => mission.sideId === currentSideId
             ).length === 0
           )
             return;
@@ -1714,29 +1718,37 @@ export default function ScenarioMap({
       )}
 
       {/** // TODO: Add selected mission param to 'toggleMissionEditor(...)'  - pass mission as prop here and prepopulate selected mission data instead */}
-      {missionEditorActive && game.currentScenario.missions.length > 0 && (
-        <MissionEditorCard
-          missions={game.currentScenario.missions.filter(
-            (mission) => mission.sideId === game.currentSideName
-          )}
-          aircraft={game.currentScenario.aircraft.filter(
-            (aircraft) => aircraft.sideName === game.currentSideName
-          )}
-          referencePoints={game.currentScenario.referencePoints.filter(
-            (referencePoint) => referencePoint.sideName === game.currentSideName
-          )}
-          targets={game.currentScenario.getAllTargetsFromEnemySides(
-            game.currentSideName
-          )}
-          updatePatrolMission={handleUpdatePatrolMission}
-          updateStrikeMission={handleUpdateStrikeMission}
-          deleteMission={handleDeleteMission}
-          handleCloseOnMap={() => {
-            setKeyboardShortcutsEnabled(true);
-            setMissionEditorActive(!missionEditorActive);
-          }}
-        />
-      )}
+      {missionEditorActive &&
+        game.currentScenario.missions.filter(
+          (mission) =>
+            mission.sideId ===
+            game.currentScenario.getSide(game.currentSideName)?.id
+        ).length > 0 && (
+          <MissionEditorCard
+            missions={game.currentScenario.missions.filter(
+              (mission) =>
+                mission.sideId ===
+                game.currentScenario.getSide(game.currentSideName)?.id
+            )}
+            aircraft={game.currentScenario.aircraft.filter(
+              (aircraft) => aircraft.sideName === game.currentSideName
+            )}
+            referencePoints={game.currentScenario.referencePoints.filter(
+              (referencePoint) =>
+                referencePoint.sideName === game.currentSideName
+            )}
+            targets={game.currentScenario.getAllTargetsFromEnemySides(
+              game.currentSideName
+            )}
+            updatePatrolMission={handleUpdatePatrolMission}
+            updateStrikeMission={handleUpdateStrikeMission}
+            deleteMission={handleDeleteMission}
+            handleCloseOnMap={() => {
+              setKeyboardShortcutsEnabled(true);
+              setMissionEditorActive(!missionEditorActive);
+            }}
+          />
+        )}
 
       <Main open={drawerOpen}>
         <DrawerHeader />

@@ -507,17 +507,19 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   }
 
   const missionSection = () => {
-    if (
-      !props.game.currentScenario.missions ||
-      !Array.isArray(props.game.currentScenario.missions) ||
-      !props.game.currentScenario.missions.length
-    ) {
+    const currentSideId = props.game.currentScenario.getSide(
+      props.game.currentSideName
+    )?.id;
+    const sideMissions = props.game.currentScenario.missions.filter(
+      (mission) => mission.sideId === currentSideId
+    );
+    if (!sideMissions || !Array.isArray(sideMissions) || !sideMissions.length) {
       return <MenuItem disabled>No items available</MenuItem>;
     }
 
     return (
       <Stack spacing={1} direction="column">
-        {props.game.currentScenario.missions.map((mission) => (
+        {sideMissions.map((mission) => (
           <Tooltip
             key={mission.id}
             placement="right"
