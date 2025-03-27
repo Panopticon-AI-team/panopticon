@@ -6,6 +6,15 @@ import ReferencePoint from "@/game/units/ReferencePoint";
 import Ship from "@/game/units/Ship";
 import Weapon from "@/game/units/Weapon";
 
+const DEFAULT_EXPORTED_NUMBER_PRECISION = 3;
+
+const roundNumber = (
+  num: number,
+  precision: number = DEFAULT_EXPORTED_NUMBER_PRECISION
+) => {
+  return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
+};
+
 interface RecordingInfo {
   name: string;
   scenarioId: string;
@@ -107,22 +116,29 @@ class PlaybackRecorder {
       if (previousAc.className !== currentAc.className)
         update.className = currentAc.className;
       if (previousAc.latitude !== currentAc.latitude)
-        update.latitude = currentAc.latitude;
+        update.latitude = roundNumber(currentAc.latitude);
       if (previousAc.longitude !== currentAc.longitude)
-        update.longitude = currentAc.longitude;
+        update.longitude = roundNumber(currentAc.longitude);
       if (previousAc.altitude !== currentAc.altitude)
-        update.altitude = currentAc.altitude;
+        update.altitude = roundNumber(currentAc.altitude);
       if (previousAc.heading !== currentAc.heading)
-        update.heading = currentAc.heading;
+        update.heading = roundNumber(currentAc.heading);
       if (previousAc.speed !== currentAc.speed) update.speed = currentAc.speed;
       if (previousAc.currentFuel !== currentAc.currentFuel)
-        update.currentFuel = currentAc.currentFuel;
+        update.currentFuel = roundNumber(currentAc.currentFuel);
       if (previousAc.maxFuel !== currentAc.maxFuel)
-        update.maxFuel = currentAc.maxFuel;
+        update.maxFuel = roundNumber(currentAc.maxFuel);
       if (previousAc.fuelRate !== currentAc.fuelRate)
-        update.fuelRate = currentAc.fuelRate;
-      if (previousAc.range !== currentAc.range) update.range = currentAc.range;
-      if (previousAc.route !== currentAc.route) update.route = currentAc.route;
+        update.fuelRate = roundNumber(currentAc.fuelRate);
+      if (previousAc.range !== currentAc.range)
+        update.range = roundNumber(currentAc.range);
+      if (previousAc.route !== currentAc.route) {
+        const route = currentAc.route.map((waypoint) => [
+          roundNumber(waypoint[0]),
+          roundNumber(waypoint[1]),
+        ]);
+        update.route = route;
+      }
       if (previousAc.weapons !== currentAc.weapons)
         update.weapons = currentAc.weapons;
       if (previousAc.rtb !== currentAc.rtb) update.rtb = currentAc.rtb;
@@ -174,11 +190,11 @@ class PlaybackRecorder {
       if (previousReferencePoint.name !== referencePoint.name)
         update.name = referencePoint.name;
       if (previousReferencePoint.latitude !== referencePoint.latitude)
-        update.latitude = referencePoint.latitude;
+        update.latitude = roundNumber(referencePoint.latitude);
       if (previousReferencePoint.longitude !== referencePoint.longitude)
-        update.longitude = referencePoint.longitude;
+        update.longitude = roundNumber(referencePoint.longitude);
       if (previousReferencePoint.altitude !== referencePoint.altitude)
-        update.altitude = referencePoint.altitude;
+        update.altitude = roundNumber(referencePoint.altitude);
       if (Object.keys(update).length > 1) referencePointUpdates.push(update);
     });
     return {
