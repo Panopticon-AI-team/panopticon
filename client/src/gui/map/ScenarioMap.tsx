@@ -1743,114 +1743,128 @@ export default function ScenarioMap({
         <div ref={mapRef} id="map"></div>
       </Main>
 
-      {openAirbaseCard.open && (
-        <AirbaseCard
-          airbase={game.currentScenario.getAirbase(openAirbaseCard.airbaseId)!}
-          handleAddAircraft={addAircraftToAirbase}
-          handleLaunchAircraft={launchAircraftFromAirbase}
-          handleDeleteAirbase={removeAirbase}
-          handleEditAirbase={updateAirbase}
-          handleTeleportUnit={queueUnitForTeleport}
-          anchorPositionTop={openAirbaseCard.top}
-          anchorPositionLeft={openAirbaseCard.left}
-          handleCloseOnMap={() => {
-            setOpenAirbaseCard({ open: false, top: 0, left: 0, airbaseId: "" });
-            setKeyboardShortcutsEnabled(true);
-          }}
-        />
-      )}
-      {openFacilityCard.open && (
-        <FacilityCard
-          facility={
-            game.currentScenario.getFacility(openFacilityCard.facilityId)!
-          }
-          handleTeleportUnit={queueUnitForTeleport}
-          handleDeleteFacility={removeFacility}
-          handleEditFacility={updateFacility}
-          anchorPositionTop={openFacilityCard.top}
-          anchorPositionLeft={openFacilityCard.left}
-          handleCloseOnMap={() => {
-            setOpenFacilityCard({
-              open: false,
-              top: 0,
-              left: 0,
-              facilityId: "",
-            });
-            setKeyboardShortcutsEnabled(true);
-          }}
-        />
-      )}
-      {openAircraftCard.open && (
-        <AircraftCard
-          aircraft={
-            game.currentScenario.getAircraft(openAircraftCard.aircraftId)!
-          }
-          handleDeleteAircraft={removeAircraft}
-          handleMoveAircraft={queueAircraftForMovement}
-          handleAircraftAttack={handleAircraftAttack}
-          handleEditAircraft={updateAircraft}
-          handleAircraftRtb={handleAircraftRtb}
-          handleDuplicateAircraft={handleDuplicateAircraft}
-          handleTeleportUnit={queueUnitForTeleport}
-          anchorPositionTop={openAircraftCard.top}
-          anchorPositionLeft={openAircraftCard.left}
-          handleCloseOnMap={() => {
-            setOpenAircraftCard({
-              open: false,
-              top: 0,
-              left: 0,
-              aircraftId: "",
-            });
-            setKeyboardShortcutsEnabled(true);
-          }}
-        />
-      )}
-      {openShipCard.open && (
-        <ShipCard
-          ship={game.currentScenario.getShip(openShipCard.shipId)!}
-          handleAddAircraft={addAircraftToShip}
-          handleLaunchAircraft={launchAircraftFromShip}
-          handleDeleteShip={removeShip}
-          handleMoveShip={queueShipForMovement}
-          handleShipAttack={handleShipAttack}
-          handleTeleportUnit={queueUnitForTeleport}
-          handleEditShip={updateShip}
-          anchorPositionTop={openShipCard.top}
-          anchorPositionLeft={openShipCard.left}
-          handleCloseOnMap={() => {
-            setOpenShipCard({
-              open: false,
-              top: 0,
-              left: 0,
-              shipId: "",
-            });
-            setKeyboardShortcutsEnabled(true);
-          }}
-        />
-      )}
-      {openReferencePointCard.open && (
-        <ReferencePointCard
-          referencePoint={
-            game.currentScenario.getReferencePoint(
-              openReferencePointCard.referencePointId
-            )!
-          }
-          handleDeleteReferencePoint={removeReferencePoint}
-          handleEditReferencePoint={updateReferencePoint}
-          handleTeleportUnit={queueUnitForTeleport}
-          anchorPositionTop={openReferencePointCard.top}
-          anchorPositionLeft={openReferencePointCard.left}
-          handleCloseOnMap={() => {
-            setOpenReferencePointCard({
-              open: false,
-              top: 0,
-              left: 0,
-              referencePointId: "",
-            });
-            setKeyboardShortcutsEnabled(true);
-          }}
-        />
-      )}
+      {openAirbaseCard.open &&
+        game.currentScenario.getAirbase(openAirbaseCard.airbaseId) && (
+          <AirbaseCard
+            airbase={
+              game.currentScenario.getAirbase(openAirbaseCard.airbaseId)!
+            }
+            handleAddAircraft={addAircraftToAirbase}
+            handleLaunchAircraft={launchAircraftFromAirbase}
+            handleDeleteAirbase={removeAirbase}
+            handleEditAirbase={updateAirbase}
+            handleTeleportUnit={queueUnitForTeleport}
+            anchorPositionTop={openAirbaseCard.top}
+            anchorPositionLeft={openAirbaseCard.left}
+            handleCloseOnMap={() => {
+              setOpenAirbaseCard({
+                open: false,
+                top: 0,
+                left: 0,
+                airbaseId: "",
+              });
+              setKeyboardShortcutsEnabled(true);
+            }}
+          />
+        )}
+      {openFacilityCard.open &&
+        game.currentScenario.getFacility(openFacilityCard.facilityId) && (
+          <FacilityCard
+            facility={
+              game.currentScenario.getFacility(openFacilityCard.facilityId)!
+            }
+            handleTeleportUnit={queueUnitForTeleport}
+            handleDeleteFacility={removeFacility}
+            handleEditFacility={updateFacility}
+            anchorPositionTop={openFacilityCard.top}
+            anchorPositionLeft={openFacilityCard.left}
+            handleCloseOnMap={() => {
+              setOpenFacilityCard({
+                open: false,
+                top: 0,
+                left: 0,
+                facilityId: "",
+              });
+              setKeyboardShortcutsEnabled(true);
+            }}
+          />
+        )}
+      {openAircraftCard.open &&
+        game.currentScenario.getAircraft(openAircraftCard.aircraftId) && (
+          <AircraftCard
+            aircraft={
+              game.currentScenario.getAircraft(openAircraftCard.aircraftId)!
+            }
+            handleDeleteAircraft={removeAircraft}
+            handleMoveAircraft={queueAircraftForMovement}
+            handleAircraftAttack={handleAircraftAttack}
+            handleEditAircraft={updateAircraft}
+            handleAircraftRtb={handleAircraftRtb}
+            handleDuplicateAircraft={handleDuplicateAircraft}
+            handleTeleportUnit={queueUnitForTeleport}
+            anchorPositionTop={openAircraftCard.top}
+            anchorPositionLeft={openAircraftCard.left}
+            handleCloseOnMap={() => {
+              setOpenAircraftCard({
+                open: false,
+                top: 0,
+                left: 0,
+                aircraftId: "",
+              });
+              setKeyboardShortcutsEnabled(true);
+            }}
+          />
+        )}
+      {openShipCard.open &&
+        game.currentScenario.getShip(openShipCard.shipId) && (
+          <ShipCard
+            ship={game.currentScenario.getShip(openShipCard.shipId)!}
+            handleAddAircraft={addAircraftToShip}
+            handleLaunchAircraft={launchAircraftFromShip}
+            handleDeleteShip={removeShip}
+            handleMoveShip={queueShipForMovement}
+            handleShipAttack={handleShipAttack}
+            handleTeleportUnit={queueUnitForTeleport}
+            handleEditShip={updateShip}
+            anchorPositionTop={openShipCard.top}
+            anchorPositionLeft={openShipCard.left}
+            handleCloseOnMap={() => {
+              setOpenShipCard({
+                open: false,
+                top: 0,
+                left: 0,
+                shipId: "",
+              });
+              setKeyboardShortcutsEnabled(true);
+            }}
+          />
+        )}
+      {openReferencePointCard.open &&
+        game.currentScenario.getReferencePoint(
+          openReferencePointCard.referencePointId
+        ) && (
+          <ReferencePointCard
+            referencePoint={
+              game.currentScenario.getReferencePoint(
+                openReferencePointCard.referencePointId
+              )!
+            }
+            handleDeleteReferencePoint={removeReferencePoint}
+            handleEditReferencePoint={updateReferencePoint}
+            handleTeleportUnit={queueUnitForTeleport}
+            anchorPositionTop={openReferencePointCard.top}
+            anchorPositionLeft={openReferencePointCard.left}
+            handleCloseOnMap={() => {
+              setOpenReferencePointCard({
+                open: false,
+                top: 0,
+                left: 0,
+                referencePointId: "",
+              });
+              setKeyboardShortcutsEnabled(true);
+            }}
+          />
+        )}
       {openMultipleFeatureSelector.open && (
         <MultipleFeatureSelector
           features={openMultipleFeatureSelector.features}
