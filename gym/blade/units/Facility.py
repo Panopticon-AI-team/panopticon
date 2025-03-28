@@ -37,6 +37,19 @@ class Facility:
             return None
         return max(self.weapons, key=lambda weapon: weapon.range)
 
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "side_name": self.side_name,
+            "class_name": self.class_name,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "altitude": self.altitude,
+            "range": self.range,
+            "side_color": self.side_color,
+        }
+
     def toJSON(self):
         return json.dumps(
             self,

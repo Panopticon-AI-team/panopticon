@@ -157,21 +157,24 @@ def termination_filter_fnc(observation: Scenario):
     return terminated
 
 
-def evaluate_agent(model, env, num_episodes=1):
+def evaluate_agent(model, env, num_episodes=5):
     total_rewards = []
-    for _ in range(num_episodes):
+    env.unwrapped.game.record_scenario_start()
+    for i in range(num_episodes):
         obs, _ = env.reset()
         episode_reward = 0
         done = False
+        
         while not done:
             action, _ = model.predict(obs)
             obs, reward, terminated, truncated, _ = env.step(action)
             episode_reward += reward
             done = terminated or truncated
 
+        env.unwrapped.game.record_scenario_stop(tag=i, compression=False)
         env.unwrapped.export_scenario(f"{demo_folder}/scen_x.json")
-
         total_rewards.append(episode_reward)
+        
     return np.mean(total_rewards), np.std(total_rewards)
 
 
@@ -202,13 +205,13 @@ model = PPO(
     # max_grad_norm=0.5,
 )
 
-if True:
+if False:
     model.learn(total_timesteps=35_000 * 10)
     model.save("default_hyper_ppo_aircraft.zip")
 
 # model0 = PPO.load("muh_model.zip", device="cpu")
 # model1 = PPO.load("ppo_aircraft.zip", device="cpu")
-model2 = PPO.load("default_hyper_ppo_aircraft.zip", device="cpu")
+model2 = PPO.load("default_hyper_ppo_aircraft", device="cpu")
 
 # mean, std = evaluate_agent(model0, env)
 # print(f"mean: {mean} std: {std}")

@@ -36,10 +36,11 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import MenuOpenOutlinedIcon from "@mui/icons-material/MenuOpenOutlined";
 import EraserIcon from "@/gui/assets/img/eraser-icon.png";
 import GodModeIcon from "@mui/icons-material/Preview";
+import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Container } from "@mui/system";
-import { Pause, PlayArrow } from "@mui/icons-material";
+import { Pause, PlayArrow, Stop } from "@mui/icons-material";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import DocumentScannerOutlinedIcon from "@mui/icons-material/DocumentScannerOutlined";
@@ -65,6 +66,8 @@ interface ToolBarProps {
   stepOnClick: () => void;
   pauseOnClick: () => void;
   toggleScenarioTimeCompressionOnClick: () => void;
+  recordScenarioOnClick: () => void;
+  stopRecordingScenarioOnClick: () => void;
   switchCurrentSideOnClick: () => void;
   refreshAllLayers: () => void;
   updateMapView: (center: number[], zoom: number) => void;
@@ -128,6 +131,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   );
   const [scenarioPaused, setScenarioPaused] = useState<boolean>(
     props.game.scenarioPaused
+  );
+  const [recordingScenario, setRecordingScenario] = useState<boolean>(
+    props.game.recordingScenario
   );
   const [entityFilterSelectedOptions, setEntityFilterSelectedOptions] =
     useState<string[]>([
@@ -383,6 +389,16 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     } else {
       setScenarioPaused(true);
       props.pauseOnClick();
+    }
+  };
+
+  const handleRecordScenarioClick = () => {
+    if (recordingScenario) {
+      setRecordingScenario(false);
+      props.stopRecordingScenarioOnClick();
+    } else {
+      setRecordingScenario(true);
+      props.recordScenarioOnClick();
     }
   };
 
@@ -1188,7 +1204,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               <Stack
                 direction="row"
                 divider={<Divider orientation="vertical" flexItem />}
-                spacing={2}
+                spacing={1}
                 sx={{
                   justifyContent: "center",
                   alignItems: "center",
@@ -1204,6 +1220,15 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                 <Tooltip title="Restart Scenario">
                   <IconButton onClick={reloadScenario}>
                     <RestartAltIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip
+                  title={
+                    recordingScenario ? "Stop Recording" : "Record Scenario"
+                  }
+                >
+                  <IconButton onClick={handleRecordScenarioClick}>
+                    {recordingScenario ? <Stop /> : <RadioButtonCheckedIcon />}
                   </IconButton>
                 </Tooltip>
                 <Tooltip

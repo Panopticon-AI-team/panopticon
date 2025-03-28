@@ -1,8 +1,9 @@
 import json
 from typing import List, Optional
 from blade.utils.constants import DEFAULT_SIDE_COLOR
+from dataclasses import dataclass
 
-
+@dataclass
 class Weapon:
     def __init__(
         self,
@@ -47,6 +48,30 @@ class Weapon:
         self.current_quantity = current_quantity
         self.route = route if route is not None else []
         self.side_color = side_color
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "side_name": self.side_name,
+            "class_name": self.class_name,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "altitude": self.altitude,
+            "heading": self.heading,
+            "speed": self.speed,
+            "current_fuel": self.current_fuel,
+            "max_fuel": self.max_fuel,
+            "fuel_rate": self.fuel_rate,
+            "range": self.range,
+            "target_id": self.target_id,
+            "lethality": self.lethality,
+            "max_quantity": self.max_quantity,
+            "current_quantity": self.current_quantity,
+            "route": self.route,
+            "side_color": self.side_color,
+        } 
+    
 
     def toJSON(self):
         return json.dumps(
