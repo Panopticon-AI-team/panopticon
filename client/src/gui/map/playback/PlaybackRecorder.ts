@@ -41,6 +41,41 @@ interface AircraftUpdate {
   targetId?: string;
 }
 
+interface ShipUpdate {
+  id: string;
+  name?: string;
+  className?: string;
+  latitude?: number;
+  longitude?: number;
+  altitude?: number;
+  heading?: number;
+  speed?: number;
+  currentFuel?: number;
+  maxFuel?: number;
+  fuelRate?: number;
+  range?: number;
+  route?: number[][];
+  weapons?: Weapon[];
+  aircraft?: Aircraft[];
+}
+
+interface WeaponUpdate {
+  id: string;
+  name?: string;
+  className?: string;
+  latitude?: number;
+  longitude?: number;
+  altitude?: number;
+  heading?: number;
+  speed?: number;
+  currentFuel?: number;
+  maxFuel?: number;
+  fuelRate?: number;
+  range?: number;
+  route?: number[][];
+  targetId?: string;
+}
+
 interface AirbaseUpdate {
   id: string;
   name?: string;
@@ -48,6 +83,17 @@ interface AirbaseUpdate {
   longitude?: number;
   altitude?: number;
   aircraft?: Aircraft[];
+}
+
+interface FacilityUpdate {
+  id: string;
+  name?: string;
+  className?: string;
+  latitude?: number;
+  longitude?: number;
+  altitude?: number;
+  range?: number;
+  weapons?: Weapon[];
 }
 
 interface ReferencePointUpdate {
@@ -63,9 +109,18 @@ interface Change {
   newAircraft?: Aircraft[];
   deletedAircraftIds?: string[];
   aircraftUpdates?: AircraftUpdate[];
+  newShips?: Ship[];
+  deletedShipIds?: string[];
+  shipUpdates?: ShipUpdate[];
+  newWeapons?: Weapon[];
+  deletedWeaponIds?: string[];
+  weaponUpdates?: WeaponUpdate[];
   newAirbases?: Airbase[];
   deletedAirbaseIds?: string[];
   airbaseUpdates?: AirbaseUpdate[];
+  newFacilities?: Facility[];
+  deletedFacilityIds?: string[];
+  facilityUpdates?: FacilityUpdate[];
   newReferencePoints?: ReferencePoint[];
   deletedReferencePointIds?: string[];
   referencePointUpdates?: ReferencePointUpdate[];
@@ -93,7 +148,10 @@ class PlaybackRecorder {
     const change: Change = {
       currentTime: scenario.currentTime,
       newAircraft: scenario.aircraft,
+      newShips: scenario.ships,
+      newWeapons: scenario.weapons,
       newAirbases: scenario.airbases,
+      newFacilities: scenario.facilities,
       newReferencePoints: scenario.referencePoints,
     };
     this.recordedSteps.push(change);
@@ -166,6 +224,143 @@ class PlaybackRecorder {
     };
   }
 
+  getShipChanges(nextShips: Ship[]) {
+    const previousShips = this.previousStep?.ships ?? [];
+    const previousShipIds = previousShips.map((ship) => ship.id);
+    const nextShipIds = nextShips.map((ship) => ship.id);
+    // add new ship
+    const newShips = nextShips.filter(
+      (ship) => !previousShipIds.includes(ship.id)
+    );
+    // remove deleted ship
+    const deletedShipIds =
+      previousShips
+        .filter((ship) => !nextShipIds.includes(ship.id))
+        .map((ship) => ship.id) ?? [];
+    // update other ship
+    const updatedShips = nextShips.filter((ship) =>
+      previousShipIds.includes(ship.id)
+    );
+    const shipUpdates: ShipUpdate[] = [];
+    updatedShips.forEach((currentShip) => {
+      const previousShip = previousShips.find((sh) => sh.id === currentShip.id);
+      if (!previousShip) {
+        return;
+      }
+      const update: ShipUpdate = {
+        id: currentShip.id,
+      };
+      if (previousShip.name !== currentShip.name)
+        update.name = currentShip.name;
+      if (previousShip.className !== currentShip.className)
+        update.className = currentShip.className;
+      if (previousShip.latitude !== currentShip.latitude)
+        update.latitude = roundNumber(currentShip.latitude);
+      if (previousShip.longitude !== currentShip.longitude)
+        update.longitude = roundNumber(currentShip.longitude);
+      if (previousShip.altitude !== currentShip.altitude)
+        update.altitude = roundNumber(currentShip.altitude);
+      if (previousShip.heading !== currentShip.heading)
+        update.heading = roundNumber(currentShip.heading);
+      if (previousShip.speed !== currentShip.speed)
+        update.speed = currentShip.speed;
+      if (previousShip.currentFuel !== currentShip.currentFuel)
+        update.currentFuel = roundNumber(currentShip.currentFuel);
+      if (previousShip.maxFuel !== currentShip.maxFuel)
+        update.maxFuel = roundNumber(currentShip.maxFuel);
+      if (previousShip.fuelRate !== currentShip.fuelRate)
+        update.fuelRate = roundNumber(currentShip.fuelRate);
+      if (previousShip.range !== currentShip.range)
+        update.range = roundNumber(currentShip.range);
+      if (previousShip.route !== currentShip.route) {
+        const route = currentShip.route.map((waypoint) => [
+          roundNumber(waypoint[0]),
+          roundNumber(waypoint[1]),
+        ]);
+        update.route = route;
+      }
+      if (previousShip.weapons !== currentShip.weapons)
+        update.weapons = currentShip.weapons;
+      if (Object.keys(update).length > 1) shipUpdates.push(update);
+    });
+    return {
+      newShips,
+      deletedShipIds,
+      shipUpdates,
+    };
+  }
+
+  getWeaponChanges(nextWeapons: Weapon[]) {
+    const previousWeapons = this.previousStep?.weapons ?? [];
+    const previousWeaponIds = previousWeapons.map((weapon) => weapon.id);
+    const nextWeaponIds = nextWeapons.map((weapon) => weapon.id);
+    // add new weapon
+    const newWeapons = nextWeapons.filter(
+      (weapon) => !previousWeaponIds.includes(weapon.id)
+    );
+    // remove deleted weapon
+    const deletedWeaponIds =
+      previousWeapons
+        .filter((weapon) => !nextWeaponIds.includes(weapon.id))
+        .map((weapon) => weapon.id) ?? [];
+    // update other weapon
+    const updatedWeapons = nextWeapons.filter((weapon) =>
+      previousWeaponIds.includes(weapon.id)
+    );
+    const weaponUpdates: WeaponUpdate[] = [];
+    updatedWeapons.forEach((currentWeapon) => {
+      const previousWeapon = previousWeapons.find(
+        (wp) => wp.id === currentWeapon.id
+      );
+      if (!previousWeapon) {
+        return;
+      }
+      const update: WeaponUpdate = {
+        id: currentWeapon.id,
+      };
+      if (previousWeapon.name !== currentWeapon.name)
+        update.name = currentWeapon.name;
+      if (previousWeapon.className !== currentWeapon.className)
+        update.className = currentWeapon.className;
+      if (previousWeapon.latitude !== currentWeapon.latitude)
+        update.latitude = roundNumber(currentWeapon.latitude);
+      if (previousWeapon.longitude !== currentWeapon.longitude)
+        update.longitude = roundNumber(currentWeapon.longitude);
+      if (previousWeapon.altitude !== currentWeapon.altitude)
+        update.altitude = roundNumber(currentWeapon.altitude);
+      if (previousWeapon.heading !== currentWeapon.heading)
+        update.heading = roundNumber(currentWeapon.heading);
+      if (previousWeapon.speed !== currentWeapon.speed)
+        update.speed = currentWeapon.speed;
+      if (previousWeapon.currentFuel !== currentWeapon.currentFuel)
+        update.currentFuel = roundNumber(currentWeapon.currentFuel);
+      if (previousWeapon.maxFuel !== currentWeapon.maxFuel)
+        update.maxFuel = roundNumber(currentWeapon.maxFuel);
+      if (previousWeapon.fuelRate !== currentWeapon.fuelRate)
+        update.fuelRate = roundNumber(currentWeapon.fuelRate);
+      if (previousWeapon.range !== currentWeapon.range)
+        update.range = roundNumber(currentWeapon.range);
+      if (previousWeapon.route !== currentWeapon.route) {
+        const route = currentWeapon.route.map((waypoint) => [
+          roundNumber(waypoint[0]),
+          roundNumber(waypoint[1]),
+        ]);
+        update.route = route;
+      }
+      if (
+        previousWeapon.targetId !== currentWeapon.targetId &&
+        currentWeapon.targetId
+      )
+        update.targetId = currentWeapon.targetId;
+      if (Object.keys(update).length > 1) weaponUpdates.push(update);
+    });
+    return {
+      newWeapons,
+      deletedWeaponIds,
+      weaponUpdates,
+    };
+  }
+
   getAirbaseChanges(nextAirbases: Airbase[]) {
     const previousAirbases = this.previousStep?.airbases ?? [];
     const previousAirbaseIds = previousAirbases.map((airbase) => airbase.id);
@@ -209,6 +404,58 @@ class PlaybackRecorder {
       newAirbases,
       deletedAirbaseIds,
       airbaseUpdates,
+    };
+  }
+
+  getFacilityChanges(nextFacilities: Facility[]) {
+    const previousFacilities = this.previousStep?.facilities ?? [];
+    const previousFacilityIds = previousFacilities.map(
+      (facility) => facility.id
+    );
+    const nextFacilityIds = nextFacilities.map((facility) => facility.id);
+    // add new facilities
+    const newFacilities = nextFacilities.filter(
+      (facility) => !previousFacilityIds.includes(facility.id)
+    );
+    // remove deleted facilities
+    const deletedFacilityIds =
+      previousFacilities
+        .filter((facility) => !nextFacilityIds.includes(facility.id))
+        .map((fa) => fa.id) ?? [];
+    // update other facilities
+    const updatedFacilities = nextFacilities.filter((facility) =>
+      previousFacilityIds.includes(facility.id)
+    );
+    const facilityUpdates: FacilityUpdate[] = [];
+    updatedFacilities.forEach((facility) => {
+      const previousFacility = previousFacilities.find(
+        (fa) => fa.id === facility.id
+      );
+      if (!previousFacility) {
+        return;
+      }
+      const update: FacilityUpdate = {
+        id: facility.id,
+      };
+      if (previousFacility.name !== facility.name) update.name = facility.name;
+      if (previousFacility.className !== facility.className)
+        update.className = facility.className;
+      if (previousFacility.latitude !== facility.latitude)
+        update.latitude = roundNumber(facility.latitude);
+      if (previousFacility.longitude !== facility.longitude)
+        update.longitude = roundNumber(facility.longitude);
+      if (previousFacility.altitude !== facility.altitude)
+        update.altitude = roundNumber(facility.altitude);
+      if (previousFacility.range !== facility.range)
+        update.range = roundNumber(facility.range);
+      if (previousFacility.weapons !== facility.weapons)
+        update.weapons = facility.weapons;
+      if (Object.keys(update).length > 1) facilityUpdates.push(update);
+    });
+    return {
+      newFacilities,
+      deletedFacilityIds,
+      facilityUpdates,
     };
   }
 
@@ -269,8 +516,15 @@ class PlaybackRecorder {
     }
     const { newAircraft, deletedAircraftIds, aircraftUpdates } =
       this.getAircraftChanges(currentStep.aircraft);
+    const { newShips, deletedShipIds, shipUpdates } = this.getShipChanges(
+      currentStep.ships
+    );
     const { newAirbases, deletedAirbaseIds, airbaseUpdates } =
       this.getAirbaseChanges(currentStep.airbases);
+    const { newFacilities, deletedFacilityIds, facilityUpdates } =
+      this.getFacilityChanges(currentStep.facilities);
+    const { newWeapons, deletedWeaponIds, weaponUpdates } =
+      this.getWeaponChanges(currentStep.weapons);
     const {
       newReferencePoints,
       deletedReferencePointIds,
@@ -283,10 +537,20 @@ class PlaybackRecorder {
     if (deletedAircraftIds.length > 0)
       change.deletedAircraftIds = deletedAircraftIds;
     if (aircraftUpdates.length > 0) change.aircraftUpdates = aircraftUpdates;
+    if (newShips.length > 0) change.newShips = newShips;
+    if (deletedShipIds.length > 0) change.deletedShipIds = deletedShipIds;
+    if (shipUpdates.length > 0) change.shipUpdates = shipUpdates;
+    if (newWeapons.length > 0) change.newWeapons = newWeapons;
+    if (deletedWeaponIds.length > 0) change.deletedWeaponIds = deletedWeaponIds;
+    if (weaponUpdates.length > 0) change.weaponUpdates = weaponUpdates;
     if (newAirbases.length > 0) change.newAirbases = newAirbases;
     if (deletedAirbaseIds.length > 0)
       change.deletedAirbaseIds = deletedAirbaseIds;
     if (airbaseUpdates.length > 0) change.airbaseUpdates = airbaseUpdates;
+    if (newFacilities.length > 0) change.newFacilities = newFacilities;
+    if (deletedFacilityIds.length > 0)
+      change.deletedFacilityIds = deletedFacilityIds;
+    if (facilityUpdates.length > 0) change.facilityUpdates = facilityUpdates;
     if (newReferencePoints.length > 0)
       change.newReferencePoints = newReferencePoints;
     if (deletedReferencePointIds.length > 0)
