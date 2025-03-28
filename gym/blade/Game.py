@@ -1,7 +1,8 @@
 import json
 import copy
 from uuid import uuid4
-from typing import Tuple
+from typing import List, Tuple
+
 from blade.units.Aircraft import Aircraft
 from blade.units.Airbase import Airbase
 from blade.units.Facility import Facility
@@ -28,6 +29,7 @@ from blade.engine.weaponEngagement import (
     route_aircraft_to_strike_position,
     weapon_engagement,
 )
+from blade.playback.PlaybackRecorder import PlaybackRecorder
 
 
 class Game:
@@ -36,6 +38,8 @@ class Game:
         self.initial_scenario = current_scenario
 
         self.current_side_name = ""
+        self.recording_scenario = False
+        self.recorder = PlaybackRecorder()
         self.scenario_paused = True
         self.current_attacker_id = ""
         self.map_view = {
@@ -614,6 +618,10 @@ class Game:
         reward = 0
         observation = self._get_observation()
         info = self._get_info()
+        
+        if self.recording_scenario:
+            self.recorder.record_frame(Game.create_scenario_copy(observation))
+            
         return observation, reward, terminated, truncated, info
 
     def reset(self):
@@ -625,6 +633,21 @@ class Game:
 
     def check_game_ended(self) -> bool:
         return False
+    
+    def record_scenario_start(self):
+        self.recording_scenario = True
+        #self.recorder.reset()
+        
+        self.recorder.start_recording({
+            "name": f"{self.current_scenario.name} Recording",
+            "scenarioId": self.current_scenario.id,
+            "scenarioName": self.current_scenario.name,
+            "startTime": self.current_scenario.current_time,
+        }, self.current_scenario)
+
+    def record_scenario_stop(self, tag = "", compression=False):
+        self.recording_scenario = False
+        self.recorder.export_recording(tag, compression)
 
     def export_scenario(self) -> dict:
         scenario_json_string = self.current_scenario.toJSON()
@@ -638,6 +661,252 @@ class Game:
         }
 
         return export_object
+    
+    def create_scenario_copy(scenario: "Scenario") -> Scenario:
+        saved_sides: List[Side] = []
+        for side in scenario.sides:
+            new_side = Side(
+                id=side.id,
+                name=side.name,
+                total_score=side.total_score,
+                side_color=side.side_color,
+            )
+            saved_sides.append(new_side)
+
+        scenario_copy = Scenario(
+            id=scenario.id,
+            name=scenario.name,
+            start_time=scenario.start_time,
+            current_time=scenario.current_time,
+            duration=scenario.duration,
+            sides=saved_sides,
+            time_compression=scenario.time_compression,
+        )
+
+        for aircraft in scenario.aircraft:
+            new_aircraft = Aircraft(
+                id=aircraft.id,
+                name=aircraft.name,
+                side_name=aircraft.side_name,
+                class_name=aircraft.class_name,
+                latitude=aircraft.latitude,
+                longitude=aircraft.longitude,
+                altitude=aircraft.altitude,
+                heading=aircraft.heading,
+                speed=aircraft.speed,
+                current_fuel=aircraft.current_fuel,
+                max_fuel=aircraft.max_fuel,
+                fuel_rate=aircraft.fuel_rate,
+                range=aircraft.range,
+                route=copy.deepcopy(aircraft.route),
+                selected=aircraft.selected,
+                side_color=aircraft.side_color,
+                weapons=copy.deepcopy(aircraft.weapons) if aircraft.weapons else [
+                    # get_sample_weapon(10, 0.25, ab_aircraft.side_name)
+                ],
+                home_base_id=aircraft.home_base_id,
+                rtb=aircraft.rtb,
+                target_id=aircraft.target_id if aircraft.target_id else "",
+            )
+            scenario_copy.aircraft.append(new_aircraft)
+
+        for airbase in scenario.airbases:
+            airbase_aircraft: List[Aircraft] = []
+            for ab_aircraft in airbase.aircraft:
+                new_aircraft = Aircraft(
+                    id=ab_aircraft.id,
+                    name=ab_aircraft.name,
+                    side_name=ab_aircraft.side_name,
+                    class_name=ab_aircraft.class_name,
+                    latitude=ab_aircraft.latitude,
+                    longitude=ab_aircraft.longitude,
+                    altitude=ab_aircraft.altitude,
+                    heading=ab_aircraft.heading,
+                    speed=ab_aircraft.speed,
+                    current_fuel=ab_aircraft.current_fuel,
+                    max_fuel=ab_aircraft.max_fuel,
+                    fuel_rate=ab_aircraft.fuel_rate,
+                    range=ab_aircraft.range,
+                    route=copy.deepcopy(ab_aircraft.route),
+                    selected=ab_aircraft.selected,
+                    side_color=ab_aircraft.side_color,
+                    weapons=copy.deepcopy(ab_aircraft.weapons) if ab_aircraft.weapons else [
+                        # get_sample_weapon(10, 0.25, ab_aircraft.side_name)
+                    ],
+                    home_base_id=ab_aircraft.home_base_id,
+                    rtb=ab_aircraft.rtb,
+                    target_id=ab_aircraft.target_id if ab_aircraft.target_id else "",
+                )
+                airbase_aircraft.append(new_aircraft)
+
+            new_airbase = Airbase(
+                id=airbase.id,
+                name=airbase.name,
+                side_name=airbase.side_name,
+                class_name=airbase.class_name,
+                latitude=airbase.latitude,
+                longitude=airbase.longitude,
+                altitude=airbase.altitude,
+                side_color=airbase.side_color,
+                aircraft=airbase_aircraft,
+            )
+            scenario_copy.airbases.append(new_airbase)
+
+        for facility in scenario.facilities:
+            new_facility = Facility(
+                id=facility.id,
+                name=facility.name,
+                side_name=facility.side_name,
+                class_name=facility.class_name,
+                latitude=facility.latitude,
+                longitude=facility.longitude,
+                altitude=facility.altitude,
+                range=facility.range,
+                side_color=facility.side_color,
+                weapons=copy.deepcopy(facility.weapons) if facility.weapons else [
+                    #get_sample_weapon(30, 0.1, facility.side_name)
+                ],
+            )
+            scenario_copy.facilities.append(new_facility)
+
+        # ---- Weapons
+        for weapon in scenario.weapons:
+            new_weapon = Weapon(
+                id=weapon.id,
+                name=weapon.name,
+                side_name=weapon.side_name,
+                class_name=weapon.class_name,
+                latitude=weapon.latitude,
+                longitude=weapon.longitude,
+                altitude=weapon.altitude,
+                heading=weapon.heading,
+                speed=weapon.speed,
+                current_fuel=weapon.current_fuel,
+                max_fuel=weapon.max_fuel,
+                fuel_rate=weapon.fuel_rate,
+                range=weapon.range,
+                route=copy.deepcopy(weapon.route),
+                side_color=weapon.side_color,
+                target_id=weapon.target_id,
+                lethality=weapon.lethality,
+                max_quantity=weapon.max_quantity,
+                current_quantity=weapon.current_quantity,
+            )
+            scenario_copy.weapons.append(new_weapon)
+
+        if scenario.ships:
+            for ship in scenario.ships:
+                ship_aircraft: List[Aircraft] = []
+                for sh_aircraft in ship.aircraft:
+                    new_aircraft = Aircraft(
+                        id=sh_aircraft.id,
+                        name=sh_aircraft.name,
+                        side_name=sh_aircraft.side_name,
+                        class_name=sh_aircraft.class_name,
+                        latitude=sh_aircraft.latitude,
+                        longitude=sh_aircraft.longitude,
+                        altitude=sh_aircraft.altitude,
+                        heading=sh_aircraft.heading,
+                        speed=sh_aircraft.speed,
+                        current_fuel=sh_aircraft.current_fuel,
+                        max_fuel=sh_aircraft.max_fuel,
+                        fuel_rate=sh_aircraft.fuel_rate,
+                        range=sh_aircraft.range,
+                        route=copy.deepcopy(sh_aircraft.route),
+                        selected=sh_aircraft.selected,
+                        side_color=sh_aircraft.side_color,
+                        weapons=copy.deepcopy(sh_aircraft.weapons) if sh_aircraft.weapons else [
+                            # get_sample_weapon(10, 0.25, sh_aircraft.side_name)
+                        ],
+                        home_base_id=sh_aircraft.home_base_id,
+                        rtb=sh_aircraft.rtb,
+                        target_id=sh_aircraft.target_id if sh_aircraft.target_id else "",
+                    )
+                    ship_aircraft.append(new_aircraft)
+
+                new_ship = Ship(
+                    id=ship.id,
+                    name=ship.name,
+                    side_name=ship.side_name,
+                    class_name=ship.class_name,
+                    latitude=ship.latitude,
+                    longitude=ship.longitude,
+                    altitude=ship.altitude,
+                    heading=ship.heading,
+                    speed=ship.speed,
+                    current_fuel=ship.current_fuel,
+                    max_fuel=ship.max_fuel,
+                    fuel_rate=ship.fuel_rate,
+                    range=ship.range,
+                    route=copy.deepcopy(ship.route),
+                    side_color=ship.side_color,
+                    weapons=copy.deepcopy(ship.weapons) if ship.weapons else [
+                        # get_sample_weapon(300, 0.15, ship.side_name)
+                    ],
+                    aircraft=ship_aircraft,
+                )
+                scenario_copy.ships.append(new_ship)
+
+        if scenario.reference_points:
+            for ref_point in scenario.reference_points:
+                new_ref = ReferencePoint(
+                    id=ref_point.id,
+                    name=ref_point.name,
+                    side_name=ref_point.side_name,
+                    latitude=ref_point.latitude,
+                    longitude=ref_point.longitude,
+                    altitude=ref_point.altitude,
+                    side_color=ref_point.side_color,
+                )
+                scenario_copy.reference_points.append(new_ref)
+
+        if scenario.missions:
+            for mission in scenario.missions:
+                base_props = {
+                    "id": mission.id,
+                    "name": mission.name,
+                    "side_id": mission.side_id,
+                    "assigned_unit_ids": mission.assigned_unit_ids,
+                    "active": mission.active,
+                }
+
+                if isinstance(mission, PatrolMission):
+                    new_assigned_area = []
+                    for pt in mission.assigned_area:
+                        new_ref_pt = ReferencePoint(
+                            id=pt.id,
+                            name=pt.name,
+                            side_name=pt.side_name,
+                            latitude=pt.latitude,
+                            longitude=pt.longitude,
+                            altitude=pt.altitude,
+                            side_color=pt.side_color,
+                        )
+                        new_assigned_area.append(new_ref_pt)
+
+                    scenario_copy.missions.append(
+                        PatrolMission(
+                            id=base_props["id"],
+                            name=base_props["name"],
+                            side_id=base_props["side_id"],
+                            assigned_unit_ids=base_props["assigned_unit_ids"],
+                            assigned_area=new_assigned_area,
+                            active=base_props["active"],
+                        )
+                    )
+                elif isinstance(mission, StrikeMission):
+                    scenario_copy.missions.append(
+                        StrikeMission(
+                            id=base_props["id"],
+                            name=base_props["name"],
+                            side_id=base_props["side_id"],
+                            assigned_unit_ids=base_props["assigned_unit_ids"],
+                            assigned_target_ids=mission.assigned_target_ids,
+                            active=base_props["active"],
+                        )
+                    )
+                    
+        return scenario_copy
 
     def load_scenario(self, scenario_string: str) -> None:
         import_object = json.loads(scenario_string)

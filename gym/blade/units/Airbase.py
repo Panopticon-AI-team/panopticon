@@ -26,7 +26,19 @@ class Airbase:
         self.altitude = altitude  # FT ASL -- currently default
         self.side_color = side_color
         self.aircraft = aircraft if aircraft is not None else []
-
+        
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "side_name": self.side_name,
+            "class_name": self.class_name,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "altitude": self.altitude,
+            "side_color": self.side_color,
+        }
+        
     def toJSON(self):
         return json.dumps(
             self,

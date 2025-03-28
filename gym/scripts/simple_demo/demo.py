@@ -4,16 +4,17 @@ import blade
 from blade.Game import Game
 from blade.Scenario import Scenario
 
-demo_folder = "./gym/scripts/simple_demo"
+demo_folder = "/home/panopticon/panopticon/gym/scripts/simple_demo"
 
 game = Game(current_scenario=Scenario())
-with open(f"{demo_folder}/simple_demo.json", "r") as scenario_file:
+with open(f"{demo_folder}/new_scenario_2025_03_28_T17_39_16.140Z.json", "r") as scenario_file:
     game.load_scenario(scenario_file.read())
 
 env = gymnasium.make("blade/BLADE-v0", game=game)
 
 observation, info = env.reset()
 env.unwrapped.pretty_print(observation)
+env.unwrapped.game.record_scenario_start()
 
 def simple_scripted_agent(observation):
     sample_launch_aircraft_action = "launch_aircraft_from_airbase('05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3')"
@@ -66,5 +67,5 @@ for step in range(steps):
         env.unwrapped.export_scenario(f"{demo_folder}/simple_demo_t{step}.json")
     elif step == 30000: # blue aircraft should be near enemy airbase if it did not get destroyed
         env.unwrapped.export_scenario(f"{demo_folder}/simple_demo_t{step}.json")
-
+env.unwrapped.game.record_scenario_stop(compression=True)
 env.unwrapped.export_scenario(f"{demo_folder}/simple_demo_t{steps}.json") # blue aircraft should be returning to base

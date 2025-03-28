@@ -59,5 +59,26 @@ class Ship:
             return None
         return max(self.weapons, key=lambda weapon: weapon.range)
 
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "side_name": self.side_name,
+            "class_name": self.class_name,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "altitude": self.altitude,
+            "heading": self.heading,
+            "speed": self.speed,
+            "current_fuel": self.current_fuel,
+            "max_fuel": self.max_fuel,
+            "fuel_rate": self.fuel_rate,
+            "range": self.range,
+            "route": self.route,
+            "selected": self.selected,
+            "side_color": self.side_color,
+            "desired_route": self.desired_route,
+        }
+
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)

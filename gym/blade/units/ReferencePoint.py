@@ -21,7 +21,18 @@ class ReferencePoint:
         self.longitude = longitude
         self.altitude = altitude
         self.side_color = side_color
-
+        
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "side_name": self.side_name,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "altitude": self.altitude,
+            "side_color": self.side_color,
+        }
+    
     def toJSON(self):
         return json.dumps(
             self,
