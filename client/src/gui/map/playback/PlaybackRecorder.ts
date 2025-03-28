@@ -565,39 +565,100 @@ class PlaybackRecorder {
     if (!this.recordingInfo) {
       return;
     }
-    const recording = {
-      info: this.recordingInfo,
-      steps: this.recordedSteps,
-    };
-    const dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(recording));
-    const downloadAnchorNode = document.createElement("a");
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute(
-      "download",
-      `${this.recordingInfo.name}.json`
-    );
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+    // const recording = {
+    //   info: this.recordingInfo,
+    //   steps: this.recordedSteps,
+    // };
+    // const dataStr =
+    //   "data:text/json;charset=utf-8," +
+    //   encodeURIComponent(JSON.stringify(recording));
+    // const downloadAnchorNode = document.createElement("a");
+    // downloadAnchorNode.setAttribute("href", dataStr);
+    // downloadAnchorNode.setAttribute(
+    //   "download",
+    //   `${this.recordingInfo.name}.json`
+    // );
+    // document.body.appendChild(downloadAnchorNode); // required for firefox
+    // downloadAnchorNode.click();
+    // downloadAnchorNode.remove();
 
     // output JSONL file instead of JSON which might facilitate streaming
-    // const jsonlDataStr = this.recordedSteps.map((step) => {
-    //   return JSON.stringify(step);
-    // });
-    // const jsonlData = jsonlDataStr.join("\n");
-    // const jsonlDataStrUrl =
-    //   "data:text/json;charset=utf-8," + encodeURIComponent(jsonlData);
-    // const downloadJsonlAnchorNode = document.createElement("a");
-    // downloadJsonlAnchorNode.setAttribute("href", jsonlDataStrUrl);
-    // downloadJsonlAnchorNode.setAttribute(
-    //   "download",
-    //   `${this.recordingInfo.name}.jsonl`
-    // );
-    // document.body.appendChild(downloadJsonlAnchorNode); // required for firefox
-    // downloadJsonlAnchorNode.click();
-    // downloadJsonlAnchorNode.remove();
+    const jsonlDataStr = this.recordedSteps.map((step) => {
+      return JSON.stringify(step);
+    });
+    const jsonlData = jsonlDataStr.join("\n");
+    const jsonlDataStrUrl =
+      "data:text/json;charset=utf-8," + encodeURIComponent(jsonlData);
+    const downloadJsonlAnchorNode = document.createElement("a");
+    downloadJsonlAnchorNode.setAttribute("href", jsonlDataStrUrl);
+    downloadJsonlAnchorNode.setAttribute(
+      "download",
+      `${this.recordingInfo.name}.jsonl`
+    );
+    document.body.appendChild(downloadJsonlAnchorNode); // required for firefox
+    downloadJsonlAnchorNode.click();
+    downloadJsonlAnchorNode.remove();
+  }
+
+  applyChangeToScenario(change: Change, scenario: Scenario) {
+    // if (change.newAircraft) {
+    //   scenario.aircraft.push(...change.newAircraft);
+    // }
+    // if (change.deletedAircraftIds) {
+    //   scenario.aircraft = scenario.aircraft.filter(
+    //     (aircraft) => !change.deletedAircraftIds?.includes(aircraft.id)
+    //   );
+    // }
+    change.aircraftUpdates?.forEach((update) => {
+      const aircraft = scenario.aircraft.find(
+        (aircraft) => aircraft.id === update.id
+      );
+      if (!aircraft) {
+        return;
+      }
+      if (update.name) aircraft.name = update.name;
+      if (update.className) aircraft.className = update.className;
+      if (update.latitude) aircraft.latitude = update.latitude;
+      if (update.longitude) aircraft.longitude = update.longitude;
+      if (update.altitude) aircraft.altitude = update.altitude;
+      if (update.heading) aircraft.heading = update.heading;
+      if (update.speed) aircraft.speed = update.speed;
+      if (update.currentFuel) aircraft.currentFuel = update.currentFuel;
+      if (update.maxFuel) aircraft.maxFuel = update.maxFuel;
+      if (update.fuelRate) aircraft.fuelRate = update.fuelRate;
+      if (update.range) aircraft.range = update.range;
+      if (update.route) aircraft.route = update.route;
+      // if (update.weapons) aircraft.weapons = update.weapons;
+      if (update.rtb) aircraft.rtb = update.rtb;
+      if (update.targetId) aircraft.targetId = update.targetId;
+    });
+    // if (change.newShips) {
+    //   scenario.ships.push(...change.newShips);
+    // }
+    // if (change.deletedShipIds) {
+    //   scenario.ships = scenario.ships.filter(
+    //     (ship) => !change.deletedShipIds.includes(ship.id)
+    //   );
+    // }
+    // if (change.shipUpdates) {
+    //   change.shipUpdates.forEach((update) => {
+    //     const ship = scenario.ships.find((ship) => ship.id === update.id);
+    //     if (!ship) {
+    //       return;
+    //     }
+    //     if (update.name) ship.name = update.name;
+    //     if (update.className) ship.className = update.className;
+    //     if (update.latitude) ship.latitude = update.latitude;
+    //     if (update.longitude) ship.longitude = update.longitude;
+    //     if (update.altitude) ship.altitude = update.altitude;
+    //     if (
+    //       update.heading !== undefined &&
+    //       update.heading !== null &&
+    //       !isNaN(update.heading)
+    //     )
+    //       ship.heading = update.heading;
+    //     if (update.speed) ship.speed = update.speed;
+    //     )
   }
 }
 
