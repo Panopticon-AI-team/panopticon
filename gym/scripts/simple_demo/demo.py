@@ -4,10 +4,10 @@ import blade
 from blade.Game import Game
 from blade.Scenario import Scenario
 
-demo_folder = "/home/panopticon/panopticon/gym/scripts/simple_demo"
+demo_folder = "/home/panopticon/fork_panopticon/gym/scripts/simple_demo"
 
 game = Game(current_scenario=Scenario())
-with open(f"{demo_folder}/new_scenario_2025_03_28_T17_39_16.140Z.json", "r") as scenario_file:
+with open(f"{demo_folder}/simple_demo.json", "r") as scenario_file:
     game.load_scenario(scenario_file.read())
 
 env = gymnasium.make("blade/BLADE-v0", game=game)
