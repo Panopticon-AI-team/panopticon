@@ -15,13 +15,6 @@ const roundNumber = (
   return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
 };
 
-interface RecordingInfo {
-  name: string;
-  scenarioId: string;
-  scenarioName: string;
-  startTime: number;
-}
-
 interface AircraftUpdate {
   id: string;
   name?: string;
@@ -127,34 +120,21 @@ interface Change {
 }
 
 class PlaybackRecorder {
-  recordingInfo: RecordingInfo | null = null;
+  scenarioName: string = "New Scenario";
   recordedSteps: Change[] = [];
   previousStep: Scenario | null = null;
 
   reset() {
-    this.recordingInfo = null;
+    this.scenarioName = "New Scenario";
     this.recordedSteps = [];
     this.previousStep = null;
   }
 
-  startRecording(parameters: RecordingInfo, scenario: Scenario) {
+  startRecording(scenario: Scenario) {
     this.reset();
-    this.recordingInfo = parameters;
+    this.scenarioName = scenario.name;
     this.previousStep = scenario;
     this.recordInitialFrame(scenario);
-  }
-
-  recordInitialFrame(scenario: Scenario) {
-    const change: Change = {
-      currentTime: scenario.currentTime,
-      newAircraft: scenario.aircraft,
-      newShips: scenario.ships,
-      newWeapons: scenario.weapons,
-      newAirbases: scenario.airbases,
-      newFacilities: scenario.facilities,
-      newReferencePoints: scenario.referencePoints,
-    };
-    this.recordedSteps.push(change);
   }
 
   getAircraftChanges(nextAircraft: Aircraft[]) {
@@ -210,8 +190,8 @@ class PlaybackRecorder {
         ]);
         update.route = route;
       }
-      if (previousAc.weapons !== currentAc.weapons)
-        update.weapons = currentAc.weapons;
+      // if (previousAc.weapons !== currentAc.weapons)
+      //   update.weapons = currentAc.weapons;
       if (previousAc.rtb !== currentAc.rtb) update.rtb = currentAc.rtb;
       if (previousAc.targetId !== currentAc.targetId)
         update.targetId = currentAc.targetId;
@@ -279,8 +259,10 @@ class PlaybackRecorder {
         ]);
         update.route = route;
       }
-      if (previousShip.weapons !== currentShip.weapons)
-        update.weapons = currentShip.weapons;
+      // if (previousShip.weapons !== currentShip.weapons)
+      //   update.weapons = currentShip.weapons;
+      //   if (previousShip.aircraft !== currentShip.aircraft)
+      //     update.aircraft = currentShip.aircraft;
       if (Object.keys(update).length > 1) shipUpdates.push(update);
     });
     return {
@@ -448,8 +430,8 @@ class PlaybackRecorder {
         update.altitude = roundNumber(facility.altitude);
       if (previousFacility.range !== facility.range)
         update.range = roundNumber(facility.range);
-      if (previousFacility.weapons !== facility.weapons)
-        update.weapons = facility.weapons;
+      // if (previousFacility.weapons !== facility.weapons)
+      //   update.weapons = facility.weapons;
       if (Object.keys(update).length > 1) facilityUpdates.push(update);
     });
     return {
@@ -510,6 +492,19 @@ class PlaybackRecorder {
     };
   }
 
+  recordInitialFrame(scenario: Scenario) {
+    const change: Change = {
+      currentTime: scenario.currentTime,
+      newAircraft: scenario.aircraft,
+      newShips: scenario.ships,
+      newWeapons: scenario.weapons,
+      newAirbases: scenario.airbases,
+      newFacilities: scenario.facilities,
+      newReferencePoints: scenario.referencePoints,
+    };
+    this.recordedSteps.push(change);
+  }
+
   recordFrame(currentStep: Scenario) {
     if (!this.previousStep) {
       return;
@@ -562,27 +557,6 @@ class PlaybackRecorder {
   }
 
   exportRecording() {
-    if (!this.recordingInfo) {
-      return;
-    }
-    // const recording = {
-    //   info: this.recordingInfo,
-    //   steps: this.recordedSteps,
-    // };
-    // const dataStr =
-    //   "data:text/json;charset=utf-8," +
-    //   encodeURIComponent(JSON.stringify(recording));
-    // const downloadAnchorNode = document.createElement("a");
-    // downloadAnchorNode.setAttribute("href", dataStr);
-    // downloadAnchorNode.setAttribute(
-    //   "download",
-    //   `${this.recordingInfo.name}.json`
-    // );
-    // document.body.appendChild(downloadAnchorNode); // required for firefox
-    // downloadAnchorNode.click();
-    // downloadAnchorNode.remove();
-
-    // output JSONL file instead of JSON which might facilitate streaming
     const jsonlDataStr = this.recordedSteps.map((step) => {
       return JSON.stringify(step);
     });
@@ -593,22 +567,42 @@ class PlaybackRecorder {
     downloadJsonlAnchorNode.setAttribute("href", jsonlDataStrUrl);
     downloadJsonlAnchorNode.setAttribute(
       "download",
-      `${this.recordingInfo.name}.jsonl`
+      `${this.scenarioName} Recording.jsonl`
     );
     document.body.appendChild(downloadJsonlAnchorNode); // required for firefox
     downloadJsonlAnchorNode.click();
     downloadJsonlAnchorNode.remove();
   }
 
-  applyChangeToScenario(change: Change, scenario: Scenario) {
-    // if (change.newAircraft) {
-    //   scenario.aircraft.push(...change.newAircraft);
-    // }
-    // if (change.deletedAircraftIds) {
-    //   scenario.aircraft = scenario.aircraft.filter(
-    //     (aircraft) => !change.deletedAircraftIds?.includes(aircraft.id)
-    //   );
-    // }
+  applyAircraftChangesToScenario(change: Change, scenario: Scenario) {
+    change.newAircraft?.forEach((aircraft: Aircraft) => {
+      const newAircraft = new Aircraft({
+        id: aircraft.id,
+        name: aircraft.name,
+        sideName: aircraft.sideName,
+        className: aircraft.className,
+        latitude: aircraft.latitude,
+        longitude: aircraft.longitude,
+        altitude: aircraft.altitude,
+        heading: aircraft.heading,
+        speed: aircraft.speed,
+        currentFuel: aircraft.currentFuel,
+        maxFuel: aircraft.maxFuel,
+        fuelRate: aircraft.fuelRate,
+        range: aircraft.range,
+        route: aircraft.route,
+        selected: aircraft.selected,
+        sideColor: aircraft.sideColor,
+        weapons: aircraft.weapons,
+        homeBaseId: aircraft.homeBaseId,
+        rtb: aircraft.rtb,
+        targetId: aircraft.targetId ?? "",
+      });
+      scenario.aircraft.push(newAircraft);
+    });
+    scenario.aircraft = scenario.aircraft.filter(
+      (aircraft) => !change.deletedAircraftIds?.includes(aircraft.id)
+    );
     change.aircraftUpdates?.forEach((update) => {
       const aircraft = scenario.aircraft.find(
         (aircraft) => aircraft.id === update.id
@@ -628,37 +622,263 @@ class PlaybackRecorder {
       if (update.fuelRate) aircraft.fuelRate = update.fuelRate;
       if (update.range) aircraft.range = update.range;
       if (update.route) aircraft.route = update.route;
-      // if (update.weapons) aircraft.weapons = update.weapons;
       if (update.rtb) aircraft.rtb = update.rtb;
       if (update.targetId) aircraft.targetId = update.targetId;
     });
-    // if (change.newShips) {
-    //   scenario.ships.push(...change.newShips);
-    // }
-    // if (change.deletedShipIds) {
-    //   scenario.ships = scenario.ships.filter(
-    //     (ship) => !change.deletedShipIds.includes(ship.id)
-    //   );
-    // }
-    // if (change.shipUpdates) {
-    //   change.shipUpdates.forEach((update) => {
-    //     const ship = scenario.ships.find((ship) => ship.id === update.id);
-    //     if (!ship) {
-    //       return;
-    //     }
-    //     if (update.name) ship.name = update.name;
-    //     if (update.className) ship.className = update.className;
-    //     if (update.latitude) ship.latitude = update.latitude;
-    //     if (update.longitude) ship.longitude = update.longitude;
-    //     if (update.altitude) ship.altitude = update.altitude;
-    //     if (
-    //       update.heading !== undefined &&
-    //       update.heading !== null &&
-    //       !isNaN(update.heading)
-    //     )
-    //       ship.heading = update.heading;
-    //     if (update.speed) ship.speed = update.speed;
-    //     )
+  }
+
+  applyShipChangesToScenario(change: Change, scenario: Scenario) {
+    change.newShips?.forEach((ship: Ship) => {
+      const shipAircraft: Aircraft[] = [];
+      ship.aircraft.forEach((aircraft: Aircraft) => {
+        const newAircraft = new Aircraft({
+          id: aircraft.id,
+          name: aircraft.name,
+          sideName: aircraft.sideName,
+          className: aircraft.className,
+          latitude: aircraft.latitude,
+          longitude: aircraft.longitude,
+          altitude: aircraft.altitude,
+          heading: aircraft.heading,
+          speed: aircraft.speed,
+          currentFuel: aircraft.currentFuel,
+          maxFuel: aircraft.maxFuel,
+          fuelRate: aircraft.fuelRate,
+          range: aircraft.range,
+          route: aircraft.route,
+          selected: aircraft.selected,
+          sideColor: aircraft.sideColor,
+          weapons: aircraft.weapons,
+          homeBaseId: aircraft.homeBaseId,
+          rtb: aircraft.rtb,
+          targetId: aircraft.targetId ?? "",
+        });
+        shipAircraft.push(newAircraft);
+      });
+      const newShip = new Ship({
+        id: ship.id,
+        name: ship.name,
+        sideName: ship.sideName,
+        className: ship.className,
+        latitude: ship.latitude,
+        longitude: ship.longitude,
+        altitude: ship.altitude,
+        heading: ship.heading,
+        speed: ship.speed,
+        currentFuel: ship.currentFuel,
+        maxFuel: ship.maxFuel,
+        fuelRate: ship.fuelRate,
+        range: ship.range,
+        route: ship.route,
+        sideColor: ship.sideColor,
+        weapons: ship.weapons,
+        aircraft: shipAircraft,
+      });
+      scenario.ships.push(newShip);
+    });
+    scenario.ships = scenario.ships.filter(
+      (ship) => !change.deletedShipIds?.includes(ship.id)
+    );
+    change.shipUpdates?.forEach((update) => {
+      const ship = scenario.ships.find((ship) => ship.id === update.id);
+      if (!ship) {
+        return;
+      }
+      if (update.name) ship.name = update.name;
+      if (update.className) ship.className = update.className;
+      if (update.latitude) ship.latitude = update.latitude;
+      if (update.longitude) ship.longitude = update.longitude;
+      if (update.altitude) ship.altitude = update.altitude;
+      if (update.heading) ship.heading = update.heading;
+      if (update.speed) ship.speed = update.speed;
+      if (update.currentFuel) ship.currentFuel = update.currentFuel;
+      if (update.maxFuel) ship.maxFuel = update.maxFuel;
+      if (update.fuelRate) ship.fuelRate = update.fuelRate;
+      if (update.range) ship.range = update.range;
+      if (update.route) ship.route = update.route;
+    });
+  }
+
+  applyWeaponChangesToScenario(change: Change, scenario: Scenario) {
+    change.newWeapons?.forEach((weapon: Weapon) => {
+      const newWeapon = new Weapon({
+        id: weapon.id,
+        name: weapon.name,
+        sideName: weapon.sideName,
+        className: weapon.className,
+        latitude: weapon.latitude,
+        longitude: weapon.longitude,
+        altitude: weapon.altitude,
+        heading: weapon.heading,
+        speed: weapon.speed,
+        currentFuel: weapon.currentFuel,
+        maxFuel: weapon.maxFuel,
+        fuelRate: weapon.fuelRate,
+        range: weapon.range,
+        route: weapon.route,
+        sideColor: weapon.sideColor,
+        targetId: weapon.targetId,
+        lethality: weapon.lethality,
+        maxQuantity: weapon.maxQuantity,
+        currentQuantity: weapon.currentQuantity,
+      });
+      scenario.weapons.push(newWeapon);
+    });
+    scenario.weapons = scenario.weapons.filter(
+      (weapon) => !change.deletedWeaponIds?.includes(weapon.id)
+    );
+    change.weaponUpdates?.forEach((update) => {
+      const weapon = scenario.weapons.find((weapon) => weapon.id === update.id);
+      if (!weapon) {
+        return;
+      }
+      if (update.name) weapon.name = update.name;
+      if (update.className) weapon.className = update.className;
+      if (update.latitude) weapon.latitude = update.latitude;
+      if (update.longitude) weapon.longitude = update.longitude;
+      if (update.altitude) weapon.altitude = update.altitude;
+      if (update.heading) weapon.heading = update.heading;
+      if (update.speed) weapon.speed = update.speed;
+      if (update.currentFuel) weapon.currentFuel = update.currentFuel;
+      if (update.maxFuel) weapon.maxFuel = update.maxFuel;
+      if (update.fuelRate) weapon.fuelRate = update.fuelRate;
+      if (update.range) weapon.range = update.range;
+      if (update.route) weapon.route = update.route;
+      if (update.targetId) weapon.targetId = update.targetId;
+    });
+  }
+
+  applyAirbaseChangesToScenario(change: Change, scenario: Scenario) {
+    change.newAirbases?.forEach((airbase: Airbase) => {
+      const airbaseAircraft: Aircraft[] = [];
+      airbase.aircraft.forEach((aircraft: Aircraft) => {
+        const newAircraft = new Aircraft({
+          id: aircraft.id,
+          name: aircraft.name,
+          sideName: aircraft.sideName,
+          className: aircraft.className,
+          latitude: aircraft.latitude,
+          longitude: aircraft.longitude,
+          altitude: aircraft.altitude,
+          heading: aircraft.heading,
+          speed: aircraft.speed,
+          currentFuel: aircraft.currentFuel,
+          maxFuel: aircraft.maxFuel,
+          fuelRate: aircraft.fuelRate,
+          range: aircraft.range,
+          route: aircraft.route,
+          selected: aircraft.selected,
+          sideColor: aircraft.sideColor,
+          weapons: aircraft.weapons,
+          homeBaseId: aircraft.homeBaseId,
+          rtb: aircraft.rtb,
+          targetId: aircraft.targetId ?? "",
+        });
+        airbaseAircraft.push(newAircraft);
+      });
+      const newAirbase = new Airbase({
+        id: airbase.id,
+        name: airbase.name,
+        sideName: airbase.sideName,
+        className: airbase.className,
+        latitude: airbase.latitude,
+        longitude: airbase.longitude,
+        altitude: airbase.altitude,
+        sideColor: airbase.sideColor,
+        aircraft: airbaseAircraft,
+      });
+      scenario.airbases.push(newAirbase);
+    });
+    scenario.airbases = scenario.airbases.filter(
+      (airbase) => !change.deletedAirbaseIds?.includes(airbase.id)
+    );
+    change.airbaseUpdates?.forEach((update) => {
+      const airbase = scenario.airbases.find(
+        (airbase) => airbase.id === update.id
+      );
+      if (!airbase) {
+        return;
+      }
+      if (update.name) airbase.name = update.name;
+      if (update.latitude) airbase.latitude = update.latitude;
+      if (update.longitude) airbase.longitude = update.longitude;
+      if (update.altitude) airbase.altitude = update.altitude;
+    });
+  }
+
+  applyFacilityChangesToScenario(change: Change, scenario: Scenario) {
+    change.newFacilities?.forEach((facility: Facility) => {
+      const newFacility = new Facility({
+        id: facility.id,
+        name: facility.name,
+        sideName: facility.sideName,
+        className: facility.className,
+        latitude: facility.latitude,
+        longitude: facility.longitude,
+        altitude: facility.altitude,
+        range: facility.range,
+        sideColor: facility.sideColor,
+        weapons: facility.weapons,
+      });
+      scenario.facilities.push(newFacility);
+    });
+    scenario.facilities = scenario.facilities.filter(
+      (facility) => !change.deletedFacilityIds?.includes(facility.id)
+    );
+    change.facilityUpdates?.forEach((update) => {
+      const facility = scenario.facilities.find(
+        (facility) => facility.id === update.id
+      );
+      if (!facility) {
+        return;
+      }
+      if (update.name) facility.name = update.name;
+      if (update.className) facility.className = update.className;
+      if (update.latitude) facility.latitude = update.latitude;
+      if (update.longitude) facility.longitude = update.longitude;
+      if (update.altitude) facility.altitude = update.altitude;
+      if (update.range) facility.range = update.range;
+    });
+  }
+
+  applyReferencePointChangesToScenario(change: Change, scenario: Scenario) {
+    change.newReferencePoints?.forEach((referencePoint: ReferencePoint) => {
+      const newReferencePoint = new ReferencePoint({
+        id: referencePoint.id,
+        name: referencePoint.name,
+        sideName: referencePoint.sideName,
+        latitude: referencePoint.latitude,
+        longitude: referencePoint.longitude,
+        altitude: referencePoint.altitude,
+        sideColor: referencePoint.sideColor,
+      });
+      scenario.referencePoints.push(newReferencePoint);
+    });
+    scenario.referencePoints = scenario.referencePoints.filter(
+      (referencePoint) =>
+        !change.deletedReferencePointIds?.includes(referencePoint.id)
+    );
+    change.referencePointUpdates?.forEach((update) => {
+      const referencePoint = scenario.referencePoints.find(
+        (referencePoint) => referencePoint.id === update.id
+      );
+      if (!referencePoint) {
+        return;
+      }
+      if (update.name) referencePoint.name = update.name;
+      if (update.latitude) referencePoint.latitude = update.latitude;
+      if (update.longitude) referencePoint.longitude = update.longitude;
+      if (update.altitude) referencePoint.altitude = update.altitude;
+    });
+  }
+
+  applyChangeToScenario(change: Change, scenario: Scenario) {
+    this.applyAircraftChangesToScenario(change, scenario);
+    this.applyShipChangesToScenario(change, scenario);
+    this.applyWeaponChangesToScenario(change, scenario);
+    this.applyAirbaseChangesToScenario(change, scenario);
+    this.applyFacilityChangesToScenario(change, scenario);
+    this.applyReferencePointChangesToScenario(change, scenario);
   }
 }
 

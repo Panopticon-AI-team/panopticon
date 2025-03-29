@@ -777,12 +777,6 @@ export default function ScenarioMap({
   function handleRecordScenarioClick() {
     game.recordingScenario = true;
     game.playbackRecorder.startRecording(
-      {
-        name: `${game.currentScenario.name} Recording`,
-        scenarioId: game.currentScenario.id,
-        scenarioName: game.currentScenario.name,
-        startTime: game.currentScenario.currentTime,
-      },
       game.createScenarioCopy(game.currentScenario)
     );
   }
@@ -805,6 +799,16 @@ export default function ScenarioMap({
       reader.onload = (event) => {
         const content = event.target?.result as string;
         const stepUpdates = content.split("\n").map((line) => JSON.parse(line));
+        const scenarioReset = new Scenario({
+          id: game.currentScenario.id,
+          name: game.currentScenario.name,
+          startTime: game.currentScenario.startTime,
+          currentTime: game.currentScenario.currentTime,
+          duration: game.currentScenario.duration,
+          sides: game.currentScenario.sides,
+          timeCompression: game.currentScenario.timeCompression,
+        });
+        game.currentScenario = scenarioReset;
         playbackRecording(stepUpdates);
       };
       reader.readAsText(file);
