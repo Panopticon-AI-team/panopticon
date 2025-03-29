@@ -774,6 +774,66 @@ export default function ScenarioMap({
     }
   }
 
+  function handleRecordScenarioClick() {
+    game.recordingScenario = true;
+    game.playbackRecorder.startRecording(
+      game.createScenarioCopy(game.currentScenario)
+    );
+  }
+
+  function handleStopRecordingScenarioClick() {
+    game.recordingScenario = false;
+    game.playbackRecorder.exportRecording();
+  }
+
+  function handleLoadRecording() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".jsonl";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result as string;
+        const stepUpdates = content.split("\n").map((line) => JSON.parse(line));
+        const scenarioReset = new Scenario({
+          id: game.currentScenario.id,
+          name: game.currentScenario.name,
+          startTime: game.currentScenario.startTime,
+          currentTime: game.currentScenario.currentTime,
+          duration: game.currentScenario.duration,
+          sides: game.currentScenario.sides,
+          timeCompression: game.currentScenario.timeCompression,
+        });
+        game.currentScenario = scenarioReset;
+        playbackRecording(stepUpdates);
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
+  async function playbackRecording(stepUpdates: any[]) {
+    game.scenarioPaused = false;
+    while (!game.scenarioPaused) {
+      const update = stepUpdates.find(
+        (update) => update.currentTime === game.currentScenario.currentTime
+      );
+      if (update) {
+        game.playbackRecorder.applyChangeToScenario(
+          update,
+          game.currentScenario
+        );
+        drawNextFrame(game.currentScenario);
+      }
+      game.currentScenario.currentTime += 1;
+      await delay(0);
+    }
+  }
+
   function handleStepGameClick() {
     setGamePaused();
     stepGameAndDrawFrame();
@@ -821,6 +881,9 @@ export default function ScenarioMap({
 
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation);
+    if (game.recordingScenario) {
+      game.playbackRecorder.recordFrame(game.createScenarioCopy(observation));
+    }
     // const guiDrawElapsed = new Date().getTime() - guiDrawStartTime;
     // console.log('gameStepElapsed:', gameStepElapsed, 'guiDrawElapsed:', guiDrawElapsed)
 
@@ -1291,7 +1354,7 @@ export default function ScenarioMap({
       ).length === 0
     )
       return;
-    setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+    setKeyboardShortcutsEnabled(missionEditorActive);
     setMissionEditorActive(!missionEditorActive);
   }
 
@@ -1645,9 +1708,11 @@ export default function ScenarioMap({
         addShipOnClick={setAddingShip}
         addReferencePointOnClick={setAddingReferencePoint}
         playOnClick={handlePlayGameClick}
-        stepOnClick={handleStepGameClick}
+        stepOnClick={handleLoadRecording}
         pauseOnClick={handlePauseGameClick}
         toggleScenarioTimeCompressionOnClick={toggleScenarioTimeCompression}
+        recordScenarioOnClick={handleRecordScenarioClick}
+        stopRecordingScenarioOnClick={handleStopRecordingScenarioClick}
         switchCurrentSideOnClick={switchCurrentSide}
         refreshAllLayers={refreshAllLayers}
         updateMapView={updateMapView}
@@ -1669,7 +1734,7 @@ export default function ScenarioMap({
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
         toggleMissionCreator={() => {
-          setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+          setKeyboardShortcutsEnabled(missionCreatorActive);
           setMissionCreatorActive(!missionCreatorActive);
         }}
         featureEntitiesPlotted={featureEntitiesState}
