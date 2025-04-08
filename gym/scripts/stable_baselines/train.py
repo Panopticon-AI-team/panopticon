@@ -7,9 +7,13 @@ from gymnasium.spaces import Box
 from blade.utils.utils import get_bearing_between_two_points
 
 DEBUG = False
-demo_folder = "."
+demo_folder = "./gym/scripts/stable_baselines"
 
-game = Game(current_scenario=Scenario())
+game = Game(
+    current_scenario=Scenario(),
+    record_every_seconds=30,
+    recording_export_path=demo_folder,
+)
 with open(f"{demo_folder}/scen.json", "r") as scenario_file:
     game.load_scenario(scenario_file.read())
 
@@ -202,42 +206,45 @@ model = PPO(
     # max_grad_norm=0.5,
 )
 
-if True:
+learn = True
+evaluate = True
+default_hyper_params_filename = "default_hyper_ppo_aircraft"
+if learn:
     model.learn(total_timesteps=35_000 * 10)
-    model.save("default_hyper_ppo_aircraft.zip")
+    model.save(f"{demo_folder}/{default_hyper_params_filename}.zip")
 
-# model0 = PPO.load("muh_model.zip", device="cpu")
-# model1 = PPO.load("ppo_aircraft.zip", device="cpu")
-model2 = PPO.load("default_hyper_ppo_aircraft.zip", device="cpu")
+if evaluate:
+    import os
 
-# mean, std = evaluate_agent(model0, env)
-# print(f"mean: {mean} std: {std}")
+    # model0 = PPO.load(f"{demo_folder}/muh_model.zip", device="cpu")
+    # model1 = PPO.load(f"{demo_folder}/ppo_aircraft.zip", device="cpu")
+    model2 = PPO.load(f"{demo_folder}/{default_hyper_params_filename}", device="cpu")
 
-# mean, std = evaluate_agent(model1, env)
-# print(f"mean: {mean} std: {std}")
+    # mean, std = evaluate_agent(model0, env)
+    # print(f"mean: {mean} std: {std}")
 
-mean, std = evaluate_agent(model2, env)
-print(f"mean: {mean} std: {std}")
+    # mean, std = evaluate_agent(model1, env)
+    # print(f"mean: {mean} std: {std}")
 
+    mean, std = evaluate_agent(model2, env)
+    print(f"mean: {mean} std: {std}")
 
-"""
-for filename in os.listdir(demo_folder):
-    if filename.endswith(".json") and "scen_t" in filename:
-        os.remove(f"{demo_folder}/{filename}")
+    for filename in os.listdir(demo_folder):
+        if filename.endswith(".json") and "scen_t" in filename or "scen_x" in filename:
+            os.remove(f"{demo_folder}/{filename}")
 
-vec_env = model.get_env()
-obs = vec_env.reset()
+    vec_env = model.get_env()
+    obs = vec_env.reset()
 
-steps = 35000
-for step in range(steps):
-    action, _states = model.predict(obs, deterministic=True)
-    obs, reward, done, info = vec_env.step(action)
-    if step == 10000:
-        env.unwrapped.export_scenario(f"{demo_folder}/scen_t{step}.json")
-    elif step == 20000:
-        env.unwrapped.export_scenario(f"{demo_folder}/scen_t{step}.json")
-    elif step == 30000:
-        env.unwrapped.export_scenario(f"{demo_folder}/scen_t{step}.json")
+    game.start_recording()
+    game.record_step()
+    steps = 35000
+    for step in range(steps):
+        action, _states = model.predict(obs, deterministic=True)
+        obs, reward, done, info = vec_env.step(action)
+        game.record_step()
 
-env.unwrapped.export_scenario(f"{demo_folder}/scen_t{steps}.json") # target location is (4.5, 5.5)
-"""
+    env.unwrapped.export_scenario(
+        f"{demo_folder}/scen_t{steps}.json"
+    )  # target location is (4.5, 5.5)
+    game.export_recording()

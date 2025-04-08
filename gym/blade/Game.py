@@ -1,7 +1,7 @@
 import json
 import copy
 from uuid import uuid4
-from typing import Tuple
+from typing import Tuple, Optional
 from blade.units.Aircraft import Aircraft
 from blade.units.Airbase import Airbase
 from blade.units.Facility import Facility
@@ -14,6 +14,7 @@ from blade.Scenario import Scenario
 from blade.Side import Side
 
 from blade.utils.constants import NAUTICAL_MILES_TO_METERS
+from blade.utils.PlaybackRecorder import PlaybackRecorder
 from blade.utils.utils import (
     get_bearing_between_two_points,
     get_next_coordinates,
@@ -31,11 +32,19 @@ from blade.engine.weaponEngagement import (
 
 
 class Game:
-    def __init__(self, current_scenario: Scenario):
+
+    def __init__(
+        self,
+        current_scenario: Scenario,
+        record_every_seconds: Optional[int] = None,
+        recording_export_path: Optional[str] = ".",
+    ):
         self.current_scenario = current_scenario
         self.initial_scenario = current_scenario
 
         self.current_side_name = ""
+        self.recording_scenario = False
+        self.recorder = PlaybackRecorder(record_every_seconds, recording_export_path)
         self.scenario_paused = True
         self.current_attacker_id = ""
         self.map_view = {
@@ -1019,3 +1028,14 @@ class Game:
 
         self.initial_scenario = copy.deepcopy(loaded_scenario)
         self.current_scenario = loaded_scenario
+
+    def start_recording(self):
+        self.recorder.start_recording(self.current_scenario)
+
+    def record_step(self):
+        if not self.recorder.should_record(self.current_scenario.current_time):
+            return
+        self.recorder.record_step(json.dumps(self.export_scenario()))
+
+    def export_recording(self):
+        self.recorder.export_recording()
