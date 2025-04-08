@@ -1264,7 +1264,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               <Stack
                 direction="row"
                 divider={<Divider orientation="vertical" flexItem />}
-                spacing={1}
+                spacing={2}
                 sx={{
                   justifyContent: "center",
                   alignItems: "center",

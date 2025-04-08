@@ -815,13 +815,8 @@ export default function ScenarioMap({
         } else {
           toastContext?.addToast("Successfully loaded recording", "success");
         }
-        game.loadScenario(game.recordingPlayer.getCurrentStep());
-        setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
-        setCurrentRecordingStepToContext(
-          game.recordingPlayer.getCurrentStepIndex()
-        );
-        drawNextFrame(game.currentScenario);
         setRecordingPlayerHasRecording(game.recordingPlayer.hasRecording());
+        loadAndDisplayCurrentRecordedFrame();
       };
       reader.readAsText(file);
     };
@@ -838,6 +833,15 @@ export default function ScenarioMap({
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
   }
 
+  function loadAndDisplayCurrentRecordedFrame() {
+    game.loadScenario(game.recordingPlayer.getCurrentStep());
+    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    setCurrentRecordingStepToContext(
+      game.recordingPlayer.getCurrentStepIndex()
+    );
+    drawNextFrame(game.currentScenario);
+  }
+
   async function handlePlayRecordingClick() {
     game.recordingPlayer.playing = true;
     while (
@@ -845,12 +849,7 @@ export default function ScenarioMap({
       !game.recordingPlayer.isPaused()
     ) {
       game.recordingPlayer.nextStep();
-      game.loadScenario(game.recordingPlayer.getCurrentStep());
-      setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
-      setCurrentRecordingStepToContext(
-        game.recordingPlayer.getCurrentStepIndex()
-      );
-      drawNextFrame(game.currentScenario);
+      loadAndDisplayCurrentRecordedFrame();
       await delay(100);
     }
   }
@@ -866,34 +865,19 @@ export default function ScenarioMap({
   function handleStepRecordingToStep(step: number) {
     if (game.recordingPlayer.isAtStep(step)) return;
     game.recordingPlayer.setCurrentStepIndex(step);
-    game.loadScenario(game.recordingPlayer.getCurrentStep());
-    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
-    setCurrentRecordingStepToContext(
-      game.recordingPlayer.getCurrentStepIndex()
-    );
-    drawNextFrame(game.currentScenario);
+    loadAndDisplayCurrentRecordedFrame();
   }
 
   function handleStepRecordingBackwards() {
     if (game.recordingPlayer.isAtStart()) return;
     game.recordingPlayer.previousStep();
-    game.loadScenario(game.recordingPlayer.getCurrentStep());
-    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
-    setCurrentRecordingStepToContext(
-      game.recordingPlayer.getCurrentStepIndex()
-    );
-    drawNextFrame(game.currentScenario);
+    loadAndDisplayCurrentRecordedFrame();
   }
 
   function handleStepRecordingForwards() {
     if (game.recordingPlayer.isAtEnd()) return;
     game.recordingPlayer.nextStep();
-    game.loadScenario(game.recordingPlayer.getCurrentStep());
-    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
-    setCurrentRecordingStepToContext(
-      game.recordingPlayer.getCurrentStepIndex()
-    );
-    drawNextFrame(game.currentScenario);
+    loadAndDisplayCurrentRecordedFrame();
   }
 
   async function handlePlayGameClick() {
