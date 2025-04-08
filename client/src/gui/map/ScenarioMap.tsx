@@ -789,12 +789,12 @@ export default function ScenarioMap({
 
   function handleRecordScenarioClick() {
     game.recordingScenario = true;
-    game.playbackRecorder.startRecording(game.currentScenario);
+    game.startRecording();
   }
 
   function handleStopRecordingScenarioClick() {
     game.recordingScenario = false;
-    game.playbackRecorder.exportRecording();
+    game.exportRecording();
   }
 
   function handleLoadRecording() {
@@ -933,12 +933,7 @@ export default function ScenarioMap({
 
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation);
-    if (
-      game.recordingScenario &&
-      game.playbackRecorder.shouldRecord(game.currentScenario.currentTime)
-    ) {
-      game.playbackRecorder.recordStep(game.exportCurrentScenario());
-    }
+    game.recordStep();
     // const guiDrawElapsed = new Date().getTime() - guiDrawStartTime;
     // console.log('gameStepElapsed:', gameStepElapsed, 'guiDrawElapsed:', guiDrawElapsed)
 

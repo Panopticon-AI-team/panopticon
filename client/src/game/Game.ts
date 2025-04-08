@@ -1537,4 +1537,21 @@ export default class Game {
   checkGameEnded(): boolean {
     return false;
   }
+
+  startRecording() {
+    this.playbackRecorder.startRecording(this.currentScenario);
+  }
+
+  recordStep() {
+    if (
+      this.recordingScenario &&
+      this.playbackRecorder.shouldRecord(this.currentScenario.currentTime)
+    ) {
+      this.playbackRecorder.recordStep(this.exportCurrentScenario());
+    }
+  }
+
+  exportRecording() {
+    this.playbackRecorder.exportRecording();
+  }
 }
