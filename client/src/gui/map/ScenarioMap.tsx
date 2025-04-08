@@ -809,7 +809,12 @@ export default function ScenarioMap({
       const reader = new FileReader();
       reader.onload = (event) => {
         const content = event.target?.result as string;
-        game.recordingPlayer.loadRecording(content);
+        if (!game.recordingPlayer.loadRecording(content)) {
+          toastContext?.addToast("Failed to load recording", "error");
+          return;
+        } else {
+          toastContext?.addToast("Successfully loaded recording", "success");
+        }
         game.loadScenario(game.recordingPlayer.getCurrentStep());
         setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
         setCurrentRecordingStepToContext(

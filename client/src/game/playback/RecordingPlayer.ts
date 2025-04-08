@@ -10,15 +10,35 @@ class RecordingPlayer {
     return this.recording.length > 0;
   }
 
+  validateRecordingStep(recordingStep: string) {
+    try {
+      const step = JSON.parse(recordingStep);
+      if (!step.currentScenario) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   loadRecording(recording: string) {
+    const recordingInput = recording.split("\n");
+    if (recordingInput.length === 0) return false;
+    const validatedRecording = recordingInput.filter((step) => {
+      return this.validateRecordingStep(step);
+    });
+    if (validatedRecording.length === 0) return false;
+    this.recording = validatedRecording;
     this.currentStep = 0;
-    this.recording = recording.split("\n");
+    this.playing = false;
     this.recordingScenarioTimes = this.recording.map((step) => {
       const stepData = JSON.parse(step);
       if (stepData.currentScenario?.currentTime)
         return unixToLocalTime(parseInt(stepData.currentScenario.currentTime));
       return unixToLocalTime(0);
     });
+    return true;
   }
 
   setCurrentStepIndex(index: number) {
