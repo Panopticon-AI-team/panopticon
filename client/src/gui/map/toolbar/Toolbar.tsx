@@ -11,7 +11,6 @@ import {
   ListSubheader,
   Menu,
   MenuItem,
-  Slider,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -41,7 +40,7 @@ import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Container } from "@mui/system";
-import { Pause, PlayArrow, SkipNext, SkipPrevious } from "@mui/icons-material";
+import { Pause, PlayArrow } from "@mui/icons-material";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import DocumentScannerOutlinedIcon from "@mui/icons-material/DocumentScannerOutlined";
@@ -56,6 +55,7 @@ import TextField from "@/gui/shared/ui/TextField";
 import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 import { FeatureEntityState } from "@/gui/map/mapLayers/FeatureLayers";
+import RecordingPlayer from "./RecordingPlayer";
 
 interface ToolBarProps {
   mobileView: boolean;
@@ -145,12 +145,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   );
   const [recordingScenario, setRecordingScenario] = useState<boolean>(
     props.game.recordingScenario
-  );
-  const [recordingPaused, setRecordingPaused] = useState<boolean>(
-    props.game.recordingPlayer.isPaused()
-  );
-  const [recordingStep, setRecordingStep] = useState<number>(
-    props.game.recordingPlayer.getCurrentStepIndex()
   );
   const [entityFilterSelectedOptions, setEntityFilterSelectedOptions] =
     useState<string[]>([
@@ -419,39 +413,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     }
   };
 
-  const handlePlayRecordingClick = () => {
-    if (recordingPaused) {
-      setRecordingPaused(false);
-      props.handlePlayRecordingClick();
-      setRecordingStep(props.game.recordingPlayer.getCurrentStepIndex());
-    } else {
-      setRecordingPaused(true);
-      props.handlePauseRecordingClick();
-      setRecordingStep(props.game.recordingPlayer.getCurrentStepIndex());
-    }
-  };
-
-  const handleChangeRecordingStep = (event: Event, newValue: number) => {
-    setRecordingPaused(true);
-    props.handlePauseRecordingClick();
-    props.handleStepRecordingToStep(newValue);
-    setRecordingStep(props.game.recordingPlayer.getCurrentStepIndex());
-  };
-
-  const stepRecordingBackwards = () => {
-    setRecordingPaused(true);
-    props.handlePauseRecordingClick();
-    props.handleStepRecordingBackwards();
-    setRecordingStep(props.game.recordingPlayer.getCurrentStepIndex());
-  };
-
-  const stepRecordingForwards = () => {
-    setRecordingPaused(true);
-    props.handlePauseRecordingClick();
-    props.handleStepRecordingForwards();
-    setRecordingStep(props.game.recordingPlayer.getCurrentStepIndex());
-  };
-
   const handleStepClick = () => {
     setScenarioPaused(true);
     props.stepOnClick();
@@ -584,10 +545,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     document.onkeydown = null;
   }
 
-  const recordingTimelineMark = (recordingStep: number) => {
-    return <>{props.game.recordingPlayer.getStepScenarioTime(recordingStep)}</>;
-  };
-
   const recordingSection = () => {
     return (
       <Stack spacing={1} direction={"column"}>
@@ -601,7 +558,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         >
           <Chip
             variant="outlined"
-            label={recordingScenario ? "Recording" : "Record"}
+            label={recordingScenario ? "Stop Recording" : "Record"}
             onClick={handleRecordScenarioClick}
           />
           <Chip
@@ -609,39 +566,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             label={`every ${formatSecondsToString(props.game.playbackRecorder.recordEverySeconds)}`}
             onClick={props.toggleRecordEverySeconds}
           />
-        </Stack>
-        {props.game.recordingPlayer.hasRecording() && (
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{
-              padding: "0 2em",
-            }}
-          >
-            <Slider
-              aria-label="Recording Player Timeline"
-              value={recordingStep}
-              onChange={handleChangeRecordingStep}
-              min={props.game.recordingPlayer.getStartStepIndex()}
-              max={props.game.recordingPlayer.getEndStepIndex()}
-              shiftStep={1}
-              step={1}
-              size="small"
-              valueLabelDisplay="auto"
-              valueLabelFormat={(recordingStep) =>
-                recordingTimelineMark(recordingStep)
-              }
-            />
-          </Stack>
-        )}
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
           <Tooltip title="Upload Recording">
             <IconButton onClick={props.loadRecordingOnClick}>
               <UploadFileOutlinedIcon
@@ -650,28 +574,22 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               />
             </IconButton>
           </Tooltip>
-          {props.game.recordingPlayer.hasRecording() && (
-            <>
-              <Tooltip title={"Seek Backwards"}>
-                <IconButton onClick={stepRecordingBackwards}>
-                  {<SkipPrevious />}
-                </IconButton>
-              </Tooltip>
-              <Tooltip
-                title={!recordingPaused ? "Pause Recording" : "Play Recording"}
-              >
-                <IconButton onClick={handlePlayRecordingClick}>
-                  {!recordingPaused ? <Pause /> : <PlayArrow />}
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={"Seek Forwards"}>
-                <IconButton onClick={stepRecordingForwards}>
-                  {<SkipNext />}
-                </IconButton>
-              </Tooltip>
-            </>
-          )}
         </Stack>
+        {props.game.recordingPlayer.hasRecording() && (
+          <RecordingPlayer
+            recordingPaused={props.game.recordingPlayer.isPaused()}
+            timelineStart={props.game.recordingPlayer.getStartStepIndex()}
+            timelineEnd={props.game.recordingPlayer.getEndStepIndex()}
+            handlePlayRecordingClick={props.handlePlayRecordingClick}
+            handlePauseRecordingClick={props.handlePauseRecordingClick}
+            handleStepRecordingToStep={props.handleStepRecordingToStep}
+            handleStepRecordingBackwards={props.handleStepRecordingBackwards}
+            handleStepRecordingForwards={props.handleStepRecordingForwards}
+            formatTimelineMark={(recordingStep: number) =>
+              props.game.recordingPlayer.getStepScenarioTime(recordingStep)
+            }
+          />
+        )}
       </Stack>
     );
   };

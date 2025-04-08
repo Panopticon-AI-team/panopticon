@@ -44,8 +44,12 @@ class RecordingPlayer {
   }
 
   getStepScenarioTime(step: number) {
-    if (step < 0 || step >= this.recordingScenarioTimes.length) {
-      return 0;
+    if (step < 0) {
+      return this.recordingScenarioTimes[0];
+    } else if (step >= this.recordingScenarioTimes.length) {
+      return this.recordingScenarioTimes[
+        this.recordingScenarioTimes.length - 1
+      ];
     }
     return this.recordingScenarioTimes[step];
   }

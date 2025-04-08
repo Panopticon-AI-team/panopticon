@@ -32,6 +32,7 @@ import { SetScenarioTimeContext } from "@/gui/contextProviders/contexts/Scenario
 import { SetGameStatusContext } from "@/gui/contextProviders/contexts/GameStatusContext";
 import { SetMouseMapCoordinatesContext } from "@/gui/contextProviders/contexts/MouseMapCoordinatesContext";
 import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
+import { SetRecordingStepContext } from "../contextProviders/contexts/RecordingStepContext";
 import AirbaseCard from "@/gui/map/feature/AirbaseCard";
 import AircraftCard from "@/gui/map/feature/AircraftCard";
 import FacilityCard from "@/gui/map/feature/FacilityCard";
@@ -196,6 +197,7 @@ export default function ScenarioMap({
   const [missionCreatorActive, setMissionCreatorActive] = useState(false);
   const [missionEditorActive, setMissionEditorActive] = useState(false);
   const setCurrentScenarioTimeToContext = useContext(SetScenarioTimeContext);
+  const setCurrentRecordingStepToContext = useContext(SetRecordingStepContext);
   const setCurrentGameStatusToContext = useContext(SetGameStatusContext);
   const setCurrentMouseMapCoordinatesToContext = useContext(
     SetMouseMapCoordinatesContext
@@ -810,6 +812,9 @@ export default function ScenarioMap({
         game.recordingPlayer.loadRecording(content);
         game.loadScenario(game.recordingPlayer.getCurrentStep());
         setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+        setCurrentRecordingStepToContext(
+          game.recordingPlayer.getCurrentStepIndex()
+        );
         drawNextFrame(game.currentScenario);
         setRecordingPlayerHasRecording(game.recordingPlayer.hasRecording());
       };
@@ -837,14 +842,20 @@ export default function ScenarioMap({
       game.recordingPlayer.nextStep();
       game.loadScenario(game.recordingPlayer.getCurrentStep());
       setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+      setCurrentRecordingStepToContext(
+        game.recordingPlayer.getCurrentStepIndex()
+      );
       drawNextFrame(game.currentScenario);
-      await delay(0);
+      await delay(100);
     }
   }
 
   function handlePauseRecordingClick() {
     game.recordingPlayer.playing = false;
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    setCurrentRecordingStepToContext(
+      game.recordingPlayer.getCurrentStepIndex()
+    );
   }
 
   function handleStepRecordingToStep(step: number) {
@@ -852,6 +863,9 @@ export default function ScenarioMap({
     game.recordingPlayer.setCurrentStepIndex(step);
     game.loadScenario(game.recordingPlayer.getCurrentStep());
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    setCurrentRecordingStepToContext(
+      game.recordingPlayer.getCurrentStepIndex()
+    );
     drawNextFrame(game.currentScenario);
   }
 
@@ -860,6 +874,9 @@ export default function ScenarioMap({
     game.recordingPlayer.previousStep();
     game.loadScenario(game.recordingPlayer.getCurrentStep());
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    setCurrentRecordingStepToContext(
+      game.recordingPlayer.getCurrentStepIndex()
+    );
     drawNextFrame(game.currentScenario);
   }
 
@@ -868,6 +885,9 @@ export default function ScenarioMap({
     game.recordingPlayer.nextStep();
     game.loadScenario(game.recordingPlayer.getCurrentStep());
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    setCurrentRecordingStepToContext(
+      game.recordingPlayer.getCurrentStepIndex()
+    );
     drawNextFrame(game.currentScenario);
   }
 
