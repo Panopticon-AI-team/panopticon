@@ -1,5 +1,6 @@
 import Scenario from "@/game/Scenario";
 import { RECORDING_INTERVALS_SECONDS } from "@/utils/constants";
+import { unixToLocalTime } from "@/utils/dateTimeFunctions";
 
 const FILE_SIZE_LIMIT_MB = 10;
 const CHARACTER_LIMIT = FILE_SIZE_LIMIT_MB * 1024 * 1024;
@@ -9,7 +10,7 @@ class PlaybackRecorder {
   scenarioName: string = "New Scenario";
   currentScenarioTime: number = 0;
   recording: string = "";
-  currentRecordingFilePart: number = 0;
+  recordingStartTime: number = 0;
   recordEverySeconds: number = RECORDING_INTERVAL_SECONDS;
 
   constructor(recordEverySeconds: number) {
@@ -42,26 +43,30 @@ class PlaybackRecorder {
   reset() {
     this.scenarioName = "New Scenario";
     this.recording = "";
-    this.currentRecordingFilePart = 0;
     this.currentScenarioTime = 0;
+    this.recordingStartTime = 0;
   }
 
   startRecording(scenario: Scenario) {
     this.reset();
     this.scenarioName = scenario.name;
     this.currentScenarioTime = scenario.currentTime;
+    this.recordingStartTime = scenario.currentTime;
   }
 
-  recordStep(currentStep: string) {
+  recordStep(currentStep: string, currentScenarioTime: number) {
     this.recording += currentStep + "\n";
     if (this.recording.length > CHARACTER_LIMIT) {
-      this.exportRecording(this.currentRecordingFilePart);
-      this.currentRecordingFilePart++;
+      this.exportRecording(currentScenarioTime, this.recordingStartTime);
+      this.recordingStartTime = currentScenarioTime;
       this.recording = "";
     }
   }
 
-  exportRecording(currentRecordingFilePart: number | null = null) {
+  exportRecording(
+    recordingEndTimeUnix: number,
+    recordingStartTimeUnix: number = this.recordingStartTime
+  ) {
     if (this.recording.length === 0) {
       return;
     }
@@ -70,19 +75,16 @@ class PlaybackRecorder {
       encodeURIComponent(this.recording.slice(0, -1));
     const downloadJsonlAnchorNode = document.createElement("a");
     downloadJsonlAnchorNode.setAttribute("href", jsonlDataStrUrl);
-    let recordingFilePartSuffix = "";
-    if (currentRecordingFilePart !== null) {
-      recordingFilePartSuffix = " Part " + currentRecordingFilePart.toString();
-    } else if (
-      this.currentRecordingFilePart > 0 &&
-      currentRecordingFilePart === null
-    ) {
-      recordingFilePartSuffix =
-        " Part " + this.currentRecordingFilePart.toString();
-    }
+    const formattedRecordingStartTime = unixToLocalTime(
+      recordingStartTimeUnix
+    ).replace(/:/g, "");
+    const formattedRecordingEndTime = unixToLocalTime(
+      recordingEndTimeUnix
+    ).replace(/:/g, "");
+    const recordingFileTimespanSuffix = `${formattedRecordingStartTime} - ${formattedRecordingEndTime}`;
     downloadJsonlAnchorNode.setAttribute(
       "download",
-      `${this.scenarioName} Recording${recordingFilePartSuffix}.jsonl`
+      `${this.scenarioName} Recording ${recordingFileTimespanSuffix}.jsonl`
     );
     document.body.appendChild(downloadJsonlAnchorNode); // required for firefox
     downloadJsonlAnchorNode.click();

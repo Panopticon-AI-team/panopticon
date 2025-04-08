@@ -1,5 +1,6 @@
-from blade.Scenario import Scenario
 from typing import Optional
+from blade.Scenario import Scenario
+from blade.utils.utils import unix_to_local_time
 
 FILE_SIZE_LIMIT_MB = 10
 CHARACTER_LIMIT = FILE_SIZE_LIMIT_MB * 1024 * 1024
@@ -16,7 +17,7 @@ class PlaybackRecorder:
         self.scenario_name: str = "New Scenario"
         self.current_scenario_time: int = 0
         self.recording: str = ""
-        self.current_recording_file_part: int = 0
+        self.recording_start_time: int = 0
         self.record_every_seconds: int = (
             record_every_seconds if record_every_seconds else RECORDING_INTERVAL_SECONDS
         )
@@ -34,34 +35,42 @@ class PlaybackRecorder:
     def reset(self):
         self.scenario_name = "New Scenario"
         self.recording = ""
-        self.current_recording_file_part = 0
         self.current_scenario_time = 0
+        self.recording_start_time = 0
 
     def start_recording(self, scenario: Scenario):
         self.reset()
         self.scenario_name = scenario.name
         self.current_scenario_time = scenario.current_time
+        self.recording_start_time = scenario.current_time
 
-    def record_step(self, current_step: str):
+    def record_step(self, current_step: str, current_scenario_time: int):
         self.recording += current_step + "\n"
         if len(self.recording) > CHARACTER_LIMIT:
-            self.export_recording(self.current_recording_file_part)
-            self.current_recording_file_part += 1
+            self.export_recording(current_scenario_time, self.recording_start_time)
+            self.recording_start_time = current_scenario_time
             self.recording = ""
 
-    def export_recording(self, current_recording_file_part: Optional[int] = None):
+    def export_recording(
+        self,
+        recording_end_time_unix: int,
+        recording_start_time_unix: Optional[int] = None,
+    ):
         if not self.recording:
             return
 
-        suffix = ""
-        if current_recording_file_part is not None:
-            suffix = f" Part {current_recording_file_part}"
-        elif self.current_recording_file_part > 0:
-            suffix = f" Part {self.current_recording_file_part}"
+        if recording_start_time_unix is None:
+            recording_start_time_unix = self.recording_start_time
 
-        filename = (
-            f"{self.recording_export_path}/{self.scenario_name} Recording{suffix}.jsonl"
+        formatted_recording_start_time = unix_to_local_time(
+            recording_start_time_unix, separator=""
         )
+        formatted_recording_end_time = unix_to_local_time(
+            recording_end_time_unix, separator=""
+        )
+        suffix = f"{formatted_recording_start_time} - {formatted_recording_end_time}"
+
+        filename = f"{self.recording_export_path}/{self.scenario_name} Recording {suffix}.jsonl"
 
         with open(filename, "w", encoding="utf-8") as file:
             file.write(self.recording.rstrip("\n"))

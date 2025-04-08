@@ -1314,11 +1314,14 @@ export default class Game {
       this.recordingScenario &&
       this.playbackRecorder.shouldRecord(this.currentScenario.currentTime)
     ) {
-      this.playbackRecorder.recordStep(this.exportCurrentScenario());
+      this.playbackRecorder.recordStep(
+        this.exportCurrentScenario(),
+        this.currentScenario.currentTime
+      );
     }
   }
 
   exportRecording() {
-    this.playbackRecorder.exportRecording();
+    this.playbackRecorder.exportRecording(this.currentScenario.currentTime);
   }
 }

@@ -1,6 +1,7 @@
 import re
 import math
 import random
+from datetime import datetime
 from typing import List
 from blade.utils.constants import EARTH_RADIUS_KM, KILOMETERS_TO_NAUTICAL_MILES
 
@@ -122,3 +123,9 @@ def get_next_coordinates(
 
 def to_camelcase(s):
     return re.sub(r"(?!^)_([a-zA-Z])", lambda m: m.group(1).upper(), s)
+
+
+def unix_to_local_time(unix_timestamp: int, separator: str = ":") -> str:
+    date = datetime.fromtimestamp(unix_timestamp)
+    formatted_time = date.strftime(f"%H{separator}%M{separator}%S")
+    return formatted_time

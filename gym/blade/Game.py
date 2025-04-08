@@ -1032,10 +1032,11 @@ class Game:
     def start_recording(self):
         self.recorder.start_recording(self.current_scenario)
 
-    def record_step(self):
-        if not self.recorder.should_record(self.current_scenario.current_time):
-            return
-        self.recorder.record_step(json.dumps(self.export_scenario()))
+    def record_step(self, force: bool = False):
+        if self.recorder.should_record(self.current_scenario.current_time) or force:
+            self.recorder.record_step(
+                json.dumps(self.export_scenario()), self.current_scenario.current_time
+            )
 
     def export_recording(self):
-        self.recorder.export_recording()
+        self.recorder.export_recording(self.current_scenario.current_time)
