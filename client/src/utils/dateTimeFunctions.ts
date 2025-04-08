@@ -36,3 +36,35 @@ export function getLocalDateTime(): string {
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+function formatNumberStringWithPlural(time: number, suffix: string) {
+  return time + " " + suffix + (time > 1 ? "s" : "");
+}
+
+export function formatSecondsToString(seconds: number) {
+  if (seconds < 60) {
+    return formatNumberStringWithPlural(seconds, "second");
+  } else if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return (
+      formatNumberStringWithPlural(minutes, "minute") +
+      (remainingSeconds > 0
+        ? " " + formatNumberStringWithPlural(remainingSeconds, "second")
+        : "")
+    );
+  } else {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    return (
+      formatNumberStringWithPlural(hours, "hour") +
+      (minutes > 0
+        ? " " + formatNumberStringWithPlural(minutes, "minute")
+        : "") +
+      (remainingSeconds > 0
+        ? " " + formatNumberStringWithPlural(remainingSeconds, "second")
+        : "")
+    );
+  }
+}

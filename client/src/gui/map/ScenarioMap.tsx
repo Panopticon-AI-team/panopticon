@@ -145,6 +145,10 @@ export default function ScenarioMap({
   >([]);
   const [currentScenarioTimeCompression, setCurrentScenarioTimeCompression] =
     useState(game.currentScenario.timeCompression);
+  const [currentRecordingIntervalSeconds, setCurrentRecordingIntervalSeconds] =
+    useState(game.playbackRecorder.recordEverySeconds);
+  const [recordingPlayerHasRecording, setRecordingPlayerHasRecording] =
+    useState(game.recordingPlayer.hasRecording());
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
   const [openAircraftCard, setOpenAircraftCard] = useState({
     open: false,
@@ -774,6 +778,13 @@ export default function ScenarioMap({
     }
   }
 
+  function toggleRecordEverySeconds() {
+    game.playbackRecorder.switchRecordingInterval();
+    setCurrentRecordingIntervalSeconds(
+      game.playbackRecorder.recordEverySeconds
+    );
+  }
+
   function handleRecordScenarioClick() {
     game.recordingScenario = true;
     game.playbackRecorder.startRecording(game.currentScenario);
@@ -797,7 +808,10 @@ export default function ScenarioMap({
       reader.onload = (event) => {
         const content = event.target?.result as string;
         game.recordingPlayer.loadRecording(content);
-        handlePlayRecordingClick();
+        game.loadScenario(game.recordingPlayer.getCurrentStep());
+        setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+        drawNextFrame(game.currentScenario);
+        setRecordingPlayerHasRecording(game.recordingPlayer.hasRecording());
       };
       reader.readAsText(file);
     };
@@ -815,14 +829,46 @@ export default function ScenarioMap({
   }
 
   async function handlePlayRecordingClick() {
-    setCurrentGameStatusToContext("Playing recorded scenario");
-    while (!game.recordingPlayer.isAtEnd()) {
-      game.loadScenario(game.recordingPlayer.getCurrentStep());
+    game.recordingPlayer.playing = true;
+    while (
+      !game.recordingPlayer.isAtEnd() &&
+      !game.recordingPlayer.isPaused()
+    ) {
       game.recordingPlayer.nextStep();
+      game.loadScenario(game.recordingPlayer.getCurrentStep());
       setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
       drawNextFrame(game.currentScenario);
       await delay(0);
     }
+  }
+
+  function handlePauseRecordingClick() {
+    game.recordingPlayer.playing = false;
+    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+  }
+
+  function handleStepRecordingToStep(step: number) {
+    if (game.recordingPlayer.isAtStep(step)) return;
+    game.recordingPlayer.setCurrentStepIndex(step);
+    game.loadScenario(game.recordingPlayer.getCurrentStep());
+    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    drawNextFrame(game.currentScenario);
+  }
+
+  function handleStepRecordingBackwards() {
+    if (game.recordingPlayer.isAtStart()) return;
+    game.recordingPlayer.previousStep();
+    game.loadScenario(game.recordingPlayer.getCurrentStep());
+    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    drawNextFrame(game.currentScenario);
+  }
+
+  function handleStepRecordingForwards() {
+    if (game.recordingPlayer.isAtEnd()) return;
+    game.recordingPlayer.nextStep();
+    game.loadScenario(game.recordingPlayer.getCurrentStep());
+    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    drawNextFrame(game.currentScenario);
   }
 
   async function handlePlayGameClick() {
@@ -1692,11 +1738,18 @@ export default function ScenarioMap({
         addShipOnClick={setAddingShip}
         addReferencePointOnClick={setAddingReferencePoint}
         playOnClick={handlePlayGameClick}
-        stepOnClick={handleLoadRecording}
+        stepOnClick={handleStepGameClick}
         pauseOnClick={handlePauseGameClick}
         toggleScenarioTimeCompressionOnClick={toggleScenarioTimeCompression}
+        toggleRecordEverySeconds={toggleRecordEverySeconds}
         recordScenarioOnClick={handleRecordScenarioClick}
         stopRecordingScenarioOnClick={handleStopRecordingScenarioClick}
+        loadRecordingOnClick={handleLoadRecording}
+        handlePlayRecordingClick={handlePlayRecordingClick}
+        handlePauseRecordingClick={handlePauseRecordingClick}
+        handleStepRecordingToStep={handleStepRecordingToStep}
+        handleStepRecordingBackwards={handleStepRecordingBackwards}
+        handleStepRecordingForwards={handleStepRecordingForwards}
         switchCurrentSideOnClick={switchCurrentSide}
         refreshAllLayers={refreshAllLayers}
         updateMapView={updateMapView}

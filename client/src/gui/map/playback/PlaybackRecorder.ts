@@ -1,4 +1,5 @@
 import Scenario from "@/game/Scenario";
+import { RECORDING_INTERVALS_SECONDS } from "@/utils/constants";
 
 const FILE_SIZE_LIMIT_MB = 10;
 const CHARACTER_LIMIT = FILE_SIZE_LIMIT_MB * 1024 * 1024;
@@ -15,8 +16,16 @@ class PlaybackRecorder {
     this.recordEverySeconds = recordEverySeconds || RECORDING_INTERVAL_SECONDS;
   }
 
-  setRecordingInterval(recordEverySeconds: number) {
-    this.recordEverySeconds = recordEverySeconds;
+  switchRecordingInterval() {
+    for (let i = 0; i < RECORDING_INTERVALS_SECONDS.length; i++) {
+      if (this.recordEverySeconds === RECORDING_INTERVALS_SECONDS[i]) {
+        this.recordEverySeconds =
+          RECORDING_INTERVALS_SECONDS[
+            (i + 1) % RECORDING_INTERVALS_SECONDS.length
+          ];
+        break;
+      }
+    }
   }
 
   shouldRecord(currentScenarioTime: number) {
