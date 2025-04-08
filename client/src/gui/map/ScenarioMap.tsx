@@ -850,7 +850,7 @@ export default function ScenarioMap({
     ) {
       game.recordingPlayer.nextStep();
       loadAndDisplayCurrentRecordedFrame();
-      await delay(100);
+      await delay(50);
     }
   }
 
