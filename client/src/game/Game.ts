@@ -27,8 +27,8 @@ import Ship from "@/game/units/Ship";
 import ReferencePoint from "@/game/units/ReferencePoint";
 import PatrolMission from "@/game/mission/PatrolMission";
 import StrikeMission from "@/game/mission/StrikeMission";
-import PlaybackRecorder from "@/gui/map/playback/PlaybackRecorder";
-import RecordingPlayer from "@/gui/map/playback/RecordingPlayer";
+import PlaybackRecorder from "@/game/playback/PlaybackRecorder";
+import RecordingPlayer from "@/game/playback/RecordingPlayer";
 
 interface IMapView {
   defaultCenter: number[];
