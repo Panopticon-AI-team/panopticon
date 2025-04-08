@@ -28,6 +28,7 @@ import ReferencePoint from "@/game/units/ReferencePoint";
 import PatrolMission from "@/game/mission/PatrolMission";
 import StrikeMission from "@/game/mission/StrikeMission";
 import PlaybackRecorder from "@/gui/map/playback/PlaybackRecorder";
+import RecordingPlayer from "@/gui/map/playback/RecordingPlayer";
 
 interface IMapView {
   defaultCenter: number[];
@@ -49,7 +50,8 @@ export default class Game {
   currentSideName: string = "";
   scenarioPaused: boolean = true;
   recordingScenario: boolean = false;
-  playbackRecorder: PlaybackRecorder = new PlaybackRecorder();
+  playbackRecorder: PlaybackRecorder = new PlaybackRecorder(10);
+  recordingPlayer: RecordingPlayer = new RecordingPlayer();
   addingAircraft: boolean = false;
   addingAirbase: boolean = false;
   addingFacility: boolean = false;

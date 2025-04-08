@@ -776,9 +776,7 @@ export default function ScenarioMap({
 
   function handleRecordScenarioClick() {
     game.recordingScenario = true;
-    game.playbackRecorder.startRecording(
-      game.createScenarioCopy(game.currentScenario)
-    );
+    game.playbackRecorder.startRecording(game.currentScenario);
   }
 
   function handleStopRecordingScenarioClick() {
@@ -798,40 +796,12 @@ export default function ScenarioMap({
       const reader = new FileReader();
       reader.onload = (event) => {
         const content = event.target?.result as string;
-        const stepUpdates = content.split("\n").map((line) => JSON.parse(line));
-        const scenarioReset = new Scenario({
-          id: game.currentScenario.id,
-          name: game.currentScenario.name,
-          startTime: game.currentScenario.startTime,
-          currentTime: game.currentScenario.currentTime,
-          duration: game.currentScenario.duration,
-          sides: game.currentScenario.sides,
-          timeCompression: game.currentScenario.timeCompression,
-        });
-        game.currentScenario = scenarioReset;
-        playbackRecording(stepUpdates);
+        game.recordingPlayer.loadRecording(content);
+        handlePlayRecordingClick();
       };
       reader.readAsText(file);
     };
     input.click();
-  }
-
-  async function playbackRecording(stepUpdates: any[]) {
-    game.scenarioPaused = false;
-    while (!game.scenarioPaused) {
-      const update = stepUpdates.find(
-        (update) => update.currentTime === game.currentScenario.currentTime
-      );
-      if (update) {
-        game.playbackRecorder.applyChangeToScenario(
-          update,
-          game.currentScenario
-        );
-        drawNextFrame(game.currentScenario);
-      }
-      game.currentScenario.currentTime += 1;
-      await delay(0);
-    }
   }
 
   function handleStepGameClick() {
@@ -842,6 +812,17 @@ export default function ScenarioMap({
   function handlePauseGameClick() {
     setGamePaused();
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+  }
+
+  async function handlePlayRecordingClick() {
+    setCurrentGameStatusToContext("Playing recorded scenario");
+    while (!game.recordingPlayer.isAtEnd()) {
+      game.loadScenario(game.recordingPlayer.getCurrentStep());
+      game.recordingPlayer.nextStep();
+      setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+      drawNextFrame(game.currentScenario);
+      await delay(0);
+    }
   }
 
   async function handlePlayGameClick() {
@@ -881,8 +862,11 @@ export default function ScenarioMap({
 
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation);
-    if (game.recordingScenario) {
-      game.playbackRecorder.recordFrame(game.createScenarioCopy(observation));
+    if (
+      game.recordingScenario &&
+      game.playbackRecorder.shouldRecord(game.currentScenario.currentTime)
+    ) {
+      game.playbackRecorder.recordStep(game.exportCurrentScenario());
     }
     // const guiDrawElapsed = new Date().getTime() - guiDrawStartTime;
     // console.log('gameStepElapsed:', gameStepElapsed, 'guiDrawElapsed:', guiDrawElapsed)
