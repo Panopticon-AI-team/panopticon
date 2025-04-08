@@ -405,7 +405,7 @@ class Game:
                     unit.route.append(random_waypoint_in_patrol_area)
                 elif len(unit.route) > 0:
                     if not mission.check_if_coordinates_is_within_patrol_area(
-                        unit.route[0]
+                        [unit.route[0][1], unit.route[0][0]]
                     ):
                         unit.route = []
                         random_waypoint_in_patrol_area = (
