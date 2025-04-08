@@ -1,7 +1,7 @@
 import json
 import copy
 from uuid import uuid4
-from typing import Tuple
+from typing import Tuple, Optional
 from blade.units.Aircraft import Aircraft
 from blade.units.Airbase import Airbase
 from blade.units.Facility import Facility
@@ -14,6 +14,7 @@ from blade.Scenario import Scenario
 from blade.Side import Side
 
 from blade.utils.constants import NAUTICAL_MILES_TO_METERS
+from blade.utils.PlaybackRecorder import PlaybackRecorder
 from blade.utils.utils import (
     get_bearing_between_two_points,
     get_next_coordinates,
@@ -31,11 +32,19 @@ from blade.engine.weaponEngagement import (
 
 
 class Game:
-    def __init__(self, current_scenario: Scenario):
+
+    def __init__(
+        self,
+        current_scenario: Scenario,
+        record_every_seconds: Optional[int] = None,
+        recording_export_path: Optional[str] = ".",
+    ):
         self.current_scenario = current_scenario
         self.initial_scenario = current_scenario
 
         self.current_side_name = ""
+        self.recording_scenario = False
+        self.recorder = PlaybackRecorder(record_every_seconds, recording_export_path)
         self.scenario_paused = True
         self.current_attacker_id = ""
         self.map_view = {
@@ -106,8 +115,11 @@ class Game:
                 homebase.aircraft.append(new_aircraft)
                 self.remove_aircraft(aircraft.id)
 
-    def add_reference_point(self, reference_point_name: str, latitude: float, longitude: float) -> ReferencePoint:
-        if not self.current_side_name: return None
+    def add_reference_point(
+        self, reference_point_name: str, latitude: float, longitude: float
+    ) -> ReferencePoint:
+        if not self.current_side_name:
+            return None
 
         reference_point = ReferencePoint(
             id=uuid4(),
@@ -127,7 +139,8 @@ class Game:
         )
 
     def launch_aircraft_from_ship(self, ship_id: str) -> Aircraft | None:
-        if not self.current_side_name: return None
+        if not self.current_side_name:
+            return None
 
         ship = self.current_scenario.get_ship(ship_id)
         if ship and len(ship.aircraft) > 0:
@@ -137,7 +150,8 @@ class Game:
                 return aircraft
 
     def launch_aircraft_from_airbase(self, airbase_id: str) -> Aircraft | None:
-        if not self.current_side_name: return None
+        if not self.current_side_name:
+            return None
 
         airbase = self.current_scenario.get_airbase(airbase_id)
         if airbase and len(airbase.aircraft) > 0:
@@ -146,19 +160,32 @@ class Game:
                 self.current_scenario.aircraft.append(aircraft)
                 return aircraft
 
-    def create_patrol_mission(self, mission_name: str, assigned_units: list[str], assigned_area: list[list[float]]) -> None:
-        if (len(assigned_area) < 3): return
+    def create_patrol_mission(
+        self,
+        mission_name: str,
+        assigned_units: list[str],
+        assigned_area: list[ReferencePoint],
+    ) -> None:
+        if len(assigned_area) < 3:
+            return
+        current_side_id = self.current_scenario.get_side(self.current_side_name).id
         mission = PatrolMission(
             id=uuid4(),
             name=mission_name,
-            side_id=self.current_side_name,
+            side_id=current_side_id if current_side_id else self.current_side_name,
             assigned_unit_ids=assigned_units,
             assigned_area=assigned_area,
             active=True,
         )
         self.current_scenario.missions.append(mission)
 
-    def update_patrol_mission(self, mission_id: str, mission_name: str, assigned_units: list[str], assigned_area: list[list[float]]) -> None:
+    def update_patrol_mission(
+        self,
+        mission_id: str,
+        mission_name: str,
+        assigned_units: list[str],
+        assigned_area: list[ReferencePoint],
+    ) -> None:
         patrol_mission = self.current_scenario.get_patrol_mission(mission_id)
         if patrol_mission:
             if mission_name and mission_name != "":
@@ -167,19 +194,32 @@ class Game:
                 patrol_mission.assigned_unit_ids = assigned_units
             if assigned_area and len(assigned_area) > 2:
                 patrol_mission.assigned_area = assigned_area
+                patrol_mission.update_patrol_area_geometry()
 
-    def create_strike_mission(self, mission_name: str, assigned_attackers: list[str], assigned_targets: list[str]) -> None:
+    def create_strike_mission(
+        self,
+        mission_name: str,
+        assigned_attackers: list[str],
+        assigned_targets: list[str],
+    ) -> None:
+        current_side_id = self.current_scenario.get_side(self.current_side_name).id
         strike_mission = StrikeMission(
             id=uuid4(),
             name=mission_name,
-            side_id=self.current_side_name,
+            side_id=current_side_id if current_side_id else self.current_side_name,
             assigned_unit_ids=assigned_attackers,
             assigned_target_ids=assigned_targets,
             active=True,
         )
         self.current_scenario.missions.append(strike_mission)
 
-    def update_strike_mission(self, mission_id: str, mission_name: str, assigned_attackers: list[str], assigned_targets: list[str]) -> None:
+    def update_strike_mission(
+        self,
+        mission_id: str,
+        mission_name: str,
+        assigned_attackers: list[str],
+        assigned_targets: list[str],
+    ) -> None:
         strike_mission = self.current_scenario.get_strike_mission(mission_id)
         if strike_mission:
             if mission_name and mission_name != "":
@@ -191,7 +231,9 @@ class Game:
 
     def delete_mission(self, mission_id: str) -> None:
         self.current_scenario.missions = [
-            mission for mission in self.current_scenario.missions if mission.id != mission_id
+            mission
+            for mission in self.current_scenario.missions
+            if mission.id != mission_id
         ]
 
     def move_aircraft(self, aircraft_id: str, new_coordinates: list) -> Aircraft | None:
@@ -217,13 +259,23 @@ class Game:
     def handle_aircraft_attack(self, aircraft_id: str, target_id: str) -> None:
         target = self.current_scenario.get_target(target_id)
         aircraft = self.current_scenario.get_aircraft(aircraft_id)
-        if target and aircraft and target.side_name != aircraft.side_name and target.id != aircraft.id:
+        if (
+            target
+            and aircraft
+            and target.side_name != aircraft.side_name
+            and target.id != aircraft.id
+        ):
             launch_weapon(self.current_scenario, aircraft, target)
 
     def handle_ship_attack(self, ship_id: str, target_id: str) -> None:
         target = self.current_scenario.get_target(target_id)
         ship = self.current_scenario.get_ship(ship_id)
-        if target and ship and target.side_name != ship.side_name and target.id != ship.id:
+        if (
+            target
+            and ship
+            and target.side_name != ship.side_name
+            and target.id != ship.id
+        ):
             launch_weapon(self.current_scenario, ship, target)
 
     def aircraft_return_to_base(self, aircraft_id: str) -> Aircraft | None:
@@ -235,7 +287,11 @@ class Game:
                 return aircraft
             else:
                 aircraft.rtb = True
-                homebase = self.current_scenario.get_aircraft_homebase(aircraft.id) if aircraft.home_base_id != "" else self.current_scenario.get_closest_base_to_aircraft(aircraft.id)
+                homebase = (
+                    self.current_scenario.get_aircraft_homebase(aircraft.id)
+                    if aircraft.home_base_id != ""
+                    else self.current_scenario.get_closest_base_to_aircraft(aircraft.id)
+                )
                 if homebase:
                     if aircraft.home_base_id != homebase.id:
                         aircraft.home_base_id = homebase.id
@@ -349,7 +405,7 @@ class Game:
                     unit.route.append(random_waypoint_in_patrol_area)
                 elif len(unit.route) > 0:
                     if not mission.check_if_coordinates_is_within_patrol_area(
-                        unit.route[0]
+                        [unit.route[0][1], unit.route[0][0]]
                     ):
                         unit.route = []
                         random_waypoint_in_patrol_area = (
@@ -542,9 +598,10 @@ class Game:
         self.update_onboard_weapon_positions()
 
     def handle_action(self, action: list | str) -> None:
-        if not action or action == "" or len(action) == 0: return
+        if not action or action == "" or len(action) == 0:
+            return
         try:
-            if isinstance(action, str): 
+            if isinstance(action, str):
                 exec(f"{"self." if "self." not in action else ""}{action}")
             elif isinstance(action, list):
                 for sub_action in action:
@@ -578,7 +635,7 @@ class Game:
     def check_game_ended(self) -> bool:
         return False
 
-    def export_scenario(self) -> dict: 
+    def export_scenario(self) -> dict:
         scenario_json_string = self.current_scenario.toJSON()
         scenario_json_no_underscores = to_camelcase(scenario_json_string)
 
@@ -668,7 +725,9 @@ class Game:
                     weapons=aircraft_weapons,
                     home_base_id=aircraft["homeBaseId"],
                     rtb=aircraft["rtb"],
-                    target_id=aircraft["targetId"] if "targetId" in aircraft.keys() else "",
+                    target_id=(
+                        aircraft["targetId"] if "targetId" in aircraft.keys() else ""
+                    ),
                 )
             )
         for airbase in saved_scenario["airbases"]:
@@ -724,7 +783,9 @@ class Game:
                     weapons=aircraft_weapons,
                     home_base_id=aircraft["homeBaseId"],
                     rtb=aircraft["rtb"],
-                    target_id=aircraft["targetId"] if "targetId" in aircraft.keys() else "",
+                    target_id=(
+                        aircraft["targetId"] if "targetId" in aircraft.keys() else ""
+                    ),
                 )
                 airbase_aircraft.append(new_aircraft)
             loaded_scenario.airbases.append(
@@ -930,13 +991,26 @@ class Game:
         if "missions" in saved_scenario.keys():
             for mission in saved_scenario["missions"]:
                 if "assignedArea" in mission.keys():
+                    assigned_area = []
+                    for point in mission["assignedArea"]:
+                        assigned_area.append(
+                            ReferencePoint(
+                                id=point["id"],
+                                name=point["name"],
+                                side_name=point["sideName"],
+                                latitude=point["latitude"],
+                                longitude=point["longitude"],
+                                altitude=point["altitude"],
+                                side_color=point["sideColor"],
+                            )
+                        )
                     loaded_scenario.missions.append(
                         PatrolMission(
                             id=mission["id"],
                             name=mission["name"],
                             side_id=mission["sideId"],
                             assigned_unit_ids=mission["assignedUnitIds"],
-                            assigned_area=mission["assignedArea"],
+                            assigned_area=assigned_area,
                             active=mission["active"],
                         )
                     )
@@ -954,3 +1028,15 @@ class Game:
 
         self.initial_scenario = copy.deepcopy(loaded_scenario)
         self.current_scenario = loaded_scenario
+
+    def start_recording(self):
+        self.recorder.start_recording(self.current_scenario)
+
+    def record_step(self, force: bool = False):
+        if self.recorder.should_record(self.current_scenario.current_time) or force:
+            self.recorder.record_step(
+                json.dumps(self.export_scenario()), self.current_scenario.current_time
+            )
+
+    def export_recording(self):
+        self.recorder.export_recording(self.current_scenario.current_time)

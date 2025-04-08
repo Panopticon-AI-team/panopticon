@@ -32,6 +32,7 @@ import { SetScenarioTimeContext } from "@/gui/contextProviders/contexts/Scenario
 import { SetGameStatusContext } from "@/gui/contextProviders/contexts/GameStatusContext";
 import { SetMouseMapCoordinatesContext } from "@/gui/contextProviders/contexts/MouseMapCoordinatesContext";
 import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
+import { SetRecordingStepContext } from "../contextProviders/contexts/RecordingStepContext";
 import AirbaseCard from "@/gui/map/feature/AirbaseCard";
 import AircraftCard from "@/gui/map/feature/AircraftCard";
 import FacilityCard from "@/gui/map/feature/FacilityCard";
@@ -145,6 +146,10 @@ export default function ScenarioMap({
   >([]);
   const [currentScenarioTimeCompression, setCurrentScenarioTimeCompression] =
     useState(game.currentScenario.timeCompression);
+  const [currentRecordingIntervalSeconds, setCurrentRecordingIntervalSeconds] =
+    useState(game.playbackRecorder.recordEverySeconds);
+  const [recordingPlayerHasRecording, setRecordingPlayerHasRecording] =
+    useState(game.recordingPlayer.hasRecording());
   const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
   const [openAircraftCard, setOpenAircraftCard] = useState({
     open: false,
@@ -192,6 +197,7 @@ export default function ScenarioMap({
   const [missionCreatorActive, setMissionCreatorActive] = useState(false);
   const [missionEditorActive, setMissionEditorActive] = useState(false);
   const setCurrentScenarioTimeToContext = useContext(SetScenarioTimeContext);
+  const setCurrentRecordingStepToContext = useContext(SetRecordingStepContext);
   const setCurrentGameStatusToContext = useContext(SetGameStatusContext);
   const setCurrentMouseMapCoordinatesToContext = useContext(
     SetMouseMapCoordinatesContext
@@ -774,6 +780,49 @@ export default function ScenarioMap({
     }
   }
 
+  function toggleRecordEverySeconds() {
+    game.playbackRecorder.switchRecordingInterval();
+    setCurrentRecordingIntervalSeconds(
+      game.playbackRecorder.recordEverySeconds
+    );
+  }
+
+  function handleRecordScenarioClick() {
+    game.recordingScenario = true;
+    game.startRecording();
+  }
+
+  function handleStopRecordingScenarioClick() {
+    game.recordingScenario = false;
+    game.exportRecording();
+  }
+
+  function handleLoadRecording() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".jsonl";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result as string;
+        if (!game.recordingPlayer.loadRecording(content)) {
+          toastContext?.addToast("Failed to load recording", "error");
+          return;
+        } else {
+          toastContext?.addToast("Successfully loaded recording", "success");
+        }
+        setRecordingPlayerHasRecording(game.recordingPlayer.hasRecording());
+        loadAndDisplayCurrentRecordedFrame();
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
   function handleStepGameClick() {
     setGamePaused();
     stepGameAndDrawFrame();
@@ -782,6 +831,53 @@ export default function ScenarioMap({
   function handlePauseGameClick() {
     setGamePaused();
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+  }
+
+  function loadAndDisplayCurrentRecordedFrame() {
+    game.loadScenario(game.recordingPlayer.getCurrentStep());
+    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    setCurrentRecordingStepToContext(
+      game.recordingPlayer.getCurrentStepIndex()
+    );
+    drawNextFrame(game.currentScenario);
+  }
+
+  async function handlePlayRecordingClick() {
+    game.recordingPlayer.playing = true;
+    while (
+      !game.recordingPlayer.isAtEnd() &&
+      !game.recordingPlayer.isPaused()
+    ) {
+      game.recordingPlayer.nextStep();
+      loadAndDisplayCurrentRecordedFrame();
+      await delay(50);
+    }
+  }
+
+  function handlePauseRecordingClick() {
+    game.recordingPlayer.playing = false;
+    setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    setCurrentRecordingStepToContext(
+      game.recordingPlayer.getCurrentStepIndex()
+    );
+  }
+
+  function handleStepRecordingToStep(step: number) {
+    if (game.recordingPlayer.isAtStep(step)) return;
+    game.recordingPlayer.setCurrentStepIndex(step);
+    loadAndDisplayCurrentRecordedFrame();
+  }
+
+  function handleStepRecordingBackwards() {
+    if (game.recordingPlayer.isAtStart()) return;
+    game.recordingPlayer.previousStep();
+    loadAndDisplayCurrentRecordedFrame();
+  }
+
+  function handleStepRecordingForwards() {
+    if (game.recordingPlayer.isAtEnd()) return;
+    game.recordingPlayer.nextStep();
+    loadAndDisplayCurrentRecordedFrame();
   }
 
   async function handlePlayGameClick() {
@@ -821,6 +917,7 @@ export default function ScenarioMap({
 
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation);
+    game.recordStep();
     // const guiDrawElapsed = new Date().getTime() - guiDrawStartTime;
     // console.log('gameStepElapsed:', gameStepElapsed, 'guiDrawElapsed:', guiDrawElapsed)
 
@@ -1291,7 +1388,7 @@ export default function ScenarioMap({
       ).length === 0
     )
       return;
-    setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+    setKeyboardShortcutsEnabled(missionEditorActive);
     setMissionEditorActive(!missionEditorActive);
   }
 
@@ -1648,6 +1745,15 @@ export default function ScenarioMap({
         stepOnClick={handleStepGameClick}
         pauseOnClick={handlePauseGameClick}
         toggleScenarioTimeCompressionOnClick={toggleScenarioTimeCompression}
+        toggleRecordEverySeconds={toggleRecordEverySeconds}
+        recordScenarioOnClick={handleRecordScenarioClick}
+        stopRecordingScenarioOnClick={handleStopRecordingScenarioClick}
+        loadRecordingOnClick={handleLoadRecording}
+        handlePlayRecordingClick={handlePlayRecordingClick}
+        handlePauseRecordingClick={handlePauseRecordingClick}
+        handleStepRecordingToStep={handleStepRecordingToStep}
+        handleStepRecordingBackwards={handleStepRecordingBackwards}
+        handleStepRecordingForwards={handleStepRecordingForwards}
         switchCurrentSideOnClick={switchCurrentSide}
         refreshAllLayers={refreshAllLayers}
         updateMapView={updateMapView}
@@ -1669,7 +1775,7 @@ export default function ScenarioMap({
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
         toggleMissionCreator={() => {
-          setKeyboardShortcutsEnabled(!keyboardShortcutsEnabled);
+          setKeyboardShortcutsEnabled(missionCreatorActive);
           setMissionCreatorActive(!missionCreatorActive);
         }}
         featureEntitiesPlotted={featureEntitiesState}

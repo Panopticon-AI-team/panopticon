@@ -27,6 +27,8 @@ import Ship from "@/game/units/Ship";
 import ReferencePoint from "@/game/units/ReferencePoint";
 import PatrolMission from "@/game/mission/PatrolMission";
 import StrikeMission from "@/game/mission/StrikeMission";
+import PlaybackRecorder from "@/game/playback/PlaybackRecorder";
+import RecordingPlayer from "@/game/playback/RecordingPlayer";
 
 interface IMapView {
   defaultCenter: number[];
@@ -47,6 +49,9 @@ export default class Game {
   currentScenario: Scenario;
   currentSideName: string = "";
   scenarioPaused: boolean = true;
+  recordingScenario: boolean = false;
+  playbackRecorder: PlaybackRecorder = new PlaybackRecorder(10);
+  recordingPlayer: RecordingPlayer = new RecordingPlayer();
   addingAircraft: boolean = false;
   addingAirbase: boolean = false;
   addingFacility: boolean = false;
@@ -1298,5 +1303,25 @@ export default class Game {
 
   checkGameEnded(): boolean {
     return false;
+  }
+
+  startRecording() {
+    this.playbackRecorder.startRecording(this.currentScenario);
+  }
+
+  recordStep() {
+    if (
+      this.recordingScenario &&
+      this.playbackRecorder.shouldRecord(this.currentScenario.currentTime)
+    ) {
+      this.playbackRecorder.recordStep(
+        this.exportCurrentScenario(),
+        this.currentScenario.currentTime
+      );
+    }
+  }
+
+  exportRecording() {
+    this.playbackRecorder.exportRecording(this.currentScenario.currentTime);
   }
 }
