@@ -682,30 +682,27 @@ export default class Game {
     }
   }
 
-  getFuelNeededToReturnToBase(aircraftId: string) {
-    const aircraft = this.currentScenario.getAircraft(aircraftId);
-    if (aircraft) {
-      if (aircraft.speed === 0) return 0;
-      const homeBase =
-        aircraft.homeBaseId !== ""
-          ? this.currentScenario.getAircraftHomeBase(aircraftId)
-          : this.currentScenario.getClosestBaseToAircraft(aircraftId);
-      if (homeBase) {
-        const distanceBetweenAircraftAndBaseNm =
-          (getDistanceBetweenTwoPoints(
-            aircraft.latitude,
-            aircraft.longitude,
-            homeBase.latitude,
-            homeBase.longitude
-          ) *
-            1000) /
-          NAUTICAL_MILES_TO_METERS;
-        const timeNeededToReturnToBaseHr =
-          distanceBetweenAircraftAndBaseNm / aircraft.speed;
-        const fuelNeededToReturnToBase =
-          timeNeededToReturnToBaseHr * aircraft.fuelRate;
-        return fuelNeededToReturnToBase;
-      }
+  getFuelNeededToReturnToBase(aircraft: Aircraft) {
+    if (aircraft.speed === 0) return 0;
+    const homeBase =
+      aircraft.homeBaseId !== ""
+        ? this.currentScenario.getAircraftHomeBase(aircraft.id)
+        : this.currentScenario.getClosestBaseToAircraft(aircraft.id);
+    if (homeBase) {
+      const distanceBetweenAircraftAndBaseNm =
+        (getDistanceBetweenTwoPoints(
+          aircraft.latitude,
+          aircraft.longitude,
+          homeBase.latitude,
+          homeBase.longitude
+        ) *
+          1000) /
+        NAUTICAL_MILES_TO_METERS;
+      const timeNeededToReturnToBaseHr =
+        distanceBetweenAircraftAndBaseNm / aircraft.speed;
+      const fuelNeededToReturnToBase =
+        timeNeededToReturnToBaseHr * aircraft.fuelRate;
+      return fuelNeededToReturnToBase;
     }
     return 0;
   }
@@ -1323,12 +1320,14 @@ export default class Game {
         }
       }
       aircraft.currentFuel -= aircraft.fuelRate / 3600;
-      const fuelNeededToReturnToBase = this.getFuelNeededToReturnToBase(
-        aircraft.id
-      );
+      const fuelNeededToReturnToBase =
+        this.getFuelNeededToReturnToBase(aircraft);
       if (aircraft.currentFuel <= 0) {
         this.removeAircraft(aircraft.id);
-      } else if (aircraft.currentFuel < fuelNeededToReturnToBase * 1.1) {
+      } else if (
+        aircraft.currentFuel < fuelNeededToReturnToBase * 1.1 &&
+        !aircraft.rtb
+      ) {
         this.aircraftReturnToBase(aircraft.id);
       }
     });

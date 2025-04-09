@@ -299,37 +299,33 @@ class Game:
                         aircraft_id, [[homebase.latitude, homebase.longitude]]
                     )
 
-    def get_fuel_needed_to_return_to_base(self, aircraft_id: str) -> float:
-        aircraft = self.current_scenario.get_aircraft(aircraft_id)
-        if aircraft:
-            if aircraft.speed == 0:
-                return 0
-            if aircraft.home_base_id != "":
-                home_base = self.current_scenario.get_aircraft_homebase(aircraft_id)
-            else:
-                home_base = self.current_scenario.get_closest_base_to_aircraft(
-                    aircraft_id
-                )
+    def get_fuel_needed_to_return_to_base(self, aircraft: Aircraft) -> float:
+        if aircraft.speed == 0:
+            return 0
+        if aircraft.home_base_id != "":
+            home_base = self.current_scenario.get_aircraft_homebase(aircraft.id)
+        else:
+            home_base = self.current_scenario.get_closest_base_to_aircraft(aircraft.id)
 
-            if home_base:
-                distance_between_aircraft_and_base_nm = (
-                    get_distance_between_two_points(
-                        aircraft.latitude,
-                        aircraft.longitude,
-                        home_base.latitude,
-                        home_base.longitude,
-                    )
-                    * 1000
-                ) / NAUTICAL_MILES_TO_METERS
-
-                time_needed_to_return_to_base_hr = (
-                    distance_between_aircraft_and_base_nm / aircraft.speed
+        if home_base:
+            distance_between_aircraft_and_base_nm = (
+                get_distance_between_two_points(
+                    aircraft.latitude,
+                    aircraft.longitude,
+                    home_base.latitude,
+                    home_base.longitude,
                 )
-                fuel_needed_to_return_to_base = (
-                    time_needed_to_return_to_base_hr * aircraft.fuel_rate
-                )
+                * 1000
+            ) / NAUTICAL_MILES_TO_METERS
 
-                return fuel_needed_to_return_to_base
+            time_needed_to_return_to_base_hr = (
+                distance_between_aircraft_and_base_nm / aircraft.speed
+            )
+            fuel_needed_to_return_to_base = (
+                time_needed_to_return_to_base_hr * aircraft.fuel_rate
+            )
+
+            return fuel_needed_to_return_to_base
 
         return 0
 
@@ -619,11 +615,14 @@ class Game:
                     )
             aircraft.current_fuel -= aircraft.fuel_rate / 3600
             fuel_needed_to_return_to_base = self.get_fuel_needed_to_return_to_base(
-                aircraft.id
+                aircraft
             )
             if aircraft.current_fuel <= 0:
                 self.remove_aircraft(aircraft.id)
-            elif aircraft.current_fuel < fuel_needed_to_return_to_base * 1.1:
+            elif (
+                aircraft.current_fuel < fuel_needed_to_return_to_base * 1.1
+                and not aircraft.rtb
+            ):
                 self.aircraft_return_to_base(aircraft.id)
 
     def update_all_ship_position(self) -> None:

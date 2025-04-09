@@ -278,18 +278,17 @@ export function getNextCoordinates(
     destinationLatitude,
     destinationLongitude
   );
-  const totalDistance = getDistanceBetweenTwoPoints(
+  const totalDistanceKm = getDistanceBetweenTwoPoints(
     originLatitude,
     originLongitude,
     destinationLatitude,
     destinationLongitude
   );
   const totalTimeHours =
-    (totalDistance * KILOMETERS_TO_NAUTICAL_MILES) /
+    (totalDistanceKm * KILOMETERS_TO_NAUTICAL_MILES) /
     (platformSpeed < 0 ? -platformSpeed : platformSpeed); // hours
-  const totalTimeSeconds = Math.max(totalTimeHours * 3600, 0.0001); // seconds
-  const legDistanceNm = totalDistance / totalTimeSeconds;
-  const legDistanceKm = legDistanceNm / KILOMETERS_TO_NAUTICAL_MILES;
+  const totalTimeSeconds = Math.max(Math.floor(totalTimeHours * 3600), 0.0001); // seconds
+  const legDistanceKm = totalDistanceKm / totalTimeSeconds;
 
   return getTerminalCoordinatesFromDistanceAndBearing(
     originLatitude,

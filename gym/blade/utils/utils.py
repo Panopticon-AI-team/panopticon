@@ -105,15 +105,16 @@ def get_next_coordinates(
     heading = get_bearing_between_two_points(
         origin_latitude, origin_longitude, destination_latitude, destination_longitude
     )
-    total_distance = get_distance_between_two_points(
+    total_distance_km = get_distance_between_two_points(
         origin_latitude, origin_longitude, destination_latitude, destination_longitude
     )
-    total_time_hours = (total_distance * KILOMETERS_TO_NAUTICAL_MILES) / (
+    total_time_hours = (total_distance_km * KILOMETERS_TO_NAUTICAL_MILES) / (
         platform_speed if platform_speed >= 0 else -platform_speed
     )
-    total_time_seconds = max(total_time_hours * 3600, 0.0001)  # prevent divide-by-zero
-    leg_distance_nm = total_distance / total_time_seconds
-    leg_distance_km = leg_distance_nm / KILOMETERS_TO_NAUTICAL_MILES
+    total_time_seconds = max(
+        math.floor(total_time_hours * 3600), 0.0001
+    )  # prevent divide-by-zero
+    leg_distance_km = total_distance_km / total_time_seconds
 
     return get_terminal_coordinates_from_distance_and_bearing(
         origin_latitude, origin_longitude, leg_distance_km, heading
