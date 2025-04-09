@@ -231,6 +231,8 @@ class Scenario:
             closest_base = None
             closest_distance = float("inf")
             for base in self.airbases + self.ships:
+                if base.side_name != aircraft.side_name:
+                    continue
                 distance = get_distance_between_two_points(
                     aircraft.latitude, aircraft.longitude, base.latitude, base.longitude
                 )
@@ -261,4 +263,5 @@ class Scenario:
             self,
             default=lambda o: o.__dict__ if hasattr(o, "__dict__") else "",
             sort_keys=True,
-            indent=4)
+            indent=4,
+        )

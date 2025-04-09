@@ -23,7 +23,7 @@ def check_if_threat_is_within_range(
     threat: Aircraft | Weapon, defender: Facility | Ship | Weapon
 ) -> bool:
     defender_geometry = Point([defender.latitude, defender.longitude]).buffer(
-        defender.range / 60 # rough conversion from nautical miles to degrees
+        defender.range / 60  # rough conversion from nautical miles to degrees
     )
     threat_geometry = Point([threat.latitude, threat.longitude])
     return defender_geometry.contains(threat_geometry)
@@ -197,5 +197,5 @@ def route_aircraft_to_strike_position(
         bearing_between_target_and_aircraft,
     )
 
-    aircraft.route = [[strike_location[0], strike_location[1]]]
+    aircraft.route.append([strike_location[0], strike_location[1]])
     aircraft.heading = bearing_between_aircraft_and_target
