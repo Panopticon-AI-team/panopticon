@@ -103,7 +103,7 @@ interface ToolBarProps {
   toggleBaseMapLayer: () => void;
   keyboardShortcutsEnabled: boolean;
   toggleMissionCreator: () => void;
-  toggleMissionEditor: () => void;
+  openMissionEditor: (selectedMissionId: string) => void;
   openDrawer: () => void;
   closeDrawer: () => void;
 }
@@ -726,7 +726,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           >
             <MenuItem
               onClick={() => {
-                props.toggleMissionEditor();
+                props.openMissionEditor(mission.id);
               }}
               key={mission.id}
               value={mission.name}

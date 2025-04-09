@@ -195,7 +195,10 @@ export default function ScenarioMap({
   const [keyboardShortcutsEnabled, setKeyboardShortcutsEnabled] =
     useState(true);
   const [missionCreatorActive, setMissionCreatorActive] = useState(false);
-  const [missionEditorActive, setMissionEditorActive] = useState(false);
+  const [missionEditorActive, setMissionEditorActive] = useState({
+    open: false,
+    selectedMissionId: "",
+  });
   const setCurrentScenarioTimeToContext = useContext(SetScenarioTimeContext);
   const setCurrentRecordingStepToContext = useContext(SetRecordingStepContext);
   const setCurrentGameStatusToContext = useContext(SetGameStatusContext);
@@ -1388,19 +1391,29 @@ export default function ScenarioMap({
     toastContext?.addToast(`Deleted mission successfully!`, "success");
   }
 
-  function toggleMissionEditor() {
+  function openMissionEditor(selectedMissionId: string = "") {
     const currentSideId = game.currentScenario.getSide(
       game.currentSideName
     )?.id;
     if (
-      !missionEditorActive &&
       game.currentScenario.missions.filter(
         (mission) => mission.sideId === currentSideId
       ).length === 0
     )
       return;
-    setKeyboardShortcutsEnabled(missionEditorActive);
-    setMissionEditorActive(!missionEditorActive);
+    setKeyboardShortcutsEnabled(false);
+    setMissionEditorActive({
+      open: true,
+      selectedMissionId: selectedMissionId,
+    });
+  }
+
+  function closeMissionEditor() {
+    setKeyboardShortcutsEnabled(true);
+    setMissionEditorActive({
+      open: false,
+      selectedMissionId: "",
+    });
   }
 
   function queueUnitForTeleport(unitId: string) {
@@ -1410,7 +1423,7 @@ export default function ScenarioMap({
   }
 
   function switchCurrentSide() {
-    if (missionEditorActive) setMissionEditorActive(false);
+    if (missionEditorActive.open) closeMissionEditor();
     game.switchCurrentSide();
     setCurrentSideName(game.currentSideName);
     toastContext?.addToast(
@@ -1791,7 +1804,7 @@ export default function ScenarioMap({
           setMissionCreatorActive(!missionCreatorActive);
         }}
         featureEntitiesPlotted={featureEntitiesState}
-        toggleMissionEditor={toggleMissionEditor}
+        openMissionEditor={openMissionEditor}
         mobileView={mobileView}
       />
 
@@ -1834,8 +1847,7 @@ export default function ScenarioMap({
         />
       )}
 
-      {/** // TODO: Add selected mission param to 'toggleMissionEditor(...)'  - pass mission as prop here and prepopulate selected mission data instead */}
-      {missionEditorActive &&
+      {missionEditorActive.open &&
         game.currentScenario.missions.filter(
           (mission) =>
             mission.sideId ===
@@ -1847,6 +1859,7 @@ export default function ScenarioMap({
                 mission.sideId ===
                 game.currentScenario.getSide(game.currentSideName)?.id
             )}
+            selectedMissionId={missionEditorActive.selectedMissionId}
             aircraft={game.currentScenario.aircraft.filter(
               (aircraft) => aircraft.sideName === game.currentSideName
             )}
@@ -1860,10 +1873,7 @@ export default function ScenarioMap({
             updatePatrolMission={handleUpdatePatrolMission}
             updateStrikeMission={handleUpdateStrikeMission}
             deleteMission={handleDeleteMission}
-            handleCloseOnMap={() => {
-              setKeyboardShortcutsEnabled(true);
-              setMissionEditorActive(!missionEditorActive);
-            }}
+            handleCloseOnMap={closeMissionEditor}
           />
         )}
 
@@ -1929,7 +1939,12 @@ export default function ScenarioMap({
                 openAircraftCard.aircraftId
               )?.name ?? null
             }
-            toggleMissionEditor={toggleMissionEditor}
+            currentMissionId={
+              game.currentScenario.getMissionByAssignedUnitId(
+                openAircraftCard.aircraftId
+              )?.id ?? ""
+            }
+            openMissionEditor={openMissionEditor}
             handleDeleteAircraft={removeAircraft}
             handleMoveAircraft={queueAircraftForMovement}
             handleAircraftAttack={handleAircraftAttack}

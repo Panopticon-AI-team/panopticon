@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -23,6 +23,7 @@ import { Mission } from "@/game/Game";
 
 interface MissionEditorCardProps {
   missions: Mission[];
+  selectedMissionId: string;
   aircraft: Aircraft[];
   referencePoints: ReferencePoint[];
   targets: Target[];
@@ -85,7 +86,8 @@ const parseSelectedMissionType = (selectedMission: Mission): string => {
 const MissionEditorCard = (props: MissionEditorCardProps) => {
   const nodeRef = React.useRef(null);
   const [selectedMission, setSelectedMission] = useState<Mission>(
-    props.missions[0]
+    props.missions.find((mission) => mission.id === props.selectedMissionId) ||
+      props.missions[0]
   );
   const [selectedMissionType, setSelectedMissionType] = useState<string>(
     parseSelectedMissionType(selectedMission)
@@ -106,6 +108,31 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
       : []
   );
   const [missionName, setMissionName] = useState<string>(selectedMission.name);
+
+  useEffect(() => {
+    const newSelectedMission =
+      props.missions.find(
+        (mission) => mission.id === props.selectedMissionId
+      ) || props.missions[0];
+
+    if (newSelectedMission) {
+      setSelectedMission(newSelectedMission);
+      setMissionName(newSelectedMission.name);
+      setSelectedAircraft(newSelectedMission.assignedUnitIds);
+
+      if (newSelectedMission instanceof PatrolMission) {
+        setSelectedReferencePoints(
+          newSelectedMission.assignedArea.map((point) => point.id)
+        );
+        setSelectedTargets([]);
+      } else if (newSelectedMission instanceof StrikeMission) {
+        setSelectedTargets(newSelectedMission.assignedTargetIds);
+        setSelectedReferencePoints([]);
+      }
+
+      setSelectedMissionType(parseSelectedMissionType(newSelectedMission));
+    }
+  }, [props.selectedMissionId, props.missions]);
 
   const validateMissionPropertiesInput = () => {
     if (missionName === "") {
