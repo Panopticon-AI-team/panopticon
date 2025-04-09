@@ -36,7 +36,8 @@ import { colorPalette } from "@/utils/constants";
 interface AircraftCardProps {
   aircraft: Aircraft;
   currentMissionName: string | null;
-  toggleMissionEditor: () => void;
+  currentMissionId: string;
+  openMissionEditor: (selectedMissionId: string) => void;
   handleDeleteAircraft: (aircraftId: string) => void;
   handleMoveAircraft: (aircraftId: string) => void;
   handleAircraftAttack: (aircraftId: string) => void;
@@ -309,7 +310,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                   props.currentMissionName
                     ? () => {
                         props.handleCloseOnMap();
-                        props.toggleMissionEditor();
+                        props.openMissionEditor(props.currentMissionId);
                       }
                     : () => {}
                 }
