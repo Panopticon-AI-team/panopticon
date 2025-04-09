@@ -40,7 +40,7 @@ import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Container } from "@mui/system";
-import { Pause, PlayArrow } from "@mui/icons-material";
+import { Pause, PlayArrow, Undo } from "@mui/icons-material";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import DocumentScannerOutlinedIcon from "@mui/icons-material/DocumentScannerOutlined";
@@ -83,6 +83,7 @@ interface ToolBarProps {
   handleStepRecordingToStep: (step: number) => void;
   handleStepRecordingBackwards: () => void;
   handleStepRecordingForwards: () => void;
+  handleUndo: () => void;
   switchCurrentSideOnClick: () => void;
   refreshAllLayers: () => void;
   updateMapView: (center: number[], zoom: number) => void;
@@ -441,6 +442,11 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     }
   };
 
+  const handleUndo = () => {
+    setScenarioPaused(true);
+    props.handleUndo();
+  };
+
   const handleRecordScenarioClick = () => {
     if (recordingScenario) {
       setRecordingScenario(false);
@@ -527,6 +533,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       case "e":
         event.preventDefault();
         handleEraserModeToggle();
+        break;
+      case "z":
+        event.preventDefault();
+        handleUndo();
         break;
       case "1":
         event.preventDefault();
@@ -1364,7 +1374,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               <Stack
                 direction="row"
                 divider={<Divider orientation="vertical" flexItem />}
-                spacing={2}
+                spacing={1}
                 sx={{
                   justifyContent: "center",
                   alignItems: "center",
@@ -1381,6 +1391,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                   <IconButton onClick={reloadScenario}>
                     <RestartAltIcon />
                   </IconButton>
+                </Tooltip>
+                <Tooltip title={"Undo"}>
+                  <IconButton onClick={handleUndo}>{<Undo />}</IconButton>
                 </Tooltip>
                 <Tooltip
                   title={!scenarioPaused ? "Pause Scenario" : "Play Scenario"}

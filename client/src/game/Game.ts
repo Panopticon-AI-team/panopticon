@@ -30,6 +30,8 @@ import StrikeMission from "@/game/mission/StrikeMission";
 import PlaybackRecorder from "@/game/playback/PlaybackRecorder";
 import RecordingPlayer from "@/game/playback/RecordingPlayer";
 
+const MAX_HISTORY_SIZE = 20;
+
 interface IMapView {
   defaultCenter: number[];
   currentCameraCenter: number[];
@@ -64,6 +66,7 @@ export default class Game {
   numberOfWaypoints: number = 50;
   godMode: boolean = true;
   eraserMode: boolean = false;
+  history: string[] = [];
 
   constructor(currentScenario: Scenario) {
     this.currentScenario = currentScenario;
@@ -82,6 +85,7 @@ export default class Game {
     if (!this.currentSideName) {
       return;
     }
+    this.recordHistory();
     const aircraft = new Aircraft({
       id: randomUUID(),
       name: aircraftName,
@@ -116,6 +120,7 @@ export default class Game {
     }
     const airbase = this.currentScenario.getAirbase(airbaseId);
     if (airbase) {
+      this.recordHistory();
       const aircraft = new Aircraft({
         id: randomUUID(),
         name: aircraftName,
@@ -148,6 +153,7 @@ export default class Game {
     if (!this.currentSideName) {
       return;
     }
+    this.recordHistory();
     const airbase = new Airbase({
       id: randomUUID(),
       name: airbaseName,
@@ -170,6 +176,7 @@ export default class Game {
     if (!this.currentSideName) {
       return;
     }
+    this.recordHistory();
     const referencePoint = new ReferencePoint({
       id: randomUUID(),
       name: referencePointName,
@@ -184,6 +191,7 @@ export default class Game {
   }
 
   removeReferencePoint(referencePointId: string) {
+    this.recordHistory();
     this.currentScenario.referencePoints =
       this.currentScenario.referencePoints.filter(
         (referencePoint) => referencePoint.id !== referencePointId
@@ -191,6 +199,7 @@ export default class Game {
   }
 
   removeAirbase(airbaseId: string) {
+    this.recordHistory();
     this.currentScenario.airbases = this.currentScenario.airbases.filter(
       (airbase) => airbase.id !== airbaseId
     );
@@ -206,12 +215,14 @@ export default class Game {
   }
 
   removeFacility(facilityId: string) {
+    this.recordHistory();
     this.currentScenario.facilities = this.currentScenario.facilities.filter(
       (facility) => facility.id !== facilityId
     );
   }
 
   removeAircraft(aircraftId: string) {
+    this.recordHistory();
     this.currentScenario.aircraft = this.currentScenario.aircraft.filter(
       (aircraft) => aircraft.id !== aircraftId
     );
@@ -227,6 +238,7 @@ export default class Game {
     if (!this.currentSideName) {
       return;
     }
+    this.recordHistory();
     const facility = new Facility({
       id: randomUUID(),
       name: facilityName,
@@ -256,6 +268,7 @@ export default class Game {
     if (!this.currentSideName) {
       return;
     }
+    this.recordHistory();
     const ship = new Ship({
       id: randomUUID(),
       name: shipName,
@@ -284,6 +297,7 @@ export default class Game {
     if (unitType === "aircraft") {
       const aircraft = this.currentScenario.getAircraft(unitId);
       if (aircraft) {
+        this.recordHistory();
         const newAircraft = new Aircraft({
           id: randomUUID(),
           name: aircraft.name,
@@ -318,6 +332,7 @@ export default class Game {
     }
     const ship = this.currentScenario.getShip(shipId);
     if (ship) {
+      this.recordHistory();
       const aircraft = new Aircraft({
         id: randomUUID(),
         name: aircraftName,
@@ -349,6 +364,7 @@ export default class Game {
     if (ship && ship.aircraft.length > 0) {
       const aircraft = ship.aircraft.pop();
       if (aircraft) {
+        this.recordHistory();
         this.currentScenario.aircraft.push(aircraft);
         return aircraft;
       }
@@ -356,6 +372,7 @@ export default class Game {
   }
 
   removeShip(shipId: string) {
+    this.recordHistory();
     this.currentScenario.ships = this.currentScenario.ships.filter(
       (ship) => ship.id !== shipId
     );
@@ -376,6 +393,7 @@ export default class Game {
     assignedArea: ReferencePoint[]
   ) {
     if (assignedArea.length < 3) return;
+    this.recordHistory();
     const currentSideId = this.currentScenario.getSide(
       this.currentSideName
     )?.id;
@@ -398,6 +416,7 @@ export default class Game {
   ) {
     const patrolMission = this.currentScenario.getPatrolMission(missionId);
     if (patrolMission) {
+      this.recordHistory();
       if (missionName && missionName !== "") patrolMission.name = missionName;
       if (assignedUnits && assignedUnits.length > 0)
         patrolMission.assignedUnitIds = assignedUnits;
@@ -413,6 +432,7 @@ export default class Game {
     assignedAttackers: string[],
     assignedTargets: string[]
   ) {
+    this.recordHistory();
     const currentSideId = this.currentScenario.getSide(
       this.currentSideName
     )?.id;
@@ -435,6 +455,7 @@ export default class Game {
   ) {
     const strikeMission = this.currentScenario.getStrikeMission(missionId);
     if (strikeMission) {
+      this.recordHistory();
       if (missionName && missionName !== "") strikeMission.name = missionName;
       if (assignedAttackers && assignedAttackers.length > 0)
         strikeMission.assignedUnitIds = assignedAttackers;
@@ -444,6 +465,7 @@ export default class Game {
   }
 
   deleteMission(missionId: string) {
+    this.recordHistory();
     this.currentScenario.missions = this.currentScenario.missions.filter(
       (mission) => mission.id !== missionId
     );
@@ -512,12 +534,14 @@ export default class Game {
   commitRoute(unitId: string) {
     const aircraft = this.currentScenario.getAircraft(unitId);
     if (aircraft) {
+      this.recordHistory();
       aircraft.route = aircraft.desiredRoute;
       aircraft.desiredRoute = [];
       return aircraft;
     }
     const ship = this.currentScenario.getShip(unitId);
     if (ship) {
+      this.recordHistory();
       ship.route = ship.desiredRoute;
       ship.desiredRoute = [];
       return ship;
@@ -527,12 +551,14 @@ export default class Game {
   teleportUnit(unitId: string, newLatitude: number, newLongitude: number) {
     const aircraft = this.currentScenario.getAircraft(unitId);
     if (aircraft) {
+      this.recordHistory();
       aircraft.latitude = newLatitude;
       aircraft.longitude = newLongitude;
       return aircraft;
     }
     const airbase = this.currentScenario.getAirbase(unitId);
     if (airbase) {
+      this.recordHistory();
       airbase.latitude = newLatitude;
       airbase.longitude = newLongitude;
       airbase.aircraft.forEach((aircraft) => {
@@ -543,12 +569,14 @@ export default class Game {
     }
     const facility = this.currentScenario.getFacility(unitId);
     if (facility) {
+      this.recordHistory();
       facility.latitude = newLatitude;
       facility.longitude = newLongitude;
       return facility;
     }
     const ship = this.currentScenario.getShip(unitId);
     if (ship) {
+      this.recordHistory();
       ship.latitude = newLatitude;
       ship.longitude = newLongitude;
       ship.aircraft.forEach((aircraft) => {
@@ -559,6 +587,7 @@ export default class Game {
     }
     const referencePoint = this.currentScenario.getReferencePoint(unitId);
     if (referencePoint) {
+      this.recordHistory();
       referencePoint.latitude = newLatitude;
       referencePoint.longitude = newLongitude;
       this.currentScenario.missions.forEach((mission) => {
@@ -582,6 +611,7 @@ export default class Game {
     }
     const airbase = this.currentScenario.getAirbase(airbaseId);
     if (airbase && airbase.aircraft.length > 0) {
+      this.recordHistory();
       const aircraft = airbase.aircraft.pop();
       if (aircraft) {
         this.currentScenario.aircraft.push(aircraft);
@@ -604,6 +634,7 @@ export default class Game {
       target?.sideName !== aircraft?.sideName &&
       target?.id !== aircraft?.id
     ) {
+      this.recordHistory();
       launchWeapon(this.currentScenario, aircraft, target);
     }
   }
@@ -622,6 +653,7 @@ export default class Game {
       target?.sideName !== ship?.sideName &&
       target?.id !== ship?.id
     ) {
+      this.recordHistory();
       launchWeapon(this.currentScenario, ship, target);
     }
   }
@@ -629,6 +661,7 @@ export default class Game {
   aircraftReturnToBase(aircraftId: string) {
     const aircraft = this.currentScenario.getAircraft(aircraftId);
     if (aircraft) {
+      this.recordHistory();
       if (aircraft.rtb) {
         aircraft.rtb = false;
         aircraft.route = [];
@@ -1324,5 +1357,23 @@ export default class Game {
 
   exportRecording() {
     this.playbackRecorder.exportRecording(this.currentScenario.currentTime);
+  }
+
+  recordHistory() {
+    if (this.history.length > MAX_HISTORY_SIZE) {
+      this.history.shift();
+    }
+    this.history.push(this.exportCurrentScenario());
+  }
+
+  undo(): boolean {
+    if (this.history.length > 0) {
+      const lastScenario = this.history.pop();
+      if (lastScenario) {
+        this.loadScenario(lastScenario);
+        return true;
+      }
+    }
+    return false;
   }
 }

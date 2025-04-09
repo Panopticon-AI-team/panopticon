@@ -780,6 +780,15 @@ export default function ScenarioMap({
     }
   }
 
+  function handleUndo() {
+    setGamePaused();
+    if (game.undo()) {
+      setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+      drawNextFrame(game.currentScenario);
+      loadFeatureEntitiesState();
+    }
+  }
+
   function toggleRecordEverySeconds() {
     game.playbackRecorder.switchRecordingInterval();
     setCurrentRecordingIntervalSeconds(
@@ -1756,6 +1765,7 @@ export default function ScenarioMap({
         handleStepRecordingToStep={handleStepRecordingToStep}
         handleStepRecordingBackwards={handleStepRecordingBackwards}
         handleStepRecordingForwards={handleStepRecordingForwards}
+        handleUndo={handleUndo}
         switchCurrentSideOnClick={switchCurrentSide}
         refreshAllLayers={refreshAllLayers}
         updateMapView={updateMapView}
