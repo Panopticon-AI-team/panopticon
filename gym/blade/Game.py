@@ -413,6 +413,50 @@ class Game:
                         )
                         unit.route.append(random_waypoint_in_patrol_area)
 
+    def clear_completed_strike_missions(self) -> None:
+        def mission_filter(mission):
+            if isinstance(mission, StrikeMission):
+                is_mission_ongoing = True
+
+                target = self.current_scenario.get_target(
+                    mission.assigned_target_ids[0]
+                )
+
+                if not target:
+                    is_mission_ongoing = False
+
+                attackers = list(
+                    filter(
+                        lambda attacker: attacker is not None,
+                        [
+                            self.current_scenario.get_aircraft(attacker_id)
+                            for attacker_id in mission.assigned_unit_ids
+                        ],
+                    )
+                )
+
+                if len(attackers) < 1:
+                    is_mission_ongoing = False
+
+                all_attackers_expended = all(
+                    attacker.get_total_weapon_quantity() == 0 for attacker in attackers
+                )
+
+                if all_attackers_expended:
+                    is_mission_ongoing = False
+
+                if not is_mission_ongoing:
+                    for attacker in attackers:
+                        self.aircraft_return_to_base(attacker.id)
+
+                return is_mission_ongoing
+            else:
+                return True
+
+        self.current_scenario.missions = list(
+            filter(mission_filter, self.current_scenario.missions)
+        )
+
     def update_units_on_strike_mission(self):
         active_strike_missions = list(
             filter(
@@ -435,6 +479,18 @@ class Game:
                 )
                 if target is None:
                     continue
+                distance_between_weapon_launch_position_and_target_nm = None
+                if len(attacker.route) > 0:
+                    distance_between_weapon_launch_position_and_target_nm = (
+                        get_distance_between_two_points(
+                            attacker.route[len(attacker.route) - 1][0],
+                            attacker.route[len(attacker.route) - 1][1],
+                            target.latitude,
+                            target.longitude,
+                        )
+                        * 1000
+                    ) / NAUTICAL_MILES_TO_METERS
+
                 distance_between_attacker_and_target_nm = (
                     get_distance_between_two_points(
                         attacker.latitude,
@@ -450,7 +506,12 @@ class Game:
                 if aircraft_weapon_with_max_range is None:
                     continue
                 if (
-                    distance_between_attacker_and_target_nm
+                    distance_between_weapon_launch_position_and_target_nm is not None
+                    and distance_between_weapon_launch_position_and_target_nm
+                    > aircraft_weapon_with_max_range.range * 1.1
+                ) or (
+                    distance_between_weapon_launch_position_and_target_nm is None
+                    and distance_between_attacker_and_target_nm
                     > aircraft_weapon_with_max_range.range * 1.1
                 ):
                     route_aircraft_to_strike_position(
@@ -459,7 +520,10 @@ class Game:
                         mission.assigned_target_ids[0],
                         aircraft_weapon_with_max_range.range,
                     )
-                else:
+                elif (
+                    distance_between_attacker_and_target_nm
+                    <= aircraft_weapon_with_max_range.range * 1.1
+                ):
                     launch_weapon(self.current_scenario, attacker, target)
                     attacker.target_id = target.id
 
@@ -588,6 +652,7 @@ class Game:
         self.aircraft_air_to_air_engagement()
 
         self.update_units_on_patrol_mission()
+        self.clear_completed_strike_missions()
         self.update_units_on_strike_mission()
 
         for weapon in self.current_scenario.weapons:

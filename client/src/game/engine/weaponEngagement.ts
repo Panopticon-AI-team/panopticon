@@ -237,6 +237,6 @@ export function routeAircraftToStrikePosition(
     bearingBetweenTargetAndAircraft
   );
 
-  aircraft.route = [[strikeLocation[0], strikeLocation[1]]];
+  aircraft.route.push([strikeLocation[0], strikeLocation[1]]);
   aircraft.heading = bearingBetweenAircraftAndTarget;
 }
