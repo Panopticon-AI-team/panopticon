@@ -167,4 +167,3 @@ cython_debug/
 scripts/**/*.zip
 scripts/**/*.jsonl
 scripts/**/*.jsonl.gz
-scripts/**/*.json
