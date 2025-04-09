@@ -1396,8 +1396,10 @@ export default function ScenarioMap({
       game.currentSideName
     )?.id;
     if (
+      selectedMissionId !== "" &&
       game.currentScenario.missions.filter(
-        (mission) => mission.sideId === currentSideId
+        (mission) =>
+          mission.sideId === currentSideId && mission.id === selectedMissionId
       ).length === 0
     )
       return;
