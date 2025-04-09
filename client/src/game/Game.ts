@@ -685,6 +685,7 @@ export default class Game {
   getFuelNeededToReturnToBase(aircraftId: string) {
     const aircraft = this.currentScenario.getAircraft(aircraftId);
     if (aircraft) {
+      if (aircraft.speed === 0) return 0;
       const homeBase =
         aircraft.homeBaseId !== ""
           ? this.currentScenario.getAircraftHomeBase(aircraftId)

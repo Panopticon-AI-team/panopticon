@@ -302,6 +302,8 @@ class Game:
     def get_fuel_needed_to_return_to_base(self, aircraft_id: str) -> float:
         aircraft = self.current_scenario.get_aircraft(aircraft_id)
         if aircraft:
+            if aircraft.speed == 0:
+                return 0
             if aircraft.home_base_id != "":
                 home_base = self.current_scenario.get_aircraft_homebase(aircraft_id)
             else:
