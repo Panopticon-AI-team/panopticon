@@ -1092,7 +1092,7 @@ export default function ScenarioMap({
 
   function addReferencePoint(coordinates: number[], name?: string) {
     coordinates = toLonLat(coordinates, theMap.getView().getProjection());
-    name = name ?? "Reference Point #" + randomInt(1, 5000).toString();
+    name = name ?? "RP #" + randomInt(1, 5000).toString();
     const newReferencePoint = game.addReferencePoint(
       name,
       coordinates[1],

@@ -2429,7 +2429,7 @@
     "referencePoints": [
       {
         "id": "f2c69876-986f-4eb2-aa09-da00125e0e09",
-        "name": "Reference Point #1175",
+        "name": "RP #1175",
         "sideName": "BLUE",
         "latitude": 21.800061432629548,
         "longitude": 149.8482617352473,
@@ -2438,7 +2438,7 @@
       },
       {
         "id": "c88d834b-c35b-4c95-82bd-7bf0798d10b6",
-        "name": "Reference Point #3362",
+        "name": "RP #3362",
         "sideName": "BLUE",
         "latitude": 21.944247580149494,
         "longitude": 142.32834684548018,
@@ -2447,7 +2447,7 @@
       },
       {
         "id": "fc107728-41eb-4993-82d6-a53573858ce9",
-        "name": "Reference Point #341",
+        "name": "RP #341",
         "sideName": "BLUE",
         "latitude": 14.603141933178279,
         "longitude": 142.20405073159975,
@@ -2456,7 +2456,7 @@
       },
       {
         "id": "4fcdf8d5-2c28-490d-8733-e8ae32bb0689",
-        "name": "Reference Point #3524",
+        "name": "RP #3524",
         "sideName": "BLUE",
         "latitude": 14.753441339796368,
         "longitude": 150.96692676017133,
@@ -2465,7 +2465,7 @@
       },
       {
         "id": "072f4ade-e0cd-421e-82dd-d51a386ac09e",
-        "name": "Reference Point #2258",
+        "name": "RP #2258",
         "sideName": "RED",
         "latitude": 22.791948007929392,
         "longitude": 117.40697601245027,
@@ -2474,7 +2474,7 @@
       },
       {
         "id": "c2fdd901-9c10-4434-80a7-d0d0a7ff0ec2",
-        "name": "Reference Point #2966",
+        "name": "RP #2966",
         "sideName": "RED",
         "latitude": 22.877863978290662,
         "longitude": 120.26578663170056,
@@ -2483,7 +2483,7 @@
       },
       {
         "id": "94b605da-29da-439c-b5e5-427c9ee63e06",
-        "name": "Reference Point #4917",
+        "name": "RP #4917",
         "sideName": "RED",
         "latitude": 20.306630458768197,
         "longitude": 117.40697601245027,
@@ -2492,7 +2492,7 @@
       },
       {
         "id": "6517a3c7-5737-4191-b5a5-60c63fdd4784",
-        "name": "Reference Point #4529",
+        "name": "RP #4529",
         "sideName": "RED",
         "latitude": 20.714088302828785,
         "longitude": 120.20363857476035,
@@ -2512,7 +2512,7 @@
         "assignedArea": [
           {
             "id": "f2c69876-986f-4eb2-aa09-da00125e0e09",
-            "name": "Reference Point #1175",
+            "name": "RP #1175",
             "sideName": "BLUE",
             "latitude": 21.800061432629548,
             "longitude": 149.8482617352473,
@@ -2521,7 +2521,7 @@
           },
           {
             "id": "c88d834b-c35b-4c95-82bd-7bf0798d10b6",
-            "name": "Reference Point #3362",
+            "name": "RP #3362",
             "sideName": "BLUE",
             "latitude": 21.944247580149494,
             "longitude": 142.32834684548018,
@@ -2530,7 +2530,7 @@
           },
           {
             "id": "fc107728-41eb-4993-82d6-a53573858ce9",
-            "name": "Reference Point #341",
+            "name": "RP #341",
             "sideName": "BLUE",
             "latitude": 14.603141933178279,
             "longitude": 142.20405073159975,
@@ -2539,7 +2539,7 @@
           },
           {
             "id": "4fcdf8d5-2c28-490d-8733-e8ae32bb0689",
-            "name": "Reference Point #3524",
+            "name": "RP #3524",
             "sideName": "BLUE",
             "latitude": 14.753441339796368,
             "longitude": 150.96692676017133,
@@ -2599,7 +2599,7 @@
         "assignedArea": [
           {
             "id": "072f4ade-e0cd-421e-82dd-d51a386ac09e",
-            "name": "Reference Point #2258",
+            "name": "RP #2258",
             "sideName": "RED",
             "latitude": 22.791948007929392,
             "longitude": 117.40697601245027,
@@ -2608,7 +2608,7 @@
           },
           {
             "id": "c2fdd901-9c10-4434-80a7-d0d0a7ff0ec2",
-            "name": "Reference Point #2966",
+            "name": "RP #2966",
             "sideName": "RED",
             "latitude": 22.877863978290662,
             "longitude": 120.26578663170056,
@@ -2617,7 +2617,7 @@
           },
           {
             "id": "94b605da-29da-439c-b5e5-427c9ee63e06",
-            "name": "Reference Point #4917",
+            "name": "RP #4917",
             "sideName": "RED",
             "latitude": 20.306630458768197,
             "longitude": 117.40697601245027,
@@ -2626,7 +2626,7 @@
           },
           {
             "id": "6517a3c7-5737-4191-b5a5-60c63fdd4784",
-            "name": "Reference Point #4529",
+            "name": "RP #4529",
             "sideName": "RED",
             "latitude": 20.714088302828785,
             "longitude": 120.20363857476035,
