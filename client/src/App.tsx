@@ -5,7 +5,6 @@ import Side from "@/game/Side";
 import Scenario from "@/game/Scenario";
 import Game from "@/game/Game";
 import { DEFAULT_OL_PROJECTION_CODE } from "@/utils/constants";
-import defaultScenarioJson from "@/scenarios/default_scenario.json"; // < To easily switch between default_scenario.json and SCS.json when testing. Ignore lint warning. Possible to resort to something else instead of having unsued import here ?
 import SCSScenarioJson from "@/scenarios/SCS.json";
 import Box from "@mui/material/Box";
 import { useMediaQuery } from "@mui/material";
