@@ -1309,10 +1309,11 @@ export default class Game {
     this.playbackRecorder.startRecording(this.currentScenario);
   }
 
-  recordStep() {
+  recordStep(force: boolean = false) {
     if (
       this.recordingScenario &&
-      this.playbackRecorder.shouldRecord(this.currentScenario.currentTime)
+      (this.playbackRecorder.shouldRecord(this.currentScenario.currentTime) ||
+        force)
     ) {
       this.playbackRecorder.recordStep(
         this.exportCurrentScenario(),
