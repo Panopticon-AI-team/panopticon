@@ -352,7 +352,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     }
   };
 
-  const loadScenario = (scenarioJson: string) => {
+  const loadScenario = (
+    scenarioJson: string,
+    updateScenarioName: boolean = true
+  ) => {
     props.game.loadScenario(scenarioJson);
     props.updateMapView(
       props.game.mapView.currentCameraCenter,
@@ -362,10 +365,12 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       props.game.currentScenario.timeCompression
     );
     props.updateCurrentSideName(props.game.currentSideName);
-    props.game.currentScenario.updateScenarioName(
-      props.game.currentScenario.name
-    );
-    setScenarioName(props.game.currentScenario.name);
+    if (updateScenarioName) {
+      props.game.currentScenario.updateScenarioName(
+        props.game.currentScenario.name
+      );
+      setScenarioName(props.game.currentScenario.name);
+    }
     props.refreshAllLayers();
     props.updateCurrentScenarioTimeToContext();
     props.loadFeatureEntitiesState();
@@ -410,7 +415,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     setScenarioPaused(true);
     if (currentScenarioString) {
       try {
-        loadScenario(currentScenarioString);
+        loadScenario(currentScenarioString, false);
+        props.game.currentScenario.updateScenarioName(scenarioName);
+        setScenarioName(props.game.currentScenario.name);
       } catch {
         toastContext?.addToast(
           "Failed to restart scenario. Please refresh page or try again later.",
@@ -418,7 +425,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         );
       }
     } else {
-      loadScenario(initialScenarioString);
+      loadScenario(initialScenarioString, false);
+      props.game.currentScenario.updateScenarioName(scenarioName);
+      setScenarioName(props.game.currentScenario.name);
     }
   };
 
