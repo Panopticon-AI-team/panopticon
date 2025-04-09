@@ -1324,7 +1324,10 @@ export default class Game {
         this.getFuelNeededToReturnToBase(aircraft);
       if (aircraft.currentFuel <= 0) {
         this.removeAircraft(aircraft.id);
-      } else if (aircraft.currentFuel < fuelNeededToReturnToBase * 1.1) {
+      } else if (
+        aircraft.currentFuel < fuelNeededToReturnToBase * 1.1 &&
+        !aircraft.rtb
+      ) {
         this.aircraftReturnToBase(aircraft.id);
       }
     });

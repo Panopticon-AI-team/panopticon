@@ -619,7 +619,10 @@ class Game:
             )
             if aircraft.current_fuel <= 0:
                 self.remove_aircraft(aircraft.id)
-            elif aircraft.current_fuel < fuel_needed_to_return_to_base * 1.1:
+            elif (
+                aircraft.current_fuel < fuel_needed_to_return_to_base * 1.1
+                and not aircraft.rtb
+            ):
                 self.aircraft_return_to_base(aircraft.id)
 
     def update_all_ship_position(self) -> None:
