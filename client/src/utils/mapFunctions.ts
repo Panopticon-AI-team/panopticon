@@ -265,109 +265,6 @@ export function randomInt(min: number = 0, max: number = 100): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export function generateRoute(
-  originLatitude: number,
-  originLongitude: number,
-  destinationLatitude: number,
-  destinationLongitude: number,
-  numberOfWaypoints: number
-): number[][] {
-  const route: number[][] = [];
-
-  const heading = getBearingBetweenTwoPoints(
-    originLatitude,
-    originLongitude,
-    destinationLatitude,
-    destinationLongitude
-  );
-  const totalDistance = getDistanceBetweenTwoPoints(
-    originLatitude,
-    originLongitude,
-    destinationLatitude,
-    destinationLongitude
-  );
-  const legDistance = totalDistance / numberOfWaypoints;
-
-  route.push(
-    getTerminalCoordinatesFromDistanceAndBearing(
-      originLatitude,
-      originLongitude,
-      legDistance,
-      heading
-    )
-  );
-
-  for (
-    let waypointIndex = 1;
-    waypointIndex < numberOfWaypoints;
-    waypointIndex++
-  ) {
-    const newWaypoint = getTerminalCoordinatesFromDistanceAndBearing(
-      route[waypointIndex - 1][0],
-      route[waypointIndex - 1][1],
-      legDistance,
-      heading
-    );
-    route.push(newWaypoint);
-  }
-
-  route.push([destinationLatitude, destinationLongitude]);
-  return route;
-}
-
-export function generateRouteRealistic(
-  originLatitude: number,
-  originLongitude: number,
-  destinationLatitude: number,
-  destinationLongitude: number,
-  platformSpeed: number
-): number[][] {
-  const route: number[][] = [];
-
-  const heading = getBearingBetweenTwoPoints(
-    originLatitude,
-    originLongitude,
-    destinationLatitude,
-    destinationLongitude
-  );
-  const totalDistance = getDistanceBetweenTwoPoints(
-    originLatitude,
-    originLongitude,
-    destinationLatitude,
-    destinationLongitude
-  );
-  const totalTimeHours =
-    (totalDistance * KILOMETERS_TO_NAUTICAL_MILES) / platformSpeed; // hours
-  const totalTimeSeconds = Math.floor(totalTimeHours * 3600); // seconds
-  const legDistance = totalDistance / totalTimeSeconds;
-
-  route.push(
-    getTerminalCoordinatesFromDistanceAndBearing(
-      originLatitude,
-      originLongitude,
-      legDistance,
-      heading
-    )
-  );
-
-  for (
-    let waypointIndex = 1;
-    waypointIndex < totalTimeSeconds;
-    waypointIndex++
-  ) {
-    const newWaypoint = getTerminalCoordinatesFromDistanceAndBearing(
-      route[waypointIndex - 1][0],
-      route[waypointIndex - 1][1],
-      legDistance,
-      heading
-    );
-    route.push(newWaypoint);
-  }
-
-  route.push([destinationLatitude, destinationLongitude]);
-  return route;
-}
-
 export function getNextCoordinates(
   originLatitude: number,
   originLongitude: number,
@@ -390,13 +287,14 @@ export function getNextCoordinates(
   const totalTimeHours =
     (totalDistance * KILOMETERS_TO_NAUTICAL_MILES) /
     (platformSpeed < 0 ? -platformSpeed : platformSpeed); // hours
-  const totalTimeSeconds = Math.floor(totalTimeHours * 3600); // seconds
-  const legDistance = totalDistance / totalTimeSeconds;
+  const totalTimeSeconds = Math.max(totalTimeHours * 3600, 0.0001); // seconds
+  const legDistanceNm = totalDistance / totalTimeSeconds;
+  const legDistanceKm = legDistanceNm / KILOMETERS_TO_NAUTICAL_MILES;
 
   return getTerminalCoordinatesFromDistanceAndBearing(
     originLatitude,
     originLongitude,
-    legDistance,
+    legDistanceKm,
     heading
   );
 }
