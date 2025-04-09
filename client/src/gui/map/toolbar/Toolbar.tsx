@@ -134,16 +134,16 @@ const toolbarStyle = {
 export default function Toolbar(props: Readonly<ToolBarProps>) {
   const toastContext = useContext(ToastContext);
   const [selectedSide, setSelectedSide] = useState<"blue" | "red">("blue");
-  const [currentScenarioFile, setCurrentScenarioFile] = useState<File | null>(
-    null
+  const [initialScenarioString, setInitialScenarioString] = useState<string>(
+    props.game.exportCurrentScenario()
   );
+  const [currentScenarioString, setCurrentScenarioString] = useState<
+    string | null
+  >(null);
   const [scenarioName, setScenarioName] = useState<string>(
     props.game.currentScenario.name ?? "New Scenario"
   );
   const [scenarioNameError, setScenarioNameError] = useState<boolean>(false);
-  const [initialScenarioString, setInitialScenarioString] = useState<string>(
-    props.game.exportCurrentScenario()
-  );
   const [scenarioPaused, setScenarioPaused] = useState<boolean>(
     props.game.scenarioPaused
   );
@@ -339,7 +339,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       try {
         props.pauseOnClick();
         setScenarioPaused(true);
-        loadScenario(JSON.stringify(scenarioJson));
+        const scenarioString = JSON.stringify(scenarioJson);
+        loadScenario(scenarioString);
+        setCurrentScenarioString(scenarioString);
         toastContext?.addToast("Scenario loaded successfully!", "success");
       } catch (error) {
         toastContext?.addToast(
@@ -383,7 +385,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         const reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = (readerEvent) => {
-          loadScenario(readerEvent.target?.result as string);
+          const scenarioString = readerEvent.target?.result as string;
+          loadScenario(scenarioString);
+          setCurrentScenarioString(scenarioString);
           toastContext?.addToast(
             "Scenario file uploaded successfully!",
             "success"
@@ -396,7 +400,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             "error"
           );
         };
-        setCurrentScenarioFile(file);
       }
     };
     input.click();
@@ -405,19 +408,15 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   const reloadScenario = () => {
     props.pauseOnClick();
     setScenarioPaused(true);
-    if (currentScenarioFile) {
-      const reader = new FileReader();
-      reader.readAsText(currentScenarioFile, "UTF-8");
-      reader.onload = (readerEvent) => {
-        loadScenario(readerEvent.target?.result as string);
-      };
-      reader.onerror = () => {
-        reader.abort();
+    if (currentScenarioString) {
+      try {
+        loadScenario(currentScenarioString);
+      } catch {
         toastContext?.addToast(
           "Failed to restart scenario. Please refresh page or try again later.",
           "error"
         );
-      };
+      }
     } else {
       loadScenario(initialScenarioString);
     }
