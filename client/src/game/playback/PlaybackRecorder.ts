@@ -8,7 +8,7 @@ const RECORDING_INTERVAL_SECONDS = 10;
 
 class PlaybackRecorder {
   scenarioName: string = "New Scenario";
-  currentScenarioTime: number = 0;
+  lastRecordingTime: number = 0;
   recording: string = "";
   recordingStartTime: number = 0;
   recordEverySeconds: number = RECORDING_INTERVAL_SECONDS;
@@ -31,10 +31,10 @@ class PlaybackRecorder {
 
   shouldRecord(currentScenarioTime: number) {
     if (
-      currentScenarioTime - this.currentScenarioTime >=
+      currentScenarioTime - this.lastRecordingTime >=
       this.recordEverySeconds
     ) {
-      this.currentScenarioTime = currentScenarioTime;
+      this.lastRecordingTime = currentScenarioTime;
       return true;
     }
     return false;
@@ -43,19 +43,20 @@ class PlaybackRecorder {
   reset() {
     this.scenarioName = "New Scenario";
     this.recording = "";
-    this.currentScenarioTime = 0;
+    this.lastRecordingTime = 0;
     this.recordingStartTime = 0;
   }
 
   startRecording(scenario: Scenario) {
     this.reset();
     this.scenarioName = scenario.name;
-    this.currentScenarioTime = scenario.currentTime;
+    this.lastRecordingTime = scenario.currentTime;
     this.recordingStartTime = scenario.currentTime;
   }
 
   recordStep(currentStep: string, currentScenarioTime: number) {
     this.recording += currentStep + "\n";
+    this.lastRecordingTime = currentScenarioTime;
     if (this.recording.length > CHARACTER_LIMIT) {
       this.exportRecording(currentScenarioTime, this.recordingStartTime);
       this.recordingStartTime = currentScenarioTime;

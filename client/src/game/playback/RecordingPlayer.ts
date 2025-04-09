@@ -22,6 +22,20 @@ class RecordingPlayer {
     }
   }
 
+  cleanDuplicatedSteps(recording: string[]) {
+    const seenTimes = new Set<string>();
+    const uniqueSteps: string[] = [];
+    for (let i = recording.length - 1; i >= 0; i--) {
+      const step = JSON.parse(recording[i]);
+      const stepTime = step.currentScenario.currentTime;
+      if (!seenTimes.has(stepTime)) {
+        seenTimes.add(stepTime);
+        uniqueSteps.unshift(recording[i]);
+      }
+    }
+    return uniqueSteps;
+  }
+
   loadRecording(recording: string) {
     const recordingInput = recording.split("\n");
     if (recordingInput.length === 0) return false;
@@ -29,7 +43,7 @@ class RecordingPlayer {
       return this.validateRecordingStep(step);
     });
     if (validatedRecording.length === 0) return false;
-    this.recording = validatedRecording;
+    this.recording = this.cleanDuplicatedSteps(validatedRecording);
     this.currentStep = 0;
     this.playing = false;
     this.recordingScenarioTimes = this.recording.map((step) => {

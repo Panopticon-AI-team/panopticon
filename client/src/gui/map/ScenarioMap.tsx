@@ -824,6 +824,7 @@ export default function ScenarioMap({
   }
 
   function handleStepGameClick() {
+    game.recordStep(true);
     setGamePaused();
     stepGameAndDrawFrame();
   }
@@ -881,6 +882,7 @@ export default function ScenarioMap({
   }
 
   async function handlePlayGameClick() {
+    game.recordStep(true);
     setCurrentGameStatusToContext("Scenario playing");
     game.scenarioPaused = false;
     let gameEnded = game.checkGameEnded();
