@@ -111,13 +111,12 @@ def get_next_coordinates(
     total_time_hours = (total_distance * KILOMETERS_TO_NAUTICAL_MILES) / (
         platform_speed if platform_speed >= 0 else -platform_speed
     )
-    total_time_seconds = max(
-        math.floor(total_time_hours * 3600), 0.0001
-    )  # prevent divide-by-zero
-    leg_distance = total_distance / total_time_seconds
+    total_time_seconds = max(total_time_hours * 3600, 0.0001)  # prevent divide-by-zero
+    leg_distance_nm = total_distance / total_time_seconds
+    leg_distance_km = leg_distance_nm / KILOMETERS_TO_NAUTICAL_MILES
 
     return get_terminal_coordinates_from_distance_and_bearing(
-        origin_latitude, origin_longitude, leg_distance, heading
+        origin_latitude, origin_longitude, leg_distance_km, heading
     )
 
 

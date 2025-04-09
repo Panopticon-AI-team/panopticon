@@ -682,6 +682,34 @@ export default class Game {
     }
   }
 
+  getFuelNeededToReturnToBase(aircraftId: string) {
+    const aircraft = this.currentScenario.getAircraft(aircraftId);
+    if (aircraft) {
+      if (aircraft.speed === 0) return 0;
+      const homeBase =
+        aircraft.homeBaseId !== ""
+          ? this.currentScenario.getAircraftHomeBase(aircraftId)
+          : this.currentScenario.getClosestBaseToAircraft(aircraftId);
+      if (homeBase) {
+        const distanceBetweenAircraftAndBaseNm =
+          (getDistanceBetweenTwoPoints(
+            aircraft.latitude,
+            aircraft.longitude,
+            homeBase.latitude,
+            homeBase.longitude
+          ) *
+            1000) /
+          NAUTICAL_MILES_TO_METERS;
+        const timeNeededToReturnToBaseHr =
+          distanceBetweenAircraftAndBaseNm / aircraft.speed;
+        const fuelNeededToReturnToBase =
+          timeNeededToReturnToBaseHr * aircraft.fuelRate;
+        return fuelNeededToReturnToBase;
+      }
+    }
+    return 0;
+  }
+
   landAircraft(aircraftId: string) {
     const aircraft = this.currentScenario.getAircraft(aircraftId);
     if (aircraft && aircraft.rtb) {
@@ -1293,10 +1321,15 @@ export default class Game {
             nextWaypointLongitude
           );
         }
-        aircraft.currentFuel -= aircraft.fuelRate / 3600;
-        if (aircraft.currentFuel <= 0) {
-          this.removeAircraft(aircraft.id);
-        }
+      }
+      aircraft.currentFuel -= aircraft.fuelRate / 3600;
+      const fuelNeededToReturnToBase = this.getFuelNeededToReturnToBase(
+        aircraft.id
+      );
+      if (aircraft.currentFuel <= 0) {
+        this.removeAircraft(aircraft.id);
+      } else if (aircraft.currentFuel < fuelNeededToReturnToBase * 1.1) {
+        this.aircraftReturnToBase(aircraft.id);
       }
     });
   }

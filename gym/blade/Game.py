@@ -299,6 +299,40 @@ class Game:
                         aircraft_id, [[homebase.latitude, homebase.longitude]]
                     )
 
+    def get_fuel_needed_to_return_to_base(self, aircraft_id: str) -> float:
+        aircraft = self.current_scenario.get_aircraft(aircraft_id)
+        if aircraft:
+            if aircraft.speed == 0:
+                return 0
+            if aircraft.home_base_id != "":
+                home_base = self.current_scenario.get_aircraft_homebase(aircraft_id)
+            else:
+                home_base = self.current_scenario.get_closest_base_to_aircraft(
+                    aircraft_id
+                )
+
+            if home_base:
+                distance_between_aircraft_and_base_nm = (
+                    get_distance_between_two_points(
+                        aircraft.latitude,
+                        aircraft.longitude,
+                        home_base.latitude,
+                        home_base.longitude,
+                    )
+                    * 1000
+                ) / NAUTICAL_MILES_TO_METERS
+
+                time_needed_to_return_to_base_hr = (
+                    distance_between_aircraft_and_base_nm / aircraft.speed
+                )
+                fuel_needed_to_return_to_base = (
+                    time_needed_to_return_to_base_hr * aircraft.fuel_rate
+                )
+
+                return fuel_needed_to_return_to_base
+
+        return 0
+
     def facility_auto_defense(self) -> None:
         for facility in self.current_scenario.facilities:
             for aircraft in self.current_scenario.aircraft:
@@ -549,44 +583,48 @@ class Game:
                     continue
 
             route = aircraft.route
-            if len(route) < 1:
-                continue
-            next_waypoint = route[0]
-            next_waypoint_latitude = next_waypoint[0]
-            next_waypoint_longitude = next_waypoint[1]
-            if (
-                get_distance_between_two_points(
-                    aircraft.latitude,
-                    aircraft.longitude,
-                    next_waypoint_latitude,
-                    next_waypoint_longitude,
-                )
-                < 0.5
-            ):
-                aircraft.latitude = next_waypoint_latitude
-                aircraft.longitude = next_waypoint_longitude
-                aircraft.route.pop(0)
-            else:
-                next_aircraft_coordinates = get_next_coordinates(
-                    aircraft.latitude,
-                    aircraft.longitude,
-                    next_waypoint_latitude,
-                    next_waypoint_longitude,
-                    aircraft.speed,
-                )
-                next_aircraft_latitude = next_aircraft_coordinates[0]
-                next_aircraft_longitude = next_aircraft_coordinates[1]
-                aircraft.latitude = next_aircraft_latitude
-                aircraft.longitude = next_aircraft_longitude
-                aircraft.heading = get_bearing_between_two_points(
-                    aircraft.latitude,
-                    aircraft.longitude,
-                    next_waypoint_latitude,
-                    next_waypoint_longitude,
-                )
+            if len(route) > 0:
+                next_waypoint = route[0]
+                next_waypoint_latitude = next_waypoint[0]
+                next_waypoint_longitude = next_waypoint[1]
+                if (
+                    get_distance_between_two_points(
+                        aircraft.latitude,
+                        aircraft.longitude,
+                        next_waypoint_latitude,
+                        next_waypoint_longitude,
+                    )
+                    < 0.5
+                ):
+                    aircraft.latitude = next_waypoint_latitude
+                    aircraft.longitude = next_waypoint_longitude
+                    aircraft.route.pop(0)
+                else:
+                    next_aircraft_coordinates = get_next_coordinates(
+                        aircraft.latitude,
+                        aircraft.longitude,
+                        next_waypoint_latitude,
+                        next_waypoint_longitude,
+                        aircraft.speed,
+                    )
+                    next_aircraft_latitude = next_aircraft_coordinates[0]
+                    next_aircraft_longitude = next_aircraft_coordinates[1]
+                    aircraft.latitude = next_aircraft_latitude
+                    aircraft.longitude = next_aircraft_longitude
+                    aircraft.heading = get_bearing_between_two_points(
+                        aircraft.latitude,
+                        aircraft.longitude,
+                        next_waypoint_latitude,
+                        next_waypoint_longitude,
+                    )
             aircraft.current_fuel -= aircraft.fuel_rate / 3600
+            fuel_needed_to_return_to_base = self.get_fuel_needed_to_return_to_base(
+                aircraft.id
+            )
             if aircraft.current_fuel <= 0:
                 self.remove_aircraft(aircraft.id)
+            elif aircraft.current_fuel < fuel_needed_to_return_to_base * 1.1:
+                self.aircraft_return_to_base(aircraft.id)
 
     def update_all_ship_position(self) -> None:
         for ship in self.current_scenario.ships:
