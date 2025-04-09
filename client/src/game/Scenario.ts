@@ -19,7 +19,7 @@ interface IScenario {
   startTime: number;
   currentTime?: number;
   duration: number;
-  sides: Side[];
+  sides?: Side[];
   timeCompression?: number;
   aircraft?: Aircraft[];
   ships?: Ship[];
@@ -52,7 +52,7 @@ export default class Scenario {
     this.startTime = parameters.startTime;
     this.currentTime = parameters.currentTime ?? parameters.startTime;
     this.duration = parameters.duration;
-    this.sides = parameters.sides;
+    this.sides = parameters.sides ?? [];
     this.timeCompression = parameters.timeCompression ?? 1;
     this.aircraft = parameters.aircraft ?? [];
     this.facilities = parameters.facilities ?? [];

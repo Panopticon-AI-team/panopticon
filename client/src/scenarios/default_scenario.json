@@ -62,7 +62,9 @@
           }
         ],
         "homeBaseId": "",
-        "rtb": false
+        "rtb": false,
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "bc655d60-6f8e-4480-ac47-043d27134c32",
@@ -105,7 +107,9 @@
           }
         ],
         "homeBaseId": "",
-        "rtb": false
+        "rtb": false,
+        "targetId": "",
+        "desiredRoute": []
       }
     ],
     "ships": [],
@@ -265,7 +269,9 @@
               }
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "1063e7b1-32fa-43e5-be2b-6d54d3fa6b8c",
@@ -308,7 +314,9 @@
               }
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "bdb9ef88-92d2-420a-8621-b4425cadd0c6",
@@ -351,7 +359,9 @@
               }
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "a45cdcb6-89ca-4d16-8701-38ac0e227e68",
@@ -394,7 +404,9 @@
               }
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "74a0ceea-1562-40e9-bfd1-a51b70a1dbc4",
@@ -437,7 +449,9 @@
               }
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           }
         ]
       },
@@ -492,7 +506,9 @@
               }
             ],
             "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "d9336419-6674-45a9-bf72-c8d1f71bf8ad",
@@ -535,7 +551,9 @@
               }
             ],
             "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "97916c94-1941-402a-bc96-a542d548ed63",
@@ -578,7 +596,9 @@
               }
             ],
             "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "e0d4547d-9921-4580-bef9-5026f371cb9e",
@@ -621,7 +641,9 @@
               }
             ],
             "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "519a9ecc-829f-469d-a77c-e4132dc26baa",
@@ -664,19 +686,23 @@
               }
             ],
             "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
-            "rtb": false
+            "rtb": false,
+            "targetId": "",
+            "desiredRoute": []
           }
         ]
       }
     ],
-    "weapons": []
+    "weapons": [],
+    "referencePoints": [],
+    "missions": []
   },
   "currentSideName": "BLUE",
   "selectedUnitId": "",
   "mapView": {
     "defaultCenter": [0, 0],
-    "currentCameraCenter": [-28.026647139596086, 6.417724587487484],
+    "currentCameraCenter": [-27.855518405785773, 6.8653382652346835],
     "defaultZoom": 5,
-    "currentCameraZoom": 5.001735148595708
+    "currentCameraZoom": 4.668401815262376
   }
 }

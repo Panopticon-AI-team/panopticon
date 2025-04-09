@@ -2554,7 +2554,7 @@
           "dispatching_": null,
           "listeners_": null,
           "revision_": 1,
-          "ol_uid": "10",
+          "ol_uid": "6",
           "values_": null,
           "extent_": [null, null, null, null],
           "extentRevision_": -1,
@@ -2641,7 +2641,7 @@
           "dispatching_": null,
           "listeners_": null,
           "revision_": 1,
-          "ol_uid": "11",
+          "ol_uid": "7",
           "values_": null,
           "extent_": [null, null, null, null],
           "extentRevision_": -1,
@@ -2658,8 +2658,8 @@
           "orientedFlatCoordinates_": null,
           "flatCoordinates": [
             13069684.78528405, 2606877.5839218325, 13387926.127693396,
-            2617255.0190003994, 13381007.83764102, 2357819.1420362582,
-            13069684.78528405, 2309391.1116696196
+            2617255.0190003994, 13069684.78528405, 2309391.1116696196,
+            13381007.83764102, 2357819.1420362582
           ]
         }
       }
@@ -2669,8 +2669,8 @@
   "selectedUnitId": "",
   "mapView": {
     "defaultCenter": [130.78675023228317, 26.54934438063878],
-    "currentCameraCenter": [126.32522218337252, 26.935149764112793],
+    "currentCameraCenter": [131.35362952457942, 25.894570685552196],
     "defaultZoom": 5.5,
-    "currentCameraZoom": 5.5
+    "currentCameraZoom": 5.166666666666667
   }
 }
