@@ -707,7 +707,7 @@ export default class Game {
 
   exportCurrentScenario(): string {
     const exportObject = {
-      currentScenario: this.currentScenario,
+      currentScenario: this.currentScenario, // TODO clean up some parameters that are not needed before export, e.g. PatrolMission patrolAreaGeometry
       currentSideName: this.currentSideName,
       selectedUnitId: this.selectedUnitId,
       mapView: this.mapView,

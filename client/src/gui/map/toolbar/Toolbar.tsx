@@ -45,6 +45,7 @@ import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import DocumentScannerOutlinedIcon from "@mui/icons-material/DocumentScannerOutlined";
 import AirlineStopsOutlinedIcon from "@mui/icons-material/AirlineStopsOutlined";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import {
   formatSecondsToString,
   getLocalDateTime,
@@ -56,6 +57,9 @@ import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 import { FeatureEntityState } from "@/gui/map/mapLayers/FeatureLayers";
 import RecordingPlayer from "./RecordingPlayer";
+import blankScenarioJson from "@/scenarios/blank_scenario.json";
+import defaultScenarioJson from "@/scenarios/default_scenario.json";
+import SCSScenarioJson from "@/scenarios/SCS.json";
 
 interface ToolBarProps {
   mobileView: boolean;
@@ -130,16 +134,16 @@ const toolbarStyle = {
 export default function Toolbar(props: Readonly<ToolBarProps>) {
   const toastContext = useContext(ToastContext);
   const [selectedSide, setSelectedSide] = useState<"blue" | "red">("blue");
-  const [currentScenarioFile, setCurrentScenarioFile] = useState<File | null>(
-    null
+  const [initialScenarioString, setInitialScenarioString] = useState<string>(
+    props.game.exportCurrentScenario()
   );
+  const [currentScenarioString, setCurrentScenarioString] = useState<
+    string | null
+  >(null);
   const [scenarioName, setScenarioName] = useState<string>(
     props.game.currentScenario.name ?? "New Scenario"
   );
   const [scenarioNameError, setScenarioNameError] = useState<boolean>(false);
-  const [initialScenarioString, setInitialScenarioString] = useState<string>(
-    props.game.exportCurrentScenario()
-  );
   const [scenarioPaused, setScenarioPaused] = useState<boolean>(
     props.game.scenarioPaused
   );
@@ -191,6 +195,18 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     props.game.currentScenario.updateScenarioName(scenarioName);
     handleCloseScenarioEditNameMenu();
     toastContext?.addToast("Scenario name updated successfully!", "success");
+  };
+
+  const [loadScenarioAnchorEl, setLoadScenarioAnchorEl] =
+    useState<null | HTMLElement>(null);
+  const presetScenarioSelectionMenuOpen = Boolean(loadScenarioAnchorEl);
+  const handleLoadScenarioIconClick = (
+    event: React.MouseEvent<HTMLElement>
+  ) => {
+    setLoadScenarioAnchorEl(event.currentTarget);
+  };
+  const handleLoadScenarioIconClose = () => {
+    setLoadScenarioAnchorEl(null);
   };
 
   const [selectedAircraftUnitClass, setSelectedAircraftUnitClass] =
@@ -293,7 +309,74 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     downloadAnchorNode.remove();
   };
 
-  const loadScenario = () => {
+  const newScenario = () => {
+    loadPresetScenario("blank_scenario");
+  };
+
+  const loadPresetScenario = (presetScenarioName: string) => {
+    let scenarioJson: Object | null = null;
+    switch (presetScenarioName) {
+      case "blank_scenario":
+        scenarioJson = blankScenarioJson;
+        handleLoadScenarioIconClose();
+        break;
+      case "default_scenario":
+        scenarioJson = defaultScenarioJson;
+        handleLoadScenarioIconClose();
+        break;
+      case "SCS":
+        scenarioJson = SCSScenarioJson;
+        handleLoadScenarioIconClose();
+        break;
+      case "_upload":
+        handleLoadScenarioIconClose();
+        uploadScenario();
+        return;
+      default:
+        break;
+    }
+    if (scenarioJson !== null) {
+      try {
+        props.pauseOnClick();
+        setScenarioPaused(true);
+        const scenarioString = JSON.stringify(scenarioJson);
+        loadScenario(scenarioString);
+        setCurrentScenarioString(scenarioString);
+        toastContext?.addToast("Scenario loaded successfully!", "success");
+      } catch (error) {
+        toastContext?.addToast(
+          "Failed to load scenario. Please refresh page or try again later.",
+          "error"
+        );
+      }
+    }
+  };
+
+  const loadScenario = (
+    scenarioJson: string,
+    updateScenarioName: boolean = true
+  ) => {
+    props.game.loadScenario(scenarioJson);
+    props.updateMapView(
+      props.game.mapView.currentCameraCenter,
+      props.game.mapView.currentCameraZoom
+    );
+    props.updateScenarioTimeCompression(
+      props.game.currentScenario.timeCompression
+    );
+    props.updateCurrentSideName(props.game.currentSideName);
+    if (updateScenarioName) {
+      props.game.currentScenario.updateScenarioName(
+        props.game.currentScenario.name
+      );
+      setScenarioName(props.game.currentScenario.name);
+    }
+    props.refreshAllLayers();
+    props.updateCurrentScenarioTimeToContext();
+    props.loadFeatureEntitiesState();
+  };
+
+  const uploadScenario = () => {
     props.pauseOnClick();
     setScenarioPaused(true);
     const input = document.createElement("input");
@@ -304,26 +387,12 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       input.remove();
       const file = (event.target as HTMLInputElement).files?.[0];
       if (file) {
-        props.game.currentScenario.updateScenarioName(file.name);
         const reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = (readerEvent) => {
-          props.game.loadScenario(readerEvent.target?.result as string);
-          props.updateMapView(
-            props.game.mapView.currentCameraCenter,
-            props.game.mapView.currentCameraZoom
-          );
-          props.updateScenarioTimeCompression(
-            props.game.currentScenario.timeCompression
-          );
-          props.updateCurrentSideName(props.game.currentSideName);
-          props.game.currentScenario.updateScenarioName(
-            props.game.currentScenario.name
-          );
-          setScenarioName(props.game.currentScenario.name);
-          props.refreshAllLayers();
-          props.updateCurrentScenarioTimeToContext();
-          props.loadFeatureEntitiesState();
+          const scenarioString = readerEvent.target?.result as string;
+          loadScenario(scenarioString);
+          setCurrentScenarioString(scenarioString);
           toastContext?.addToast(
             "Scenario file uploaded successfully!",
             "success"
@@ -336,7 +405,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             "error"
           );
         };
-        setCurrentScenarioFile(file);
       }
     };
     input.click();
@@ -345,51 +413,21 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   const reloadScenario = () => {
     props.pauseOnClick();
     setScenarioPaused(true);
-    if (currentScenarioFile) {
-      const reader = new FileReader();
-      reader.readAsText(currentScenarioFile, "UTF-8");
-      reader.onload = (readerEvent) => {
-        props.game.loadScenario(readerEvent.target?.result as string);
-        props.updateMapView(
-          props.game.mapView.currentCameraCenter,
-          props.game.mapView.currentCameraZoom
-        );
-        props.updateScenarioTimeCompression(
-          props.game.currentScenario.timeCompression
-        );
-        props.updateCurrentSideName(props.game.currentSideName);
-        props.game.currentScenario.updateScenarioName(
-          props.game.currentScenario.name
-        );
+    if (currentScenarioString) {
+      try {
+        loadScenario(currentScenarioString, false);
+        props.game.currentScenario.updateScenarioName(scenarioName);
         setScenarioName(props.game.currentScenario.name);
-        props.refreshAllLayers();
-        props.updateCurrentScenarioTimeToContext();
-        props.loadFeatureEntitiesState();
-      };
-      reader.onerror = () => {
-        reader.abort();
+      } catch {
         toastContext?.addToast(
           "Failed to restart scenario. Please refresh page or try again later.",
           "error"
         );
-      };
+      }
     } else {
-      props.game.loadScenario(initialScenarioString);
-      props.updateMapView(
-        props.game.mapView.currentCameraCenter,
-        props.game.mapView.currentCameraZoom
-      );
-      props.updateScenarioTimeCompression(
-        props.game.currentScenario.timeCompression
-      );
-      props.updateCurrentSideName(props.game.currentSideName);
-      props.game.currentScenario.updateScenarioName(
-        props.game.currentScenario.name
-      );
+      loadScenario(initialScenarioString, false);
+      props.game.currentScenario.updateScenarioName(scenarioName);
       setScenarioName(props.game.currentScenario.name);
-      props.refreshAllLayers();
-      props.updateCurrentScenarioTimeToContext();
-      props.loadFeatureEntitiesState();
     }
   };
 
@@ -544,6 +582,59 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   } else {
     document.onkeydown = null;
   }
+
+  const ScenarioDb = [
+    { name: "default_scenario", displayName: "Panopticon Demo" },
+    { name: "SCS", displayName: "South China Sea Strike" },
+    { name: "_upload", displayName: "Upload..." },
+  ];
+
+  const presetScenarioSelectionMenu = () => {
+    return (
+      <Menu
+        id="preset-scenario-selection-menu"
+        anchorEl={loadScenarioAnchorEl}
+        open={presetScenarioSelectionMenuOpen}
+        onClose={handleLoadScenarioIconClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "left" }}
+        slotProps={{
+          root: { sx: { ".MuiList-root": { padding: 0 } } },
+          list: {
+            "aria-labelledby": "add-aircraft-icon-button",
+          },
+        }}
+      >
+        <Stack
+          direction={"row"}
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            backgroundColor: colorPalette.lightGray,
+            pl: 2,
+          }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+            Load Scenario
+          </Typography>
+          <IconButton onClick={handleLoadScenarioIconClose}>
+            <ClearIcon sx={{ fontSize: 15, color: "red" }} />
+          </IconButton>
+        </Stack>
+        {ScenarioDb.map((scenario) => (
+          <MenuItem
+            onClick={(_event: React.MouseEvent<HTMLElement>) =>
+              loadPresetScenario(scenario.name)
+            }
+            key={scenario.name}
+            value={scenario.name}
+          >
+            {scenario.displayName}
+          </MenuItem>
+        ))}
+      </Menu>
+    );
+  };
 
   const recordingSection = () => {
     return (
@@ -1159,14 +1250,23 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               sx={{ paddingBottom: 0 }}
               action={
                 <Stack direction={"row"}>
-                  <Tooltip title="Upload Scenario">
-                    <IconButton onClick={loadScenario}>
+                  <Tooltip title="New Scenario">
+                    <IconButton onClick={newScenario}>
+                      <InsertDriveFileIcon
+                        fontSize="medium"
+                        sx={{ color: "#000000" }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Load Scenario">
+                    <IconButton onClick={handleLoadScenarioIconClick}>
                       <UploadFileOutlinedIcon
                         fontSize="medium"
                         sx={{ color: "#171717" }}
                       />
                     </IconButton>
                   </Tooltip>
+                  {presetScenarioSelectionMenu()}
                   <Tooltip title="Save Scenario">
                     <IconButton onClick={exportScenario}>
                       <FileDownloadOutlinedIcon
