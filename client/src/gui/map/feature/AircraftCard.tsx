@@ -272,7 +272,8 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                 Fuel:
               </TableCell>
               <TableCell align="right" sx={tableValueCellStyle}>
-                {props.aircraft.currentFuel} / {props.aircraft.maxFuel}
+                {props.aircraft.currentFuel.toFixed(0)} /{" "}
+                {props.aircraft.maxFuel.toFixed(0)}
               </TableCell>
             </TableRow>
             <TableRow sx={tableRowStyle}>
@@ -280,7 +281,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                 Fuel Consumption:
               </TableCell>
               <TableCell align="right" sx={tableValueCellStyle}>
-                {props.aircraft.fuelRate}
+                {props.aircraft.fuelRate.toFixed(2)}
               </TableCell>
             </TableRow>
             <TableRow sx={tableRowStyle}>
