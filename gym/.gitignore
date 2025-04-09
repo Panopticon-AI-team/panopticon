@@ -164,7 +164,7 @@ cython_debug/
 #.idea/
 
 #stable_baselines
-*.zip
-*.jsonl
-*.jsonl.gz
-*.json
+scripts/**/*.zip
+scripts/**/*.jsonl
+scripts/**/*.jsonl.gz
+scripts/**/*.json

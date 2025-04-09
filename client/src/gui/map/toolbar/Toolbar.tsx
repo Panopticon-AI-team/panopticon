@@ -577,8 +577,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const ScenarioDb = [
     { name: "default_scenario", displayName: "Panopticon Demo" },
-    { name: "SCS", displayName: "South China Sea Standoff" },
-    { name: "_upload", displayName: "Browse..." },
+    { name: "SCS", displayName: "South China Sea Strike" },
+    { name: "_upload", displayName: "Upload..." },
   ];
 
   const presetScenarioSelectionMenu = () => {
