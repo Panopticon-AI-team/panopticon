@@ -148,7 +148,7 @@ export function colorNameToHex(color: string): string {
     greenyellow: "#adff2f",
     honeydew: "#f0fff0",
     hotpink: "#ff69b4",
-    "indianred ": "#cd5c5c",
+    indianred: "#cd5c5c",
     indigo: "#4b0082",
     ivory: "#fffff0",
     khaki: "#f0e68c",
