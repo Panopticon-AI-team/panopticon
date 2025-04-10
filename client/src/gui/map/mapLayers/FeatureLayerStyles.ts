@@ -1,7 +1,8 @@
 import { FeatureLike } from "ol/Feature.js";
 import { Style, Icon, Fill, Stroke, Text } from "ol/style.js";
 
-import { colorNameToColorArray, toRadians } from "@/utils/mapFunctions";
+import { toRadians } from "@/utils/mapFunctions";
+import { colorNameToColorArray } from "@/utils/colors";
 
 import FlightIconSvg from "@/gui/assets/svg/flight_black_24dp.svg";
 import RadarIconSvg from "@/gui/assets/svg/radar_black_24dp.svg";
