@@ -29,7 +29,7 @@ import {
   Tooltip,
   ListItemButton,
 } from "@mui/material";
-import { colorPalette } from "@/utils/constants";
+import { COLOR_PALETTE } from "@/utils/colors";
 
 interface AirbaseCardProps {
   airbase: Airbase;
@@ -321,7 +321,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
             <Stack
               direction={"column"}
               spacing={0}
-              sx={{ color: colorPalette.lightGray }}
+              sx={{ color: COLOR_PALETTE.LIGHT_GRAY }}
             >
               <Typography variant="caption">
                 Type: {props.airbase.className}

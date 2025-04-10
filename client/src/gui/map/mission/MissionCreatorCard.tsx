@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
-import { colorPalette } from "@/utils/constants";
+import { COLOR_PALETTE } from "@/utils/colors";
 import Aircraft from "@/game/units/Aircraft";
 import ReferencePoint from "@/game/units/ReferencePoint";
 import { Target } from "@/game/engine/weaponEngagement";
@@ -46,7 +46,7 @@ const closeButtonStyle = {
 };
 
 const cardHeaderStyle = {
-  backgroundColor: colorPalette.white,
+  backgroundColor: COLOR_PALETTE.WHITE,
   color: "black",
   height: "50px",
 };
@@ -55,7 +55,7 @@ const cardStyle = {
   minWidth: "400px",
   maxWidth: "400px",
   minHeight: "200px",
-  backgroundColor: colorPalette.lightGray,
+  backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
   boxShadow: "none",
   borderRadius: "10px",
 };

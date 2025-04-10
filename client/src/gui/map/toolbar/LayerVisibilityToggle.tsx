@@ -6,7 +6,7 @@ import CardActions from "@mui/material/CardActions";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import React, { useState } from "react";
-import { colorPalette } from "@/utils/constants";
+import { COLOR_PALETTE } from "@/utils/colors";
 
 interface LayerVisibilityPanelToggleProps {
   featureLabelVisibility: boolean;
@@ -38,8 +38,8 @@ export default function LayerVisibilityPanelToggle(
 
   const toggleStyle = {
     border: 1,
-    backgroundColor: colorPalette.white,
-    color: colorPalette.black,
+    backgroundColor: COLOR_PALETTE.WHITE,
+    color: COLOR_PALETTE.BLACK,
     borderRadius: "16px",
     borderColor: "black",
     borderWidth: "2px",
@@ -49,15 +49,15 @@ export default function LayerVisibilityPanelToggle(
     lineHeight: "normal",
   };
   const openLayersPanelButtonStyle = {
-    border: `1px solid ${colorPalette.darkGray}`,
-    backgroundColor: colorPalette.lightGray,
+    border: `1px solid ${COLOR_PALETTE.DARK_GRAY}`,
+    backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
     borderRadius: "8px",
     position: "absolute",
     top: "4em",
     right: "0.2em",
   };
   const layersVisibilityPanelStyle = {
-    backgroundColor: colorPalette.lightGray,
+    backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
     borderRadius: "5px",
     borderColor: "black",
     borderWidth: "2px",

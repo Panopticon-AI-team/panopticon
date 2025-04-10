@@ -31,7 +31,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { colorPalette } from "@/utils/constants";
+import { COLOR_PALETTE } from "@/utils/colors";
 
 interface ShipCardProps {
   ship: Ship;
@@ -492,7 +492,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
             <Stack
               direction={"column"}
               spacing={0}
-              sx={{ color: colorPalette.lightGray }}
+              sx={{ color: COLOR_PALETTE.LIGHT_GRAY }}
             >
               <Typography variant="caption">
                 Type: {props.ship.className}

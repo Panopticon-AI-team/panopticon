@@ -9,7 +9,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Geometry } from "ol/geom";
 import { Feature } from "ol";
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
-import { ICON_COLOR } from "@/utils/constants";
+import { ICON_COLOR } from "@/utils/colors";
 
 interface MultipleFeatureSelectorProps {
   features: Feature<Geometry>[];

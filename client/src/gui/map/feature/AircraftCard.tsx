@@ -31,7 +31,7 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { colorPalette } from "@/utils/constants";
+import { COLOR_PALETTE } from "@/utils/colors";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -545,7 +545,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             <Stack
               direction={"column"}
               spacing={0}
-              sx={{ color: colorPalette.lightGray }}
+              sx={{ color: COLOR_PALETTE.LIGHT_GRAY }}
             >
               <Typography variant="caption">
                 Type: {props.aircraft.className}

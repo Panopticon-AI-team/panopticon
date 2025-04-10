@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
-import { colorPalette } from "@/utils/constants";
+import { COLOR_PALETTE } from "@/utils/colors";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
@@ -59,13 +59,13 @@ const cardStyle = {
   minWidth: "400px",
   maxWidth: "400px",
   minHeight: "200px",
-  backgroundColor: colorPalette.lightGray,
+  backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
   boxShadow: "none",
   borderRadius: "10px",
 };
 
 const cardHeaderStyle = {
-  backgroundColor: colorPalette.white,
+  backgroundColor: COLOR_PALETTE.WHITE,
   color: "black",
   height: "50px",
 };
@@ -76,7 +76,7 @@ const bottomButtonsStackStyle = {
 };
 
 const editorButtonStyle = {
-  color: colorPalette.white,
+  color: COLOR_PALETTE.WHITE,
 };
 
 const parseSelectedMissionType = (selectedMission: Mission): string => {

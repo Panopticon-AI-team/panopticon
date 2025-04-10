@@ -1,5 +1,45 @@
 import { asArray } from "ol/color";
-import { ICON_COLOR } from "@/utils/constants";
+
+export enum COLOR_PALETTE {
+  LIGHT_GRAY = "#E8E8E8",
+  DARK_GRAY = "#9B9B9B",
+  BLACK = "#000000",
+  WHITE = "#F2F2F2",
+}
+export enum ICON_COLOR {
+  RED = "red",
+  BLUE = "blue",
+  GREEN = "green",
+  ORANGE = "orange",
+  PURPLE = "purple",
+  YELLOW = "yellow",
+  PINK = "pink",
+  TEAL = "teal",
+  CYAN = "cyan",
+  LIME = "lime",
+  BROWN = "brown",
+  GRAY = "gray",
+  BLACK = "black",
+  WHITE = "white",
+  MAGENTA = "magenta",
+  PLUM = "plum",
+  LIGHT_GREEN = "lightgreen",
+  DARK_RED = "darkred",
+  DARK_BLUE = "darkblue",
+  DARK_GREEN = "darkgreen",
+  GOLD = "gold",
+  SILVER = "silver",
+  NAVY = "navy",
+  MAROON = "maroon",
+  OLIVE = "olive",
+  CORAL = "coral",
+  TURQUOISE = "turquoise",
+  INDIGO = "indigo",
+  BEIGE = "beige",
+  SALMON = "salmon",
+  SKY_BLUE = "skyblue",
+  AQUAMARINE = "aquamarine",
+}
 
 export function colorNameToHex(color: string): string {
   const colors = {

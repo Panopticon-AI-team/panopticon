@@ -3,8 +3,7 @@ import AirbaseIcon from "@/gui/assets/svg/flight_takeoff_black_24dp.svg";
 import AircraftIcon from "@/gui/assets/svg/flight_black_24dp.svg";
 import ShipIcon from "@/gui/assets/svg/directions_boat_black_24dp.svg";
 import PointMarkerIcon from "@/gui/assets/svg/pin_drop_24dp_E8EAED.svg";
-import { ICON_COLOR } from "@/utils/constants";
-import { getColorFilter } from "@/utils/colors";
+import { ICON_COLOR, getColorFilter } from "@/utils/colors";
 
 export interface IEntityIconProps {
   type: "aircraft" | "airbase" | "ship" | "facility" | "referencePoint";

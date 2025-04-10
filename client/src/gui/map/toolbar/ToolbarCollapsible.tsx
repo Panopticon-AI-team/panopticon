@@ -19,7 +19,7 @@ import Stack from "@mui/material/Stack";
 import ClearIcon from "@mui/icons-material/Clear";
 import DeselectCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 import SelectCheckBoxIcon from "@mui/icons-material/CheckBox";
-import { colorPalette } from "@/utils/constants";
+import { COLOR_PALETTE } from "@/utils/colors";
 
 interface ToolbarCollapsibleProps {
   title: string;
@@ -174,7 +174,7 @@ export default function ToolbarCollapsible(
                 sx={{
                   justifyContent: "space-between",
                   alignItems: "center",
-                  backgroundColor: colorPalette.lightGray,
+                  backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
                   pl: 0.2,
                   pt: 1,
                   pb: 1,

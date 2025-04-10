@@ -27,7 +27,7 @@ import {
   Menu,
   Tooltip,
 } from "@mui/material";
-import { colorPalette } from "@/utils/constants";
+import { COLOR_PALETTE } from "@/utils/colors";
 
 interface FacilityCardProps {
   facility: Facility;
@@ -368,7 +368,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
             <Stack
               direction={"column"}
               spacing={0}
-              sx={{ color: colorPalette.lightGray }}
+              sx={{ color: COLOR_PALETTE.LIGHT_GRAY }}
             >
               <Typography variant="caption">
                 Type: {props.facility.className}
