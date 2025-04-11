@@ -77,9 +77,6 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
     range: props.facility.range,
     weaponQuantity: props.facility.getTotalWeaponQuantity(),
   });
-  const [featureEntitySideColor, setFeatureEntitySideColor] = useState<
-    "primary" | "error"
-  >(props.facility.sideColor.toLowerCase() === "blue" ? "primary" : "error");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -269,8 +266,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
   const defaultCardActions = (
     <Stack spacing={0.5} direction="column">
       <ListItemButton onClick={_handleTeleportFacility}>
-        <TelegramIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} /> Edit
-        Location
+        <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
       </ListItemButton>
     </Stack>
   );
@@ -376,11 +372,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
               </Typography>
               <Typography variant="caption">
                 Side:{" "}
-                <Typography
-                  variant="caption"
-                  component={"span"}
-                  color={featureEntitySideColor}
-                >
+                <Typography variant="caption" component={"span"}>
                   {props.sideName}
                 </Typography>
               </Typography>

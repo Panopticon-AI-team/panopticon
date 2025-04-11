@@ -91,21 +91,42 @@ export default class Game {
       this.currentScenario.airbases.forEach((airbase) => {
         if (airbase.sideId === sideId) {
           airbase.sideColor = sideColor;
+          airbase.aircraft.forEach((aircraft) => {
+            aircraft.sideColor = sideColor;
+            aircraft.weapons.forEach((weapon) => {
+              weapon.sideColor = sideColor;
+            });
+          });
         }
       });
       this.currentScenario.ships.forEach((ship) => {
         if (ship.sideId === sideId) {
           ship.sideColor = sideColor;
+          ship.aircraft.forEach((aircraft) => {
+            aircraft.sideColor = sideColor;
+            aircraft.weapons.forEach((weapon) => {
+              weapon.sideColor = sideColor;
+            });
+          });
+          ship.weapons.forEach((weapon) => {
+            weapon.sideColor = sideColor;
+          });
         }
       });
       this.currentScenario.facilities.forEach((facility) => {
         if (facility.sideId === sideId) {
           facility.sideColor = sideColor;
+          facility.weapons.forEach((weapon) => {
+            weapon.sideColor = sideColor;
+          });
         }
       });
       this.currentScenario.aircraft.forEach((aircraft) => {
         if (aircraft.sideId === sideId) {
           aircraft.sideColor = sideColor;
+          aircraft.weapons.forEach((weapon) => {
+            weapon.sideColor = sideColor;
+          });
         }
       });
       this.currentScenario.weapons.forEach((weapon) => {

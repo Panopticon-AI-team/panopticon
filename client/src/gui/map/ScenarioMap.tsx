@@ -808,7 +808,7 @@ export default function ScenarioMap({
     setGamePaused();
     if (game.undo()) {
       setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
-      drawNextFrame(game.currentScenario);
+      refreshAllLayers();
       loadFeatureEntitiesState();
     }
   }
@@ -1474,7 +1474,7 @@ export default function ScenarioMap({
     sideColor: SIDE_COLOR
   ) {
     game.updateSide(sideId, sideName, sideColor);
-    drawNextFrame(game.currentScenario);
+    refreshAllLayers();
     loadFeatureEntitiesState();
   }
 
@@ -1485,7 +1485,7 @@ export default function ScenarioMap({
     } else if (game.currentScenario.sides.length === 0) {
       switchCurrentSide("");
     }
-    drawNextFrame(game.currentScenario);
+    refreshAllLayers();
     loadFeatureEntitiesState();
   }
 

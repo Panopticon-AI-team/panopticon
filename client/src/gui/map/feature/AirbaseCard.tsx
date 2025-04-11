@@ -75,9 +75,6 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
   const [tempEditData, setTempEditData] = useState({
     name: props.airbase.name,
   });
-  const [featureEntitySideColor, setFeatureEntitySideColor] = useState<
-    "primary" | "error"
-  >(props.airbase.sideColor.toLowerCase() === "blue" ? "primary" : "error");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -213,17 +210,14 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
           sx={{
             mr: 0.5,
           }}
-          color={featureEntitySideColor}
         />
         Add Aicraft
       </ListItemButton>
       <ListItemButton onClick={_handleLaunchAircraft}>
-        <FlightIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} /> Launch
-        Aircraft
+        <FlightIcon sx={{ mr: 0.5 }} /> Launch Aircraft
       </ListItemButton>
       <ListItemButton onClick={_handleTeleportAirbase}>
-        <TelegramIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} /> Edit
-        Location
+        <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
       </ListItemButton>
     </Stack>
   );
@@ -329,11 +323,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
               </Typography>
               <Typography variant="caption">
                 Side:{" "}
-                <Typography
-                  variant="caption"
-                  component={"span"}
-                  color={featureEntitySideColor}
-                >
+                <Typography variant="caption" component={"span"}>
                   {props.sideName}
                 </Typography>
               </Typography>

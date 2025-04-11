@@ -92,9 +92,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     currentFuel: props.aircraft.currentFuel,
     currentFuelRate: props.aircraft.fuelRate,
   });
-  const [featureEntitySideColor, setFeatureEntitySideColor] = useState<
-    "primary" | "error"
-  >(props.aircraft.sideColor.toLowerCase() === "blue" ? "primary" : "error");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -430,24 +427,21 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           sx={{
             mr: 0.5,
           }}
-          color={featureEntitySideColor}
         />
         Plot Course
       </ListItemButton>
       <ListItemButton onClick={_handleAircraftAttack}>
-        <RocketLaunchIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} />
+        <RocketLaunchIcon sx={{ mr: 0.5 }} />
         Attack
       </ListItemButton>
       <ListItemButton onClick={_handleAircraftRtb}>
-        <HomeIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} /> Return To
-        Base
+        <HomeIcon sx={{ mr: 0.5 }} /> Return To Base
       </ListItemButton>
       <ListItemButton onClick={_handleDuplicateAircraft}>
-        <AddIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} /> Duplicate
+        <AddIcon sx={{ mr: 0.5 }} /> Duplicate
       </ListItemButton>
       <ListItemButton onClick={_handleTeleportAircraft}>
-        <TelegramIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} /> Edit
-        Location
+        <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
       </ListItemButton>
     </Stack>
   );
@@ -553,11 +547,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
               </Typography>
               <Typography variant="caption">
                 Side:{" "}
-                <Typography
-                  variant="caption"
-                  component={"span"}
-                  color={featureEntitySideColor}
-                >
+                <Typography variant="caption" component={"span"}>
                   {props.sideName}
                 </Typography>
               </Typography>

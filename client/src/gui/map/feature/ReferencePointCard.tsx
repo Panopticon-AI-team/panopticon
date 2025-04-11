@@ -73,13 +73,6 @@ export default function ReferencePointCard(
   const [tempEditData, setTempEditData] = useState({
     name: props.referencePoint.name,
   });
-  const [featureEntitySideColor, setFeatureEntitySideColor] = useState<
-    "primary" | "error"
-  >(
-    props.referencePoint.sideColor.toLowerCase() === "blue"
-      ? "primary"
-      : "error"
-  );
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -193,8 +186,7 @@ export default function ReferencePointCard(
   const defaultCardActions = (
     <Stack spacing={0.5} direction="column">
       <ListItemButton onClick={_handleTeleportReferencePoint}>
-        <TelegramIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} /> Edit
-        Location
+        <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
       </ListItemButton>
     </Stack>
   );
@@ -300,11 +292,7 @@ export default function ReferencePointCard(
             >
               <Typography variant="caption">
                 Side:{" "}
-                <Typography
-                  variant="caption"
-                  component={"span"}
-                  color={featureEntitySideColor}
-                >
+                <Typography variant="caption" component={"span"}>
                   {props.sideName}
                 </Typography>
               </Typography>

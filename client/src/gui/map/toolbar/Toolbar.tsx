@@ -1006,10 +1006,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           <IconButton onClick={handleGodModeToggle}>
             <GodModeIcon
               sx={{
-                color: COLOR_PALETTE.BLACK,
-                filter: props.game.godMode
-                  ? SELECTED_ICON_COLOR_FILTER
-                  : DEFAULT_ICON_COLOR_FILTER,
+                color: props.game.godMode ? "green" : "black",
                 width: 24,
                 height: 24,
               }}

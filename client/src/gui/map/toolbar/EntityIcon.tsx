@@ -1,11 +1,13 @@
-import SamIcon from "@/gui/assets/svg/radar_black_24dp.svg";
-import AirbaseIcon from "@/gui/assets/svg/flight_takeoff_black_24dp.svg";
-import AircraftIcon from "@/gui/assets/svg/flight_black_24dp.svg";
-import ShipIcon from "@/gui/assets/svg/directions_boat_black_24dp.svg";
-import PointMarkerIcon from "@/gui/assets/svg/pin_drop_24dp_E8EAED.svg";
-import CircleIcon from "@/gui/assets/svg/brightness_1_24dp_E3E3E3.svg";
-import HelpIcon from "@/gui/assets/svg/help_24dp_E3E3E3.svg";
-import { SIDE_COLOR, getColorFilter } from "@/utils/colors";
+import { SIDE_COLOR } from "@/utils/colors";
+import {
+  Brightness1,
+  DirectionsBoat,
+  Flight,
+  FlightTakeoff,
+  Help,
+  PinDrop,
+  Radar,
+} from "@mui/icons-material";
 
 export interface IEntityIconProps {
   type: string;
@@ -23,72 +25,72 @@ export default function EntityIcon({
   switch (type) {
     case "aircraft":
       return (
-        <img
-          src={AircraftIcon}
-          alt="Aircraft Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(color) }}
+        <Flight
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     case "airbase":
       return (
-        <img
-          src={AirbaseIcon}
-          alt="Airebase Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(color) }}
+        <FlightTakeoff
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     case "ship":
       return (
-        <img
-          src={ShipIcon}
-          alt="Ship Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(color) }}
+        <DirectionsBoat
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     case "facility":
       return (
-        <img
-          src={SamIcon}
-          alt="Sam Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(color) }}
+        <Radar
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     case "referencePoint":
       return (
-        <img
-          src={PointMarkerIcon}
-          alt="Reference Point Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(color) }}
+        <PinDrop
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     case "circle":
       return (
-        <img
-          src={CircleIcon}
-          alt="Unknown Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(color) }}
+        <Brightness1
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     default:
       return (
-        <img
-          src={HelpIcon}
-          alt="Unknown Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(color) }}
+        <Help
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
   }
