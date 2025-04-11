@@ -49,10 +49,12 @@ class PatrolMission:
         ]
         return random_coordinates
 
-    def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__ if hasattr(o, "__dict__") else "",
-            sort_keys=True,
-            indent=4,
-        )
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "side_id": str(self.side_id),
+            "assigned_unit_ids": [str(id) for id in self.assigned_unit_ids],
+            "assigned_area": [point.to_dict() for point in self.assigned_area],
+            "active": self.active,
+        }

@@ -14,6 +14,7 @@ from blade.Scenario import Scenario
 from blade.Side import Side
 
 from blade.utils.constants import NAUTICAL_MILES_TO_METERS
+from blade.utils.colors import SIDE_COLOR
 from blade.utils.PlaybackRecorder import PlaybackRecorder
 from blade.utils.utils import (
     get_bearing_between_two_points,
@@ -42,7 +43,7 @@ class Game:
         self.current_scenario = current_scenario
         self.initial_scenario = current_scenario
 
-        self.current_side_name = ""
+        self.current_side_id = ""
         self.recording_scenario = False
         self.recorder = PlaybackRecorder(record_every_seconds, recording_export_path)
         self.scenario_paused = True
@@ -55,16 +56,14 @@ class Game:
         }
 
     def get_sample_weapon(
-        self, quantity: int, lethality: float, side_name: str
+        self, quantity: int, lethality: float, side_id: str
     ) -> Weapon:
-        current_side_name = (
-            side_name if side_name is not None else self.current_side_name
-        )
-        side_color = self.current_scenario.get_side_color(current_side_name)
+        current_side_id = side_id if side_id is not None else self.current_side_id
+        side_color = self.current_scenario.get_side_color(current_side_id)
         return Weapon(
-            id=uuid4(),
+            id=str(uuid4()),
             name="Sample Weapon",
-            side_name=current_side_name,
+            side_id=current_side_id,
             class_name="Sample Weapon",
             latitude=0.0,
             longitude=0.0,
@@ -95,7 +94,7 @@ class Game:
                 new_aircraft = Aircraft(
                     id=aircraft.id,
                     name=aircraft.name,
-                    side_name=aircraft.side_name,
+                    side_id=aircraft.side_id,
                     class_name=aircraft.class_name,
                     latitude=homebase.latitude - 0.5,
                     longitude=homebase.longitude - 0.5,
@@ -118,17 +117,17 @@ class Game:
     def add_reference_point(
         self, reference_point_name: str, latitude: float, longitude: float
     ) -> ReferencePoint:
-        if not self.current_side_name:
+        if not self.current_side_id:
             return None
 
         reference_point = ReferencePoint(
-            id=uuid4(),
+            id=str(uuid4()),
             name=reference_point_name,
-            side_name=self.current_side_name,
+            side_id=self.current_side_id,
             latitude=latitude,
             longitude=longitude,
             altitude=0,
-            side_color=self.current_scenario.get_side_color(self.current_side_name),
+            side_color=self.current_scenario.get_side_color(self.current_side_id),
         )
         self.current_scenario.reference_points.append(reference_point)
         return reference_point
@@ -139,7 +138,7 @@ class Game:
         )
 
     def launch_aircraft_from_ship(self, ship_id: str) -> Aircraft | None:
-        if not self.current_side_name:
+        if not self.current_side_id:
             return None
 
         ship = self.current_scenario.get_ship(ship_id)
@@ -150,7 +149,7 @@ class Game:
                 return aircraft
 
     def launch_aircraft_from_airbase(self, airbase_id: str) -> Aircraft | None:
-        if not self.current_side_name:
+        if not self.current_side_id:
             return None
 
         airbase = self.current_scenario.get_airbase(airbase_id)
@@ -168,11 +167,11 @@ class Game:
     ) -> None:
         if len(assigned_area) < 3:
             return
-        current_side_id = self.current_scenario.get_side(self.current_side_name).id
+        current_side_id = self.current_scenario.get_side(self.current_side_id).id
         mission = PatrolMission(
-            id=uuid4(),
+            id=str(uuid4()),
             name=mission_name,
-            side_id=current_side_id if current_side_id else self.current_side_name,
+            side_id=current_side_id if current_side_id else self.current_side_id,
             assigned_unit_ids=assigned_units,
             assigned_area=assigned_area,
             active=True,
@@ -202,11 +201,11 @@ class Game:
         assigned_attackers: list[str],
         assigned_targets: list[str],
     ) -> None:
-        current_side_id = self.current_scenario.get_side(self.current_side_name).id
+        current_side_id = self.current_scenario.get_side(self.current_side_id).id
         strike_mission = StrikeMission(
-            id=uuid4(),
+            id=str(uuid4()),
             name=mission_name,
-            side_id=current_side_id if current_side_id else self.current_side_name,
+            side_id=current_side_id if current_side_id else self.current_side_id,
             assigned_unit_ids=assigned_attackers,
             assigned_target_ids=assigned_targets,
             active=True,
@@ -262,7 +261,7 @@ class Game:
         if (
             target
             and aircraft
-            and target.side_name != aircraft.side_name
+            and target.side_id != aircraft.side_id
             and target.id != aircraft.id
         ):
             launch_weapon(self.current_scenario, aircraft, target)
@@ -270,12 +269,7 @@ class Game:
     def handle_ship_attack(self, ship_id: str, target_id: str) -> None:
         target = self.current_scenario.get_target(target_id)
         ship = self.current_scenario.get_ship(ship_id)
-        if (
-            target
-            and ship
-            and target.side_name != ship.side_name
-            and target.id != ship.id
-        ):
+        if target and ship and target.side_id != ship.side_id and target.id != ship.id:
             launch_weapon(self.current_scenario, ship, target)
 
     def aircraft_return_to_base(self, aircraft_id: str) -> Aircraft | None:
@@ -332,7 +326,7 @@ class Game:
     def facility_auto_defense(self) -> None:
         for facility in self.current_scenario.facilities:
             for aircraft in self.current_scenario.aircraft:
-                if facility.side_name != aircraft.side_name:
+                if facility.side_id != aircraft.side_id:
                     if (
                         check_if_threat_is_within_range(aircraft, facility)
                         and check_target_tracked_by_count(
@@ -342,7 +336,7 @@ class Game:
                     ):
                         launch_weapon(self.current_scenario, facility, aircraft)
             for weapon in self.current_scenario.weapons:
-                if facility.side_name != weapon.side_name:
+                if facility.side_id != weapon.side_id:
                     if (
                         weapon.target_id == facility.id
                         and check_if_threat_is_within_range(weapon, facility)
@@ -354,7 +348,7 @@ class Game:
     def ship_auto_defense(self) -> None:
         for ship in self.current_scenario.ships:
             for aircraft in self.current_scenario.aircraft:
-                if ship.side_name != aircraft.side_name:
+                if ship.side_id != aircraft.side_id:
                     if (
                         check_if_threat_is_within_range(aircraft, ship)
                         and check_target_tracked_by_count(
@@ -364,7 +358,7 @@ class Game:
                     ):
                         launch_weapon(self.current_scenario, ship, aircraft)
             for weapon in self.current_scenario.weapons:
-                if ship.side_name != weapon.side_name:
+                if ship.side_id != weapon.side_id:
                     if (
                         weapon.target_id == ship.id
                         and check_if_threat_is_within_range(weapon, ship)
@@ -381,7 +375,7 @@ class Game:
             if aircraft_weapon_with_max_range is None:
                 continue
             for enemy_aircraft in self.current_scenario.aircraft:
-                if aircraft.side_name != enemy_aircraft.side_name and (
+                if aircraft.side_id != enemy_aircraft.side_id and (
                     aircraft.target_id == "" or aircraft.target_id == enemy_aircraft.id
                 ):
                     if (
@@ -396,7 +390,7 @@ class Game:
                         launch_weapon(self.current_scenario, aircraft, enemy_aircraft)
                         aircraft.target_id = enemy_aircraft.id
             for enemy_weapon in self.current_scenario.weapons:
-                if aircraft.side_name != enemy_weapon.side_name:
+                if aircraft.side_id != enemy_weapon.side_id:
                     if (
                         enemy_weapon.target_id == aircraft.id
                         and check_if_threat_is_within_range(
@@ -730,7 +724,7 @@ class Game:
     def reset(self):
         self.current_scenario = copy.deepcopy(self.initial_scenario)
         assert len(self.current_scenario.sides) > 0
-        self.current_side_name = self.current_scenario.sides[0].name
+        self.current_side_id = self.current_scenario.sides[0].id
         self.scenario_paused = True
         self.current_attacker_id = ""
 
@@ -738,12 +732,12 @@ class Game:
         return False
 
     def export_scenario(self) -> dict:
-        scenario_json_string = self.current_scenario.toJSON()
+        scenario_json_string = self.current_scenario.toJson()
         scenario_json_no_underscores = to_camelcase(scenario_json_string)
 
         export_object = {
             "currentScenario": json.loads(scenario_json_no_underscores),
-            "currentSideName": self.current_side_name,
+            "currentSideId": self.current_side_id,
             "selectedUnitId": "",
             "mapView": self.map_view,
         }
@@ -752,7 +746,7 @@ class Game:
 
     def load_scenario(self, scenario_string: str) -> None:
         import_object = json.loads(scenario_string)
-        self.current_side_name = import_object["currentSideName"]
+        self.current_side_id = import_object["currentSideId"]
         self.map_view = import_object["mapView"]
 
         saved_scenario = import_object["currentScenario"]
@@ -763,7 +757,7 @@ class Game:
                     id=side["id"],
                     name=side["name"],
                     total_score=side["totalScore"],
-                    side_color=side["sideColor"],
+                    color=side["color"],
                 )
             )
         loaded_scenario = Scenario(
@@ -783,7 +777,7 @@ class Game:
                         Weapon(
                             id=weapon["id"],
                             name=weapon["name"],
-                            side_name=weapon["sideName"],
+                            side_id=weapon["sideId"],
                             class_name=weapon["className"],
                             latitude=weapon["latitude"],
                             longitude=weapon["longitude"],
@@ -804,13 +798,13 @@ class Game:
                     )
             else:
                 aircraft_weapons.append(
-                    self.get_sample_weapon(10, 0.25, aircraft["sideName"])
+                    self.get_sample_weapon(10, 0.25, aircraft["sideId"])
                 )
             loaded_scenario.aircraft.append(
                 Aircraft(
                     id=aircraft["id"],
                     name=aircraft["name"],
-                    side_name=aircraft["sideName"],
+                    side_id=aircraft["sideId"],
                     class_name=aircraft["className"],
                     latitude=aircraft["latitude"],
                     longitude=aircraft["longitude"],
@@ -842,7 +836,7 @@ class Game:
                             Weapon(
                                 id=weapon["id"],
                                 name=weapon["name"],
-                                side_name=weapon["sideName"],
+                                side_id=weapon["sideId"],
                                 class_name=weapon["className"],
                                 latitude=weapon["latitude"],
                                 longitude=weapon["longitude"],
@@ -863,12 +857,12 @@ class Game:
                         )
                 else:
                     aircraft_weapons.append(
-                        self.get_sample_weapon(10, 0.25, aircraft["sideName"])
+                        self.get_sample_weapon(10, 0.25, aircraft["sideId"])
                     )
                 new_aircraft = Aircraft(
                     id=aircraft["id"],
                     name=aircraft["name"],
-                    side_name=aircraft["sideName"],
+                    side_id=aircraft["sideId"],
                     class_name=aircraft["className"],
                     latitude=aircraft["latitude"],
                     longitude=aircraft["longitude"],
@@ -894,7 +888,7 @@ class Game:
                 Airbase(
                     id=airbase["id"],
                     name=airbase["name"],
-                    side_name=airbase["sideName"],
+                    side_id=airbase["sideId"],
                     class_name=airbase["className"],
                     latitude=airbase["latitude"],
                     longitude=airbase["longitude"],
@@ -911,7 +905,7 @@ class Game:
                         Weapon(
                             id=weapon["id"],
                             name=weapon["name"],
-                            side_name=weapon["sideName"],
+                            side_id=weapon["sideId"],
                             class_name=weapon["className"],
                             latitude=weapon["latitude"],
                             longitude=weapon["longitude"],
@@ -932,13 +926,13 @@ class Game:
                     )
             else:
                 facility_weapons.append(
-                    self.get_sample_weapon(10, 0.25, facility["sideName"])
+                    self.get_sample_weapon(10, 0.25, facility["sideId"])
                 )
             loaded_scenario.facilities.append(
                 Facility(
                     id=facility["id"],
                     name=facility["name"],
-                    side_name=facility["sideName"],
+                    side_id=facility["sideId"],
                     class_name=facility["className"],
                     latitude=facility["latitude"],
                     longitude=facility["longitude"],
@@ -953,7 +947,7 @@ class Game:
                 Weapon(
                     id=weapon["id"],
                     name=weapon["name"],
-                    side_name=weapon["sideName"],
+                    side_id=weapon["sideId"],
                     class_name=weapon["className"],
                     latitude=weapon["latitude"],
                     longitude=weapon["longitude"],
@@ -982,7 +976,7 @@ class Game:
                             Weapon(
                                 id=weapon["id"],
                                 name=weapon["name"],
-                                side_name=weapon["sideName"],
+                                side_id=weapon["sideId"],
                                 class_name=weapon["className"],
                                 latitude=weapon["latitude"],
                                 longitude=weapon["longitude"],
@@ -1003,12 +997,12 @@ class Game:
                         )
                 else:
                     aircraft_weapons.append(
-                        self.get_sample_weapon(10, 0.25, aircraft["sideName"])
+                        self.get_sample_weapon(10, 0.25, aircraft["sideId"])
                     )
                 new_aircraft = Aircraft(
                     id=aircraft["id"],
                     name=aircraft["name"],
-                    side_name=aircraft["sideName"],
+                    side_id=aircraft["sideId"],
                     class_name=aircraft["className"],
                     latitude=aircraft["latitude"],
                     longitude=aircraft["longitude"],
@@ -1035,7 +1029,7 @@ class Game:
                         Weapon(
                             id=weapon["id"],
                             name=weapon["name"],
-                            side_name=weapon["sideName"],
+                            side_id=weapon["sideId"],
                             class_name=weapon["className"],
                             latitude=weapon["latitude"],
                             longitude=weapon["longitude"],
@@ -1055,12 +1049,12 @@ class Game:
                         )
                     )
             else:
-                ship_weapons.append(self.get_sample_weapon(10, 0.25, ship["sideName"]))
+                ship_weapons.append(self.get_sample_weapon(10, 0.25, ship["sideId"]))
             loaded_scenario.ships.append(
                 Ship(
                     id=ship["id"],
                     name=ship["name"],
-                    side_name=ship["sideName"],
+                    side_id=ship["sideId"],
                     class_name=ship["className"],
                     latitude=ship["latitude"],
                     longitude=ship["longitude"],
@@ -1083,7 +1077,7 @@ class Game:
                     ReferencePoint(
                         id=reference_point["id"],
                         name=reference_point["name"],
-                        side_name=reference_point["sideName"],
+                        side_id=reference_point["sideId"],
                         latitude=reference_point["latitude"],
                         longitude=reference_point["longitude"],
                         altitude=reference_point["altitude"],
@@ -1099,7 +1093,7 @@ class Game:
                             ReferencePoint(
                                 id=point["id"],
                                 name=point["name"],
-                                side_name=point["sideName"],
+                                side_id=point["sideId"],
                                 latitude=point["latitude"],
                                 longitude=point["longitude"],
                                 altitude=point["altitude"],

@@ -1,23 +1,27 @@
 import json
-from blade.utils.constants import DEFAULT_SIDE_COLOR
+from blade.utils.colors import convert_color_name_to_side_color, SIDE_COLOR
 
 
 class Side:
+
     def __init__(
         self,
         id: str,
         name: str,
         total_score: int = 0,
-        side_color: str = DEFAULT_SIDE_COLOR,
+        color: str | SIDE_COLOR | None = None,
     ):
         self.id = id
         self.name = name
         self.total_score = total_score
-        self.side_color = side_color
+        self.color = convert_color_name_to_side_color(color)
 
-    def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__, 
-            sort_keys=True,
-            indent=4)
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "total_score": self.total_score,
+            "color": (
+                self.color.value if isinstance(self.color, SIDE_COLOR) else self.color
+            ),
+        }

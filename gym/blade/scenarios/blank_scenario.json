@@ -5,20 +5,7 @@
     "startTime": 1699073110,
     "currentTime": 1699073110,
     "duration": 14400,
-    "sides": [
-      {
-        "id": "b7346e11-0412-493c-a0d0-aacf69ceaad7",
-        "name": "BLUE",
-        "totalScore": 0,
-        "sideColor": "blue"
-      },
-      {
-        "id": "6bcbbd72-d64d-4720-b293-d8a814c8d205",
-        "name": "RED",
-        "totalScore": 0,
-        "sideColor": "red"
-      }
-    ],
+    "sides": [],
     "timeCompression": 1,
     "aircraft": [],
     "ships": [],
@@ -26,7 +13,7 @@
     "airbases": [],
     "weapons": []
   },
-  "currentSideName": "BLUE",
+  "currentSideId": "",
   "selectedUnitId": "",
   "mapView": {
     "defaultCenter": [0, 0],

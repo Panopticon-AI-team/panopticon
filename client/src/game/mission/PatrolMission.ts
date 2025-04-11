@@ -1,7 +1,7 @@
 import { fromLonLat, get as getProjection } from "ol/proj";
 import { DEFAULT_OL_PROJECTION_CODE } from "@/utils/constants";
 import { Polygon } from "ol/geom";
-import ReferencePoint from "../units/ReferencePoint";
+import ReferencePoint from "@/game/units/ReferencePoint";
 
 interface IPatrolMission {
   id: string;

@@ -7,7 +7,7 @@ describe("Ship", () => {
     const testWeapon = new Weapon({
       id: "123456",
       name: "Sample Weapon",
-      sideName: "sideName",
+      sideId: "sideId",
       className: "Sample Weapon",
       latitude: 0.0,
       longitude: 0.0,
@@ -27,7 +27,7 @@ describe("Ship", () => {
     const testAircraft = new Aircraft({
       id: "12345",
       name: "F-16",
-      sideName: "BLUE",
+      sideId: "BLUE",
       className: "Fighter",
       latitude: 15,
       longitude: 20,
@@ -43,7 +43,7 @@ describe("Ship", () => {
     const testShip = new Ship({
       id: "12345",
       name: "Nimitz",
-      sideName: "BLUE",
+      sideId: "BLUE",
       className: "USS Nimitz",
       latitude: 15,
       longitude: 20,
@@ -64,7 +64,7 @@ describe("Ship", () => {
     });
     expect(testShip.id).toBe("12345");
     expect(testShip.name).toBe("Nimitz");
-    expect(testShip.sideName).toBe("BLUE");
+    expect(testShip.sideId).toBe("BLUE");
     expect(testShip.className).toBe("USS Nimitz");
     expect(testShip.latitude).toBe(15);
     expect(testShip.longitude).toBe(20);
@@ -90,7 +90,7 @@ describe("Ship", () => {
     const testWeapon1 = new Weapon({
       id: "123456",
       name: "Sample Weapon",
-      sideName: "sideName",
+      sideId: "sideId",
       className: "Sample Weapon",
       latitude: 0.0,
       longitude: 0.0,
@@ -110,7 +110,7 @@ describe("Ship", () => {
     const testWeapon2 = new Weapon({
       id: "123456",
       name: "Sample Weapon",
-      sideName: "sideName",
+      sideId: "sideId",
       className: "Sample Weapon",
       latitude: 0.0,
       longitude: 0.0,
@@ -130,7 +130,7 @@ describe("Ship", () => {
     const testShip = new Ship({
       id: "12345",
       name: "Nimitz",
-      sideName: "BLUE",
+      sideId: "BLUE",
       className: "USS Nimitz",
       latitude: 15,
       longitude: 20,

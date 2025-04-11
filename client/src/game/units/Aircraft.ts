@@ -1,10 +1,10 @@
-import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
 import Weapon from "@/game/units/Weapon";
+import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 
 interface IAircraft {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -17,7 +17,7 @@ interface IAircraft {
   range: number;
   route?: number[][];
   selected?: boolean;
-  sideColor?: string;
+  sideColor?: string | SIDE_COLOR;
   weapons?: Weapon[];
   homeBaseId?: string;
   rtb?: boolean;
@@ -28,7 +28,7 @@ interface IAircraft {
 export default class Aircraft {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -41,7 +41,7 @@ export default class Aircraft {
   range: number; // NM -- currently default -- need to reference from database
   route: number[][];
   selected: boolean;
-  sideColor: string;
+  sideColor: SIDE_COLOR;
   weapons: Weapon[];
   homeBaseId: string;
   rtb: boolean;
@@ -51,7 +51,7 @@ export default class Aircraft {
   constructor(parameters: IAircraft) {
     this.id = parameters.id;
     this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    this.sideId = parameters.sideId;
     this.className = parameters.className;
     this.latitude = parameters.latitude;
     this.longitude = parameters.longitude;
@@ -64,7 +64,7 @@ export default class Aircraft {
     this.range = parameters.range;
     this.route = parameters.route ?? [];
     this.selected = parameters.selected ?? false;
-    this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
+    this.sideColor = convertColorNameToSideColor(parameters.sideColor);
     this.weapons = parameters.weapons ?? [];
     this.homeBaseId = parameters.homeBaseId ?? "";
     this.rtb = parameters.rtb ?? false;

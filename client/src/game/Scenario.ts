@@ -10,6 +10,7 @@ import PatrolMission from "@/game/mission/PatrolMission";
 import { Target } from "@/game/engine/weaponEngagement";
 import StrikeMission from "@/game/mission/StrikeMission";
 import { Mission } from "@/game/Game";
+import { SIDE_COLOR } from "@/utils/colors";
 
 type HomeBase = Airbase | Ship;
 
@@ -63,16 +64,24 @@ export default class Scenario {
     this.missions = parameters.missions ?? [];
   }
 
-  getSide(sideName: string): Side | undefined {
-    return this.sides.find((side) => side.name === sideName);
+  getSide(sideId: string | null | undefined): Side | undefined {
+    return this.sides.find((side) => side.id === sideId);
   }
 
-  getSideColor(sideName: string): string {
-    const side = this.getSide(sideName);
+  getSideName(sideId: string | null | undefined): string {
+    const side = this.getSide(sideId);
     if (side) {
-      return side.sideColor;
+      return side.name;
     }
-    return "black";
+    return "N/A";
+  }
+
+  getSideColor(sideId: string | null | undefined): SIDE_COLOR {
+    const side = this.getSide(sideId);
+    if (side) {
+      return side.color;
+    }
+    return SIDE_COLOR.BLACK;
   }
 
   getAircraft(aircraftId: string | null): Aircraft | undefined {
@@ -234,7 +243,7 @@ export default class Scenario {
       let closestBase: HomeBase | undefined;
       let closestDistance = Number.MAX_VALUE;
       this.airbases.forEach((airbase) => {
-        if (airbase.sideName !== aircraft.sideName) return;
+        if (airbase.sideId !== aircraft.sideId) return;
         const distance = getDistanceBetweenTwoPoints(
           aircraft.latitude,
           aircraft.longitude,
@@ -247,7 +256,7 @@ export default class Scenario {
         }
       });
       this.ships.forEach((ship) => {
-        if (ship.sideName !== aircraft.sideName) return;
+        if (ship.sideId !== aircraft.sideId) return;
         const distance = getDistanceBetweenTwoPoints(
           aircraft.latitude,
           aircraft.longitude,
@@ -263,25 +272,25 @@ export default class Scenario {
     }
   }
 
-  getAllTargetsFromEnemySides(sideName: string): Target[] {
+  getAllTargetsFromEnemySides(sideId: string): Target[] {
     const targets: Target[] = [];
     this.aircraft.forEach((aircraft) => {
-      if (aircraft.sideName !== sideName) {
+      if (aircraft.sideId !== sideId) {
         targets.push(aircraft);
       }
     });
     this.facilities.forEach((facility) => {
-      if (facility.sideName !== sideName) {
+      if (facility.sideId !== sideId) {
         targets.push(facility);
       }
     });
     this.ships.forEach((ship) => {
-      if (ship.sideName !== sideName) {
+      if (ship.sideId !== sideId) {
         targets.push(ship);
       }
     });
     this.airbases.forEach((airbase) => {
-      if (airbase.sideName !== sideName) {
+      if (airbase.sideId !== sideId) {
         targets.push(airbase);
       }
     });

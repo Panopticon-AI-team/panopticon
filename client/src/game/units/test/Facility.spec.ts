@@ -6,7 +6,7 @@ describe("Facility", () => {
     const testWeapon = new Weapon({
       id: "123456",
       name: "Sample Weapon",
-      sideName: "sideName",
+      sideId: "sideId",
       className: "Sample Weapon",
       latitude: 0.0,
       longitude: 0.0,
@@ -26,7 +26,7 @@ describe("Facility", () => {
     const testFacility = new Facility({
       id: "12345",
       name: "SAM",
-      sideName: "RED",
+      sideId: "RED",
       className: "SAM",
       latitude: 15,
       longitude: 20,
@@ -37,7 +37,7 @@ describe("Facility", () => {
     });
     expect(testFacility.id).toBe("12345");
     expect(testFacility.name).toBe("SAM");
-    expect(testFacility.sideName).toBe("RED");
+    expect(testFacility.sideId).toBe("RED");
     expect(testFacility.className).toBe("SAM");
     expect(testFacility.latitude).toBe(15);
     expect(testFacility.longitude).toBe(20);
@@ -52,7 +52,7 @@ describe("Facility", () => {
     const testWeapon1 = new Weapon({
       id: "123456",
       name: "Sample Weapon",
-      sideName: "sideName",
+      sideId: "sideId",
       className: "Sample Weapon",
       latitude: 0.0,
       longitude: 0.0,
@@ -72,7 +72,7 @@ describe("Facility", () => {
     const testWeapon2 = new Weapon({
       id: "123456",
       name: "Sample Weapon",
-      sideName: "sideName",
+      sideId: "sideId",
       className: "Sample Weapon",
       latitude: 0.0,
       longitude: 0.0,
@@ -92,7 +92,7 @@ describe("Facility", () => {
     const testFacility = new Facility({
       id: "12345",
       name: "SAM",
-      sideName: "RED",
+      sideId: "RED",
       className: "SAM",
       latitude: 15,
       longitude: 20,

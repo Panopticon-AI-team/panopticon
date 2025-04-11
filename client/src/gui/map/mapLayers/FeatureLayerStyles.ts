@@ -1,7 +1,8 @@
 import { FeatureLike } from "ol/Feature.js";
 import { Style, Icon, Fill, Stroke, Text } from "ol/style.js";
 
-import { colorNameToColorArray, toRadians } from "@/utils/mapFunctions";
+import { toRadians } from "@/utils/mapFunctions";
+import { colorNameToColorArray, SIDE_COLOR } from "@/utils/colors";
 
 import FlightIconSvg from "@/gui/assets/svg/flight_black_24dp.svg";
 import RadarIconSvg from "@/gui/assets/svg/radar_black_24dp.svg";
@@ -61,7 +62,7 @@ export const threatRangeStyle = function (feature: FeatureLike) {
 
 export const routeStyle = function (feature: FeatureLike) {
   const colorArray = colorNameToColorArray(
-    feature.getProperties().sideColor,
+    feature.getProperties().sideColor ?? SIDE_COLOR.BLACK,
     0.5
   );
   const styles = [
@@ -99,7 +100,7 @@ export const routeDrawLineStyle = function (feature: FeatureLike) {
   if (feature.getGeometry()?.getType() !== "LineString") return [];
 
   const colorArray = colorNameToColorArray(
-    feature.getProperties().sideColor ?? "black",
+    feature.getProperties().sideColor ?? SIDE_COLOR.BLACK,
     0.5
   );
   const styles = [

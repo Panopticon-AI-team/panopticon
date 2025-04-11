@@ -9,6 +9,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Geometry } from "ol/geom";
 import { Feature } from "ol";
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
+import { SIDE_COLOR } from "@/utils/colors";
 
 interface MultipleFeatureSelectorProps {
   features: Feature<Geometry>[];
@@ -46,7 +47,7 @@ export default function MultipleFeatureSelector({
       | undefined
   ) => {
     if (featureType) {
-      return <EntityIcon type={featureType} defaultColor="white" />;
+      return <EntityIcon type={featureType} color={SIDE_COLOR.WHITE} />;
     }
     return <HelpOutlineIcon />;
   };

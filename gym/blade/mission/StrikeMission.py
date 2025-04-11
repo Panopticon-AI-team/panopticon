@@ -19,9 +19,12 @@ class StrikeMission:
         self.assigned_target_ids = assigned_target_ids
         self.active = active
 
-    def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__, 
-            sort_keys=True,
-            indent=4)
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "side_id": str(self.side_id),
+            "assigned_unit_ids": [str(id) for id in self.assigned_unit_ids],
+            "assigned_target_ids": [str(id) for id in self.assigned_target_ids],
+            "active": self.active,
+        }

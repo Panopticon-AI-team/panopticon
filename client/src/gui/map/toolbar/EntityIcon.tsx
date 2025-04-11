@@ -1,86 +1,96 @@
-import SamIcon from "@/gui/assets/svg/radar_black_24dp.svg";
-import AirbaseIcon from "@/gui/assets/svg/flight_takeoff_black_24dp.svg";
-import AircraftIcon from "@/gui/assets/svg/flight_black_24dp.svg";
-import ShipIcon from "@/gui/assets/svg/directions_boat_black_24dp.svg";
-import PointMarkerIcon from "@/gui/assets/svg/pin_drop_24dp_E8EAED.svg";
+import { SIDE_COLOR } from "@/utils/colors";
+import {
+  Brightness1,
+  DirectionsBoat,
+  Flight,
+  FlightTakeoff,
+  Help,
+  PinDrop,
+  Radar,
+} from "@mui/icons-material";
 
 export interface IEntityIconProps {
-  type: "aircraft" | "airbase" | "ship" | "facility" | "referencePoint";
+  type: string;
   width?: number;
   height?: number;
-  sideColor?: "blue" | "red";
-  defaultColor?: "white" | "black";
+  color?: SIDE_COLOR;
 }
 
 export default function EntityIcon({
   type,
   width = 24,
   height = 24,
-  sideColor,
-  defaultColor = "black",
+  color = SIDE_COLOR.BLACK,
 }: Readonly<IEntityIconProps>) {
-  const getColorFilter = (color?: "blue" | "red") => {
-    switch (color) {
-      case "blue":
-        return "invert(70%) sepia(69%) saturate(4532%) hue-rotate(220deg)";
-      case "red":
-        return "invert(70%) sepia(91%) saturate(2552%) hue-rotate(0deg)";
-      default:
-        return defaultColor === "white"
-          ? "brightness(100%) contrast(100%)"
-          : "brightness(0) contrast(100%)";
-    }
-  };
-
   switch (type) {
     case "aircraft":
       return (
-        <img
-          src={AircraftIcon}
-          alt="Aircraft Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(sideColor) }}
+        <Flight
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     case "airbase":
       return (
-        <img
-          src={AirbaseIcon}
-          alt="Airebase Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(sideColor) }}
+        <FlightTakeoff
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     case "ship":
       return (
-        <img
-          src={ShipIcon}
-          alt="Ship Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(sideColor) }}
+        <DirectionsBoat
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     case "facility":
       return (
-        <img
-          src={SamIcon}
-          alt="Sam Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(sideColor) }}
+        <Radar
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
     case "referencePoint":
       return (
-        <img
-          src={PointMarkerIcon}
-          alt="Reference Point Unit Icon"
-          width={width}
-          height={height}
-          style={{ filter: getColorFilter(sideColor) }}
+        <PinDrop
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
+        />
+      );
+    case "circle":
+      return (
+        <Brightness1
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
+        />
+      );
+    default:
+      return (
+        <Help
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
         />
       );
   }
