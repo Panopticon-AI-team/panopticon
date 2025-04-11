@@ -1,4 +1,4 @@
-import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
+import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 
 interface IReferencePoint {
   id: string;
@@ -7,7 +7,7 @@ interface IReferencePoint {
   latitude: number;
   longitude: number;
   altitude: number;
-  sideColor?: string;
+  sideColor?: string | SIDE_COLOR;
 }
 
 export default class ReferencePoint {
@@ -17,7 +17,7 @@ export default class ReferencePoint {
   latitude: number;
   longitude: number;
   altitude: number;
-  sideColor: string;
+  sideColor: SIDE_COLOR;
 
   constructor(parameters: IReferencePoint) {
     this.id = parameters.id;
@@ -26,6 +26,6 @@ export default class ReferencePoint {
     this.latitude = parameters.latitude;
     this.longitude = parameters.longitude;
     this.altitude = parameters.altitude;
-    this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
+    this.sideColor = convertColorNameToSideColor(parameters.sideColor);
   }
 }

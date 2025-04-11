@@ -10,6 +10,7 @@ import PatrolMission from "@/game/mission/PatrolMission";
 import { Target } from "@/game/engine/weaponEngagement";
 import StrikeMission from "@/game/mission/StrikeMission";
 import { Mission } from "@/game/Game";
+import { SIDE_COLOR } from "@/utils/colors";
 
 type HomeBase = Airbase | Ship;
 
@@ -75,12 +76,12 @@ export default class Scenario {
     return "N/A";
   }
 
-  getSideColor(sideId: string | null | undefined): string {
+  getSideColor(sideId: string | null | undefined): SIDE_COLOR {
     const side = this.getSide(sideId);
     if (side) {
-      return side.sideColor;
+      return side.color;
     }
-    return "black";
+    return SIDE_COLOR.BLACK;
   }
 
   getAircraft(aircraftId: string | null): Aircraft | undefined {

@@ -1,7 +1,8 @@
 import { FeatureLike } from "ol/Feature.js";
 import { Style, Icon, Fill, Stroke, Text } from "ol/style.js";
 
-import { colorNameToColorArray, toRadians } from "@/utils/mapFunctions";
+import { toRadians } from "@/utils/mapFunctions";
+import { colorNameToColorArray, colorNameToHex } from "@/utils/colors";
 
 import FlightIconSvg from "@/gui/assets/svg/flight_black_24dp.svg";
 import RadarIconSvg from "@/gui/assets/svg/radar_black_24dp.svg";
@@ -18,7 +19,7 @@ export const aircraftStyle = function (feature: FeatureLike) {
       opacity: feature.getProperties().selected ? 0.5 : 1,
       src: FlightIconSvg,
       rotation: toRadians(feature.getProperties().heading),
-      color: feature.getProperties().sideColor,
+      color: colorNameToHex(feature.getProperties().sideColor),
     }),
   });
 };
@@ -28,7 +29,7 @@ export const facilityStyle = function (feature: FeatureLike) {
     image: new Icon({
       opacity: 1,
       src: RadarIconSvg,
-      color: feature.getProperties().sideColor,
+      color: colorNameToHex(feature.getProperties().sideColor),
     }),
   });
 };
@@ -38,19 +39,19 @@ export const airbasesStyle = function (feature: FeatureLike) {
     image: new Icon({
       opacity: 1,
       src: FlightTakeoffSvg,
-      color: feature.getProperties().sideColor,
+      color: colorNameToHex(feature.getProperties().sideColor),
     }),
   });
 };
 
 export const threatRangeStyle = function (feature: FeatureLike) {
   const colorArray = colorNameToColorArray(
-    feature.getProperties().sideColor,
+    colorNameToHex(feature.getProperties().sideColor),
     0.1
   );
   return new Style({
     stroke: new Stroke({
-      color: feature.getProperties().sideColor,
+      color: colorNameToHex(feature.getProperties().sideColor),
       width: 3,
     }),
     fill: new Fill({
@@ -61,7 +62,7 @@ export const threatRangeStyle = function (feature: FeatureLike) {
 
 export const routeStyle = function (feature: FeatureLike) {
   const colorArray = colorNameToColorArray(
-    feature.getProperties().sideColor,
+    feature.getProperties().sideColor ?? "black",
     0.5
   );
   const styles = [
@@ -86,7 +87,7 @@ export const routeStyle = function (feature: FeatureLike) {
           anchor: [0.75, 0.5],
           rotateWithView: true,
           rotation: -rotation,
-          color: feature.getProperties().sideColor,
+          color: colorNameToHex(feature.getProperties().sideColor),
         }),
       })
     );
@@ -120,7 +121,7 @@ export const weaponStyle = function (feature: FeatureLike) {
     image: new Icon({
       src: WeaponSvg,
       rotation: toRadians(feature.getProperties().heading),
-      color: feature.getProperties().sideColor,
+      color: colorNameToHex(feature.getProperties().sideColor),
     }),
   });
 };
@@ -132,7 +133,7 @@ export const featureLabelStyle = function (feature: FeatureLike) {
       text: feature.getProperties().name,
       placement: "point",
       fill: new Fill({
-        color: feature.getProperties().sideColor,
+        color: colorNameToHex(feature.getProperties().sideColor),
       }),
       stroke: new Stroke({
         color: "#000",
@@ -149,7 +150,7 @@ export const shipStyle = function (feature: FeatureLike) {
       opacity: feature.getProperties().selected ? 0.5 : 1,
       src: DirectionsBoatSvg,
       // rotation: toRadians(feature.getProperties().heading),
-      color: feature.getProperties().sideColor,
+      color: colorNameToHex(feature.getProperties().sideColor),
     }),
   });
 };
@@ -158,7 +159,7 @@ export const referencePointStyle = function (feature: FeatureLike) {
   return new Style({
     image: new Icon({
       src: PinDropSvg,
-      color: feature.getProperties().sideColor,
+      color: colorNameToHex(feature.getProperties().sideColor),
     }),
   });
 };

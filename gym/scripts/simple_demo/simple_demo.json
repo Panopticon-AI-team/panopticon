@@ -10,13 +10,13 @@
         "id": "b7346e11-0412-493c-a0d0-aacf69ceaad7",
         "name": "BLUE",
         "totalScore": 0,
-        "sideColor": "blue"
+        "color": "blue"
       },
       {
         "id": "6bcbbd72-d64d-4720-b293-d8a814c8d205",
         "name": "RED",
         "totalScore": 0,
-        "sideColor": "red"
+        "color": "red"
       }
     ],
     "timeCompression": 1,

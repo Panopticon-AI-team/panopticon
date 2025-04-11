@@ -61,6 +61,7 @@ import MissionCreatorCard from "@/gui/map/mission/MissionCreatorCard";
 import MissionEditorCard from "@/gui/map/mission/MissionEditorCard";
 import BaseVectorLayer from "ol/layer/BaseVector";
 import VectorLayer from "ol/layer/Vector";
+import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -1020,7 +1021,7 @@ export default function ScenarioMap({
           name: newAircraft.name,
           type: "aircraft",
           sideId: newAircraft.sideId,
-          sideColor: newAircraft.sideColor as "blue" | "red",
+          sideColor: newAircraft.sideColor,
         },
         "add"
       );
@@ -1082,7 +1083,7 @@ export default function ScenarioMap({
           name: newAirbase.name,
           type: "airbase",
           sideId: newAirbase.sideId,
-          sideColor: newAirbase.sideColor as "blue" | "red",
+          sideColor: newAirbase.sideColor,
         },
         "add"
       );
@@ -1130,7 +1131,7 @@ export default function ScenarioMap({
           name: newReferencePoint.name,
           type: "referencePoint",
           sideId: newReferencePoint.sideId,
-          sideColor: newReferencePoint.sideColor as "blue" | "red",
+          sideColor: newReferencePoint.sideColor,
         },
         "add"
       );
@@ -1178,7 +1179,7 @@ export default function ScenarioMap({
           name: newShip.name,
           type: "facility",
           sideId: newShip.sideId,
-          sideColor: newShip.sideColor as "blue" | "red",
+          sideColor: newShip.sideColor,
         },
         "add"
       );
@@ -1436,9 +1437,9 @@ export default function ScenarioMap({
     setCurrentGameStatusToContext("Click on the map to teleport the unit");
   }
 
-  function switchCurrentSide() {
+  function switchCurrentSide(sideId: string) {
     if (missionEditorActive.open) closeMissionEditor();
-    game.switchCurrentSide();
+    game.switchCurrentSide(sideId);
     setCurrentSideId(game.currentSideId);
     toastContext?.addToast(
       `Side changed: ${game.currentScenario.getSideName(game.currentSideId)}`
@@ -1692,7 +1693,7 @@ export default function ScenarioMap({
 
   function addRouteMeasurementInteraction(
     startCoordinates: number[],
-    sideColor: string | undefined = undefined
+    sideColor: string | SIDE_COLOR | undefined = undefined
   ) {
     routeMeasurementDrawLine = new Draw({
       source: new VectorSource(),
@@ -1705,12 +1706,9 @@ export default function ScenarioMap({
     createRouteMeasurementTooltip();
 
     routeMeasurementDrawLine.on("drawstart", function (event) {
-      const defaultColor = game.currentScenario.getSideColor(
-        game.currentSideId
-      );
       const drawLineFeature = event.feature;
       drawLineFeature.setProperties({
-        sideColor: sideColor ?? defaultColor,
+        sideColor: convertColorNameToSideColor(sideColor),
       });
       routeMeasurementListener = drawLineFeature
         .getGeometry()
@@ -1726,7 +1724,7 @@ export default function ScenarioMap({
             routeMeasurementTooltipElement.innerHTML =
               formatRouteLengthDisplay(geom);
             routeMeasurementTooltipElement.style.color =
-              sideColor ?? defaultColor;
+              convertColorNameToSideColor(sideColor);
             routeMeasurementTooltipElement.style.fontWeight = "bold";
           }
           routeMeasurementTooltip?.setPosition(tooltipCoord);

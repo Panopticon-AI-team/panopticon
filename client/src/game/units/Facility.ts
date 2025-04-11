@@ -1,5 +1,5 @@
-import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
 import Weapon from "@/game/units/Weapon";
+import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 
 interface IFacility {
   id: string;
@@ -10,7 +10,7 @@ interface IFacility {
   longitude: number;
   altitude: number;
   range: number;
-  sideColor?: string;
+  sideColor?: string | SIDE_COLOR;
   weapons?: Weapon[];
 }
 
@@ -23,7 +23,7 @@ export default class Facility {
   longitude: number = 0.0;
   altitude: number = 0.0; // FT ASL -- currently default -- need to reference from database
   range: number = 250; // NM -- currently default -- need to reference from database
-  sideColor: string = "black";
+  sideColor: SIDE_COLOR;
   weapons: Weapon[] = [];
 
   constructor(parameters: IFacility) {
@@ -35,7 +35,7 @@ export default class Facility {
     this.longitude = parameters.longitude;
     this.altitude = parameters.altitude;
     this.range = parameters.range;
-    this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
+    this.sideColor = convertColorNameToSideColor(parameters.sideColor);
     this.weapons = parameters.weapons ?? [];
   }
 

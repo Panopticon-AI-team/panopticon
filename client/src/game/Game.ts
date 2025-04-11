@@ -135,7 +135,6 @@ export default class Game {
         maxFuel: 10000.0,
         fuelRate: 5000.0,
         range: 100,
-        sideColor: airbase.sideColor,
         weapons: [this.getSampleWeapon(10, 0.25)],
         homeBaseId: airbase.id,
         rtb: false,
@@ -314,7 +313,6 @@ export default class Game {
           range: aircraft.range,
           route: [],
           selected: false,
-          sideColor: aircraft.sideColor,
           weapons: aircraft.weapons,
           homeBaseId: aircraft.homeBaseId,
           rtb: false,
@@ -347,7 +345,6 @@ export default class Game {
         maxFuel: 10000.0,
         fuelRate: 5000.0,
         range: 100,
-        sideColor: ship.sideColor,
         weapons: [this.getSampleWeapon(10, 0.25)],
         homeBaseId: ship.id,
         rtb: false,
@@ -722,7 +719,6 @@ export default class Game {
           maxFuel: aircraft.maxFuel,
           fuelRate: aircraft.fuelRate,
           range: aircraft.range,
-          sideColor: aircraft.sideColor,
           weapons: aircraft.weapons,
           homeBaseId: homeBase.id,
           rtb: false,
@@ -734,15 +730,9 @@ export default class Game {
     }
   }
 
-  switchCurrentSide() {
-    for (let i = 0; i < this.currentScenario.sides.length; i++) {
-      if (this.currentScenario.sides[i].id === this.currentSideId) {
-        this.currentSideId =
-          this.currentScenario.sides[
-            (i + 1) % this.currentScenario.sides.length
-          ].id;
-        break;
-      }
+  switchCurrentSide(sideId: string) {
+    if (this.currentScenario.getSide(sideId)) {
+      this.currentSideId = sideId;
     }
   }
 
@@ -781,7 +771,7 @@ export default class Game {
         id: side.id,
         name: side.name,
         totalScore: side.totalScore,
-        sideColor: side.sideColor,
+        color: side.color,
       });
       return newSide;
     });
@@ -811,13 +801,13 @@ export default class Game {
         range: aircraft.range,
         route: aircraft.route,
         selected: aircraft.selected,
-        sideColor: aircraft.sideColor,
         weapons: aircraft.weapons ?? [
           this.getSampleWeapon(10, 0.25, aircraft.sideId),
         ],
         homeBaseId: aircraft.homeBaseId,
         rtb: aircraft.rtb,
         targetId: aircraft.targetId ?? "",
+        // sideColor: aircraft.sideColor,
       });
       loadedScenario.aircraft.push(newAircraft);
     });
@@ -840,13 +830,13 @@ export default class Game {
           range: aircraft.range,
           route: aircraft.route,
           selected: aircraft.selected,
-          sideColor: aircraft.sideColor,
           weapons: aircraft.weapons ?? [
             this.getSampleWeapon(10, 0.25, aircraft.sideId),
           ],
           homeBaseId: aircraft.homeBaseId,
           rtb: aircraft.rtb,
           targetId: aircraft.targetId ?? "",
+          sideColor: aircraft.sideColor,
         });
         airbaseAircraft.push(newAircraft);
       });
@@ -873,10 +863,10 @@ export default class Game {
         longitude: facility.longitude,
         altitude: facility.altitude,
         range: facility.range,
-        sideColor: facility.sideColor,
         weapons: facility.weapons ?? [
           this.getSampleWeapon(30, 0.1, facility.sideId),
         ],
+        sideColor: facility.sideColor,
       });
       loadedScenario.facilities.push(newFacility);
     });
@@ -896,11 +886,11 @@ export default class Game {
         fuelRate: weapon.fuelRate,
         range: weapon.range,
         route: weapon.route,
-        sideColor: weapon.sideColor,
         targetId: weapon.targetId,
         lethality: weapon.lethality,
         maxQuantity: weapon.maxQuantity,
         currentQuantity: weapon.currentQuantity,
+        sideColor: weapon.sideColor,
       });
       loadedScenario.weapons.push(newWeapon);
     });
@@ -923,13 +913,13 @@ export default class Game {
           range: aircraft.range,
           route: aircraft.route,
           selected: aircraft.selected,
-          sideColor: aircraft.sideColor,
           weapons: aircraft.weapons ?? [
             this.getSampleWeapon(10, 0.25, aircraft.sideId),
           ],
           homeBaseId: aircraft.homeBaseId,
           rtb: aircraft.rtb,
           targetId: aircraft.targetId ?? "",
+          sideColor: aircraft.sideColor,
         });
         shipAircraft.push(newAircraft);
       });
@@ -984,7 +974,6 @@ export default class Game {
             latitude: point.latitude,
             longitude: point.longitude,
             altitude: point.altitude,
-            sideColor: point.sideColor,
           });
           assignedArea.push(referencePoint);
         });

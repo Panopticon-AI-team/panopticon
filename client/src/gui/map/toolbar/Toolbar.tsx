@@ -11,8 +11,6 @@ import {
   ListSubheader,
   Menu,
   MenuItem,
-  ToggleButton,
-  ToggleButtonGroup,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -26,7 +24,7 @@ import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import Game from "@/game/Game";
 import { AircraftDb, AirbaseDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
-import { APP_DRAWER_WIDTH, colorPalette } from "@/utils/constants";
+import { APP_DRAWER_WIDTH } from "@/utils/constants";
 import PanopticonLogoSvg from "@/gui/assets/svg/panopticon.svg?react";
 import ToolbarCollapsible from "@/gui/map/toolbar/ToolbarCollapsible";
 import CurrentActionContextDisplay from "@/gui/map/toolbar/CurrentActionContextDisplay";
@@ -56,11 +54,18 @@ import TextField from "@/gui/shared/ui/TextField";
 import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 import { FeatureEntityState } from "@/gui/map/mapLayers/FeatureLayers";
-import RecordingPlayer from "./RecordingPlayer";
+import RecordingPlayer from "@/gui/map/toolbar/RecordingPlayer";
 import blankScenarioJson from "@/scenarios/blank_scenario.json";
 import defaultScenarioJson from "@/scenarios/default_scenario.json";
 import SCSScenarioJson from "@/scenarios/SCS.json";
 import Side from "@/game/Side";
+import SideSelect from "@/gui/map/toolbar/SideSelect";
+import {
+  COLOR_PALETTE,
+  SIDE_COLOR,
+  DEFAULT_ICON_COLOR_FILTER,
+  SELECTED_ICON_COLOR_FILTER,
+} from "@/utils/colors";
 
 interface ToolBarProps {
   mobileView: boolean;
@@ -85,7 +90,7 @@ interface ToolBarProps {
   handleStepRecordingBackwards: () => void;
   handleStepRecordingForwards: () => void;
   handleUndo: () => void;
-  switchCurrentSideOnClick: () => void;
+  switchCurrentSideOnClick: (sideId: string) => void;
   refreshAllLayers: () => void;
   updateMapView: (center: number[], zoom: number) => void;
   loadFeatureEntitiesState: () => void;
@@ -117,7 +122,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const toolbarDrawerStyle = {
-  backgroundColor: colorPalette.darkGray,
+  backgroundColor: COLOR_PALETTE.DARK_GRAY,
   width: APP_DRAWER_WIDTH,
   flexShrink: 0,
   "& .MuiDrawer-paper": {
@@ -128,9 +133,9 @@ const toolbarDrawerStyle = {
 };
 
 const toolbarStyle = {
-  backgroundColor: colorPalette.lightGray,
+  backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
   borderBottom: "1px solid",
-  borderBottomColor: colorPalette.darkGray,
+  borderBottomColor: COLOR_PALETTE.DARK_GRAY,
 };
 
 export default function Toolbar(props: Readonly<ToolBarProps>) {
@@ -265,13 +270,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     setShipIconAnchorEl(null);
   };
 
-  const handleSideChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newSelectedSideId: string
-  ) => {
-    if (newSelectedSideId != null && newSelectedSideId != selectedSideId) {
+  const handleSideChange = (newSelectedSideId: string) => {
+    if (newSelectedSideId != null) {
       setSelectedSideId(newSelectedSideId);
-      props.switchCurrentSideOnClick();
+      props.switchCurrentSideOnClick(newSelectedSideId);
     }
   };
 
@@ -527,8 +529,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         break;
       case "s":
         event.preventDefault();
-        // setSelectedSide((prevSide) => (prevSide === "blue" ? "red" : "blue"));
-        props.switchCurrentSideOnClick();
+        // setSelectedSideId((prevSide) => (prevSide === "blue" ? "red" : "blue"));
+        // props.switchCurrentSideOnClick();
         break;
       case "g":
         event.preventDefault();
@@ -624,7 +626,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            backgroundColor: colorPalette.lightGray,
+            backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
             pl: 2,
           }}
         >
@@ -787,7 +789,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: colorPalette.lightGray,
+              backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
               pl: 2,
             }}
           >
@@ -845,7 +847,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: colorPalette.lightGray,
+              backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
               pl: 2,
             }}
           >
@@ -901,7 +903,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: colorPalette.lightGray,
+              backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
               pl: 2,
             }}
           >
@@ -957,7 +959,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              backgroundColor: colorPalette.lightGray,
+              backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
               pl: 2,
             }}
           >
@@ -997,8 +999,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               height={24}
               style={{
                 filter: props.game.eraserMode
-                  ? "invert(32%) sepia(98%) saturate(2000%) hue-rotate(95deg) brightness(90%) contrast(105%)"
-                  : "grayscale(100%) contrast(200%)",
+                  ? SELECTED_ICON_COLOR_FILTER
+                  : DEFAULT_ICON_COLOR_FILTER,
               }}
             />
           </IconButton>
@@ -1008,7 +1010,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           <IconButton onClick={handleGodModeToggle}>
             <GodModeIcon
               sx={{
-                color: props.game.godMode ? "#009406" : colorPalette.black,
+                color: COLOR_PALETTE.BLACK,
+                filter: props.game.godMode
+                  ? SELECTED_ICON_COLOR_FILTER
+                  : DEFAULT_ICON_COLOR_FILTER,
                 width: 24,
                 height: 24,
               }}
@@ -1033,7 +1038,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     return (
       <Stack spacing={1} direction={"column"} sx={{ gap: "8px" }}>
         {props.mobileView && entityMenuButtons()}
-        <ToggleButtonGroup
+        {/* <ToggleButtonGroup
           fullWidth
           value={entityFilterSelectedOptions.filter((selectedOption) =>
             sideIds.includes(selectedOption)
@@ -1048,7 +1053,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               {side.name}
             </ToggleButton>
           ))}
-        </ToggleButtonGroup>
+        </ToggleButtonGroup>*/}
         {props.featureEntitiesPlotted
           .filter((feature: FeatureEntityState) => {
             const selectedSideIds = entityFilterSelectedOptions.filter(
@@ -1109,10 +1114,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                 value={feature.name}
               >
                 <ListItemIcon>
-                  <EntityIcon
-                    type={feature.type}
-                    sideColor={feature.sideColor}
-                  />
+                  <EntityIcon type={feature.type} color={feature.sideColor} />
                 </ListItemIcon>
                 <ListItemText primary={feature.name} />
               </MenuItem>
@@ -1140,7 +1142,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                 sx={[
                   {
                     ml: 1,
-                    color: colorPalette.black,
+                    color: COLOR_PALETTE.BLACK,
                   },
                 ]}
               >
@@ -1157,7 +1159,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                 sx={[
                   {
                     ml: 1,
-                    color: colorPalette.black,
+                    color: COLOR_PALETTE.BLACK,
                   },
                 ]}
               >
@@ -1191,8 +1193,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                 display: "flex",
                 fontWeight: 400,
                 textDecoration: "none",
-                backgroundColor: colorPalette.lightGray,
-                color: colorPalette.black,
+                backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
+                color: COLOR_PALETTE.BLACK,
                 transform: "none",
               }}
             >
@@ -1204,7 +1206,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                   orientation="vertical"
                   flexItem
                   sx={{
-                    borderColor: colorPalette.darkGray,
+                    borderColor: COLOR_PALETTE.DARK_GRAY,
                     ml: 9.3,
                   }}
                 />
@@ -1215,22 +1217,13 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               orientation="vertical"
               variant="middle"
               flexItem
-              sx={{ borderColor: colorPalette.darkGray, mr: 1.6 }}
+              sx={{ borderColor: COLOR_PALETTE.DARK_GRAY, mr: 1.6 }}
             />
-            <ToggleButtonGroup
-              // color={selectedSide === "blue" ? "primary" : "error"}
-              value={selectedSideId}
-              exclusive
-              onChange={handleSideChange}
-              aria-label="side"
-              sx={{ display: "flex", justifyContent: "center", height: 35 }}
-            >
-              {props.game.currentScenario.sides.map((side: Side) => (
-                <ToggleButton color="primary" key={side.id} value={side.id}>
-                  {side.name}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
+            <SideSelect
+              sides={props.game.currentScenario.sides}
+              currentSideId={selectedSideId}
+              onSideSelect={handleSideChange}
+            />
           </Stack>
         </MapToolbar>
       </AppBar>
@@ -1245,11 +1238,11 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         <Container
           disableGutters
           sx={{
-            backgroundColor: colorPalette.lightGray,
+            backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
             padding: 1,
             flexGrow: 1,
             borderRight: "1px solid",
-            borderRightColor: colorPalette.darkGray,
+            borderRightColor: COLOR_PALETTE.DARK_GRAY,
             overflowX: "hidden",
           }}
         >
@@ -1421,7 +1414,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             sx={{
               py: 0,
               width: "100%",
-              backgroundColor: colorPalette.lightGray,
+              backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
               display: "flex",
               flexDirection: "column",
               gap: "15px",
@@ -1500,9 +1493,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           sx={{
             marginTop: "auto",
             padding: 2,
-            backgroundColor: colorPalette.lightGray,
+            backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
             borderRight: "1px solid",
-            borderRightColor: colorPalette.darkGray,
+            borderRightColor: COLOR_PALETTE.DARK_GRAY,
           }}
         >
           <Divider sx={{ marginBottom: 2 }} />

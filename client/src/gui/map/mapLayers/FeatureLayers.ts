@@ -27,13 +27,14 @@ import Weapon from "@/game/units/Weapon";
 import VectorLayer from "ol/layer/Vector";
 import Ship from "@/game/units/Ship";
 import ReferencePoint from "@/game/units/ReferencePoint";
+import { SIDE_COLOR } from "@/utils/colors";
 
 export type FeatureEntityState = {
   id: string;
   type: "aircraft" | "airbase" | "facility" | "ship" | "referencePoint";
   name: string;
   sideId: string;
-  sideColor: string;
+  sideColor: SIDE_COLOR;
 };
 
 type GameEntity =
