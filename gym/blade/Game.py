@@ -61,7 +61,7 @@ class Game:
         current_side_id = side_id if side_id is not None else self.current_side_id
         side_color = self.current_scenario.get_side_color(current_side_id)
         return Weapon(
-            id=uuid4(),
+            id=str(uuid4()),
             name="Sample Weapon",
             side_id=current_side_id,
             class_name="Sample Weapon",
@@ -121,7 +121,7 @@ class Game:
             return None
 
         reference_point = ReferencePoint(
-            id=uuid4(),
+            id=str(uuid4()),
             name=reference_point_name,
             side_id=self.current_side_id,
             latitude=latitude,
@@ -169,7 +169,7 @@ class Game:
             return
         current_side_id = self.current_scenario.get_side(self.current_side_id).id
         mission = PatrolMission(
-            id=uuid4(),
+            id=str(uuid4()),
             name=mission_name,
             side_id=current_side_id if current_side_id else self.current_side_id,
             assigned_unit_ids=assigned_units,
@@ -203,7 +203,7 @@ class Game:
     ) -> None:
         current_side_id = self.current_scenario.get_side(self.current_side_id).id
         strike_mission = StrikeMission(
-            id=uuid4(),
+            id=str(uuid4()),
             name=mission_name,
             side_id=current_side_id if current_side_id else self.current_side_id,
             assigned_unit_ids=assigned_attackers,
@@ -732,7 +732,7 @@ class Game:
         return False
 
     def export_scenario(self) -> dict:
-        scenario_json_string = self.current_scenario.toJSON()
+        scenario_json_string = self.current_scenario.toJson()
         scenario_json_no_underscores = to_camelcase(scenario_json_string)
 
         export_object = {

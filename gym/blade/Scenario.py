@@ -263,10 +263,18 @@ class Scenario:
                 targets.append(airbase)
         return targets
 
-    def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__ if hasattr(o, "__dict__") else "",
-            sort_keys=True,
-            indent=4,
-        )
+    def to_dict(self):
+        def serialize(obj):
+            if hasattr(obj, "to_dict"):
+                return obj.to_dict()
+            elif isinstance(obj, list):
+                return [serialize(item) for item in obj]
+            elif isinstance(obj, dict):
+                return {key: serialize(value) for key, value in obj.items()}
+            else:
+                return obj
+
+        return serialize(self.__dict__)
+
+    def toJson(self):
+        return json.dumps(self.to_dict(), sort_keys=True, indent=4)

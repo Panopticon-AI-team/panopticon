@@ -16,5 +16,12 @@ class Side:
         self.total_score = total_score
         self.color = convert_color_name_to_side_color(color)
 
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "total_score": self.total_score,
+            "color": (
+                self.color.value if isinstance(self.color, SIDE_COLOR) else self.color
+            ),
+        }

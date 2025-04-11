@@ -48,5 +48,29 @@ class Weapon:
         self.route = route if route is not None else []
         self.side_color = convert_color_name_to_side_color(side_color)
 
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "side_id": str(self.side_id),
+            "class_name": self.class_name,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "altitude": self.altitude,
+            "heading": self.heading,
+            "speed": self.speed,
+            "current_fuel": self.current_fuel,
+            "max_fuel": self.max_fuel,
+            "fuel_rate": self.fuel_rate,
+            "range": self.range,
+            "target_id": str(self.target_id),
+            "lethality": self.lethality,
+            "max_quantity": self.max_quantity,
+            "current_quantity": self.current_quantity,
+            "route": self.route,
+            "side_color": (
+                self.side_color.value
+                if isinstance(self.side_color, SIDE_COLOR)
+                else self.side_color
+            ),
+        }

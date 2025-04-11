@@ -35,6 +35,9 @@ class SIDE_COLOR(Enum):
     SKY_BLUE = "skyblue"
     AQUAMARINE = "aquamarine"
 
+    def upper(self):
+        return self.name.upper()
+
 
 def convert_color_name_to_side_color(
     color: str | None, return_if_error: SIDE_COLOR = SIDE_COLOR.BLACK
