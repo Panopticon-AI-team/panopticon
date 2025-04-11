@@ -30,9 +30,10 @@ import ReferencePoint from "@/game/units/ReferencePoint";
 
 export type FeatureEntityState = {
   id: string;
-  type: "aircraft" | "airbase" | "facility" | "referencePoint";
+  type: "aircraft" | "airbase" | "facility" | "ship" | "referencePoint";
   name: string;
-  sideColor: "blue" | "red";
+  sideId: string;
+  sideColor: string;
 };
 
 type GameEntity =

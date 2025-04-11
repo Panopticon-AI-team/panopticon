@@ -8,7 +8,7 @@ export interface IEntityIconProps {
   type: "aircraft" | "airbase" | "ship" | "facility" | "referencePoint";
   width?: number;
   height?: number;
-  sideColor?: "blue" | "red";
+  sideColor?: string;
   defaultColor?: "white" | "black";
 }
 
@@ -19,7 +19,7 @@ export default function EntityIcon({
   sideColor,
   defaultColor = "black",
 }: Readonly<IEntityIconProps>) {
-  const getColorFilter = (color?: "blue" | "red") => {
+  const getColorFilter = (color?: string) => {
     switch (color) {
       case "blue":
         return "invert(70%) sepia(69%) saturate(4532%) hue-rotate(220deg)";

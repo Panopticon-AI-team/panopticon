@@ -653,6 +653,13 @@ export default function ScenarioMap({
       .map((layer) => layer.getSource().getFeatures())
       .flat();
 
+    const entityTypes = [
+      "aircraft",
+      "airbase",
+      "facility",
+      "ship",
+      "referencePoint",
+    ];
     for (const feature of features) {
       if (
         ["rangeRing", "route"].includes(feature.get("type")) ||
@@ -660,12 +667,15 @@ export default function ScenarioMap({
       ) {
         continue;
       }
-      visibleFeaturesMap[feature.get("id")] = {
-        id: feature.get("id"),
-        name: feature.get("name"),
-        type: feature.get("type").replaceAll("FeatureLabel", ""),
-        sideColor: feature.get("sideColor"),
-      };
+      if (entityTypes.includes(feature.get("type"))) {
+        visibleFeaturesMap[feature.get("id")] = {
+          id: feature.get("id"),
+          name: feature.get("name"),
+          type: feature.get("type"),
+          sideId: feature.get("sideId"),
+          sideColor: feature.get("sideColor"),
+        };
+      }
     }
 
     setFeatureEntitiesState(Object.values(visibleFeaturesMap));
@@ -1009,6 +1019,7 @@ export default function ScenarioMap({
           id: newAircraft.id,
           name: newAircraft.name,
           type: "aircraft",
+          sideId: newAircraft.sideId,
           sideColor: newAircraft.sideColor as "blue" | "red",
         },
         "add"
@@ -1070,6 +1081,7 @@ export default function ScenarioMap({
           id: newAirbase.id,
           name: newAirbase.name,
           type: "airbase",
+          sideId: newAirbase.sideId,
           sideColor: newAirbase.sideColor as "blue" | "red",
         },
         "add"
@@ -1117,6 +1129,7 @@ export default function ScenarioMap({
           id: newReferencePoint.id,
           name: newReferencePoint.name,
           type: "referencePoint",
+          sideId: newReferencePoint.sideId,
           sideColor: newReferencePoint.sideColor as "blue" | "red",
         },
         "add"
@@ -1164,6 +1177,7 @@ export default function ScenarioMap({
           id: newShip.id,
           name: newShip.name,
           type: "facility",
+          sideId: newShip.sideId,
           sideColor: newShip.sideColor as "blue" | "red",
         },
         "add"

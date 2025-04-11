@@ -60,6 +60,7 @@ import RecordingPlayer from "./RecordingPlayer";
 import blankScenarioJson from "@/scenarios/blank_scenario.json";
 import defaultScenarioJson from "@/scenarios/default_scenario.json";
 import SCSScenarioJson from "@/scenarios/SCS.json";
+import Side from "@/game/Side";
 
 interface ToolBarProps {
   mobileView: boolean;
@@ -134,7 +135,9 @@ const toolbarStyle = {
 
 export default function Toolbar(props: Readonly<ToolBarProps>) {
   const toastContext = useContext(ToastContext);
-  const [selectedSide, setSelectedSide] = useState<"blue" | "red">("blue");
+  const [selectedSideId, setSelectedSideId] = useState<string>(
+    props.game.currentSideId
+  );
   const [initialScenarioString, setInitialScenarioString] = useState<string>(
     props.game.exportCurrentScenario()
   );
@@ -264,10 +267,10 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const handleSideChange = (
     _event: React.MouseEvent<HTMLElement>,
-    newSelectedSide: "blue" | "red"
+    newSelectedSideId: string
   ) => {
-    if (newSelectedSide != null && newSelectedSide != selectedSide) {
-      setSelectedSide(newSelectedSide);
+    if (newSelectedSideId != null && newSelectedSideId != selectedSideId) {
+      setSelectedSideId(newSelectedSideId);
       props.switchCurrentSideOnClick();
     }
   };
@@ -277,11 +280,12 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     newSelectedSide: string
   ) => {
     setEntityFilterSelectedOptions((prevItems: string[]) => {
+      const sideIds = props.game.currentScenario.sides.map((side) => side.id);
       if (prevItems.includes(newSelectedSide)) {
         const updatedItems = prevItems.filter(
           (item) => item !== newSelectedSide
         );
-        if (["blue", "red"].some((value) => updatedItems.includes(value))) {
+        if (sideIds.some((value) => updatedItems.includes(value))) {
           return updatedItems;
         } else {
           return prevItems;
@@ -523,7 +527,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         break;
       case "s":
         event.preventDefault();
-        setSelectedSide((prevSide) => (prevSide === "blue" ? "red" : "blue"));
+        // setSelectedSide((prevSide) => (prevSide === "blue" ? "red" : "blue"));
         props.switchCurrentSideOnClick();
         break;
       case "g":
@@ -1016,13 +1020,12 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   };
 
   const entitiesSection = () => {
+    const sideIds = props.game.currentScenario.sides.map((side) => side.id);
     if (
       !entityFilterSelectedOptions.length ||
       !props.featureEntitiesPlotted.length ||
       (entityFilterSelectedOptions.length &&
-        entityFilterSelectedOptions.every(
-          (option) => option === "blue" || option === "red"
-        ))
+        entityFilterSelectedOptions.every((option) => sideIds.includes(option)))
     ) {
       return <MenuItem disabled>No items available</MenuItem>;
     }
@@ -1033,25 +1036,23 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         <ToggleButtonGroup
           fullWidth
           value={entityFilterSelectedOptions.filter((selectedOption) =>
-            ["blue", "red"].includes(selectedOption)
+            sideIds.includes(selectedOption)
           )}
           exclusive
           onChange={handleEntitySideChange}
           aria-label="side"
           sx={{ display: "flex", justifyContent: "center", height: 35 }}
         >
-          <ToggleButton color="primary" value="blue">
-            Blue
-          </ToggleButton>
-          <ToggleButton color="error" value="red">
-            Red
-          </ToggleButton>
+          {props.game.currentScenario.sides.map((side: Side) => (
+            <ToggleButton color="primary" key={side.id} value={side.id}>
+              {side.name}
+            </ToggleButton>
+          ))}
         </ToggleButtonGroup>
         {props.featureEntitiesPlotted
           .filter((feature: FeatureEntityState) => {
-            const selectedSideColors = entityFilterSelectedOptions.filter(
-              (selectedOption: string) =>
-                ["red", "blue"].includes(selectedOption)
+            const selectedSideIds = entityFilterSelectedOptions.filter(
+              (selectedOption: string) => sideIds.includes(selectedOption)
             );
             const selectedTypes = entityFilterSelectedOptions.filter(
               (selectedOption: string) =>
@@ -1065,16 +1066,16 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             );
 
             // Side color(s) selected, prioritize 'side color' first
-            if (selectedSideColors.length) {
+            if (selectedSideIds.length) {
               // Type(s) selected too - filter both 'type' and 'side color'
               if (selectedTypes.length) {
                 return (
                   selectedTypes.includes(feature.type) &&
-                  selectedSideColors.includes(feature.sideColor)
+                  selectedSideIds.includes(feature.sideId)
                 );
               }
               // Only side color selected in options - filter 'side color'
-              return selectedSideColors.includes(feature.sideColor);
+              return selectedSideIds.includes(feature.sideId);
             }
 
             // No side color filter(s) - filter 'type'
@@ -1217,15 +1218,18 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               sx={{ borderColor: colorPalette.darkGray, mr: 1.6 }}
             />
             <ToggleButtonGroup
-              color={selectedSide === "blue" ? "primary" : "error"}
-              value={selectedSide}
+              // color={selectedSide === "blue" ? "primary" : "error"}
+              value={selectedSideId}
               exclusive
               onChange={handleSideChange}
               aria-label="side"
               sx={{ display: "flex", justifyContent: "center", height: 35 }}
             >
-              <ToggleButton value="blue">Blue</ToggleButton>
-              <ToggleButton value="red">Red</ToggleButton>
+              {props.game.currentScenario.sides.map((side: Side) => (
+                <ToggleButton color="primary" key={side.id} value={side.id}>
+                  {side.name}
+                </ToggleButton>
+              ))}
             </ToggleButtonGroup>
           </Stack>
         </MapToolbar>
@@ -1458,12 +1462,15 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                   { label: "Reference Point", value: "referencePoint" },
                 ],
                 onApplyFilterOptions: (selectedOptions: string[]) => {
-                  const selectedSideColors =
-                    entityFilterSelectedOptions.filter(
-                      (item) => item === "blue" || item === "red"
+                  const sideIds = props.game.currentScenario.sides.map(
+                    (side) => side.id
+                  );
+                  const selectedSideIds =
+                    entityFilterSelectedOptions.filter((item) =>
+                      sideIds.includes(item)
                     ) || [];
                   const updatedOptions = [
-                    ...selectedSideColors,
+                    ...selectedSideIds,
                     ...selectedOptions,
                   ];
                   setEntityFilterSelectedOptions(updatedOptions);
