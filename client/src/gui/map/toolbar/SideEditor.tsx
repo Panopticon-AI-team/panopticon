@@ -47,9 +47,9 @@ const editorButtonStyle = {
 };
 
 const SideEditor = (props: SideEditorProps) => {
-  const [sideName, setSideName] = useState(props.side?.name || "");
+  const [sideName, setSideName] = useState(props.side?.name ?? "");
   const [sideColor, setSideColor] = useState<SIDE_COLOR>(
-    props.side?.color || SIDE_COLOR.BLUE
+    props.side?.color ?? SIDE_COLOR.BLUE
   );
   const [sideNameError, setSideNameError] = useState(false);
 
@@ -99,6 +99,7 @@ const SideEditor = (props: SideEditorProps) => {
             helperText={sideNameError ? "Name is required" : ""}
           />
           {/** Side Color Select Field */}
+          {/** Side Color Preview */}
           <Select
             value={sideColor}
             onChange={(e) => setSideColor(e.target.value as SIDE_COLOR)}
@@ -125,7 +126,6 @@ const SideEditor = (props: SideEditorProps) => {
             ))}
           </Select>
         </Stack>
-        {/** Side Color Preview */}
         {/* Form Action/Buttons */}
         <Stack sx={bottomButtonsStackStyle} direction="row" spacing={2}>
           {!props.side ? (

@@ -63,6 +63,7 @@ import {
   COLOR_PALETTE,
   DEFAULT_ICON_COLOR_FILTER,
   SELECTED_ICON_COLOR_FILTER,
+  SIDE_COLOR,
 } from "@/utils/colors";
 
 interface ToolBarProps {
@@ -93,7 +94,6 @@ interface ToolBarProps {
   updateMapView: (center: number[], zoom: number) => void;
   loadFeatureEntitiesState: () => void;
   updateScenarioTimeCompression: (scenarioTimeCompression: number) => void;
-  updateCurrentSideId: (currentSideId: string) => void;
   updateCurrentScenarioTimeToContext: () => void;
   scenarioTimeCompression: number;
   scenarioCurrentSideId: string;
@@ -369,7 +369,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     props.updateScenarioTimeCompression(
       props.game.currentScenario.timeCompression
     );
-    props.updateCurrentSideId(props.game.currentSideId);
+    handleSideChange(props.game.currentSideId);
     if (updateScenarioName) {
       props.game.currentScenario.updateScenarioName(
         props.game.currentScenario.name
@@ -1010,7 +1010,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           <IconButton onClick={handleGodModeToggle}>
             <GodModeIcon
               sx={{
-                color: props.game.godMode ? "green" : "black",
+                color: props.game.godMode ? SIDE_COLOR.GREEN : SIDE_COLOR.BLACK,
                 width: 24,
                 height: 24,
               }}
