@@ -29,6 +29,7 @@ import PatrolMission from "@/game/mission/PatrolMission";
 import StrikeMission from "@/game/mission/StrikeMission";
 import PlaybackRecorder from "@/game/playback/PlaybackRecorder";
 import RecordingPlayer from "@/game/playback/RecordingPlayer";
+import { SIDE_COLOR } from "@/utils/colors";
 
 const MAX_HISTORY_SIZE = 20;
 
@@ -70,6 +71,86 @@ export default class Game {
 
   constructor(currentScenario: Scenario) {
     this.currentScenario = currentScenario;
+  }
+
+  addSide(sideName: string, sideColor: SIDE_COLOR) {
+    const side = new Side({
+      id: randomUUID(),
+      name: sideName,
+      color: sideColor,
+    });
+    this.currentScenario.sides.push(side);
+  }
+
+  updateSide(sideId: string, sideName: string, sideColor: SIDE_COLOR) {
+    const side = this.currentScenario.getSide(sideId);
+    if (side) {
+      this.recordHistory();
+      side.name = sideName;
+      side.color = sideColor;
+      this.currentScenario.airbases.forEach((airbase) => {
+        if (airbase.sideId === sideId) {
+          airbase.sideColor = sideColor;
+        }
+      });
+      this.currentScenario.ships.forEach((ship) => {
+        if (ship.sideId === sideId) {
+          ship.sideColor = sideColor;
+        }
+      });
+      this.currentScenario.facilities.forEach((facility) => {
+        if (facility.sideId === sideId) {
+          facility.sideColor = sideColor;
+        }
+      });
+      this.currentScenario.aircraft.forEach((aircraft) => {
+        if (aircraft.sideId === sideId) {
+          aircraft.sideColor = sideColor;
+        }
+      });
+      this.currentScenario.weapons.forEach((weapon) => {
+        if (weapon.sideId === sideId) {
+          weapon.sideColor = sideColor;
+        }
+      });
+      this.currentScenario.referencePoints.forEach((referencePoint) => {
+        if (referencePoint.sideId === sideId) {
+          referencePoint.sideColor = sideColor;
+        }
+      });
+    }
+  }
+
+  deleteSide(sideId: string) {
+    this.recordHistory();
+    this.currentScenario.sides = this.currentScenario.sides.filter(
+      (side) => side.id !== sideId
+    );
+    this.currentScenario.aircraft = this.currentScenario.aircraft.filter(
+      (aircraft) => aircraft.sideId !== sideId
+    );
+    this.currentScenario.airbases = this.currentScenario.airbases.filter(
+      (airbase) => airbase.sideId !== sideId
+    );
+    this.currentScenario.facilities = this.currentScenario.facilities.filter(
+      (facility) => facility.sideId !== sideId
+    );
+    this.currentScenario.ships = this.currentScenario.ships.filter(
+      (ship) => ship.sideId !== sideId
+    );
+    this.currentScenario.missions = this.currentScenario.missions.filter(
+      (mission) => mission.sideId !== sideId
+    );
+    this.currentScenario.weapons = this.currentScenario.weapons.filter(
+      (weapon) => weapon.sideId !== sideId
+    );
+    this.currentScenario.referencePoints =
+      this.currentScenario.referencePoints.filter(
+        (referencePoint) => referencePoint.sideId !== sideId
+      );
+    if (this.currentSideId === sideId) {
+      this.currentSideId = this.currentScenario.sides[0]?.id ?? "";
+    }
   }
 
   addAircraft(

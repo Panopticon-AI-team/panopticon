@@ -62,6 +62,7 @@ import MissionEditorCard from "@/gui/map/mission/MissionEditorCard";
 import BaseVectorLayer from "ol/layer/BaseVector";
 import VectorLayer from "ol/layer/Vector";
 import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
+import SideEditor from "./toolbar/SideEditor";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -189,6 +190,15 @@ export default function ScenarioMap({
       left: 0,
       features: [],
     });
+  const [openSideEditor, setOpenSideEditor] = useState<{
+    open: boolean;
+    sideId: string | null;
+    anchorEl: null | HTMLElement;
+  }>({
+    open: false,
+    sideId: null,
+    anchorEl: null,
+  });
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
   const [routeVisible, setRouteVisible] = useState(true);
@@ -1431,6 +1441,54 @@ export default function ScenarioMap({
     });
   }
 
+  function handleOpenSideEditor(sideId: string | null) {
+    const anchorEl = document.getElementById("side-select");
+    if (!anchorEl) return;
+    setKeyboardShortcutsEnabled(false);
+    setOpenSideEditor({
+      open: true,
+      sideId: sideId,
+      anchorEl: anchorEl,
+    });
+  }
+
+  function handleCloseSideEditor() {
+    setOpenSideEditor({
+      open: false,
+      anchorEl: null,
+      sideId: null,
+    });
+    setKeyboardShortcutsEnabled(true);
+  }
+
+  function handleAddSide(sideName: string, sideColor: SIDE_COLOR) {
+    game.addSide(sideName, sideColor);
+    if (game.currentScenario.sides.length === 1) {
+      switchCurrentSide(game.currentScenario.sides[0].id);
+    }
+  }
+
+  function handleUpdateSide(
+    sideId: string,
+    sideName: string,
+    sideColor: SIDE_COLOR
+  ) {
+    game.updateSide(sideId, sideName, sideColor);
+    drawNextFrame(game.currentScenario);
+    loadFeatureEntitiesState();
+  }
+
+  function handleDeleteSide(sideId: string) {
+    game.deleteSide(sideId);
+    if (game.currentScenario.sides.length > 0) {
+      switchCurrentSide(game.currentSideId);
+    } else if (game.currentScenario.sides.length === 0) {
+      switchCurrentSide("");
+    }
+    drawNextFrame(game.currentScenario);
+    loadFeatureEntitiesState();
+  }
+
   function queueUnitForTeleport(unitId: string) {
     game.selectedUnitId = unitId;
     teleportingUnit = true;
@@ -1817,6 +1875,7 @@ export default function ScenarioMap({
         }}
         featureEntitiesPlotted={featureEntitiesState}
         openMissionEditor={openMissionEditor}
+        handleOpenSideEditor={handleOpenSideEditor}
         mobileView={mobileView}
       />
 
@@ -2059,6 +2118,17 @@ export default function ScenarioMap({
               features: [],
             });
           }}
+        />
+      )}
+      {openSideEditor.open && openSideEditor.anchorEl && (
+        <SideEditor
+          open={openSideEditor.open}
+          anchorEl={openSideEditor.anchorEl}
+          side={game.currentScenario.getSide(openSideEditor.sideId)}
+          updateSide={handleUpdateSide}
+          addSide={handleAddSide}
+          deleteSide={handleDeleteSide}
+          handleCloseOnMap={handleCloseSideEditor}
         />
       )}
     </>

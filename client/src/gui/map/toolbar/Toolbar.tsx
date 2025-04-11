@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   AppBar,
   Avatar,
@@ -58,11 +58,9 @@ import RecordingPlayer from "@/gui/map/toolbar/RecordingPlayer";
 import blankScenarioJson from "@/scenarios/blank_scenario.json";
 import defaultScenarioJson from "@/scenarios/default_scenario.json";
 import SCSScenarioJson from "@/scenarios/SCS.json";
-import Side from "@/game/Side";
 import SideSelect from "@/gui/map/toolbar/SideSelect";
 import {
   COLOR_PALETTE,
-  SIDE_COLOR,
   DEFAULT_ICON_COLOR_FILTER,
   SELECTED_ICON_COLOR_FILTER,
 } from "@/utils/colors";
@@ -110,6 +108,7 @@ interface ToolBarProps {
   keyboardShortcutsEnabled: boolean;
   toggleMissionCreator: () => void;
   openMissionEditor: (selectedMissionId: string) => void;
+  handleOpenSideEditor: (sideId: string | null) => void;
   openDrawer: () => void;
   closeDrawer: () => void;
 }
@@ -141,8 +140,11 @@ const toolbarStyle = {
 export default function Toolbar(props: Readonly<ToolBarProps>) {
   const toastContext = useContext(ToastContext);
   const [selectedSideId, setSelectedSideId] = useState<string>(
-    props.game.currentSideId
+    props.scenarioCurrentSideId
   );
+  useEffect(() => {
+    setSelectedSideId(props.scenarioCurrentSideId);
+  }, [props.scenarioCurrentSideId]);
   const [initialScenarioString, setInitialScenarioString] = useState<string>(
     props.game.exportCurrentScenario()
   );
@@ -271,8 +273,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   };
 
   const handleSideChange = (newSelectedSideId: string) => {
-    if (newSelectedSideId != null) {
-      setSelectedSideId(newSelectedSideId);
+    if (newSelectedSideId != null && newSelectedSideId !== "add-side") {
       props.switchCurrentSideOnClick(newSelectedSideId);
     }
   };
@@ -526,11 +527,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       case "f":
         event.preventDefault();
         props.toggleScenarioTimeCompressionOnClick();
-        break;
-      case "s":
-        event.preventDefault();
-        // setSelectedSideId((prevSide) => (prevSide === "blue" ? "red" : "blue"));
-        // props.switchCurrentSideOnClick();
         break;
       case "g":
         event.preventDefault();
@@ -1223,6 +1219,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               sides={props.game.currentScenario.sides}
               currentSideId={selectedSideId}
               onSideSelect={handleSideChange}
+              openSideEditor={props.handleOpenSideEditor}
             />
           </Stack>
         </MapToolbar>
