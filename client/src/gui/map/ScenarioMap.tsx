@@ -849,7 +849,7 @@ export default function ScenarioMap({
           toastContext?.addToast("Successfully loaded recording", "success");
         }
         setRecordingPlayerHasRecording(game.recordingPlayer.hasRecording());
-        loadAndDisplayCurrentRecordedFrame();
+        loadAndDisplayCurrentRecordedFrame(true);
       };
       reader.readAsText(file);
     };
@@ -867,13 +867,14 @@ export default function ScenarioMap({
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
   }
 
-  function loadAndDisplayCurrentRecordedFrame() {
+  function loadAndDisplayCurrentRecordedFrame(refreshAll = false) {
     game.loadScenario(game.recordingPlayer.getCurrentStep());
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
     setCurrentRecordingStepToContext(
       game.recordingPlayer.getCurrentStepIndex()
     );
-    drawNextFrame(game.currentScenario);
+    if (refreshAll) refreshAllLayers();
+    else drawNextFrame(game.currentScenario);
   }
 
   async function handlePlayRecordingClick() {
@@ -899,19 +900,19 @@ export default function ScenarioMap({
   function handleStepRecordingToStep(step: number) {
     if (game.recordingPlayer.isAtStep(step)) return;
     game.recordingPlayer.setCurrentStepIndex(step);
-    loadAndDisplayCurrentRecordedFrame();
+    loadAndDisplayCurrentRecordedFrame(true);
   }
 
   function handleStepRecordingBackwards() {
     if (game.recordingPlayer.isAtStart()) return;
     game.recordingPlayer.previousStep();
-    loadAndDisplayCurrentRecordedFrame();
+    loadAndDisplayCurrentRecordedFrame(true);
   }
 
   function handleStepRecordingForwards() {
     if (game.recordingPlayer.isAtEnd()) return;
     game.recordingPlayer.nextStep();
-    loadAndDisplayCurrentRecordedFrame();
+    loadAndDisplayCurrentRecordedFrame(true);
   }
 
   async function handlePlayGameClick() {
