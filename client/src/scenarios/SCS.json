@@ -24,7 +24,7 @@
       {
         "id": "7bc96d3b-ffe7-4469-b976-893e7fa5deca",
         "name": "Beaver #1",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "F-16C",
         "latitude": 20.442558487173827,
         "longitude": 144.16072045098306,
@@ -42,7 +42,7 @@
           {
             "id": "c9065bb1-4b3a-41d5-bc91-a16bdb23881c",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 20.442558487173827,
             "longitude": 144.16072045098306,
@@ -69,7 +69,7 @@
       {
         "id": "46e0ab0f-b49c-4961-b265-ce93dd163c21",
         "name": "Beaver #2",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "F-16C",
         "latitude": 17.226613207984627,
         "longitude": 147.09041152726178,
@@ -87,7 +87,7 @@
           {
             "id": "815f3a82-4184-49ef-b005-ac893de59e8e",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 17.226613207984627,
             "longitude": 147.09041152726178,
@@ -114,7 +114,7 @@
       {
         "id": "ccfbdbf8-1519-444c-b934-0807773bdd69",
         "name": "Defender #2",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "J-16",
         "latitude": 34.91155278110266,
         "longitude": 121.30915795098306,
@@ -132,7 +132,7 @@
           {
             "id": "0fce54c4-0bcf-4e0c-aabc-101a9a35b355",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 34.91155278110266,
             "longitude": 121.30915795098306,
@@ -159,7 +159,7 @@
       {
         "id": "ddcbcf6a-862b-49c8-8b9a-5b85df51f093",
         "name": "Defender #1",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "J-16",
         "latitude": 18.897729999571794,
         "longitude": 117.14900348912242,
@@ -177,7 +177,7 @@
           {
             "id": "5ceb7308-6f53-4f52-8ea4-716297cc7806",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 18.897729999571794,
             "longitude": 117.14900348912242,
@@ -204,7 +204,7 @@
       {
         "id": "5746a756-4739-4375-8d53-0139d3cd9f3c",
         "name": "Domo #3",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "F-16C",
         "latitude": 30.677385740537773,
         "longitude": 135.5474392009831,
@@ -222,7 +222,7 @@
           {
             "id": "54c4c424-0f08-4ede-a33e-af8e63b8d680",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 30.677385740537773,
             "longitude": 135.5474392009831,
@@ -249,7 +249,7 @@
       {
         "id": "bb0ce824-4185-4f7b-9dd0-e6db279c50ca",
         "name": "Domo #1",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "F-16C",
         "latitude": 39.07473056798921,
         "longitude": 142.34431777726178,
@@ -267,7 +267,7 @@
           {
             "id": "1ca1e6f3-1798-47a9-bb44-81e314c33703",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 39.07473056798921,
             "longitude": 142.34431777726178,
@@ -294,7 +294,7 @@
       {
         "id": "f65cdc32-4a42-4e3e-b1d4-0bc9d2b3eba0",
         "name": "Flanker #1",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "SU-35",
         "latitude": 29.256148695304276,
         "longitude": 126.40681956540108,
@@ -312,7 +312,7 @@
           {
             "id": "491b0d3c-26c1-4b04-8206-cc519efe96ff",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 29.256148695304276,
             "longitude": 126.40681956540108,
@@ -339,7 +339,7 @@
       {
         "id": "96d3dbcf-6de6-4253-b8b0-613cd1a8a192",
         "name": "Raptor #1",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "F-22A",
         "latitude": 23.270047805192192,
         "longitude": 126.81697760354042,
@@ -357,7 +357,7 @@
           {
             "id": "a05b59e8-00ce-4f47-a3d0-fe0e2cc23a4e",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 23.270047805192192,
             "longitude": 126.81697760354042,
@@ -384,7 +384,7 @@
       {
         "id": "7ec7f1fc-fc99-4387-be2a-c080c8725263",
         "name": "Raptor #3",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "F-22A",
         "latitude": 23.646303262164068,
         "longitude": 128.10603652726175,
@@ -402,7 +402,7 @@
           {
             "id": "d9953801-5b6a-4540-a396-8d3454897655",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 23.646303262164068,
             "longitude": 128.10603652726175,
@@ -429,7 +429,7 @@
       {
         "id": "b5965b1e-0c02-463b-ac20-1674deb0c610",
         "name": "Raptor #2",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "F-22A",
         "latitude": 22.351872012065343,
         "longitude": 127.57869277726174,
@@ -447,7 +447,7 @@
           {
             "id": "e9cecc27-98ae-4164-aa7e-6a265c44c578",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 22.351872012065343,
             "longitude": 127.57869277726174,
@@ -474,7 +474,7 @@
       {
         "id": "2b07be32-3c4e-41e2-b292-382b1528040f",
         "name": "Flanker #2",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "SU-35",
         "latitude": 29.682286332379206,
         "longitude": 125.31772122154348,
@@ -492,7 +492,7 @@
           {
             "id": "dafdca2a-cd8e-4f1e-9f86-10d72c272b5f",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 0,
             "longitude": 0,
@@ -519,7 +519,7 @@
       {
         "id": "06be133c-6070-43c2-99c6-6d1f3a9aaf39",
         "name": "Flanker #3",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "SU-35",
         "latitude": 28.086145870364547,
         "longitude": 125.56631344930436,
@@ -537,7 +537,7 @@
           {
             "id": "1573bd57-5022-429b-b443-15dfc75b79fd",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 0,
             "longitude": 0,
@@ -564,7 +564,7 @@
       {
         "id": "6cf33b60-a5ea-465d-9eae-b04c0a9949b8",
         "name": "Raptor #2444",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "F-35A Lightning II",
         "latitude": 21.3521645831416,
         "longitude": 118.80530729360531,
@@ -582,7 +582,7 @@
           {
             "id": "cf7ab15d-c88f-4d52-b6eb-c1c5c8563067",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 0,
             "longitude": 0,
@@ -609,7 +609,7 @@
       {
         "id": "06c2ecf8-4ab4-40ee-b038-3b5a24afa35a",
         "name": "Raptor #3519",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "F-35A Lightning II",
         "latitude": 21.033468002306122,
         "longitude": 117.68664226868127,
@@ -627,7 +627,7 @@
           {
             "id": "f6ecebf6-2fbd-4088-8817-b6effd62b8ef",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 0,
             "longitude": 0,
@@ -656,7 +656,7 @@
       {
         "id": "ca9975c7-4efe-450f-bc39-9199c0ba711b",
         "name": "Carrier #420",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "Carrier",
         "latitude": 16.9761862395075,
         "longitude": 114.64897207900776,
@@ -674,7 +674,7 @@
           {
             "id": "66183f3a-04e6-4b8c-90fa-8507d4c6d6f7",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 0,
             "longitude": 0,
@@ -697,7 +697,7 @@
           {
             "id": "636ff538-51b3-479e-81b1-516e461e33c6",
             "name": "Raptor #3982",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 16.4761862395075,
             "longitude": 114.14897207900776,
@@ -715,7 +715,7 @@
               {
                 "id": "06c7bf25-1455-4f32-8174-e21bcf127147",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -742,7 +742,7 @@
           {
             "id": "df930e6f-576e-4040-be36-0eb27d5f82ee",
             "name": "Raptor #4517",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 16.4761862395075,
             "longitude": 114.14897207900776,
@@ -760,7 +760,7 @@
               {
                 "id": "fd63ab2e-826d-4930-a795-4d78ee272296",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -787,7 +787,7 @@
           {
             "id": "5a38a6bb-b5e4-406f-8424-d92aefc67c33",
             "name": "Raptor #3827",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 16.4761862395075,
             "longitude": 114.14897207900776,
@@ -805,7 +805,7 @@
               {
                 "id": "3736208c-6a72-48d9-9260-d56988de56a6",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -835,7 +835,7 @@
       {
         "id": "8e6ce884-1213-4b2a-a9b4-9947a4008418",
         "name": "Ship #1355",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "Carrier",
         "latitude": 20.970517706476386,
         "longitude": 140.25397343498818,
@@ -853,7 +853,7 @@
           {
             "id": "948005a4-1269-4952-9015-607ba1b4a7ee",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 0,
             "longitude": 0,
@@ -876,7 +876,7 @@
           {
             "id": "20ca352a-e7cd-461d-a05a-cb773a605e6c",
             "name": "Raptor #235",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 20.470517706476386,
             "longitude": 139.75397343498818,
@@ -894,7 +894,7 @@
               {
                 "id": "6b93db36-c7b3-4054-af13-c9063fc3c007",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -921,7 +921,7 @@
           {
             "id": "ce9d95c7-3519-40cd-be00-c026a40cbe2c",
             "name": "Raptor #1315",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 20.470517706476386,
             "longitude": 139.75397343498818,
@@ -939,7 +939,7 @@
               {
                 "id": "57d98b14-db50-406c-88dd-8e505340d070",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -966,7 +966,7 @@
           {
             "id": "4d9e8439-b8ea-4468-9065-c101bb9c7086",
             "name": "Raptor #3496",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 20.470517706476386,
             "longitude": 139.75397343498818,
@@ -984,7 +984,7 @@
               {
                 "id": "b7bdafe3-fb1d-4e66-8c9c-7fca572c7074",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1011,7 +1011,7 @@
           {
             "id": "25cd9c43-ff1b-43ff-94ee-c8ee9e38c3dc",
             "name": "Raptor #2159",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 20.470517706476386,
             "longitude": 139.75397343498818,
@@ -1029,7 +1029,7 @@
               {
                 "id": "249e276f-4c0d-4c14-bb72-f781da019d74",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1056,7 +1056,7 @@
           {
             "id": "054bd8d8-85be-40b1-9403-07d3cf44b124",
             "name": "Raptor #4487",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 20.470517706476386,
             "longitude": 139.75397343498818,
@@ -1074,7 +1074,7 @@
               {
                 "id": "a6a194ab-6e94-45f7-8f64-5ea1801be8bb",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1104,7 +1104,7 @@
       {
         "id": "c58b330e-d5df-40e6-8730-c0ae11df9266",
         "name": "Ship #943",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "Carrier",
         "latitude": 31.429337578295886,
         "longitude": 140.17110683025697,
@@ -1122,7 +1122,7 @@
           {
             "id": "a84af6ee-d34c-4955-b048-0b1ae3db10b9",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 0,
             "longitude": 0,
@@ -1145,7 +1145,7 @@
           {
             "id": "2c4a9253-1238-44d6-a8b3-a1acc0558378",
             "name": "Raptor #1738",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 30.929337578295886,
             "longitude": 139.67110683025697,
@@ -1163,7 +1163,7 @@
               {
                 "id": "ff189283-838c-4c56-95f6-ab5702b66294",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1190,7 +1190,7 @@
           {
             "id": "ddfcabf8-53d3-47f2-aad9-fd2fb177a0d6",
             "name": "Raptor #1014",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 30.929337578295886,
             "longitude": 139.67110683025697,
@@ -1208,7 +1208,7 @@
               {
                 "id": "e530f5e6-0aca-49be-90e1-aa214f252349",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1235,7 +1235,7 @@
           {
             "id": "87bd2a11-44af-48ea-9c8c-9fa6b99058b1",
             "name": "Raptor #1346",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 30.929337578295886,
             "longitude": 139.67110683025697,
@@ -1253,7 +1253,7 @@
               {
                 "id": "4621b713-e63a-44aa-9946-0b7fe5d833b4",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1280,7 +1280,7 @@
           {
             "id": "1493d9c3-d7b4-449e-88a7-aa7988c88506",
             "name": "Raptor #2427",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 30.929337578295886,
             "longitude": 139.67110683025697,
@@ -1298,7 +1298,7 @@
               {
                 "id": "574dafee-14e0-4963-9c50-b5e62e822137",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1325,7 +1325,7 @@
           {
             "id": "abb9453e-3ad6-48bf-9bc5-cbca4ac7bac8",
             "name": "Raptor #1541",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 30.929337578295886,
             "longitude": 139.67110683025697,
@@ -1343,7 +1343,7 @@
               {
                 "id": "77d906ba-07a3-416e-87ba-93bb278a21a8",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1375,7 +1375,7 @@
       {
         "id": "8dd38f74-7e04-446f-94c7-5f5f82157d49",
         "name": "SAM #1",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "SAM",
         "latitude": 29.918535545898735,
         "longitude": 121.5435347391224,
@@ -1386,7 +1386,7 @@
           {
             "id": "dc11a377-5334-4be0-9bc2-be4333286a0d",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 29.918535545898735,
             "longitude": 121.5435347391224,
@@ -1409,7 +1409,7 @@
       {
         "id": "b7a394e2-ed59-4508-9f05-9d9f39adadf1",
         "name": "SAM #4",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "SAM",
         "latitude": 22.56846757650038,
         "longitude": 112.93025348912242,
@@ -1420,7 +1420,7 @@
           {
             "id": "6062caa7-dad8-4aec-8e78-2e83a456fa30",
             "name": "Sample Weapon",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "Sample Weapon",
             "latitude": 22.56846757650038,
             "longitude": 112.93025348912242,
@@ -1443,7 +1443,7 @@
       {
         "id": "342a40ce-ff7d-42ea-8ecc-503eb54854f1",
         "name": "SAM #3",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "SAM",
         "latitude": 31.97866514882547,
         "longitude": 131.0357222391224,
@@ -1454,7 +1454,7 @@
           {
             "id": "212cabd4-c600-41c9-8488-c5d4ae96a29f",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 31.97866514882547,
             "longitude": 131.0357222391224,
@@ -1477,7 +1477,7 @@
       {
         "id": "b63f8035-9bcf-43fe-823e-8d29e036f053",
         "name": "SAM #4857",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "SAM",
         "latitude": 34.81300908271406,
         "longitude": 126.42899781101866,
@@ -1488,7 +1488,7 @@
           {
             "id": "55698210-64e2-4b7c-bf7f-450e1547ab30",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "Sample Weapon",
             "latitude": 0,
             "longitude": 0,
@@ -1513,7 +1513,7 @@
       {
         "id": "051f9203-d022-46de-80b0-ed21e5d5c119",
         "name": "Andersen AFB",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "Airfield",
         "latitude": 18.786821610145893,
         "longitude": 145.74275170098306,
@@ -1523,7 +1523,7 @@
           {
             "id": "af29ff75-0ab5-4499-9044-c28c9d2c74f6",
             "name": "Raptor #3574",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 18.286821610145893,
             "longitude": 145.24275170098306,
@@ -1541,7 +1541,7 @@
               {
                 "id": "992434e6-269a-4c67-8d9a-adee8862445b",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1568,7 +1568,7 @@
           {
             "id": "659e46ba-db50-425d-b757-a91cc45c00aa",
             "name": "Raptor #2978",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 18.286821610145893,
             "longitude": 145.24275170098306,
@@ -1586,7 +1586,7 @@
               {
                 "id": "96948fd3-3d1f-48ff-b2eb-fa5b6e2b3f8a",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1613,7 +1613,7 @@
           {
             "id": "317c88c9-09c1-4b5d-9918-88962a291098",
             "name": "Raptor #1721",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "className": "F-35A Lightning II",
             "latitude": 18.286821610145893,
             "longitude": 145.24275170098306,
@@ -1631,7 +1631,7 @@
               {
                 "id": "bdb7aaf9-e9b1-49f6-af69-a6b4391f03b7",
                 "name": "Sample Weapon",
-                "sideName": "BLUE",
+                "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1660,7 +1660,7 @@
       {
         "id": "b1595e25-aefb-4b67-b5b6-ff399dd3a7d5",
         "name": "Yokota AB",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "className": "Airfield",
         "latitude": 34.007720340702974,
         "longitude": 135.40642499365072,
@@ -1671,7 +1671,7 @@
       {
         "id": "82157516-dade-47b9-a21f-e69fd93e517d",
         "name": "Guojia",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "Airfield",
         "latitude": 35.268589313614996,
         "longitude": 116.84487072309841,
@@ -1681,7 +1681,7 @@
           {
             "id": "cf82a901-5f19-4ebe-bc50-262f057e1576",
             "name": "Raptor #4623",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 34.768589313614996,
             "longitude": 116.34487072309841,
@@ -1699,7 +1699,7 @@
               {
                 "id": "aa687960-fa45-4d8c-baf2-1d02bc6cdcc2",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1726,7 +1726,7 @@
           {
             "id": "2b528aad-f50b-40ea-bc63-fecda2993bc5",
             "name": "Raptor #553",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 34.768589313614996,
             "longitude": 116.34487072309841,
@@ -1744,7 +1744,7 @@
               {
                 "id": "fe80af2a-e790-48b3-94dd-e188b18b3057",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1771,7 +1771,7 @@
           {
             "id": "0c8af935-a4ed-49fa-9a08-090555ce18a4",
             "name": "Raptor #2811",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 34.768589313614996,
             "longitude": 116.34487072309841,
@@ -1789,7 +1789,7 @@
               {
                 "id": "046f468e-8b11-4966-a97a-49a31b771b44",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1816,7 +1816,7 @@
           {
             "id": "f984484f-74d9-4970-8791-37c0f863733e",
             "name": "Raptor #3663",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 34.768589313614996,
             "longitude": 116.34487072309841,
@@ -1834,7 +1834,7 @@
               {
                 "id": "6b65f2bd-fd44-4f0a-a665-8ab7bfef3bd2",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1861,7 +1861,7 @@
           {
             "id": "cff70a8f-3338-4c06-97d9-f1080c9612a6",
             "name": "Raptor #181",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 34.768589313614996,
             "longitude": 116.34487072309841,
@@ -1879,7 +1879,7 @@
               {
                 "id": "d1b70b95-67ef-413c-a4c4-7909b273090c",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1908,7 +1908,7 @@
       {
         "id": "bf755a32-9aae-4f6a-8023-084d797daa62",
         "name": "Cici",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "Airfield",
         "latitude": 30.755419348582464,
         "longitude": 115.06329182640654,
@@ -1918,7 +1918,7 @@
           {
             "id": "ecdc1d84-71e5-4603-935b-5137e215b3a3",
             "name": "Raptor #755",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 30.255419348582464,
             "longitude": 114.56329182640654,
@@ -1936,7 +1936,7 @@
               {
                 "id": "9dcc3f61-f42d-4558-8003-6cc5b4930fff",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -1963,7 +1963,7 @@
           {
             "id": "97600c33-c7b1-4dce-8b1f-6cdfe8805a2d",
             "name": "Raptor #3288",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 30.255419348582464,
             "longitude": 114.56329182640654,
@@ -1981,7 +1981,7 @@
               {
                 "id": "0b33395d-0b11-4f90-8d0d-a6681e28e222",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2008,7 +2008,7 @@
           {
             "id": "14aafbeb-8cff-4da1-b7ca-8ef7cd2e44b1",
             "name": "Raptor #420",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 30.255419348582464,
             "longitude": 114.56329182640654,
@@ -2026,7 +2026,7 @@
               {
                 "id": "41a48192-39ce-4804-b03d-ef6682a61e1f",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2053,7 +2053,7 @@
           {
             "id": "e7ecb3f3-1539-4b13-83f5-f2e6496ebfca",
             "name": "Raptor #4670",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 30.255419348582464,
             "longitude": 114.56329182640654,
@@ -2071,7 +2071,7 @@
               {
                 "id": "1731f0b8-f72d-49d4-ae8d-7ce86d57b5ee",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2098,7 +2098,7 @@
           {
             "id": "5ac5070d-d229-41e7-be49-ace915c58fc1",
             "name": "Raptor #1672",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 30.255419348582464,
             "longitude": 114.56329182640654,
@@ -2116,7 +2116,7 @@
               {
                 "id": "40d308c9-7c2d-4607-a443-eed0c9a42ef3",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2143,7 +2143,7 @@
           {
             "id": "26a08f67-96fe-4b95-8003-6de3e1786081",
             "name": "Raptor #3009",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 30.255419348582464,
             "longitude": 114.56329182640654,
@@ -2161,7 +2161,7 @@
               {
                 "id": "19404022-2e5d-4599-8cfe-ff8489769725",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2190,7 +2190,7 @@
       {
         "id": "2d74104f-03ac-4fdf-ad70-2fa81ac6d514",
         "name": "Yingling",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "className": "Airfield",
         "latitude": 26.42915146666425,
         "longitude": 108.93135084050718,
@@ -2200,7 +2200,7 @@
           {
             "id": "1cb080fe-2768-4fdf-b6d7-03fac0ad56d0",
             "name": "Raptor #3509",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 25.92915146666425,
             "longitude": 108.43135084050718,
@@ -2218,7 +2218,7 @@
               {
                 "id": "90f7caa7-5cc5-46d2-8a5e-b5e1c0ef75c0",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2245,7 +2245,7 @@
           {
             "id": "cba22b13-fbc0-4d6d-afb8-9f7db8768377",
             "name": "Raptor #2201",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 25.92915146666425,
             "longitude": 108.43135084050718,
@@ -2263,7 +2263,7 @@
               {
                 "id": "16540ef9-57a7-40ca-a905-0985993ad91b",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2290,7 +2290,7 @@
           {
             "id": "a8666a44-18eb-4060-a718-1e3f9a4fc640",
             "name": "Raptor #1651",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 25.92915146666425,
             "longitude": 108.43135084050718,
@@ -2308,7 +2308,7 @@
               {
                 "id": "f90a457e-db70-4ea1-9a84-e416c20d5dc7",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2335,7 +2335,7 @@
           {
             "id": "6ec1d728-7938-4f7b-9bca-4dad3e13add7",
             "name": "Raptor #1372",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 25.92915146666425,
             "longitude": 108.43135084050718,
@@ -2353,7 +2353,7 @@
               {
                 "id": "4d999a75-e0f3-46f0-a45f-72a3664e3354",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2380,7 +2380,7 @@
           {
             "id": "76ea342b-7e87-48af-a136-426e548f219c",
             "name": "Raptor #905",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "className": "F-35A Lightning II",
             "latitude": 25.92915146666425,
             "longitude": 108.43135084050718,
@@ -2398,7 +2398,7 @@
               {
                 "id": "9aa38da3-c5d2-41f6-8790-4be9ac43cc8e",
                 "name": "Sample Weapon",
-                "sideName": "RED",
+                "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
                 "className": "Sample Weapon",
                 "latitude": 0,
                 "longitude": 0,
@@ -2430,7 +2430,7 @@
       {
         "id": "f2c69876-986f-4eb2-aa09-da00125e0e09",
         "name": "RP #1175",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "latitude": 21.800061432629548,
         "longitude": 149.8482617352473,
         "altitude": 0,
@@ -2439,7 +2439,7 @@
       {
         "id": "c88d834b-c35b-4c95-82bd-7bf0798d10b6",
         "name": "RP #3362",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "latitude": 21.944247580149494,
         "longitude": 142.32834684548018,
         "altitude": 0,
@@ -2448,7 +2448,7 @@
       {
         "id": "fc107728-41eb-4993-82d6-a53573858ce9",
         "name": "RP #341",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "latitude": 14.603141933178279,
         "longitude": 142.20405073159975,
         "altitude": 0,
@@ -2457,7 +2457,7 @@
       {
         "id": "4fcdf8d5-2c28-490d-8733-e8ae32bb0689",
         "name": "RP #3524",
-        "sideName": "BLUE",
+        "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
         "latitude": 14.753441339796368,
         "longitude": 150.96692676017133,
         "altitude": 0,
@@ -2466,7 +2466,7 @@
       {
         "id": "072f4ade-e0cd-421e-82dd-d51a386ac09e",
         "name": "RP #2258",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "latitude": 22.791948007929392,
         "longitude": 117.40697601245027,
         "altitude": 0,
@@ -2475,7 +2475,7 @@
       {
         "id": "c2fdd901-9c10-4434-80a7-d0d0a7ff0ec2",
         "name": "RP #2966",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "latitude": 22.877863978290662,
         "longitude": 120.26578663170056,
         "altitude": 0,
@@ -2484,7 +2484,7 @@
       {
         "id": "94b605da-29da-439c-b5e5-427c9ee63e06",
         "name": "RP #4917",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "latitude": 20.306630458768197,
         "longitude": 117.40697601245027,
         "altitude": 0,
@@ -2493,7 +2493,7 @@
       {
         "id": "6517a3c7-5737-4191-b5a5-60c63fdd4784",
         "name": "RP #4529",
-        "sideName": "RED",
+        "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
         "latitude": 20.714088302828785,
         "longitude": 120.20363857476035,
         "altitude": 0,
@@ -2513,7 +2513,7 @@
           {
             "id": "f2c69876-986f-4eb2-aa09-da00125e0e09",
             "name": "RP #1175",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "latitude": 21.800061432629548,
             "longitude": 149.8482617352473,
             "altitude": 0,
@@ -2522,7 +2522,7 @@
           {
             "id": "c88d834b-c35b-4c95-82bd-7bf0798d10b6",
             "name": "RP #3362",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "latitude": 21.944247580149494,
             "longitude": 142.32834684548018,
             "altitude": 0,
@@ -2531,7 +2531,7 @@
           {
             "id": "fc107728-41eb-4993-82d6-a53573858ce9",
             "name": "RP #341",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "latitude": 14.603141933178279,
             "longitude": 142.20405073159975,
             "altitude": 0,
@@ -2540,7 +2540,7 @@
           {
             "id": "4fcdf8d5-2c28-490d-8733-e8ae32bb0689",
             "name": "RP #3524",
-            "sideName": "BLUE",
+            "sideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
             "latitude": 14.753441339796368,
             "longitude": 150.96692676017133,
             "altitude": 0,
@@ -2600,7 +2600,7 @@
           {
             "id": "072f4ade-e0cd-421e-82dd-d51a386ac09e",
             "name": "RP #2258",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "latitude": 22.791948007929392,
             "longitude": 117.40697601245027,
             "altitude": 0,
@@ -2609,7 +2609,7 @@
           {
             "id": "c2fdd901-9c10-4434-80a7-d0d0a7ff0ec2",
             "name": "RP #2966",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "latitude": 22.877863978290662,
             "longitude": 120.26578663170056,
             "altitude": 0,
@@ -2618,7 +2618,7 @@
           {
             "id": "94b605da-29da-439c-b5e5-427c9ee63e06",
             "name": "RP #4917",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "latitude": 20.306630458768197,
             "longitude": 117.40697601245027,
             "altitude": 0,
@@ -2627,7 +2627,7 @@
           {
             "id": "6517a3c7-5737-4191-b5a5-60c63fdd4784",
             "name": "RP #4529",
-            "sideName": "RED",
+            "sideId": "6a271548-f333-44e6-8d27-3ab0b59cb5f1",
             "latitude": 20.714088302828785,
             "longitude": 120.20363857476035,
             "altitude": 0,
@@ -2665,7 +2665,7 @@
       }
     ]
   },
-  "currentSideName": "BLUE",
+  "currentSideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
   "selectedUnitId": "",
   "mapView": {
     "defaultCenter": [130.78675023228317, 26.54934438063878],

@@ -4,7 +4,7 @@ import Aircraft from "@/game/units/Aircraft";
 interface IAirbase {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -16,7 +16,7 @@ interface IAirbase {
 export default class Airbase {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -27,7 +27,7 @@ export default class Airbase {
   constructor(parameters: IAirbase) {
     this.id = parameters.id;
     this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    this.sideId = parameters.sideId;
     this.className = parameters.className;
     this.latitude = parameters.latitude;
     this.longitude = parameters.longitude;

@@ -9,7 +9,7 @@ class Facility:
         self,
         id: str,
         name: str,
-        side_name: str,
+        side_id: str,
         class_name: str,
         latitude: float = 0.0,
         longitude: float = 0.0,
@@ -20,7 +20,7 @@ class Facility:
     ):
         self.id = id
         self.name = name
-        self.side_name = side_name
+        self.side_id = side_id
         self.class_name = class_name
         self.latitude = latitude
         self.longitude = longitude
@@ -38,8 +38,4 @@ class Facility:
         return max(self.weapons, key=lambda weapon: weapon.range)
 
     def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__, 
-            sort_keys=True,
-            indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)

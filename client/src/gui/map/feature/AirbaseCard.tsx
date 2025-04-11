@@ -333,7 +333,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.airbase.sideName}
+                  {props.airbase.sideId}
                 </Typography>
               </Typography>
             </Stack>

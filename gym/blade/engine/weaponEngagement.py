@@ -78,7 +78,7 @@ def launch_weapon(
     new_weapon = Weapon(
         id=uuid4(),
         name=weapon_with_max_range_prototype.name,
-        side_name=origin.side_name,
+        side_id=origin.side_id,
         class_name=weapon_with_max_range_prototype.class_name,
         latitude=next_weapon_latitude,
         longitude=next_weapon_longitude,

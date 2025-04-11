@@ -3,7 +3,7 @@ import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
 interface IWeapon {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -25,7 +25,7 @@ interface IWeapon {
 export default class Weapon {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -46,7 +46,7 @@ export default class Weapon {
   constructor(parameters: IWeapon) {
     this.id = parameters.id;
     this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    this.sideId = parameters.sideId;
     this.className = parameters.className;
     this.latitude = parameters.latitude;
     this.longitude = parameters.longitude;

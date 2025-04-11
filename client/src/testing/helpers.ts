@@ -21,7 +21,7 @@ export function getTestUnits() {
   const testAirbase = new Airbase({
     id: "3",
     name: "Floridistan AFB",
-    sideName: "BLUE",
+    sideId: "BLUE",
     className: "Airfield",
     latitude: 90,
     longitude: 90,
@@ -31,7 +31,7 @@ export function getTestUnits() {
   const testWeapon = new Weapon({
     id: "4",
     name: "Sample Weapon",
-    sideName: "sideName",
+    sideId: "sideId",
     className: "Sample Weapon",
     latitude: 0.0,
     longitude: 0.0,
@@ -51,7 +51,7 @@ export function getTestUnits() {
   const testAircraft = new Aircraft({
     id: "5",
     name: "F-16",
-    sideName: "BLUE",
+    sideId: "BLUE",
     className: "Fighter",
     latitude: 15,
     longitude: 20,
@@ -69,7 +69,7 @@ export function getTestUnits() {
   const testShip = new Ship({
     id: "6",
     name: "Nimitz",
-    sideName: "BLUE",
+    sideId: "BLUE",
     className: "USS Nimitz",
     latitude: 15,
     longitude: 20,
@@ -90,7 +90,7 @@ export function getTestUnits() {
   const testFacility = new Facility({
     id: "7",
     name: "SAM",
-    sideName: "RED",
+    sideId: "RED",
     className: "SAM",
     latitude: 15,
     longitude: 20,
@@ -137,6 +137,6 @@ export function getTestGame() {
     sideRed,
   ] = getTestUnits();
   const testGame = new Game(testScenario as Scenario);
-  testGame.currentSideName = "BLUE";
+  testGame.currentSideId = "BLUE";
   return testGame;
 }

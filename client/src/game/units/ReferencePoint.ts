@@ -3,7 +3,7 @@ import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
 interface IReferencePoint {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   latitude: number;
   longitude: number;
   altitude: number;
@@ -13,7 +13,7 @@ interface IReferencePoint {
 export default class ReferencePoint {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   latitude: number;
   longitude: number;
   altitude: number;
@@ -22,7 +22,7 @@ export default class ReferencePoint {
   constructor(parameters: IReferencePoint) {
     this.id = parameters.id;
     this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    this.sideId = parameters.sideId;
     this.latitude = parameters.latitude;
     this.longitude = parameters.longitude;
     this.altitude = parameters.altitude;

@@ -89,10 +89,10 @@ interface ToolBarProps {
   updateMapView: (center: number[], zoom: number) => void;
   loadFeatureEntitiesState: () => void;
   updateScenarioTimeCompression: (scenarioTimeCompression: number) => void;
-  updateCurrentSideName: (currentSideName: string) => void;
+  updateCurrentSideId: (currentSideId: string) => void;
   updateCurrentScenarioTimeToContext: () => void;
   scenarioTimeCompression: number;
-  scenarioCurrentSideName: string;
+  scenarioCurrentSideId: string;
   game: Game;
   featureLabelVisibility: boolean;
   toggleFeatureLabelVisibility: (featureLabelVisibility: boolean) => void;
@@ -153,7 +153,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   );
   const [entityFilterSelectedOptions, setEntityFilterSelectedOptions] =
     useState<string[]>([
-      props.game.currentSideName.toLowerCase(),
+      props.game.currentSideId,
       "aircraft",
       "airbase",
       "ship",
@@ -365,7 +365,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     props.updateScenarioTimeCompression(
       props.game.currentScenario.timeCompression
     );
-    props.updateCurrentSideName(props.game.currentSideName);
+    props.updateCurrentSideId(props.game.currentSideId);
     if (updateScenarioName) {
       props.game.currentScenario.updateScenarioName(
         props.game.currentScenario.name
@@ -697,7 +697,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const missionSection = () => {
     const currentSideId = props.game.currentScenario.getSide(
-      props.game.currentSideName
+      props.game.currentSideId
     )?.id;
     const sideMissions = props.game.currentScenario.missions.filter(
       (mission) => mission.sideId === currentSideId

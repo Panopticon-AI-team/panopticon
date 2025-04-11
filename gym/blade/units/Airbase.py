@@ -9,7 +9,7 @@ class Airbase:
         self,
         id: str,
         name: str,
-        side_name: str,
+        side_id: str,
         class_name: str,
         latitude: float,
         longitude: float,
@@ -19,7 +19,7 @@ class Airbase:
     ):
         self.id = id
         self.name = name
-        self.side_name = side_name
+        self.side_id = side_id
         self.class_name = class_name
         self.latitude = latitude
         self.longitude = longitude
@@ -28,8 +28,4 @@ class Airbase:
         self.aircraft = aircraft if aircraft is not None else []
 
     def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__, 
-            sort_keys=True,
-            indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)

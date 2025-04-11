@@ -504,7 +504,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.ship.sideName}
+                  {props.ship.sideId}
                 </Typography>
               </Typography>
             </Stack>

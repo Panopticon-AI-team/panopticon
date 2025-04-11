@@ -304,7 +304,7 @@ export default function ReferencePointCard(
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.referencePoint.sideName}
+                  {props.referencePoint.sideId}
                 </Typography>
               </Typography>
             </Stack>

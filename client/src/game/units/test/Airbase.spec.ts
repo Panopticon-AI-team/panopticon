@@ -6,7 +6,7 @@ describe("Airbase", () => {
     const testAircraft = new Aircraft({
       id: "12345",
       name: "F-16",
-      sideName: "BLUE",
+      sideId: "BLUE",
       className: "Fighter",
       latitude: 15,
       longitude: 20,
@@ -22,7 +22,7 @@ describe("Airbase", () => {
     const testAirbase = new Airbase({
       id: "12345",
       name: "Floridistan AFB",
-      sideName: "BLUE",
+      sideId: "BLUE",
       className: "Airfield",
       latitude: 15,
       longitude: 20,
@@ -32,7 +32,7 @@ describe("Airbase", () => {
     });
     expect(testAirbase.id).toBe("12345");
     expect(testAirbase.name).toBe("Floridistan AFB");
-    expect(testAirbase.sideName).toBe("BLUE");
+    expect(testAirbase.sideId).toBe("BLUE");
     expect(testAirbase.className).toBe("Airfield");
     expect(testAirbase.latitude).toBe(15);
     expect(testAirbase.longitude).toBe(20);

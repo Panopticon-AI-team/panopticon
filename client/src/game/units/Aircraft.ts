@@ -4,7 +4,7 @@ import Weapon from "@/game/units/Weapon";
 interface IAircraft {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -28,7 +28,7 @@ interface IAircraft {
 export default class Aircraft {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -51,7 +51,7 @@ export default class Aircraft {
   constructor(parameters: IAircraft) {
     this.id = parameters.id;
     this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    this.sideId = parameters.sideId;
     this.className = parameters.className;
     this.latitude = parameters.latitude;
     this.longitude = parameters.longitude;

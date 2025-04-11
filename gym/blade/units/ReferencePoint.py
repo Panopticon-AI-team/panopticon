@@ -8,7 +8,7 @@ class ReferencePoint:
         self,
         id: str,
         name: str,
-        side_name: str,
+        side_id: str,
         latitude: float,
         longitude: float,
         altitude: float,
@@ -16,15 +16,11 @@ class ReferencePoint:
     ):
         self.id = id
         self.name = name
-        self.side_name = side_name
+        self.side_id = side_id
         self.latitude = latitude
         self.longitude = longitude
         self.altitude = altitude
         self.side_color = side_color
 
     def toJSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__, 
-            sort_keys=True,
-            indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)

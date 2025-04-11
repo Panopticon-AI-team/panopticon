@@ -4,7 +4,7 @@ import Weapon from "@/game/units/Weapon";
 interface IFacility {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -17,7 +17,7 @@ interface IFacility {
 export default class Facility {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number = 0.0;
   longitude: number = 0.0;
@@ -29,7 +29,7 @@ export default class Facility {
   constructor(parameters: IFacility) {
     this.id = parameters.id;
     this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    this.sideId = parameters.sideId;
     this.className = parameters.className;
     this.latitude = parameters.latitude;
     this.longitude = parameters.longitude;

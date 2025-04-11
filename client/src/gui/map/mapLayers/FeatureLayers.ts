@@ -106,7 +106,7 @@ export class AircraftLayer extends FeatureLayer {
       name: aircraft.name,
       heading: aircraft.heading,
       selected: aircraft.selected,
-      sideName: aircraft.sideName,
+      sideId: aircraft.sideId,
       sideColor: aircraft.sideColor,
     });
     aircraftFeature.setId(aircraft.id);
@@ -165,7 +165,7 @@ export class FacilityLayer extends FeatureLayer {
       ),
       id: facility.id,
       name: facility.name,
-      sideName: facility.sideName,
+      sideId: facility.sideId,
       sideColor: facility.sideColor,
     });
   }
@@ -197,7 +197,7 @@ export class AirbasesLayer extends FeatureLayer {
       ),
       id: airbase.id,
       name: airbase.name,
-      sideName: airbase.sideName,
+      sideId: airbase.sideId,
       sideColor: airbase.sideColor,
     });
   }
@@ -364,7 +364,7 @@ export class WeaponLayer extends FeatureLayer {
       id: weapon.id,
       name: weapon.name,
       heading: weapon.heading,
-      sideName: weapon.sideName,
+      sideId: weapon.sideId,
       sideColor: weapon.sideColor,
     });
   }
@@ -463,7 +463,7 @@ export class ShipLayer extends FeatureLayer {
       name: ship.name,
       heading: ship.heading,
       selected: ship.selected,
-      sideName: ship.sideName,
+      sideId: ship.sideId,
       sideColor: ship.sideColor,
     });
     shipFeature.setId(ship.id);
@@ -510,7 +510,7 @@ export class ReferencePointLayer extends FeatureLayer {
       ),
       id: referencePoint.id,
       name: referencePoint.name,
-      sideName: referencePoint.sideName,
+      sideId: referencePoint.sideId,
       sideColor: referencePoint.sideColor,
     });
   }

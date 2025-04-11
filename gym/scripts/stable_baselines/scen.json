@@ -24,7 +24,7 @@
       {
         "id": "00860c99-e7a0-4f3c-9a0f-b94a93ac1248",
         "name": "Warthog",
-        "sideName": "BLUE",
+        "sideId": "b7346e11-0412-493c-a0d0-aacf69ceaad7",
         "className": "A-10 Thunderbolt II",
         "latitude": -0.4105591888498594,
         "longitude": 0.7857592043329991,
@@ -42,7 +42,7 @@
           {
             "id": "6eb6c0ae-cd9e-4101-92a4-93c904b72636",
             "name": "Sample Weapon",
-            "sideName": "BLUE",
+            "sideId": "b7346e11-0412-493c-a0d0-aacf69ceaad7",
             "className": "Sample Weapon",
             "latitude": 0,
             "longitude": 0,
@@ -73,7 +73,7 @@
     "referencePoints": [],
     "missions": []
   },
-  "currentSideName": "BLUE",
+  "currentSideId": "b7346e11-0412-493c-a0d0-aacf69ceaad7",
   "selectedUnitId": "",
   "mapView": {
     "defaultCenter": [0, 0],

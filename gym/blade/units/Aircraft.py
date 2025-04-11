@@ -81,7 +81,7 @@ class Aircraft:
         self,
         id: str,
         name: str,
-        side_name: str,
+        side_id: str,
         class_name: str,
         latitude: float,
         longitude: float,
@@ -103,7 +103,7 @@ class Aircraft:
     ):
         self.id = id
         self.name = name
-        self.side_name = side_name
+        self.side_id = side_id
         self.class_name = class_name
         self.latitude = latitude
         self.longitude = longitude

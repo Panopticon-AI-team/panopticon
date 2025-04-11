@@ -150,7 +150,7 @@ export default function ScenarioMap({
     useState(game.playbackRecorder.recordEverySeconds);
   const [recordingPlayerHasRecording, setRecordingPlayerHasRecording] =
     useState(game.recordingPlayer.hasRecording());
-  const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
+  const [currentSideId, setCurrentSideId] = useState(game.currentSideId);
   const [openAircraftCard, setOpenAircraftCard] = useState({
     open: false,
     top: 0,
@@ -415,12 +415,12 @@ export default function ScenarioMap({
   function handleSelectSingleFeature(feature: Feature) {
     const currentSelectedFeatureId = feature.getProperties()?.id;
     const currentSelectedFeatureType = feature.getProperties()?.type;
-    const currentSelectedFeatureSideName = feature.getProperties()?.sideName;
+    const currentSelectedFeatureSideId = feature.getProperties()?.sideId;
 
     if (
       !game.godMode &&
-      currentSelectedFeatureSideName &&
-      currentSelectedFeatureSideName !== game.currentSideName
+      currentSelectedFeatureSideId &&
+      currentSelectedFeatureSideId !== game.currentSideId
     )
       return;
 
@@ -1392,9 +1392,7 @@ export default function ScenarioMap({
   }
 
   function openMissionEditor(selectedMissionId: string = "") {
-    const currentSideId = game.currentScenario.getSide(
-      game.currentSideName
-    )?.id;
+    const currentSideId = game.currentScenario.getSide(game.currentSideId)?.id;
     if (
       selectedMissionId !== "" &&
       game.currentScenario.missions.filter(
@@ -1427,10 +1425,8 @@ export default function ScenarioMap({
   function switchCurrentSide() {
     if (missionEditorActive.open) closeMissionEditor();
     game.switchCurrentSide();
-    setCurrentSideName(game.currentSideName);
-    toastContext?.addToast(
-      `Side changed: ${game.currentSideName.toUpperCase()}`
-    );
+    setCurrentSideId(game.currentSideId);
+    toastContext?.addToast(`Side changed: ${game.currentSideId.toUpperCase()}`);
   }
 
   function toggleScenarioTimeCompression() {
@@ -1694,7 +1690,7 @@ export default function ScenarioMap({
 
     routeMeasurementDrawLine.on("drawstart", function (event) {
       const defaultColor = game.currentScenario.getSideColor(
-        game.currentSideName
+        game.currentSideId
       );
       const drawLineFeature = event.feature;
       drawLineFeature.setProperties({
@@ -1789,9 +1785,9 @@ export default function ScenarioMap({
         updateCurrentScenarioTimeToContext={() => {
           setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
         }}
-        updateCurrentSideName={setCurrentSideName}
+        updateCurrentSideId={setCurrentSideId}
         scenarioTimeCompression={currentScenarioTimeCompression}
-        scenarioCurrentSideName={currentSideName}
+        scenarioCurrentSideId={currentSideId}
         game={game}
         featureLabelVisibility={featureLabelVisible}
         toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
@@ -1828,17 +1824,17 @@ export default function ScenarioMap({
         <MissionCreatorCard
           aircraft={game.currentScenario.aircraft.filter(
             (aircraft) =>
-              aircraft.sideName === game.currentSideName &&
+              aircraft.sideId === game.currentSideId &&
               game.currentScenario.missions
                 .map((mission) => mission.assignedUnitIds)
                 .flat()
                 .indexOf(aircraft.id) === -1
           )}
           targets={game.currentScenario.getAllTargetsFromEnemySides(
-            game.currentSideName
+            game.currentSideId
           )}
           referencePoints={game.currentScenario.referencePoints.filter(
-            (referencePoint) => referencePoint.sideName === game.currentSideName
+            (referencePoint) => referencePoint.sideId === game.currentSideId
           )}
           handleCloseOnMap={() => {
             setKeyboardShortcutsEnabled(true);
@@ -1853,24 +1849,23 @@ export default function ScenarioMap({
         game.currentScenario.missions.filter(
           (mission) =>
             mission.sideId ===
-            game.currentScenario.getSide(game.currentSideName)?.id
+            game.currentScenario.getSide(game.currentSideId)?.id
         ).length > 0 && (
           <MissionEditorCard
             missions={game.currentScenario.missions.filter(
               (mission) =>
                 mission.sideId ===
-                game.currentScenario.getSide(game.currentSideName)?.id
+                game.currentScenario.getSide(game.currentSideId)?.id
             )}
             selectedMissionId={missionEditorActive.selectedMissionId}
             aircraft={game.currentScenario.aircraft.filter(
-              (aircraft) => aircraft.sideName === game.currentSideName
+              (aircraft) => aircraft.sideId === game.currentSideId
             )}
             referencePoints={game.currentScenario.referencePoints.filter(
-              (referencePoint) =>
-                referencePoint.sideName === game.currentSideName
+              (referencePoint) => referencePoint.sideId === game.currentSideId
             )}
             targets={game.currentScenario.getAllTargetsFromEnemySides(
-              game.currentSideName
+              game.currentSideId
             )}
             updatePatrolMission={handleUpdatePatrolMission}
             updateStrikeMission={handleUpdateStrikeMission}

@@ -5,7 +5,7 @@ import Weapon from "@/game/units/Weapon";
 interface IShip {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -27,7 +27,7 @@ interface IShip {
 export default class Ship {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -48,7 +48,7 @@ export default class Ship {
   constructor(parameters: IShip) {
     this.id = parameters.id;
     this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    this.sideId = parameters.sideId;
     this.className = parameters.className;
     this.latitude = parameters.latitude;
     this.longitude = parameters.longitude;

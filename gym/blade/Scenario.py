@@ -49,14 +49,14 @@ class Scenario:
         self.reference_points = reference_points if reference_points is not None else []
         self.missions = missions if missions is not None else []
 
-    def get_side(self, side_name: str) -> Side | None:
+    def get_side(self, side_id: str) -> Side | None:
         for side in self.sides:
-            if side.name == side_name:
+            if side.id == side_id:
                 return side
         return None
 
-    def get_side_color(self, side_name: str) -> str:
-        side = self.get_side(side_name)
+    def get_side_color(self, side_id: str) -> str:
+        side = self.get_side(side_id)
         return side.side_color if side is not None else "black"
 
     def get_aircraft(self, aircraft_id: str) -> Aircraft | None:
@@ -231,7 +231,7 @@ class Scenario:
             closest_base = None
             closest_distance = float("inf")
             for base in self.airbases + self.ships:
-                if base.side_name != aircraft.side_name:
+                if base.side_id != aircraft.side_id:
                     continue
                 distance = get_distance_between_two_points(
                     aircraft.latitude, aircraft.longitude, base.latitude, base.longitude
@@ -242,19 +242,19 @@ class Scenario:
             return closest_base
         return None
 
-    def get_all_targets_from_enemy_sides(self, side_name: str) -> Target:
+    def get_all_targets_from_enemy_sides(self, side_id: str) -> Target:
         targets = []
         for aircraft in self.aircraft:
-            if aircraft.side_name != side_name:
+            if aircraft.side_id != side_id:
                 targets.append(aircraft)
         for facility in self.facilities:
-            if facility.side_name != side_name:
+            if facility.side_id != side_id:
                 targets.append(facility)
         for ship in self.ships:
-            if ship.side_name != side_name:
+            if ship.side_id != side_id:
                 targets.append(ship)
         for airbase in self.airbases:
-            if airbase.side_name != side_name:
+            if airbase.side_id != side_id:
                 targets.append(airbase)
         return targets
 

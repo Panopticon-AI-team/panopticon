@@ -557,7 +557,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.aircraft.sideName}
+                  {props.aircraft.sideId}
                 </Typography>
               </Typography>
             </Stack>

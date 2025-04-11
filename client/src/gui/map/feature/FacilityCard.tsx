@@ -380,7 +380,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.facility.sideName}
+                  {props.facility.sideId}
                 </Typography>
               </Typography>
             </Stack>
