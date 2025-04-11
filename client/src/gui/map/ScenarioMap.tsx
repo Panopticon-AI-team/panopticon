@@ -63,6 +63,13 @@ import BaseVectorLayer from "ol/layer/BaseVector";
 import VectorLayer from "ol/layer/Vector";
 import { Menu, MenuItem } from "@mui/material";
 
+import EntityIcon from "@/gui/map/toolbar/EntityIcon";
+import MapIcon from '@mui/icons-material/Map';
+import AddLocationIcon from '@mui/icons-material/AddLocation';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import FlagIcon from '@mui/icons-material/Flag';
+
+
 interface ScenarioMapProps {
   zoom: number;
   center: number[];
@@ -395,6 +402,7 @@ export default function ScenarioMap({
   //   evt.preventDefault();
   //   console.log(theMap.getEventPixel(evt));
   // });
+  let currentSideColor = game.currentSideName.toLowerCase() === "blue" ? "blue" : "red";
 
   function getSelectedFeatureType(featureId: string): string {
     let featureType = "";
@@ -2193,9 +2201,6 @@ export default function ScenarioMap({
 
 
       <Menu
-      disableAutoFocus
-      disableEnforceFocus
-      disableRestoreFocus
       open={contextMenu.open}
       onClose={() => setContextMenu((prev) => ({ ...prev, open: false }))}
       anchorReference="anchorPosition"
@@ -2211,13 +2216,16 @@ export default function ScenarioMap({
       }}
       >
       
-      <MenuItem onClick={(event) => setSideSubMenuAnchor(event.currentTarget)}>
+        <MenuItem onClick={(event) => setSideSubMenuAnchor(event.currentTarget)}>
+        <FlagIcon sx={{ mr: 1 }} />
         Choose Side
       </MenuItem>
       
       <MenuItem
         onClick={(event) => setUnitsSubMenuAnchor(event.currentTarget)}
-      >
+        >
+          
+        <AddCircleOutlineIcon sx={{ mr: 1 }} />
         Add Unit
       </MenuItem>
 
@@ -2226,7 +2234,8 @@ export default function ScenarioMap({
           addReferencePoint(contextMenu.coordinate);
           setContextMenu((prev) => ({ ...prev, open: false }));
         }}
-      >
+        >
+        <AddLocationIcon sx={{ mr: 1 }} />
         Add Reference Point
       </MenuItem>
 
@@ -2235,7 +2244,8 @@ export default function ScenarioMap({
           baseMapLayers.toggleLayer();
           setContextMenu((prev) => ({ ...prev, open: false }));
         }}
-      >
+        >
+        <MapIcon sx={{ mr: 1 }} />
         Toggle Basemap
       </MenuItem>
       </Menu>
@@ -2260,8 +2270,12 @@ export default function ScenarioMap({
         }}
       >
         <MenuItem
-          onClick={(event) => setAircraftSubMenuAnchor(event.currentTarget)}
-        >
+          onClick={(event) => {
+            setAircraftSubMenuAnchor(event.currentTarget)
+            currentSideColor = game.currentSideName.toLocaleLowerCase();
+          }}
+        > 
+          <EntityIcon type="aircraft" width={20} height={20} />
           Aircraft
         </MenuItem>
 
@@ -2269,18 +2283,21 @@ export default function ScenarioMap({
         <MenuItem
           onClick={(event) => setShipSubMenuAnchor(event.currentTarget)}
         >
+          <EntityIcon type="ship" width={20} height={20} />
           Ship
         </MenuItem>
 
         <MenuItem
           onClick={(event) => setAirbaseSubMenuAnchor(event.currentTarget)}
         >
+          <EntityIcon type="airbase" width={20} height={20} />
           Airbase
         </MenuItem>
 
         <MenuItem
           onClick={(event) => setFacilitySubMenuAnchor(event.currentTarget)}
         >
+          <EntityIcon type="facility" width={20} height={20} />
           Facility
         </MenuItem>
         
