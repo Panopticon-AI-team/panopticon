@@ -2238,16 +2238,6 @@ export default function ScenarioMap({
         <AddLocationIcon sx={{ mr: 1 }} />
         Add Reference Point
       </MenuItem>
-
-      <MenuItem
-        onClick={() => {
-          baseMapLayers.toggleLayer();
-          setContextMenu((prev) => ({ ...prev, open: false }));
-        }}
-        >
-        <MapIcon sx={{ mr: 1 }} />
-        Toggle Basemap
-      </MenuItem>
       </Menu>
 
       <Menu
