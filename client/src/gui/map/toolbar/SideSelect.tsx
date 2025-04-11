@@ -10,7 +10,7 @@ import {
   IconButton,
   Divider,
 } from "@mui/material";
-import EntityIcon from "./EntityIcon";
+import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 

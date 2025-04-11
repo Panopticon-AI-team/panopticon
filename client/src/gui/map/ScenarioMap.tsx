@@ -32,7 +32,7 @@ import { SetScenarioTimeContext } from "@/gui/contextProviders/contexts/Scenario
 import { SetGameStatusContext } from "@/gui/contextProviders/contexts/GameStatusContext";
 import { SetMouseMapCoordinatesContext } from "@/gui/contextProviders/contexts/MouseMapCoordinatesContext";
 import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
-import { SetRecordingStepContext } from "../contextProviders/contexts/RecordingStepContext";
+import { SetRecordingStepContext } from "@/gui/contextProviders/contexts/RecordingStepContext";
 import AirbaseCard from "@/gui/map/feature/AirbaseCard";
 import AircraftCard from "@/gui/map/feature/AircraftCard";
 import FacilityCard from "@/gui/map/feature/FacilityCard";
@@ -62,7 +62,7 @@ import MissionEditorCard from "@/gui/map/mission/MissionEditorCard";
 import BaseVectorLayer from "ol/layer/BaseVector";
 import VectorLayer from "ol/layer/Vector";
 import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
-import SideEditor from "./toolbar/SideEditor";
+import SideEditor from "@/gui/map/toolbar/SideEditor";
 
 interface ScenarioMapProps {
   zoom: number;

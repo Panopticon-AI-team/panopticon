@@ -14,7 +14,7 @@ import {
 import TextField from "@/gui/shared/ui/TextField";
 import Side from "@/game/Side";
 import { SIDE_COLOR } from "@/utils/colors";
-import EntityIcon from "./EntityIcon";
+import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 
 interface SideEditorProps {
   open: boolean;
