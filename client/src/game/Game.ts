@@ -807,7 +807,7 @@ export default class Game {
         homeBaseId: aircraft.homeBaseId,
         rtb: aircraft.rtb,
         targetId: aircraft.targetId ?? "",
-        // sideColor: aircraft.sideColor,
+        sideColor: aircraft.sideColor,
       });
       loadedScenario.aircraft.push(newAircraft);
     });
