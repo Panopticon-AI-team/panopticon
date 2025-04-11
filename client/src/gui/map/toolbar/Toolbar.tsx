@@ -144,6 +144,11 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   );
   useEffect(() => {
     setSelectedSideId(props.scenarioCurrentSideId);
+    handleEntitySideChange(
+      props.game.godMode
+        ? props.game.currentScenario.sides.map((side) => side.id)
+        : [props.scenarioCurrentSideId]
+    );
   }, [props.scenarioCurrentSideId]);
   const [initialScenarioString, setInitialScenarioString] = useState<string>(
     props.game.exportCurrentScenario()
@@ -163,7 +168,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   );
   const [entityFilterSelectedOptions, setEntityFilterSelectedOptions] =
     useState<string[]>([
-      props.game.currentSideId,
+      ...(props.game.godMode
+        ? props.game.currentScenario.sides.map((side) => side.id)
+        : [props.scenarioCurrentSideId]),
       "aircraft",
       "airbase",
       "ship",
@@ -278,23 +285,13 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     }
   };
 
-  const handleEntitySideChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newSelectedSide: string
-  ) => {
+  const handleEntitySideChange = (newSelectedSides: string[]) => {
     setEntityFilterSelectedOptions((prevItems: string[]) => {
       const sideIds = props.game.currentScenario.sides.map((side) => side.id);
-      if (prevItems.includes(newSelectedSide)) {
-        const updatedItems = prevItems.filter(
-          (item) => item !== newSelectedSide
-        );
-        if (sideIds.some((value) => updatedItems.includes(value))) {
-          return updatedItems;
-        } else {
-          return prevItems;
-        }
-      }
-      return [...prevItems, newSelectedSide];
+      const filtersWithNewSide = prevItems.filter(
+        (item) => !sideIds.includes(item)
+      );
+      return [...filtersWithNewSide, ...newSelectedSides];
     });
   };
 
@@ -501,6 +498,13 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const handleGodModeToggle = () => {
     props.game.toggleGodMode();
+    if (props.game.godMode) {
+      handleEntitySideChange(
+        props.game.currentScenario.sides.map((side) => side.id)
+      );
+    } else {
+      handleEntitySideChange([props.game.currentSideId]);
+    }
     toastContext?.addToast(`God Mode:  ${props.game.godMode ? "ON" : "OFF"}`);
   };
 
@@ -1019,11 +1023,17 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const entitiesSection = () => {
     const sideIds = props.game.currentScenario.sides.map((side) => side.id);
+    const currentlySelectedSides = props.game.godMode
+      ? sideIds
+      : [props.game.currentSideId];
+    const plottedSideFeatures = props.featureEntitiesPlotted.filter(
+      (feature: FeatureEntityState) =>
+        currentlySelectedSides.includes(feature.sideId)
+    );
     if (
       !entityFilterSelectedOptions.length ||
       !props.featureEntitiesPlotted.length ||
-      (entityFilterSelectedOptions.length &&
-        entityFilterSelectedOptions.every((option) => sideIds.includes(option)))
+      !plottedSideFeatures.length
     ) {
       return <MenuItem disabled>No items available</MenuItem>;
     }
@@ -1031,22 +1041,6 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     return (
       <Stack spacing={1} direction={"column"} sx={{ gap: "8px" }}>
         {props.mobileView && entityMenuButtons()}
-        {/* <ToggleButtonGroup
-          fullWidth
-          value={entityFilterSelectedOptions.filter((selectedOption) =>
-            sideIds.includes(selectedOption)
-          )}
-          exclusive
-          onChange={handleEntitySideChange}
-          aria-label="side"
-          sx={{ display: "flex", justifyContent: "center", height: 35 }}
-        >
-          {props.game.currentScenario.sides.map((side: Side) => (
-            <ToggleButton color="primary" key={side.id} value={side.id}>
-              {side.name}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>*/}
         {props.featureEntitiesPlotted
           .filter((feature: FeatureEntityState) => {
             const selectedSideIds = entityFilterSelectedOptions.filter(
