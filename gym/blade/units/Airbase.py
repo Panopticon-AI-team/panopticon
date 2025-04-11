@@ -1,10 +1,11 @@
 import json
 from typing import List, Optional
-from blade.utils.constants import DEFAULT_SIDE_COLOR
 from blade.units.Aircraft import Aircraft
+from blade.utils.colors import convert_color_name_to_side_color, SIDE_COLOR
 
 
 class Airbase:
+
     def __init__(
         self,
         id: str,
@@ -14,7 +15,7 @@ class Airbase:
         latitude: float,
         longitude: float,
         altitude: float,
-        side_color: str = DEFAULT_SIDE_COLOR,
+        side_color: str | SIDE_COLOR | None = None,
         aircraft: Optional[List[Aircraft]] = None,
     ):
         self.id = id
@@ -24,7 +25,7 @@ class Airbase:
         self.latitude = latitude
         self.longitude = longitude
         self.altitude = altitude  # FT ASL -- currently default
-        self.side_color = side_color
+        self.side_color = convert_color_name_to_side_color(side_color)
         self.aircraft = aircraft if aircraft is not None else []
 
     def toJSON(self):

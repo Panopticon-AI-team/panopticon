@@ -1,7 +1,7 @@
 import json
 from typing import List, Optional
-from blade.utils.constants import DEFAULT_SIDE_COLOR
 from blade.units.Weapon import Weapon
+from blade.utils.colors import convert_color_name_to_side_color, SIDE_COLOR
 
 
 class Facility:
@@ -15,7 +15,7 @@ class Facility:
         longitude: float = 0.0,
         altitude: float = 0.0,  # FT ASL -- currently default
         range: float = 250.0,
-        side_color: str = DEFAULT_SIDE_COLOR,
+        side_color: str | SIDE_COLOR | None = None,
         weapons: Optional[List[Weapon]] = None,
     ):
         self.id = id
@@ -26,7 +26,7 @@ class Facility:
         self.longitude = longitude
         self.altitude = altitude
         self.range = range
-        self.side_color = side_color
+        self.side_color = convert_color_name_to_side_color(side_color)
         self.weapons = weapons if weapons is not None else []
 
     def get_total_weapon_quantity(self) -> int:

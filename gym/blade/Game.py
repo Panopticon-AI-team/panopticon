@@ -14,6 +14,7 @@ from blade.Scenario import Scenario
 from blade.Side import Side
 
 from blade.utils.constants import NAUTICAL_MILES_TO_METERS
+from blade.utils.colors import SIDE_COLOR
 from blade.utils.PlaybackRecorder import PlaybackRecorder
 from blade.utils.utils import (
     get_bearing_between_two_points,
@@ -723,7 +724,7 @@ class Game:
     def reset(self):
         self.current_scenario = copy.deepcopy(self.initial_scenario)
         assert len(self.current_scenario.sides) > 0
-        self.current_side_id = self.current_scenario.sides[0].name
+        self.current_side_id = self.current_scenario.sides[0].id
         self.scenario_paused = True
         self.current_attacker_id = ""
 
@@ -756,7 +757,7 @@ class Game:
                     id=side["id"],
                     name=side["name"],
                     total_score=side["totalScore"],
-                    side_color=side["sideColor"],
+                    color=side["color"],
                 )
             )
         loaded_scenario = Scenario(

@@ -1,6 +1,6 @@
 import json
 from typing import Optional
-from blade.utils.constants import DEFAULT_SIDE_COLOR
+from blade.utils.colors import convert_color_name_to_side_color, SIDE_COLOR
 
 
 class ReferencePoint:
@@ -12,7 +12,7 @@ class ReferencePoint:
         latitude: float,
         longitude: float,
         altitude: float,
-        side_color: str = DEFAULT_SIDE_COLOR,
+        side_color: str | SIDE_COLOR | None = None,
     ):
         self.id = id
         self.name = name
@@ -20,7 +20,7 @@ class ReferencePoint:
         self.latitude = latitude
         self.longitude = longitude
         self.altitude = altitude
-        self.side_color = side_color
+        self.side_color = convert_color_name_to_side_color(side_color)
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)

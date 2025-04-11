@@ -290,5 +290,5 @@ export const getColorFilter = (color?: string): string => {
   }
 };
 
-export const SELECTED_ICON_COLOR_FILTER = getColorFilter("green");
-export const DEFAULT_ICON_COLOR_FILTER = getColorFilter("black");
+export const SELECTED_ICON_COLOR_FILTER = getColorFilter(SIDE_COLOR.GREEN);
+export const DEFAULT_ICON_COLOR_FILTER = getColorFilter(SIDE_COLOR.BLACK);

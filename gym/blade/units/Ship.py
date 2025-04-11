@@ -1,8 +1,8 @@
 import json
 from typing import List, Optional
-from blade.utils.constants import DEFAULT_SIDE_COLOR
 from blade.units.Aircraft import Aircraft
 from blade.units.Weapon import Weapon
+from blade.utils.colors import convert_color_name_to_side_color, SIDE_COLOR
 
 
 class Ship:
@@ -26,7 +26,7 @@ class Ship:
             List[List[float]]
         ] = None,  # Assuming route is a list of coordinates
         selected: bool = False,
-        side_color: str = DEFAULT_SIDE_COLOR,
+        side_color: str | SIDE_COLOR | None = None,
         weapons: Optional[List[Weapon]] = None,
         aircraft: Optional[List[Aircraft]] = None,
         desired_route: Optional[List[List[float]]] = None,
@@ -46,7 +46,7 @@ class Ship:
         self.range = range
         self.route = route if route is not None else []
         self.selected = selected
-        self.side_color = side_color
+        self.side_color = convert_color_name_to_side_color(side_color)
         self.weapons = weapons if weapons is not None else []
         self.aircraft = aircraft if aircraft is not None else []
         self.desired_route = desired_route if desired_route is not None else []

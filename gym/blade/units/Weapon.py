@@ -1,6 +1,6 @@
 import json
 from typing import List, Optional
-from blade.utils.constants import DEFAULT_SIDE_COLOR
+from blade.utils.colors import convert_color_name_to_side_color, SIDE_COLOR
 
 
 class Weapon:
@@ -22,7 +22,7 @@ class Weapon:
         route: Optional[
             List[List[float]]
         ] = None,  # Assuming route is a list of coordinates
-        side_color: str = DEFAULT_SIDE_COLOR,
+        side_color: str | SIDE_COLOR | None = None,
         target_id: Optional[str] = None,
         lethality: float = 0.0,
         max_quantity: int = 0,
@@ -46,7 +46,7 @@ class Weapon:
         self.max_quantity = max_quantity
         self.current_quantity = current_quantity
         self.route = route if route is not None else []
-        self.side_color = side_color
+        self.side_color = convert_color_name_to_side_color(side_color)
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)

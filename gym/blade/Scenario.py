@@ -10,6 +10,7 @@ from blade.Side import Side
 from blade.mission.PatrolMission import PatrolMission
 from blade.mission.StrikeMission import StrikeMission
 from blade.utils.utils import get_distance_between_two_points
+from blade.utils.colors import SIDE_COLOR
 
 HomeBase = Airbase | Ship
 
@@ -49,15 +50,19 @@ class Scenario:
         self.reference_points = reference_points if reference_points is not None else []
         self.missions = missions if missions is not None else []
 
-    def get_side(self, side_id: str) -> Side | None:
+    def get_side(self, side_id: str | None) -> Side | None:
         for side in self.sides:
             if side.id == side_id:
                 return side
         return None
 
-    def get_side_color(self, side_id: str) -> str:
+    def get_side_name(self, side_id: str | None) -> str:
         side = self.get_side(side_id)
-        return side.side_color if side is not None else "black"
+        return side.name if side is not None else "N/A"
+
+    def get_side_color(self, side_id: str | None) -> SIDE_COLOR:
+        side = self.get_side(side_id)
+        return side.color if side is not None else SIDE_COLOR.BLACK
 
     def get_aircraft(self, aircraft_id: str) -> Aircraft | None:
         for aircraft in self.aircraft:
