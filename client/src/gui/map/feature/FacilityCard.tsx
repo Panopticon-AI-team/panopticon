@@ -31,6 +31,7 @@ import { colorPalette } from "@/utils/constants";
 
 interface FacilityCardProps {
   facility: Facility;
+  sideName: string;
   handleTeleportUnit: (unitId: string) => void;
   handleDeleteFacility: (facilityId: string) => void;
   handleCloseOnMap: () => void;
@@ -380,7 +381,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.facility.sideId}
+                  {props.sideName}
                 </Typography>
               </Typography>
             </Stack>

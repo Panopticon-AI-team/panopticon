@@ -1426,7 +1426,9 @@ export default function ScenarioMap({
     if (missionEditorActive.open) closeMissionEditor();
     game.switchCurrentSide();
     setCurrentSideId(game.currentSideId);
-    toastContext?.addToast(`Side changed: ${game.currentSideId.toUpperCase()}`);
+    toastContext?.addToast(
+      `Side changed: ${game.currentScenario.getSideName(game.currentSideId)}`
+    );
   }
 
   function toggleScenarioTimeCompression() {
@@ -1885,6 +1887,9 @@ export default function ScenarioMap({
             airbase={
               game.currentScenario.getAirbase(openAirbaseCard.airbaseId)!
             }
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getAirbase(openAirbaseCard.airbaseId)?.sideId
+            )}
             handleAddAircraft={addAircraftToAirbase}
             handleLaunchAircraft={launchAircraftFromAirbase}
             handleDeleteAirbase={removeAirbase}
@@ -1909,6 +1914,10 @@ export default function ScenarioMap({
             facility={
               game.currentScenario.getFacility(openFacilityCard.facilityId)!
             }
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getFacility(openFacilityCard.facilityId)
+                ?.sideId
+            )}
             handleTeleportUnit={queueUnitForTeleport}
             handleDeleteFacility={removeFacility}
             handleEditFacility={updateFacility}
@@ -1931,6 +1940,10 @@ export default function ScenarioMap({
             aircraft={
               game.currentScenario.getAircraft(openAircraftCard.aircraftId)!
             }
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getAircraft(openAircraftCard.aircraftId)
+                ?.sideId
+            )}
             currentMissionName={
               game.currentScenario.getMissionByAssignedUnitId(
                 openAircraftCard.aircraftId
@@ -1966,6 +1979,9 @@ export default function ScenarioMap({
         game.currentScenario.getShip(openShipCard.shipId) && (
           <ShipCard
             ship={game.currentScenario.getShip(openShipCard.shipId)!}
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getShip(openShipCard.shipId)?.sideId
+            )}
             handleAddAircraft={addAircraftToShip}
             handleLaunchAircraft={launchAircraftFromShip}
             handleDeleteShip={removeShip}
@@ -1996,6 +2012,11 @@ export default function ScenarioMap({
                 openReferencePointCard.referencePointId
               )!
             }
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getReferencePoint(
+                openReferencePointCard.referencePointId
+              )?.sideId
+            )}
             handleDeleteReferencePoint={removeReferencePoint}
             handleEditReferencePoint={updateReferencePoint}
             handleTeleportUnit={queueUnitForTeleport}

@@ -63,11 +63,19 @@ export default class Scenario {
     this.missions = parameters.missions ?? [];
   }
 
-  getSide(sideId: string): Side | undefined {
+  getSide(sideId: string | null | undefined): Side | undefined {
     return this.sides.find((side) => side.id === sideId);
   }
 
-  getSideColor(sideId: string): string {
+  getSideName(sideId: string | null | undefined): string {
+    const side = this.getSide(sideId);
+    if (side) {
+      return side.name;
+    }
+    return "N/A";
+  }
+
+  getSideColor(sideId: string | null | undefined): string {
     const side = this.getSide(sideId);
     if (side) {
       return side.sideColor;

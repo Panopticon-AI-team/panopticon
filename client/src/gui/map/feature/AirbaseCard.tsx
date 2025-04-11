@@ -33,6 +33,7 @@ import { colorPalette } from "@/utils/constants";
 
 interface AirbaseCardProps {
   airbase: Airbase;
+  sideName: string;
   handleAddAircraft: (airbaseId: string) => void;
   handleLaunchAircraft: (airbaseId: string) => void;
   handleTeleportUnit: (unitId: string) => void;
@@ -333,7 +334,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.airbase.sideId}
+                  {props.sideName}
                 </Typography>
               </Typography>
             </Stack>

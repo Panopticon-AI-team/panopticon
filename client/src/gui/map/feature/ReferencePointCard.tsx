@@ -31,6 +31,7 @@ import { colorPalette } from "@/utils/constants";
 
 interface ReferencePointCardProps {
   referencePoint: ReferencePoint;
+  sideName: string;
   handleTeleportUnit: (unitId: string) => void;
   handleDeleteReferencePoint: (referencePointId: string) => void;
   handleCloseOnMap: () => void;
@@ -304,7 +305,7 @@ export default function ReferencePointCard(
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.referencePoint.sideId}
+                  {props.sideName}
                 </Typography>
               </Typography>
             </Stack>

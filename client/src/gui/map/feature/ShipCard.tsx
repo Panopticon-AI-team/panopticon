@@ -35,6 +35,7 @@ import { colorPalette } from "@/utils/constants";
 
 interface ShipCardProps {
   ship: Ship;
+  sideName: string;
   handleAddAircraft: (shipId: string) => void;
   handleLaunchAircraft: (shipId: string) => void;
   handleDeleteShip: (shipId: string) => void;
@@ -504,7 +505,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.ship.sideId}
+                  {props.sideName}
                 </Typography>
               </Typography>
             </Stack>

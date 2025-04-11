@@ -35,6 +35,7 @@ import { colorPalette } from "@/utils/constants";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
+  sideName: string;
   currentMissionName: string | null;
   currentMissionId: string;
   openMissionEditor: (selectedMissionId: string) => void;
@@ -557,7 +558,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                   component={"span"}
                   color={featureEntitySideColor}
                 >
-                  {props.aircraft.sideId}
+                  {props.sideName}
                 </Typography>
               </Typography>
             </Stack>
