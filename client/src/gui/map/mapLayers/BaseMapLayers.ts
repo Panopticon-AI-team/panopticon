@@ -9,7 +9,7 @@ const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
 
 const layers: (TileLayer<OSM> | TileLayer<TileJSON>)[] = [];
 if (!devMode) {
-  const mapTilerKey = "KSJDrRj74VJSIlWTIIap";
+  const mapTilerKey = "";
   const mapTilerBasicLayer = new TileLayer({
     source: new OSM({
       url: `https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${mapTilerKey}`,

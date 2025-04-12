@@ -11,6 +11,7 @@ from blade.mission.PatrolMission import PatrolMission
 from blade.mission.StrikeMission import StrikeMission
 from blade.utils.utils import get_distance_between_two_points
 from blade.utils.colors import SIDE_COLOR
+from blade.Relationships import Relationships
 
 HomeBase = Airbase | Ship
 
@@ -34,6 +35,7 @@ class Scenario:
         weapons: list[Weapon] = None,
         reference_points: list[ReferencePoint] = None,
         missions: list[PatrolMission | StrikeMission] = None,
+        relationships: Relationships = Relationships(),
     ):
         self.id = id
         self.name = name
@@ -49,6 +51,7 @@ class Scenario:
         self.weapons = weapons if weapons is not None else []
         self.reference_points = reference_points if reference_points is not None else []
         self.missions = missions if missions is not None else []
+        self.relationships = relationships
 
     def get_side(self, side_id: str | None) -> Side | None:
         for side in self.sides:
@@ -250,18 +253,21 @@ class Scenario:
     def get_all_targets_from_enemy_sides(self, side_id: str) -> Target:
         targets = []
         for aircraft in self.aircraft:
-            if aircraft.side_id != side_id:
+            if self.is_hostile(aircraft.side_id, side_id):
                 targets.append(aircraft)
         for facility in self.facilities:
-            if facility.side_id != side_id:
+            if self.is_hostile(facility.side_id, side_id):
                 targets.append(facility)
         for ship in self.ships:
-            if ship.side_id != side_id:
+            if self.is_hostile(ship.side_id, side_id):
                 targets.append(ship)
         for airbase in self.airbases:
-            if airbase.side_id != side_id:
+            if self.is_hostile(airbase.side_id, side_id):
                 targets.append(airbase)
         return targets
+
+    def is_hostile(self, side_id: str, target_id: str) -> bool:
+        return self.relationships.is_hostile(side_id, target_id)
 
     def to_dict(self):
         def serialize(obj):

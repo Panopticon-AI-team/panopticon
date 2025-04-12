@@ -15,7 +15,7 @@ export enum SIDE_COLOR {
   BROWN = "brown",
   MAROON = "maroon",
   RED = "red",
-  DARK_RED = "darkred",
+  DARKRED = "darkred",
   CORAL = "coral",
   SALMON = "salmon",
   ORANGE = "orange",
@@ -23,16 +23,16 @@ export enum SIDE_COLOR {
   YELLOW = "yellow",
   OLIVE = "olive",
   LIME = "lime",
-  LIGHT_GREEN = "lightgreen",
+  LIGHTGREEN = "lightgreen",
   GREEN = "green",
-  DARK_GREEN = "darkgreen",
+  DARKGREEN = "darkgreen",
   AQUAMARINE = "aquamarine",
   TEAL = "teal",
   TURQUOISE = "turquoise",
   CYAN = "cyan",
-  SKY_BLUE = "skyblue",
+  SKYBLUE = "skyblue",
   BLUE = "blue",
-  DARK_BLUE = "darkblue",
+  DARKBLUE = "darkblue",
   NAVY = "navy",
   INDIGO = "indigo",
   PURPLE = "purple",
@@ -253,13 +253,13 @@ export const getColorFilter = (color?: string): string => {
       return "brightness(0) saturate(100%) invert(20%) sepia(100%) saturate(2324%) hue-rotate(286deg) brightness(115%) contrast(144%)";
     case SIDE_COLOR.PLUM:
       return "brightness(0) saturate(100%) invert(94%) sepia(57%) saturate(2944%) hue-rotate(212deg) brightness(89%) contrast(95%)";
-    case SIDE_COLOR.LIGHT_GREEN:
+    case SIDE_COLOR.LIGHTGREEN:
       return "brightness(0) saturate(100%) invert(83%) sepia(11%) saturate(1492%) hue-rotate(68deg) brightness(101%) contrast(93%)";
-    case SIDE_COLOR.DARK_RED:
+    case SIDE_COLOR.DARKRED:
       return "brightness(0) saturate(100%) invert(7%) sepia(76%) saturate(5872%) hue-rotate(359deg) brightness(102%) contrast(111%)";
-    case SIDE_COLOR.DARK_BLUE:
+    case SIDE_COLOR.DARKBLUE:
       return "brightness(0) saturate(100%) invert(18%) sepia(26%) saturate(7462%) hue-rotate(231deg) brightness(70%) contrast(137%)";
-    case SIDE_COLOR.DARK_GREEN:
+    case SIDE_COLOR.DARKGREEN:
       return "brightness(0) saturate(100%) invert(18%) sepia(60%) saturate(3719%) hue-rotate(108deg) brightness(94%) contrast(105%)";
     case SIDE_COLOR.GOLD:
       return "brightness(0) saturate(100%) invert(87%) sepia(12%) saturate(7489%) hue-rotate(360deg) brightness(104%) contrast(104%)";
@@ -281,7 +281,7 @@ export const getColorFilter = (color?: string): string => {
       return "brightness(0) saturate(100%) invert(92%) sepia(3%) saturate(3465%) hue-rotate(334deg) brightness(122%) contrast(92%)";
     case SIDE_COLOR.SALMON:
       return "brightness(0) saturate(100%) invert(86%) sepia(31%) saturate(7160%) hue-rotate(312deg) brightness(99%) contrast(98%)";
-    case SIDE_COLOR.SKY_BLUE:
+    case SIDE_COLOR.SKYBLUE:
       return "brightness(0) saturate(100%) invert(80%) sepia(79%) saturate(3004%) hue-rotate(174deg) brightness(97%) contrast(90%)";
     case SIDE_COLOR.AQUAMARINE:
       return "brightness(0) saturate(100%) invert(85%) sepia(38%) saturate(470%) hue-rotate(95deg) brightness(101%) contrast(101%)";

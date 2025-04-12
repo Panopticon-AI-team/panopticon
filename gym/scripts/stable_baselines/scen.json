@@ -63,7 +63,8 @@
         ],
         "homeBaseId": "",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       }
     ],
     "ships": [],
@@ -71,7 +72,8 @@
     "airbases": [],
     "weapons": [],
     "referencePoints": [],
-    "missions": []
+    "missions": [],
+    "relationships": { "hostiles": {}, "allies": {} }
   },
   "currentSideId": "b7346e11-0412-493c-a0d0-aacf69ceaad7",
   "selectedUnitId": "",

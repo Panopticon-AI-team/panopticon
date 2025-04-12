@@ -1473,8 +1473,13 @@ export default function ScenarioMap({
     setKeyboardShortcutsEnabled(true);
   }
 
-  function handleAddSide(sideName: string, sideColor: SIDE_COLOR) {
-    game.addSide(sideName, sideColor);
+  function handleAddSide(
+    sideName: string,
+    sideColor: SIDE_COLOR,
+    sideHostiles: string[],
+    sideAllies: string[]
+  ) {
+    game.addSide(sideName, sideColor, sideHostiles, sideAllies);
     if (game.currentScenario.sides.length === 1) {
       switchCurrentSide(game.currentScenario.sides[0].id);
     }
@@ -1483,9 +1488,11 @@ export default function ScenarioMap({
   function handleUpdateSide(
     sideId: string,
     sideName: string,
-    sideColor: SIDE_COLOR
+    sideColor: SIDE_COLOR,
+    sideHostiles: string[],
+    sideAllies: string[]
   ) {
-    game.updateSide(sideId, sideName, sideColor);
+    game.updateSide(sideId, sideName, sideColor, sideHostiles, sideAllies);
     refreshAllLayers();
     loadFeatureEntitiesState();
   }
@@ -2136,6 +2143,21 @@ export default function ScenarioMap({
           open={openSideEditor.open}
           anchorEl={openSideEditor.anchorEl}
           side={game.currentScenario.getSide(openSideEditor.sideId)}
+          sides={game.currentScenario.sides}
+          hostiles={
+            openSideEditor.sideId
+              ? game.currentScenario.relationships.getHostiles(
+                  openSideEditor.sideId
+                )
+              : []
+          }
+          allies={
+            openSideEditor.sideId
+              ? game.currentScenario.relationships.getAllies(
+                  openSideEditor.sideId
+                )
+              : []
+          }
           updateSide={handleUpdateSide}
           addSide={handleAddSide}
           deleteSide={handleDeleteSide}

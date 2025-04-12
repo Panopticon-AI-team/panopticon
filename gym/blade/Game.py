@@ -12,6 +12,7 @@ from blade.mission.PatrolMission import PatrolMission
 from blade.mission.StrikeMission import StrikeMission
 from blade.Scenario import Scenario
 from blade.Side import Side
+from blade.Relationships import Relationships
 
 from blade.utils.constants import NAUTICAL_MILES_TO_METERS
 from blade.utils.colors import SIDE_COLOR
@@ -326,7 +327,7 @@ class Game:
     def facility_auto_defense(self) -> None:
         for facility in self.current_scenario.facilities:
             for aircraft in self.current_scenario.aircraft:
-                if facility.side_id != aircraft.side_id:
+                if self.current_scenario.is_hostile(facility.side_id, aircraft.side_id):
                     if (
                         check_if_threat_is_within_range(aircraft, facility)
                         and check_target_tracked_by_count(
@@ -336,7 +337,7 @@ class Game:
                     ):
                         launch_weapon(self.current_scenario, facility, aircraft)
             for weapon in self.current_scenario.weapons:
-                if facility.side_id != weapon.side_id:
+                if self.current_scenario.is_hostile(facility.side_id, weapon.side_id):
                     if (
                         weapon.target_id == facility.id
                         and check_if_threat_is_within_range(weapon, facility)
@@ -348,7 +349,7 @@ class Game:
     def ship_auto_defense(self) -> None:
         for ship in self.current_scenario.ships:
             for aircraft in self.current_scenario.aircraft:
-                if ship.side_id != aircraft.side_id:
+                if self.current_scenario.is_hostile(ship.side_id, aircraft.side_id):
                     if (
                         check_if_threat_is_within_range(aircraft, ship)
                         and check_target_tracked_by_count(
@@ -358,7 +359,7 @@ class Game:
                     ):
                         launch_weapon(self.current_scenario, ship, aircraft)
             for weapon in self.current_scenario.weapons:
-                if ship.side_id != weapon.side_id:
+                if self.current_scenario.is_hostile(ship.side_id, weapon.side_id):
                     if (
                         weapon.target_id == ship.id
                         and check_if_threat_is_within_range(weapon, ship)
@@ -375,7 +376,9 @@ class Game:
             if aircraft_weapon_with_max_range is None:
                 continue
             for enemy_aircraft in self.current_scenario.aircraft:
-                if aircraft.side_id != enemy_aircraft.side_id and (
+                if self.current_scenario.is_hostile(
+                    aircraft.side_id, enemy_aircraft.side_id
+                ) and (
                     aircraft.target_id == "" or aircraft.target_id == enemy_aircraft.id
                 ):
                     if (
@@ -390,7 +393,9 @@ class Game:
                         launch_weapon(self.current_scenario, aircraft, enemy_aircraft)
                         aircraft.target_id = enemy_aircraft.id
             for enemy_weapon in self.current_scenario.weapons:
-                if aircraft.side_id != enemy_weapon.side_id:
+                if self.current_scenario.is_hostile(
+                    aircraft.side_id, enemy_weapon.side_id
+                ):
                     if (
                         enemy_weapon.target_id == aircraft.id
                         and check_if_threat_is_within_range(
@@ -768,6 +773,20 @@ class Game:
             duration=saved_scenario["duration"],
             sides=saved_sides,
             time_compression=saved_scenario["timeCompression"],
+            relationships=Relationships(
+                hostiles=(
+                    saved_scenario["relationships"]["hostiles"]
+                    if "relationships" in saved_scenario.keys()
+                    and saved_scenario["relationships"]["hostiles"]
+                    else {}
+                ),
+                allies=(
+                    saved_scenario["relationships"]["allies"]
+                    if "relationships" in saved_scenario.keys()
+                    and saved_scenario["relationships"]["allies"]
+                    else {}
+                ),
+            ),
         )
         for aircraft in saved_scenario["aircraft"]:
             aircraft_weapons = []

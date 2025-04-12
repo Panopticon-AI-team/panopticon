@@ -683,7 +683,18 @@
     ],
     "weapons": [],
     "referencePoints": [],
-    "missions": []
+    "missions": [],
+    "relationships": {
+      "hostiles": {
+        "b7346e11-0412-493c-a0d0-aacf69ceaad7": [
+          "6bcbbd72-d64d-4720-b293-d8a814c8d205"
+        ],
+        "6bcbbd72-d64d-4720-b293-d8a814c8d205": [
+          "b7346e11-0412-493c-a0d0-aacf69ceaad7"
+        ]
+      },
+      "allies": {}
+    }
   },
   "currentSideId": "b7346e11-0412-493c-a0d0-aacf69ceaad7",
   "selectedUnitId": "",

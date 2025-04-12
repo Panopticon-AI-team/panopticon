@@ -30,6 +30,7 @@ import StrikeMission from "@/game/mission/StrikeMission";
 import PlaybackRecorder from "@/game/playback/PlaybackRecorder";
 import RecordingPlayer from "@/game/playback/RecordingPlayer";
 import { SIDE_COLOR } from "@/utils/colors";
+import Relationships from "@/game/Relationships";
 
 const MAX_HISTORY_SIZE = 20;
 
@@ -73,16 +74,32 @@ export default class Game {
     this.currentScenario = currentScenario;
   }
 
-  addSide(sideName: string, sideColor: SIDE_COLOR) {
+  addSide(
+    sideName: string,
+    sideColor: SIDE_COLOR,
+    sideHostiles: string[],
+    sideAllies: string[]
+  ) {
     const side = new Side({
       id: randomUUID(),
       name: sideName,
       color: sideColor,
     });
     this.currentScenario.sides.push(side);
+    this.currentScenario.relationships.updateRelationship(
+      side.id,
+      sideHostiles,
+      sideAllies
+    );
   }
 
-  updateSide(sideId: string, sideName: string, sideColor: SIDE_COLOR) {
+  updateSide(
+    sideId: string,
+    sideName: string,
+    sideColor: SIDE_COLOR,
+    sideHostiles: string[],
+    sideAllies: string[]
+  ) {
     const side = this.currentScenario.getSide(sideId);
     if (side) {
       this.recordHistory();
@@ -139,6 +156,20 @@ export default class Game {
           referencePoint.sideColor = sideColor;
         }
       });
+      this.currentScenario.missions.forEach((mission) => {
+        if (mission instanceof PatrolMission) {
+          mission.assignedArea.forEach((point) => {
+            if (point.sideId === sideId) {
+              point.sideColor = sideColor;
+            }
+          });
+        }
+      });
+      this.currentScenario.relationships.updateRelationship(
+        sideId,
+        sideHostiles,
+        sideAllies
+      );
     }
   }
 
@@ -169,6 +200,7 @@ export default class Game {
       this.currentScenario.referencePoints.filter(
         (referencePoint) => referencePoint.sideId !== sideId
       );
+    this.currentScenario.relationships.deleteSide(sideId);
     if (this.currentSideId === sideId) {
       this.currentSideId = this.currentScenario.sides[0]?.id ?? "";
     }
@@ -885,6 +917,10 @@ export default class Game {
       duration: savedScenario.duration,
       sides: savedSides,
       timeCompression: savedScenario.timeCompression,
+      relationships: new Relationships({
+        hostiles: savedScenario.relationships?.hostiles ?? {},
+        allies: savedScenario.relationships?.allies ?? {},
+      }),
     });
     savedScenario.aircraft.forEach((aircraft: Aircraft) => {
       const newAircraft = new Aircraft({
@@ -1076,6 +1112,7 @@ export default class Game {
             latitude: point.latitude,
             longitude: point.longitude,
             altitude: point.altitude,
+            sideColor: point.sideColor,
           });
           assignedArea.push(referencePoint);
         });
@@ -1109,7 +1146,7 @@ export default class Game {
   facilityAutoDefense() {
     this.currentScenario.facilities.forEach((facility) => {
       this.currentScenario.aircraft.forEach((aircraft) => {
-        if (facility.sideId !== aircraft.sideId) {
+        if (this.currentScenario.isHostile(facility.sideId, aircraft.sideId)) {
           if (
             checkIfThreatIsWithinRange(aircraft, facility) &&
             checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
@@ -1119,7 +1156,7 @@ export default class Game {
         }
       });
       this.currentScenario.weapons.forEach((weapon) => {
-        if (facility.sideId !== weapon.sideId) {
+        if (this.currentScenario.isHostile(facility.sideId, weapon.sideId)) {
           if (
             weapon.targetId === facility.id &&
             checkIfThreatIsWithinRange(weapon, facility) &&
@@ -1135,7 +1172,7 @@ export default class Game {
   shipAutoDefense() {
     this.currentScenario.ships.forEach((ship) => {
       this.currentScenario.aircraft.forEach((aircraft) => {
-        if (ship.sideId !== aircraft.sideId) {
+        if (this.currentScenario.isHostile(ship.sideId, aircraft.sideId)) {
           if (
             checkIfThreatIsWithinRange(aircraft, ship) &&
             checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
@@ -1145,7 +1182,7 @@ export default class Game {
         }
       });
       this.currentScenario.weapons.forEach((weapon) => {
-        if (ship.sideId !== weapon.sideId) {
+        if (this.currentScenario.isHostile(ship.sideId, weapon.sideId)) {
           if (
             weapon.targetId === ship.id &&
             checkIfThreatIsWithinRange(weapon, ship) &&
@@ -1165,7 +1202,10 @@ export default class Game {
       if (!aircraftWeaponWithMaxRange) return;
       this.currentScenario.aircraft.forEach((enemyAircraft) => {
         if (
-          aircraft.sideId !== enemyAircraft.sideId &&
+          this.currentScenario.isHostile(
+            aircraft.sideId,
+            enemyAircraft.sideId
+          ) &&
           (aircraft.targetId === "" || aircraft.targetId === enemyAircraft.id)
         ) {
           if (
@@ -1181,7 +1221,9 @@ export default class Game {
         }
       });
       this.currentScenario.weapons.forEach((enemyWeapon) => {
-        if (aircraft.sideId !== enemyWeapon.sideId) {
+        if (
+          this.currentScenario.isHostile(aircraft.sideId, enemyWeapon.sideId)
+        ) {
           if (
             enemyWeapon.targetId === aircraft.id &&
             checkIfThreatIsWithinRange(
