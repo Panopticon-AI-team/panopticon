@@ -849,7 +849,18 @@ export default function ScenarioMap({
           toastContext?.addToast("Successfully loaded recording", "success");
         }
         setRecordingPlayerHasRecording(game.recordingPlayer.hasRecording());
-        loadAndDisplayCurrentRecordedFrame(true);
+        game.loadScenario(game.recordingPlayer.getCurrentStep());
+        refreshAllLayers();
+        updateMapView(
+          game.mapView.currentCameraCenter,
+          game.mapView.currentCameraZoom
+        );
+        switchCurrentSide(game.currentSideId);
+        setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+        setCurrentRecordingStepToContext(
+          game.recordingPlayer.getCurrentStepIndex()
+        );
+        loadFeatureEntitiesState();
       };
       reader.readAsText(file);
     };

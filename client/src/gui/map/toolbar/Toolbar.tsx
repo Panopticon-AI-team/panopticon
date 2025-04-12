@@ -287,9 +287,15 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const handleEntitySideChange = (newSelectedSides: string[]) => {
     setEntityFilterSelectedOptions((prevItems: string[]) => {
-      const sideIds = props.game.currentScenario.sides.map((side) => side.id);
-      const filtersWithNewSide = prevItems.filter(
-        (item) => !sideIds.includes(item)
+      const nonSideFilters = [
+        "aircraft",
+        "airbase",
+        "ship",
+        "facility",
+        "referencePoint",
+      ];
+      const filtersWithNewSide = prevItems.filter((item) =>
+        nonSideFilters.includes(item)
       );
       return [...filtersWithNewSide, ...newSelectedSides];
     });
