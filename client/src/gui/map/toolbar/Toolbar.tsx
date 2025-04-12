@@ -731,7 +731,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                   Name: {mission.name.toUpperCase()}
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Side Color: {mission.sideId.toUpperCase()}
+                  Side: {props.game.currentScenario.getSideName(mission.sideId)}
                 </Typography>
               </Stack>
             }
@@ -1095,7 +1095,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                     </Typography>
                   )}
                   <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                    Side Color: {feature.sideColor.toUpperCase()}
+                    Side:{" "}
+                    {props.game.currentScenario.getSideName(feature.sideId)}
                   </Typography>
                 </Stack>
               }
