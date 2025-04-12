@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import TextField from "@/gui/shared/ui/TextField";
 import Side from "@/game/Side";
-import { SIDE_COLOR } from "@/utils/colors";
+import { COLOR_PALETTE, SIDE_COLOR } from "@/utils/colors";
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 
 interface SideEditorProps {
@@ -115,7 +115,21 @@ const SideEditor = (props: SideEditorProps) => {
             )}
           >
             {Object.entries(SIDE_COLOR).map(([name, color]) => (
-              <MenuItem key={color} value={color}>
+              <MenuItem
+                key={color}
+                value={color}
+                sx={{
+                  "&:hover": {
+                    backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
+                  },
+                  "&.Mui-selected": {
+                    backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
+                    "&:hover": {
+                      backgroundColor: COLOR_PALETTE.DARK_GRAY,
+                    },
+                  },
+                }}
+              >
                 <EntityIcon
                   type="circle"
                   color={color}

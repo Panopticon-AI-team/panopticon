@@ -13,6 +13,7 @@ import {
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
+import { COLOR_PALETTE } from "@/utils/colors";
 
 interface SideSelectProps {
   sides: Side[];
@@ -88,6 +89,15 @@ export default function SideSelect(props: Readonly<SideSelectProps>) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            "&:hover": {
+              backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
+            },
+            "&.Mui-selected": {
+              backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
+              "&:hover": {
+                backgroundColor: COLOR_PALETTE.DARK_GRAY,
+              },
+            },
           }}
         >
           <Box display="flex" alignItems="center">
@@ -116,7 +126,15 @@ export default function SideSelect(props: Readonly<SideSelectProps>) {
 
       {/* Divider and Add Side */}
       <Divider sx={{ my: 1 }} />
-      <MenuItem value="add-side" onClick={() => props.openSideEditor(null)}>
+      <MenuItem
+        sx={{
+          "&:hover": {
+            backgroundColor: COLOR_PALETTE.LIGHT_GRAY,
+          },
+        }}
+        value="add-side"
+        onClick={() => props.openSideEditor(null)}
+      >
         <ListItemIcon>
           <AddIcon fontSize="small" />
         </ListItemIcon>
