@@ -11,6 +11,7 @@ import { Target } from "@/game/engine/weaponEngagement";
 import StrikeMission from "@/game/mission/StrikeMission";
 import { Mission } from "@/game/Game";
 import { SIDE_COLOR } from "@/utils/colors";
+import Relationships from "@/game/Relationships";
 
 type HomeBase = Airbase | Ship;
 
@@ -29,6 +30,7 @@ interface IScenario {
   weapons?: Weapon[];
   referencePoints?: ReferencePoint[];
   missions?: PatrolMission[];
+  relationships?: Relationships;
 }
 
 export default class Scenario {
@@ -46,6 +48,7 @@ export default class Scenario {
   weapons: Weapon[];
   referencePoints: ReferencePoint[];
   missions: Mission[];
+  relationships: Relationships;
 
   constructor(parameters: IScenario) {
     this.id = parameters.id;
@@ -62,6 +65,7 @@ export default class Scenario {
     this.ships = parameters.ships ?? [];
     this.referencePoints = parameters.referencePoints ?? [];
     this.missions = parameters.missions ?? [];
+    this.relationships = parameters.relationships ?? new Relationships({});
   }
 
   getSide(sideId: string | null | undefined): Side | undefined {
@@ -275,25 +279,29 @@ export default class Scenario {
   getAllTargetsFromEnemySides(sideId: string): Target[] {
     const targets: Target[] = [];
     this.aircraft.forEach((aircraft) => {
-      if (aircraft.sideId !== sideId) {
+      if (this.isHostile(aircraft.sideId, sideId)) {
         targets.push(aircraft);
       }
     });
     this.facilities.forEach((facility) => {
-      if (facility.sideId !== sideId) {
+      if (this.isHostile(facility.sideId, sideId)) {
         targets.push(facility);
       }
     });
     this.ships.forEach((ship) => {
-      if (ship.sideId !== sideId) {
+      if (this.isHostile(ship.sideId, sideId)) {
         targets.push(ship);
       }
     });
     this.airbases.forEach((airbase) => {
-      if (airbase.sideId !== sideId) {
+      if (this.isHostile(airbase.sideId, sideId)) {
         targets.push(airbase);
       }
     });
     return targets;
+  }
+
+  isHostile(sideId: string, targetId: string): boolean {
+    return this.relationships.isHostile(sideId, targetId);
   }
 }

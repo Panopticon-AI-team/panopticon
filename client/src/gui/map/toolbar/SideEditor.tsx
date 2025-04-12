@@ -10,18 +10,34 @@ import {
   MenuItem,
   Popover,
   Paper,
+  FormControl,
 } from "@mui/material";
 import TextField from "@/gui/shared/ui/TextField";
 import Side from "@/game/Side";
 import { COLOR_PALETTE, SIDE_COLOR } from "@/utils/colors";
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
+import SelectField from "@/gui/shared/ui/SelectField";
 
 interface SideEditorProps {
   open: boolean;
   anchorEl: HTMLElement | null;
   side: Side | undefined;
-  updateSide: (sideId: string, sideName: string, sideColor: SIDE_COLOR) => void;
-  addSide: (sideName: string, sideColor: SIDE_COLOR) => void;
+  sides: Side[];
+  hostiles: string[];
+  allies: string[];
+  updateSide: (
+    sideId: string,
+    sideName: string,
+    sideColor: SIDE_COLOR,
+    sideHostiles: string[],
+    sideAllies: string[]
+  ) => void;
+  addSide: (
+    sideName: string,
+    sideColor: SIDE_COLOR,
+    sideHostiles: string[],
+    sideAllies: string[]
+  ) => void;
   deleteSide: (sideId: string) => void;
   handleCloseOnMap: () => void;
 }
@@ -52,12 +68,36 @@ const SideEditor = (props: SideEditorProps) => {
     props.side?.color ?? SIDE_COLOR.BLUE
   );
   const [sideNameError, setSideNameError] = useState(false);
+  const [sideRelationshipsError, setSideRelationshipsError] = useState(false);
+  const [sideHostiles, setSideHostiles] = useState<string[]>(
+    props.hostiles
+      .map(
+        (hostileId) =>
+          props.sides.find((side) => side.id === hostileId)?.id ?? ""
+      )
+      .filter((id) => id !== "")
+  );
+  const [sideAllies, setSideAllies] = useState<string[]>(
+    props.allies
+      .map((allyId) => props.sides.find((side) => side.id === allyId)?.id ?? "")
+      .filter((id) => id !== "")
+  );
+  const otherSides = props.sides.filter(
+    (side: Side) =>
+      (props.side?.id && side.id !== props.side?.id) || !props.side
+  );
 
   const validateSidePropertiesInput = () => {
     if (sideName === "") {
       setSideNameError(true);
       return false;
     }
+    if (sideHostiles.some((hostile) => sideAllies.includes(hostile))) {
+      setSideRelationshipsError(true);
+      return false;
+    }
+    setSideNameError(false);
+    setSideRelationshipsError(false);
     return true;
   };
 
@@ -69,13 +109,19 @@ const SideEditor = (props: SideEditorProps) => {
 
   const handleUpdateSide = () => {
     if (!validateSidePropertiesInput() || !props.side) return;
-    props.updateSide(props.side.id, sideName, sideColor);
+    props.updateSide(
+      props.side.id,
+      sideName,
+      sideColor,
+      sideHostiles,
+      sideAllies
+    );
     props.handleCloseOnMap();
   };
 
   const handleAddSide = () => {
     if (!validateSidePropertiesInput()) return;
-    props.addSide(sideName, sideColor);
+    props.addSide(sideName, sideColor, sideHostiles, sideAllies);
     props.handleCloseOnMap();
   };
 
@@ -140,6 +186,44 @@ const SideEditor = (props: SideEditorProps) => {
             ))}
           </Select>
         </Stack>
+        <Stack sx={bottomButtonsStackStyle} direction="row" spacing={2}>
+          <FormControl fullWidth sx={{ mb: 2 }} error={sideRelationshipsError}>
+            <SelectField
+              id="hostiles-selector"
+              labelId="hostiles-selector-label"
+              label="Enemies"
+              selectItems={otherSides.map((side: Side) => {
+                return {
+                  name: side.name,
+                  value: side.id,
+                };
+              })}
+              value={sideHostiles}
+              onChange={(value) => {
+                setSideHostiles(value as string[]);
+              }}
+              multiple
+            />
+          </FormControl>
+        </Stack>
+        <FormControl fullWidth sx={{ mb: 2 }} error={sideRelationshipsError}>
+          <SelectField
+            id="allies-selector"
+            labelId="allies-selector-label"
+            label="Allies"
+            selectItems={otherSides.map((side: Side) => {
+              return {
+                name: side.name,
+                value: side.id,
+              };
+            })}
+            value={sideAllies}
+            onChange={(value) => {
+              setSideAllies(value as string[]);
+            }}
+            multiple
+          />
+        </FormControl>
         {/* Form Action/Buttons */}
         <Stack sx={bottomButtonsStackStyle} direction="row" spacing={2}>
           {!props.side ? (

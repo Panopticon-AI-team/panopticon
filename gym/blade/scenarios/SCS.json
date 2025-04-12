@@ -17,6 +17,12 @@
         "name": "RED",
         "totalScore": 0,
         "color": "red"
+      },
+      {
+        "id": "80d461c9-4612-43e3-bd69-f32e0c5206e4",
+        "name": "ALLY",
+        "totalScore": 0,
+        "color": "darkgreen"
       }
     ],
     "timeCompression": 2,
@@ -1507,6 +1513,40 @@
             "currentQuantity": 30
           }
         ]
+      },
+      {
+        "id": "5f1a48d5-2ff1-4fcc-bb7d-fce1630b0307",
+        "name": "Antelope #1717",
+        "sideId": "80d461c9-4612-43e3-bd69-f32e0c5206e4",
+        "className": "Antelope",
+        "latitude": 24.13851247091081,
+        "longitude": 121.1156894213407,
+        "altitude": 0,
+        "range": 175,
+        "sideColor": "darkgreen",
+        "weapons": [
+          {
+            "id": "cd7b8248-6916-4208-a877-de1a834fd514",
+            "name": "Sample Weapon",
+            "sideId": "80d461c9-4612-43e3-bd69-f32e0c5206e4",
+            "className": "Sample Weapon",
+            "latitude": 0,
+            "longitude": 0,
+            "altitude": 10000,
+            "heading": 90,
+            "speed": 1000,
+            "currentFuel": 5000,
+            "maxFuel": 5000,
+            "fuelRate": 5000,
+            "range": 100,
+            "route": [],
+            "sideColor": "darkgreen",
+            "targetId": null,
+            "lethality": 0.1,
+            "maxQuantity": 30,
+            "currentQuantity": 30
+          }
+        ]
       }
     ],
     "airbases": [
@@ -2663,7 +2703,27 @@
           ]
         }
       }
-    ]
+    ],
+    "relationships": {
+      "hostiles": {
+        "47179c9e-aa00-4bba-a784-cec9108fdb4b": [
+          "6a271548-f333-44e6-8d27-3ab0b59cb5f1"
+        ],
+        "6a271548-f333-44e6-8d27-3ab0b59cb5f1": [
+          "47179c9e-aa00-4bba-a784-cec9108fdb4b"
+        ],
+        "80d461c9-4612-43e3-bd69-f32e0c5206e4": [
+          "6a271548-f333-44e6-8d27-3ab0b59cb5f1"
+        ]
+      },
+      "allies": {
+        "47179c9e-aa00-4bba-a784-cec9108fdb4b": [],
+        "6a271548-f333-44e6-8d27-3ab0b59cb5f1": [],
+        "80d461c9-4612-43e3-bd69-f32e0c5206e4": [
+          "47179c9e-aa00-4bba-a784-cec9108fdb4b"
+        ]
+      }
+    }
   },
   "currentSideId": "47179c9e-aa00-4bba-a784-cec9108fdb4b",
   "selectedUnitId": "",

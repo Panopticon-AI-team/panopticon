@@ -73,7 +73,9 @@ def simple_scripted_agent(observation):
 
 
 for filename in os.listdir(demo_folder):
-    if filename.endswith(".json") and "simple_demo_t" in filename:
+    if (
+        filename.endswith(".json") and "simple_demo_t" in filename
+    ) or filename.endswith(".jsonl"):
         os.remove(f"{demo_folder}/{filename}")
 
 game.start_recording()

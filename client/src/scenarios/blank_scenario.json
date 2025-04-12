@@ -11,7 +11,10 @@
     "ships": [],
     "facilities": [],
     "airbases": [],
-    "weapons": []
+    "weapons": [],
+    "referencePoints": [],
+    "missions": [],
+    "relationships": { "hostiles": {}, "allies": {} }
   },
   "currentSideId": "",
   "selectedUnitId": "",
