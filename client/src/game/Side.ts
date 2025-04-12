@@ -1,22 +1,22 @@
-import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
+import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 
 interface ISide {
   id: string;
   name: string;
   totalScore?: number;
-  sideColor?: string;
+  color?: string | SIDE_COLOR;
 }
 
 export default class Side {
   id: string;
   name: string;
   totalScore: number;
-  sideColor: string;
+  color: SIDE_COLOR;
 
   constructor(parameters: ISide) {
     this.id = parameters.id;
     this.name = parameters.name;
     this.totalScore = parameters.totalScore ?? 0;
-    this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
+    this.color = convertColorNameToSideColor(parameters.color);
   }
 }

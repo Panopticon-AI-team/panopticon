@@ -103,7 +103,7 @@ export function launchWeapon(
   const newWeapon = new Weapon({
     id: randomUUID(),
     name: weaponWithMaxRangePrototype.name,
-    sideName: origin.sideName,
+    sideId: origin.sideId,
     className: weaponWithMaxRangePrototype.className,
     latitude: nextWeaponLatitude,
     longitude: nextWeaponLongitude,

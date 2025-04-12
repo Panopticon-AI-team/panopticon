@@ -32,7 +32,7 @@ import { SetScenarioTimeContext } from "@/gui/contextProviders/contexts/Scenario
 import { SetGameStatusContext } from "@/gui/contextProviders/contexts/GameStatusContext";
 import { SetMouseMapCoordinatesContext } from "@/gui/contextProviders/contexts/MouseMapCoordinatesContext";
 import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
-import { SetRecordingStepContext } from "../contextProviders/contexts/RecordingStepContext";
+import { SetRecordingStepContext } from "@/gui/contextProviders/contexts/RecordingStepContext";
 import AirbaseCard from "@/gui/map/feature/AirbaseCard";
 import AircraftCard from "@/gui/map/feature/AircraftCard";
 import FacilityCard from "@/gui/map/feature/FacilityCard";
@@ -61,6 +61,8 @@ import MissionCreatorCard from "@/gui/map/mission/MissionCreatorCard";
 import MissionEditorCard from "@/gui/map/mission/MissionEditorCard";
 import BaseVectorLayer from "ol/layer/BaseVector";
 import VectorLayer from "ol/layer/Vector";
+import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
+import SideEditor from "@/gui/map/toolbar/SideEditor";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -150,7 +152,7 @@ export default function ScenarioMap({
     useState(game.playbackRecorder.recordEverySeconds);
   const [recordingPlayerHasRecording, setRecordingPlayerHasRecording] =
     useState(game.recordingPlayer.hasRecording());
-  const [currentSideName, setCurrentSideName] = useState(game.currentSideName);
+  const [currentSideId, setCurrentSideId] = useState(game.currentSideId);
   const [openAircraftCard, setOpenAircraftCard] = useState({
     open: false,
     top: 0,
@@ -188,6 +190,15 @@ export default function ScenarioMap({
       left: 0,
       features: [],
     });
+  const [openSideEditor, setOpenSideEditor] = useState<{
+    open: boolean;
+    sideId: string | null;
+    anchorEl: null | HTMLElement;
+  }>({
+    open: false,
+    sideId: null,
+    anchorEl: null,
+  });
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
   const [routeVisible, setRouteVisible] = useState(true);
@@ -415,12 +426,12 @@ export default function ScenarioMap({
   function handleSelectSingleFeature(feature: Feature) {
     const currentSelectedFeatureId = feature.getProperties()?.id;
     const currentSelectedFeatureType = feature.getProperties()?.type;
-    const currentSelectedFeatureSideName = feature.getProperties()?.sideName;
+    const currentSelectedFeatureSideId = feature.getProperties()?.sideId;
 
     if (
       !game.godMode &&
-      currentSelectedFeatureSideName &&
-      currentSelectedFeatureSideName !== game.currentSideName
+      currentSelectedFeatureSideId &&
+      currentSelectedFeatureSideId !== game.currentSideId
     )
       return;
 
@@ -653,6 +664,13 @@ export default function ScenarioMap({
       .map((layer) => layer.getSource().getFeatures())
       .flat();
 
+    const entityTypes = [
+      "aircraft",
+      "airbase",
+      "facility",
+      "ship",
+      "referencePoint",
+    ];
     for (const feature of features) {
       if (
         ["rangeRing", "route"].includes(feature.get("type")) ||
@@ -660,12 +678,15 @@ export default function ScenarioMap({
       ) {
         continue;
       }
-      visibleFeaturesMap[feature.get("id")] = {
-        id: feature.get("id"),
-        name: feature.get("name"),
-        type: feature.get("type").replaceAll("FeatureLabel", ""),
-        sideColor: feature.get("sideColor"),
-      };
+      if (entityTypes.includes(feature.get("type"))) {
+        visibleFeaturesMap[feature.get("id")] = {
+          id: feature.get("id"),
+          name: feature.get("name"),
+          type: feature.get("type"),
+          sideId: feature.get("sideId"),
+          sideColor: feature.get("sideColor"),
+        };
+      }
     }
 
     setFeatureEntitiesState(Object.values(visibleFeaturesMap));
@@ -787,7 +808,7 @@ export default function ScenarioMap({
     setGamePaused();
     if (game.undo()) {
       setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
-      drawNextFrame(game.currentScenario);
+      refreshAllLayers();
       loadFeatureEntitiesState();
     }
   }
@@ -828,7 +849,18 @@ export default function ScenarioMap({
           toastContext?.addToast("Successfully loaded recording", "success");
         }
         setRecordingPlayerHasRecording(game.recordingPlayer.hasRecording());
-        loadAndDisplayCurrentRecordedFrame();
+        game.loadScenario(game.recordingPlayer.getCurrentStep());
+        refreshAllLayers();
+        updateMapView(
+          game.mapView.currentCameraCenter,
+          game.mapView.currentCameraZoom
+        );
+        switchCurrentSide(game.currentSideId);
+        setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+        setCurrentRecordingStepToContext(
+          game.recordingPlayer.getCurrentStepIndex()
+        );
+        loadFeatureEntitiesState();
       };
       reader.readAsText(file);
     };
@@ -846,13 +878,14 @@ export default function ScenarioMap({
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
   }
 
-  function loadAndDisplayCurrentRecordedFrame() {
+  function loadAndDisplayCurrentRecordedFrame(refreshAll = false) {
     game.loadScenario(game.recordingPlayer.getCurrentStep());
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
     setCurrentRecordingStepToContext(
       game.recordingPlayer.getCurrentStepIndex()
     );
-    drawNextFrame(game.currentScenario);
+    if (refreshAll) refreshAllLayers();
+    else drawNextFrame(game.currentScenario);
   }
 
   async function handlePlayRecordingClick() {
@@ -878,19 +911,19 @@ export default function ScenarioMap({
   function handleStepRecordingToStep(step: number) {
     if (game.recordingPlayer.isAtStep(step)) return;
     game.recordingPlayer.setCurrentStepIndex(step);
-    loadAndDisplayCurrentRecordedFrame();
+    loadAndDisplayCurrentRecordedFrame(true);
   }
 
   function handleStepRecordingBackwards() {
     if (game.recordingPlayer.isAtStart()) return;
     game.recordingPlayer.previousStep();
-    loadAndDisplayCurrentRecordedFrame();
+    loadAndDisplayCurrentRecordedFrame(true);
   }
 
   function handleStepRecordingForwards() {
     if (game.recordingPlayer.isAtEnd()) return;
     game.recordingPlayer.nextStep();
-    loadAndDisplayCurrentRecordedFrame();
+    loadAndDisplayCurrentRecordedFrame(true);
   }
 
   async function handlePlayGameClick() {
@@ -1009,7 +1042,8 @@ export default function ScenarioMap({
           id: newAircraft.id,
           name: newAircraft.name,
           type: "aircraft",
-          sideColor: newAircraft.sideColor as "blue" | "red",
+          sideId: newAircraft.sideId,
+          sideColor: newAircraft.sideColor,
         },
         "add"
       );
@@ -1070,7 +1104,8 @@ export default function ScenarioMap({
           id: newAirbase.id,
           name: newAirbase.name,
           type: "airbase",
-          sideColor: newAirbase.sideColor as "blue" | "red",
+          sideId: newAirbase.sideId,
+          sideColor: newAirbase.sideColor,
         },
         "add"
       );
@@ -1117,7 +1152,8 @@ export default function ScenarioMap({
           id: newReferencePoint.id,
           name: newReferencePoint.name,
           type: "referencePoint",
-          sideColor: newReferencePoint.sideColor as "blue" | "red",
+          sideId: newReferencePoint.sideId,
+          sideColor: newReferencePoint.sideColor,
         },
         "add"
       );
@@ -1164,7 +1200,8 @@ export default function ScenarioMap({
           id: newShip.id,
           name: newShip.name,
           type: "facility",
-          sideColor: newShip.sideColor as "blue" | "red",
+          sideId: newShip.sideId,
+          sideColor: newShip.sideColor,
         },
         "add"
       );
@@ -1392,9 +1429,7 @@ export default function ScenarioMap({
   }
 
   function openMissionEditor(selectedMissionId: string = "") {
-    const currentSideId = game.currentScenario.getSide(
-      game.currentSideName
-    )?.id;
+    const currentSideId = game.currentScenario.getSide(game.currentSideId)?.id;
     if (
       selectedMissionId !== "" &&
       game.currentScenario.missions.filter(
@@ -1418,18 +1453,66 @@ export default function ScenarioMap({
     });
   }
 
+  function handleOpenSideEditor(sideId: string | null) {
+    const anchorEl = document.getElementById("side-select");
+    if (!anchorEl) return;
+    setKeyboardShortcutsEnabled(false);
+    setOpenSideEditor({
+      open: true,
+      sideId: sideId,
+      anchorEl: anchorEl,
+    });
+  }
+
+  function handleCloseSideEditor() {
+    setOpenSideEditor({
+      open: false,
+      anchorEl: null,
+      sideId: null,
+    });
+    setKeyboardShortcutsEnabled(true);
+  }
+
+  function handleAddSide(sideName: string, sideColor: SIDE_COLOR) {
+    game.addSide(sideName, sideColor);
+    if (game.currentScenario.sides.length === 1) {
+      switchCurrentSide(game.currentScenario.sides[0].id);
+    }
+  }
+
+  function handleUpdateSide(
+    sideId: string,
+    sideName: string,
+    sideColor: SIDE_COLOR
+  ) {
+    game.updateSide(sideId, sideName, sideColor);
+    refreshAllLayers();
+    loadFeatureEntitiesState();
+  }
+
+  function handleDeleteSide(sideId: string) {
+    game.deleteSide(sideId);
+    if (game.currentScenario.sides.length > 0) {
+      switchCurrentSide(game.currentSideId);
+    } else if (game.currentScenario.sides.length === 0) {
+      switchCurrentSide("");
+    }
+    refreshAllLayers();
+    loadFeatureEntitiesState();
+  }
+
   function queueUnitForTeleport(unitId: string) {
     game.selectedUnitId = unitId;
     teleportingUnit = true;
     setCurrentGameStatusToContext("Click on the map to teleport the unit");
   }
 
-  function switchCurrentSide() {
+  function switchCurrentSide(sideId: string) {
     if (missionEditorActive.open) closeMissionEditor();
-    game.switchCurrentSide();
-    setCurrentSideName(game.currentSideName);
+    game.switchCurrentSide(sideId);
+    setCurrentSideId(game.currentSideId);
     toastContext?.addToast(
-      `Side changed: ${game.currentSideName.toUpperCase()}`
+      `Side changed: ${game.currentScenario.getSideName(game.currentSideId)}`
     );
   }
 
@@ -1680,7 +1763,7 @@ export default function ScenarioMap({
 
   function addRouteMeasurementInteraction(
     startCoordinates: number[],
-    sideColor: string | undefined = undefined
+    sideColor: string | SIDE_COLOR | undefined = undefined
   ) {
     routeMeasurementDrawLine = new Draw({
       source: new VectorSource(),
@@ -1693,12 +1776,9 @@ export default function ScenarioMap({
     createRouteMeasurementTooltip();
 
     routeMeasurementDrawLine.on("drawstart", function (event) {
-      const defaultColor = game.currentScenario.getSideColor(
-        game.currentSideName
-      );
       const drawLineFeature = event.feature;
       drawLineFeature.setProperties({
-        sideColor: sideColor ?? defaultColor,
+        sideColor: convertColorNameToSideColor(sideColor),
       });
       routeMeasurementListener = drawLineFeature
         .getGeometry()
@@ -1714,7 +1794,7 @@ export default function ScenarioMap({
             routeMeasurementTooltipElement.innerHTML =
               formatRouteLengthDisplay(geom);
             routeMeasurementTooltipElement.style.color =
-              sideColor ?? defaultColor;
+              convertColorNameToSideColor(sideColor);
             routeMeasurementTooltipElement.style.fontWeight = "bold";
           }
           routeMeasurementTooltip?.setPosition(tooltipCoord);
@@ -1789,9 +1869,8 @@ export default function ScenarioMap({
         updateCurrentScenarioTimeToContext={() => {
           setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
         }}
-        updateCurrentSideName={setCurrentSideName}
         scenarioTimeCompression={currentScenarioTimeCompression}
-        scenarioCurrentSideName={currentSideName}
+        scenarioCurrentSideId={currentSideId}
         game={game}
         featureLabelVisibility={featureLabelVisible}
         toggleFeatureLabelVisibility={toggleFeatureLabelVisibility}
@@ -1807,6 +1886,7 @@ export default function ScenarioMap({
         }}
         featureEntitiesPlotted={featureEntitiesState}
         openMissionEditor={openMissionEditor}
+        handleOpenSideEditor={handleOpenSideEditor}
         mobileView={mobileView}
       />
 
@@ -1828,17 +1908,17 @@ export default function ScenarioMap({
         <MissionCreatorCard
           aircraft={game.currentScenario.aircraft.filter(
             (aircraft) =>
-              aircraft.sideName === game.currentSideName &&
+              aircraft.sideId === game.currentSideId &&
               game.currentScenario.missions
                 .map((mission) => mission.assignedUnitIds)
                 .flat()
                 .indexOf(aircraft.id) === -1
           )}
           targets={game.currentScenario.getAllTargetsFromEnemySides(
-            game.currentSideName
+            game.currentSideId
           )}
           referencePoints={game.currentScenario.referencePoints.filter(
-            (referencePoint) => referencePoint.sideName === game.currentSideName
+            (referencePoint) => referencePoint.sideId === game.currentSideId
           )}
           handleCloseOnMap={() => {
             setKeyboardShortcutsEnabled(true);
@@ -1853,24 +1933,23 @@ export default function ScenarioMap({
         game.currentScenario.missions.filter(
           (mission) =>
             mission.sideId ===
-            game.currentScenario.getSide(game.currentSideName)?.id
+            game.currentScenario.getSide(game.currentSideId)?.id
         ).length > 0 && (
           <MissionEditorCard
             missions={game.currentScenario.missions.filter(
               (mission) =>
                 mission.sideId ===
-                game.currentScenario.getSide(game.currentSideName)?.id
+                game.currentScenario.getSide(game.currentSideId)?.id
             )}
             selectedMissionId={missionEditorActive.selectedMissionId}
             aircraft={game.currentScenario.aircraft.filter(
-              (aircraft) => aircraft.sideName === game.currentSideName
+              (aircraft) => aircraft.sideId === game.currentSideId
             )}
             referencePoints={game.currentScenario.referencePoints.filter(
-              (referencePoint) =>
-                referencePoint.sideName === game.currentSideName
+              (referencePoint) => referencePoint.sideId === game.currentSideId
             )}
             targets={game.currentScenario.getAllTargetsFromEnemySides(
-              game.currentSideName
+              game.currentSideId
             )}
             updatePatrolMission={handleUpdatePatrolMission}
             updateStrikeMission={handleUpdateStrikeMission}
@@ -1890,6 +1969,9 @@ export default function ScenarioMap({
             airbase={
               game.currentScenario.getAirbase(openAirbaseCard.airbaseId)!
             }
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getAirbase(openAirbaseCard.airbaseId)?.sideId
+            )}
             handleAddAircraft={addAircraftToAirbase}
             handleLaunchAircraft={launchAircraftFromAirbase}
             handleDeleteAirbase={removeAirbase}
@@ -1914,6 +1996,10 @@ export default function ScenarioMap({
             facility={
               game.currentScenario.getFacility(openFacilityCard.facilityId)!
             }
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getFacility(openFacilityCard.facilityId)
+                ?.sideId
+            )}
             handleTeleportUnit={queueUnitForTeleport}
             handleDeleteFacility={removeFacility}
             handleEditFacility={updateFacility}
@@ -1936,6 +2022,10 @@ export default function ScenarioMap({
             aircraft={
               game.currentScenario.getAircraft(openAircraftCard.aircraftId)!
             }
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getAircraft(openAircraftCard.aircraftId)
+                ?.sideId
+            )}
             currentMissionName={
               game.currentScenario.getMissionByAssignedUnitId(
                 openAircraftCard.aircraftId
@@ -1971,6 +2061,9 @@ export default function ScenarioMap({
         game.currentScenario.getShip(openShipCard.shipId) && (
           <ShipCard
             ship={game.currentScenario.getShip(openShipCard.shipId)!}
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getShip(openShipCard.shipId)?.sideId
+            )}
             handleAddAircraft={addAircraftToShip}
             handleLaunchAircraft={launchAircraftFromShip}
             handleDeleteShip={removeShip}
@@ -2001,6 +2094,11 @@ export default function ScenarioMap({
                 openReferencePointCard.referencePointId
               )!
             }
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getReferencePoint(
+                openReferencePointCard.referencePointId
+              )?.sideId
+            )}
             handleDeleteReferencePoint={removeReferencePoint}
             handleEditReferencePoint={updateReferencePoint}
             handleTeleportUnit={queueUnitForTeleport}
@@ -2031,6 +2129,17 @@ export default function ScenarioMap({
               features: [],
             });
           }}
+        />
+      )}
+      {openSideEditor.open && openSideEditor.anchorEl && (
+        <SideEditor
+          open={openSideEditor.open}
+          anchorEl={openSideEditor.anchorEl}
+          side={game.currentScenario.getSide(openSideEditor.sideId)}
+          updateSide={handleUpdateSide}
+          addSide={handleAddSide}
+          deleteSide={handleDeleteSide}
+          handleCloseOnMap={handleCloseSideEditor}
         />
       )}
     </>

@@ -35,6 +35,7 @@ import { colorPalette } from "@/utils/constants";
 
 interface ShipCardProps {
   ship: Ship;
+  sideName: string;
   handleAddAircraft: (shipId: string) => void;
   handleLaunchAircraft: (shipId: string) => void;
   handleDeleteShip: (shipId: string) => void;
@@ -88,9 +89,6 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
     range: props.ship.range,
     weaponQuantity: props.ship.getTotalWeaponQuantity(),
   });
-  const [featureEntitySideColor, setFeatureEntitySideColor] = useState<
-    "primary" | "error"
-  >(props.ship.sideColor.toLowerCase() === "blue" ? "primary" : "error");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -370,12 +368,11 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
           sx={{
             mr: 0.5,
           }}
-          color={featureEntitySideColor}
         />
         Plot Course
       </ListItemButton>
       <ListItemButton onClick={_handleShipAttack}>
-        <RocketLaunchIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} />
+        <RocketLaunchIcon sx={{ mr: 0.5 }} />
         Attack
       </ListItemButton>
       <ListItemButton onClick={_handleAddAircraft}>
@@ -383,17 +380,14 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
           sx={{
             mr: 0.5,
           }}
-          color={featureEntitySideColor}
         />
         Add Aicraft
       </ListItemButton>
       <ListItemButton onClick={_handleLaunchAircraft}>
-        <FlightIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} /> Launch
-        Aircraft
+        <FlightIcon sx={{ mr: 0.5 }} /> Launch Aircraft
       </ListItemButton>
       <ListItemButton onClick={_handleTeleportShip}>
-        <TelegramIcon sx={{ mr: 0.5 }} color={featureEntitySideColor} /> Edit
-        Location
+        <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
       </ListItemButton>
     </Stack>
   );
@@ -499,12 +493,8 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
               </Typography>
               <Typography variant="caption">
                 Side:{" "}
-                <Typography
-                  variant="caption"
-                  component={"span"}
-                  color={featureEntitySideColor}
-                >
-                  {props.ship.sideName}
+                <Typography variant="caption" component={"span"}>
+                  {props.sideName}
                 </Typography>
               </Typography>
             </Stack>

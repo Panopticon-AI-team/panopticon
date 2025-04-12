@@ -1,9 +1,9 @@
-import { DEFAULT_SIDE_COLOR } from "@/utils/constants";
+import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 
 interface IWeapon {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -15,7 +15,7 @@ interface IWeapon {
   fuelRate: number; // lbs/hr
   range: number;
   route?: number[][];
-  sideColor?: string;
+  sideColor?: string | SIDE_COLOR;
   targetId: string | null;
   lethality: number;
   maxQuantity: number;
@@ -25,7 +25,7 @@ interface IWeapon {
 export default class Weapon {
   id: string;
   name: string;
-  sideName: string;
+  sideId: string;
   className: string;
   latitude: number;
   longitude: number;
@@ -37,7 +37,7 @@ export default class Weapon {
   fuelRate: number; // lbs/hr
   range: number; // NM -- currently default -- need to reference from database
   route: number[][];
-  sideColor: string;
+  sideColor: SIDE_COLOR;
   targetId: string | null;
   lethality: number; // currently default -- need to reference from database
   maxQuantity: number;
@@ -46,7 +46,7 @@ export default class Weapon {
   constructor(parameters: IWeapon) {
     this.id = parameters.id;
     this.name = parameters.name;
-    this.sideName = parameters.sideName;
+    this.sideId = parameters.sideId;
     this.className = parameters.className;
     this.latitude = parameters.latitude;
     this.longitude = parameters.longitude;
@@ -58,7 +58,7 @@ export default class Weapon {
     this.fuelRate = parameters.fuelRate;
     this.range = parameters.range;
     this.route = parameters.route ?? [];
-    this.sideColor = parameters.sideColor ?? DEFAULT_SIDE_COLOR;
+    this.sideColor = convertColorNameToSideColor(parameters.sideColor);
     this.targetId = parameters.targetId;
     this.lethality = parameters.lethality;
     this.maxQuantity = parameters.maxQuantity;

@@ -51,18 +51,21 @@ def simple_scripted_agent(observation):
         launched_aircraft != None
         and launched_aircraft.latitude > 15
         and launched_aircraft.longitude > -11
+        and launched_aircraft.rtb == False
     ):  # make the aircraft return to base after it has infiltrated the enemy airbase
         return return_to_base_action
     elif (
         launched_aircraft != None
         and launched_aircraft.latitude > 10
         and launched_aircraft.longitude > -23
+        and launched_aircraft.rtb == False
     ):  # move the launched aircraft to (16.05, -8.97) after destroying the red target:
         return second_move_aircraft_action
     elif (
         launched_aircraft != None
         and launched_aircraft.latitude > 0
         and launched_aircraft.longitude > -33
+        and launched_aircraft.rtb == False
     ):  # attack the red target when aircraft is near (10.9, -22.7)
         return attack_target_action  # launch missiles
     else:
