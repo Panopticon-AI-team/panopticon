@@ -11,12 +11,12 @@ export function getTestUnits() {
   const sideBlue = new Side({
     id: "1",
     name: "BLUE",
-    sideColor: "blue",
+    color: "blue",
   });
   const sideRed = new Side({
     id: "2",
     name: "RED",
-    sideColor: "red",
+    color: "red",
   });
   const testAirbase = new Airbase({
     id: "3",
