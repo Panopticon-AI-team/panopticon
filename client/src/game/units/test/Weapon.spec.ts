@@ -5,7 +5,7 @@ describe("Weapon", () => {
     const testWeapon = new Weapon({
       id: "123456",
       name: "Sample Weapon",
-      sideName: "sideName",
+      sideId: "sideId",
       className: "Sample Weapon",
       latitude: 0.0,
       longitude: 0.0,
@@ -28,7 +28,7 @@ describe("Weapon", () => {
     });
     expect(testWeapon.id).toBe("123456");
     expect(testWeapon.name).toBe("Sample Weapon");
-    expect(testWeapon.sideName).toBe("sideName");
+    expect(testWeapon.sideId).toBe("sideId");
     expect(testWeapon.className).toBe("Sample Weapon");
     expect(testWeapon.latitude).toBe(0.0);
     expect(testWeapon.longitude).toBe(0.0);

@@ -4,12 +4,11 @@ import {
   getBearingBetweenTwoPoints,
   getDistanceBetweenTwoPoints,
   getTerminalCoordinatesFromDistanceAndBearing,
-  colorNameToHex,
-  colorNameToColorArray,
   randomFloat,
   randomInt,
   getNextCoordinates,
 } from "../mapFunctions";
+import { colorNameToHex, colorNameToColorArray } from "../colors";
 
 import { unixToLocalTime } from "../dateTimeFunctions";
 
