@@ -61,8 +61,19 @@ import MissionCreatorCard from "@/gui/map/mission/MissionCreatorCard";
 import MissionEditorCard from "@/gui/map/mission/MissionEditorCard";
 import BaseVectorLayer from "ol/layer/BaseVector";
 import VectorLayer from "ol/layer/Vector";
+import { Menu, MenuItem } from "@mui/material";
+
+import EntityIcon from "@/gui/map/toolbar/EntityIcon";
+import MapIcon from '@mui/icons-material/Map';
+import AddLocationIcon from '@mui/icons-material/AddLocation';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import FlagIcon from '@mui/icons-material/Flag';
+
 import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 import SideEditor from "@/gui/map/toolbar/SideEditor";
+
+import ContextMenu, { Item } from 'ol-contextmenu';
+import 'ol-contextmenu/dist/ol-contextmenu.css';
 
 interface ScenarioMapProps {
   zoom: number;
@@ -255,7 +266,129 @@ export default function ScenarioMap({
     }),
     controls: [],
   });
-  const [theMap, setTheMap] = useState(map);
+  const [theMap] = useState(map);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const [contextMenu, setContextMenu] = useState<{
+    open: boolean;
+    x: number;
+    y: number;
+    coordinate: number[];
+  }>({
+    open: false,
+    x: 0,
+    y: 0,
+    coordinate: [],
+  });
+
+  const [unitsSubMenuAnchor, setUnitsSubMenuAnchor] = useState<null | HTMLElement>(null);
+  const [shipSubMenuAnchor, setShipSubMenuAnchor] = useState<null | HTMLElement>(null);
+  const [aircraftSubMenuAnchor, setAircraftSubMenuAnchor] = useState<null | HTMLElement>(null);
+  const [facilitySubMenuAnchor, setFacilitySubMenuAnchor] = useState<null | HTMLElement>(null);
+  const [airbaseSubMenuAnchor, setAirbaseSubMenuAnchor] = useState<null | HTMLElement>(null);
+
+  useEffect(() => {
+    if (!theMap) return;
+
+    const handleContextMenu = (evt: MouseEvent) => {
+      evt.preventDefault();
+
+      const pixel = theMap.getEventPixel(evt);
+      const coordinate = theMap.getCoordinateFromPixel(pixel) || [];
+
+      setContextMenu({
+        open: true,
+        x: evt.clientX,
+        y: evt.clientY,
+        coordinate,
+      });
+    };
+
+    const mapViewport = theMap.getViewport();
+    mapViewport.addEventListener("contextmenu", handleContextMenu);
+
+    return () => {
+      mapViewport.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, [theMap]);
+
+
+  useEffect(() => {
+    function handleGlobalContextMenu(evt: MouseEvent) {
+      if (contextMenu.open) {
+        console.log("Suppressing default context menu...")
+        evt.preventDefault();
+      }
+    }
+
+    if (contextMenu.open) {
+      document.addEventListener("contextmenu", handleGlobalContextMenu, { capture: true });
+    }
+
+    return () => {
+      document.removeEventListener("contextmenu", handleGlobalContextMenu, { capture: true });
+    };
+  }, [contextMenu.open]);
+
+
+  interface PendingUnit {
+    type: "aircraft" | "ship" | "airbase" | "facility";
+    template: any; // Adjust this to your actual type (e.g. AircraftTemplate, ShipTemplate, etc.)
+  }
+
+  const [pendingUnitPlacement, setPendingUnitPlacement] = useState<PendingUnit | null>(null);
+  const pendingUnitRef = useRef<PendingUnit | null>(null);
+
+  const handleUnitSelection = (unit: PendingUnit) => {
+    setPendingUnitPlacement(unit);
+    pendingUnitRef.current = unit;
+    // (Close menus here as needed)
+  };
+
+  useEffect(() => {
+    if (!theMap) return;
+    const mapViewport = theMap.getViewport();
+
+    const handleContextMenu = (evt: MouseEvent) => {
+      evt.preventDefault();
+      if (pendingUnitRef.current) {
+        pendingUnitRef.current = null;
+        setPendingUnitPlacement(null);
+        console.log("reset?")
+        return;
+      }
+
+      const pixel = theMap.getEventPixel(evt);
+      const coordinate = theMap.getCoordinateFromPixel(pixel) || [];
+      setContextMenu({
+        open: true,
+        x: evt.clientX,
+        y: evt.clientY,
+        coordinate,
+      });
+    };
+
+    mapViewport.addEventListener("contextmenu", handleContextMenu);
+    return () => {
+      mapViewport.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, [theMap, pendingUnitPlacement]);
+
+  const [sideSubMenuAnchor, setSideSubMenuAnchor] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     theMap.setTarget(mapRef.current!);
@@ -268,6 +401,24 @@ export default function ScenarioMap({
       theMap.setTarget();
     };
   }, []);
+
+  function closeAllContextMenus() {
+    setSideSubMenuAnchor(null);
+    setUnitsSubMenuAnchor(null);
+    setAircraftSubMenuAnchor(null);
+    setShipSubMenuAnchor(null);
+    setAirbaseSubMenuAnchor(null);
+    setFacilitySubMenuAnchor(null);
+    setContextMenu(prev => ({ ...prev, open: false }));
+  }
+
+
+
+
+
+
+
+
 
   theMap.on("click", (event) => handleMapClick(event));
 
@@ -297,6 +448,7 @@ export default function ScenarioMap({
   //   evt.preventDefault();
   //   console.log(theMap.getEventPixel(evt));
   // });
+  //let currentSideColor = game.currentSideName.toLowerCase() === "blue" ? "blue" : "red";
 
   function getSelectedFeatureType(featureId: string): string {
     let featureType = "";
@@ -420,6 +572,49 @@ export default function ScenarioMap({
         break;
       case "default":
         break;
+    }
+
+    if (pendingUnitRef.current) {
+      const unitToPlace = pendingUnitRef.current;
+      pendingUnitRef.current = null;
+      setPendingUnitPlacement(null);
+
+      const coordinate = event.coordinate;
+      switch (unitToPlace.type) {
+        case "aircraft": {
+          addAircraft(
+            coordinate,
+            unitToPlace.template.className,
+            unitToPlace.template.speed ? unitToPlace.template.speed / 1.151 : undefined,
+            unitToPlace.template.maxFuel,
+            unitToPlace.template.fuelRate ? unitToPlace.template.fuelRate * 8 : undefined,
+            unitToPlace.template.range
+          );
+          break;
+        }
+        case "ship": {
+          addShip(
+            coordinate,
+            unitToPlace.template.className,
+            unitToPlace.template.speed ? unitToPlace.template.speed / 1.151 : undefined,
+            unitToPlace.template.maxFuel,
+            unitToPlace.template.fuelRate ? unitToPlace.template.fuelRate * 8 : undefined,
+            unitToPlace.template.range
+          );
+          break;
+        }
+        case "airbase": {
+          addAirbase(coordinate, unitToPlace.template.name);
+          break;
+        }
+        case "facility": {
+          addFacility(coordinate, unitToPlace.template.className, unitToPlace.template.range);
+          break;
+        }
+        default:
+          break;
+      }
+      return;
     }
   }
 
@@ -2138,6 +2333,317 @@ export default function ScenarioMap({
           }}
         />
       )}
+
+
+
+
+
+
+
+      <Menu
+        open={contextMenu.open}
+        onClose={() => setContextMenu((prev) => ({ ...prev, open: false }))}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu.open
+            ? { top: contextMenu.y, left: contextMenu.x }
+            : undefined
+        }
+        PaperProps={{
+          onContextMenu: (event: React.MouseEvent<HTMLDivElement>) => {
+            event.preventDefault();
+          },
+        }}
+      >
+
+        <MenuItem onClick={(event) => setSideSubMenuAnchor(event.currentTarget)}>
+          <FlagIcon sx={{ mr: 1 }} />
+          Choose Side
+        </MenuItem>
+
+        <MenuItem onClick={(event) => setUnitsSubMenuAnchor(event.currentTarget)}>
+          <AddCircleOutlineIcon sx={{ mr: 1 }} />
+          Add Unit
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            addReferencePoint(contextMenu.coordinate);
+            setContextMenu((prev) => ({ ...prev, open: false }));
+          }}
+        >
+          <AddLocationIcon sx={{ mr: 1 }} />
+          Add Reference Point
+        </MenuItem>
+      </Menu>
+
+      <Menu
+        anchorEl={unitsSubMenuAnchor}
+        open={Boolean(unitsSubMenuAnchor)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+          //setContextMenu(prev => ({ ...prev, open: false }));
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <MenuItem
+          onClick={(event) => {
+            setAircraftSubMenuAnchor(event.currentTarget)
+            //currentSideColor = game.;
+          }}
+        >
+          <EntityIcon type="aircraft" width={20} height={20} />
+          Aircraft
+        </MenuItem>
+
+
+        <MenuItem
+          onClick={(event) => setShipSubMenuAnchor(event.currentTarget)}
+        >
+          <EntityIcon type="ship" width={20} height={20} />
+          Ship
+        </MenuItem>
+
+        <MenuItem
+          onClick={(event) => setAirbaseSubMenuAnchor(event.currentTarget)}
+        >
+          <EntityIcon type="airbase" width={20} height={20} />
+          Airbase
+        </MenuItem>
+
+        <MenuItem
+          onClick={(event) => setFacilitySubMenuAnchor(event.currentTarget)}
+        >
+          <EntityIcon type="facility" width={20} height={20} />
+          Facility
+        </MenuItem>
+
+      </Menu>
+
+      <Menu
+        anchorEl={aircraftSubMenuAnchor}
+        open={Boolean(aircraftSubMenuAnchor)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+          //setContextMenu(prev => ({ ...prev, open: false }));
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        {AircraftDb.map((aircraftTemplate) => (
+          <MenuItem
+            key={aircraftTemplate.className}
+            onClick={() => {
+              handleUnitSelection({
+                type: "aircraft",
+                template: aircraftTemplate,
+              });
+              setAircraftSubMenuAnchor(null);
+              setUnitsSubMenuAnchor(null);
+              setContextMenu((prev) => ({ ...prev, open: false }));
+            }}
+          >
+            {aircraftTemplate.className}
+          </MenuItem>
+        ))}
+      </Menu>
+
+      <Menu
+        anchorEl={shipSubMenuAnchor}
+        open={Boolean(shipSubMenuAnchor)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        {ShipDb.map((shipTemplate) => (
+          <MenuItem
+            key={shipTemplate.className}
+            onClick={() => {
+              handleUnitSelection({
+                type: "ship",
+                template: shipTemplate,
+              });
+              setShipSubMenuAnchor(null);
+              setUnitsSubMenuAnchor(null);
+              setContextMenu((prev) => ({ ...prev, open: false }));
+            }}
+          >
+            {shipTemplate.className}
+          </MenuItem>
+        ))}
+      </Menu>
+
+      <Menu
+        anchorEl={airbaseSubMenuAnchor}
+        open={Boolean(airbaseSubMenuAnchor)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        {AirbaseDb.map((airbaseTemplate) => (
+          <MenuItem
+            key={airbaseTemplate.name}
+            onClick={() => {
+              handleUnitSelection({
+                type: "airbase",
+                template: airbaseTemplate,
+              });
+              setAirbaseSubMenuAnchor(null);
+              setUnitsSubMenuAnchor(null);
+              setContextMenu((prev) => ({ ...prev, open: false }));
+            }}
+          >
+            {airbaseTemplate.name}
+          </MenuItem>
+        ))}
+      </Menu>
+
+      <Menu
+        anchorEl={facilitySubMenuAnchor}
+        open={Boolean(facilitySubMenuAnchor)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        {FacilityDb.map((facilityTemplate) => (
+          <MenuItem
+            key={facilityTemplate.className}
+            onClick={() => {
+              handleUnitSelection({
+                type: "facility",
+                template: facilityTemplate,
+              });
+              setFacilitySubMenuAnchor(null);
+              setUnitsSubMenuAnchor(null);
+              setContextMenu((prev) => ({ ...prev, open: false }));
+            }}
+          >
+            {facilityTemplate.className}
+          </MenuItem>
+        ))}
+      </Menu>
+
+      <Menu
+        anchorEl={sideSubMenuAnchor}
+        open={Boolean(sideSubMenuAnchor)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+        }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        disableAutoFocusItem
+      >
+        {game.currentScenario.sides.length === 0 && (
+          <MenuItem disabled>No sides defined</MenuItem>
+        )}
+
+        {game.currentScenario.sides.map(side => (
+          <MenuItem
+            key={side.id}
+            selected={side.id === game.currentSideId}
+            onClick={() => {
+              switchCurrentSide(side.id);
+              closeAllContextMenus();
+            }}
+          >
+            <span
+              style={{
+                width: 10,
+                height: 10,
+                backgroundColor: side.color,
+                display: 'inline-block',
+                marginRight: 8,
+                borderRadius: 10,
+                borderStyle: "solid",
+                borderWidth: 2,
+                borderColor: "white",
+              }}
+            />
+            {side.name}
+          </MenuItem>
+        ))}
+
+        {/* <Divider /> */}
+
+        <MenuItem
+          onClick={() => {
+            // open the existing Side Editor in "add" mode
+            handleOpenSideEditor(null);
+            closeAllContextMenus();
+          }}
+        >
+          {/* <Add fontSize="small" sx={{ mr: 1 }} /> */}
+          New Side…
+        </MenuItem>
+      </Menu>
+
       {openSideEditor.open && openSideEditor.anchorEl && (
         <SideEditor
           open={openSideEditor.open}
@@ -2147,15 +2653,15 @@ export default function ScenarioMap({
           hostiles={
             openSideEditor.sideId
               ? game.currentScenario.relationships.getHostiles(
-                  openSideEditor.sideId
-                )
+                openSideEditor.sideId
+              )
               : []
           }
           allies={
             openSideEditor.sideId
               ? game.currentScenario.relationships.getAllies(
-                  openSideEditor.sideId
-                )
+                openSideEditor.sideId
+              )
               : []
           }
           updateSide={handleUpdateSide}
