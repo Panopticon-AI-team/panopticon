@@ -72,6 +72,9 @@ import FlagIcon from '@mui/icons-material/Flag';
 import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 import SideEditor from "@/gui/map/toolbar/SideEditor";
 
+import ContextMenu, { Item } from 'ol-contextmenu';
+import 'ol-contextmenu/dist/ol-contextmenu.css';
+
 interface ScenarioMapProps {
   zoom: number;
   center: number[];
@@ -234,7 +237,7 @@ export default function ScenarioMap({
     margin: mobileView ? 0 : 16,
     justifyContent: "flex-end",
   }));
-  
+
   let routeMeasurementDrawLine: Draw | null = null;
   let routeMeasurementTooltipElement: HTMLDivElement | null = null;
   let routeMeasurementTooltip: Overlay | null = null;
@@ -265,6 +268,21 @@ export default function ScenarioMap({
   });
   const [theMap] = useState(map);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const [contextMenu, setContextMenu] = useState<{
     open: boolean;
     x: number;
@@ -288,8 +306,10 @@ export default function ScenarioMap({
 
     const handleContextMenu = (evt: MouseEvent) => {
       evt.preventDefault();
+
       const pixel = theMap.getEventPixel(evt);
       const coordinate = theMap.getCoordinateFromPixel(pixel) || [];
+
       setContextMenu({
         open: true,
         x: evt.clientX,
@@ -300,17 +320,14 @@ export default function ScenarioMap({
 
     const mapViewport = theMap.getViewport();
     mapViewport.addEventListener("contextmenu", handleContextMenu);
+
     return () => {
       mapViewport.removeEventListener("contextmenu", handleContextMenu);
     };
   }, [theMap]);
 
-  
+
   useEffect(() => {
-    // This handler is attached to the document when our custom context menu is open.
-    // Its purpose is to intercept all right-clicks (contextmenu events) in the capture phase,
-    // calling preventDefault() on them. This ensures that if a user right-clicks again while
-    // our custom context menu is still visible, the native browser context menu will not appear.
     function handleGlobalContextMenu(evt: MouseEvent) {
       if (contextMenu.open) {
         console.log("Suppressing default context menu...")
@@ -332,7 +349,7 @@ export default function ScenarioMap({
     type: "aircraft" | "ship" | "airbase" | "facility";
     template: any; // Adjust this to your actual type (e.g. AircraftTemplate, ShipTemplate, etc.)
   }
-  
+
   const [pendingUnitPlacement, setPendingUnitPlacement] = useState<PendingUnit | null>(null);
   const pendingUnitRef = useRef<PendingUnit | null>(null);
 
@@ -345,7 +362,7 @@ export default function ScenarioMap({
   useEffect(() => {
     if (!theMap) return;
     const mapViewport = theMap.getViewport();
-    
+
     const handleContextMenu = (evt: MouseEvent) => {
       evt.preventDefault();
       if (pendingUnitRef.current) {
@@ -354,7 +371,7 @@ export default function ScenarioMap({
         console.log("reset?")
         return;
       }
-      
+
       const pixel = theMap.getEventPixel(evt);
       const coordinate = theMap.getCoordinateFromPixel(pixel) || [];
       setContextMenu({
@@ -364,7 +381,7 @@ export default function ScenarioMap({
         coordinate,
       });
     };
-  
+
     mapViewport.addEventListener("contextmenu", handleContextMenu);
     return () => {
       mapViewport.removeEventListener("contextmenu", handleContextMenu);
@@ -384,6 +401,24 @@ export default function ScenarioMap({
       theMap.setTarget();
     };
   }, []);
+
+  function closeAllContextMenus() {
+    setSideSubMenuAnchor(null);
+    setUnitsSubMenuAnchor(null);
+    setAircraftSubMenuAnchor(null);
+    setShipSubMenuAnchor(null);
+    setAirbaseSubMenuAnchor(null);
+    setFacilitySubMenuAnchor(null);
+    setContextMenu(prev => ({ ...prev, open: false }));
+  }
+
+
+
+
+
+
+
+
 
   theMap.on("click", (event) => handleMapClick(event));
 
@@ -413,7 +448,7 @@ export default function ScenarioMap({
   //   evt.preventDefault();
   //   console.log(theMap.getEventPixel(evt));
   // });
-  let currentSideColor = game.currentSideName.toLowerCase() === "blue" ? "blue" : "red";
+  //let currentSideColor = game.currentSideName.toLowerCase() === "blue" ? "blue" : "red";
 
   function getSelectedFeatureType(featureId: string): string {
     let featureType = "";
@@ -539,13 +574,13 @@ export default function ScenarioMap({
         break;
     }
 
-  if (pendingUnitRef.current) {
-    const unitToPlace = pendingUnitRef.current;
-    pendingUnitRef.current = null;
-    setPendingUnitPlacement(null);
-    
-    const coordinate = event.coordinate;
-    switch (unitToPlace.type) {
+    if (pendingUnitRef.current) {
+      const unitToPlace = pendingUnitRef.current;
+      pendingUnitRef.current = null;
+      setPendingUnitPlacement(null);
+
+      const coordinate = event.coordinate;
+      switch (unitToPlace.type) {
         case "aircraft": {
           addAircraft(
             coordinate,
@@ -2299,61 +2334,60 @@ export default function ScenarioMap({
         />
       )}
 
-      
+
 
 
 
 
 
       <Menu
-      open={contextMenu.open}
-      onClose={() => setContextMenu((prev) => ({ ...prev, open: false }))}
-      anchorReference="anchorPosition"
-      anchorPosition={
-        contextMenu.open
-          ? { top: contextMenu.y, left: contextMenu.x }
-          : undefined
-      }
-      PaperProps={{
-        onContextMenu: (event: React.MouseEvent<HTMLDivElement>) => {
-          event.preventDefault();
-        },
-      }}
-      >
-      
-        <MenuItem onClick={(event) => setSideSubMenuAnchor(event.currentTarget)}>
-        <FlagIcon sx={{ mr: 1 }} />
-        Choose Side
-      </MenuItem>
-      
-      <MenuItem
-        onClick={(event) => setUnitsSubMenuAnchor(event.currentTarget)}
-        >
-          
-        <AddCircleOutlineIcon sx={{ mr: 1 }} />
-        Add Unit
-      </MenuItem>
-
-      <MenuItem
-        onClick={() => {
-          addReferencePoint(contextMenu.coordinate);
-          setContextMenu((prev) => ({ ...prev, open: false }));
+        open={contextMenu.open}
+        onClose={() => setContextMenu((prev) => ({ ...prev, open: false }))}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu.open
+            ? { top: contextMenu.y, left: contextMenu.x }
+            : undefined
+        }
+        PaperProps={{
+          onContextMenu: (event: React.MouseEvent<HTMLDivElement>) => {
+            event.preventDefault();
+          },
         }}
+      >
+
+        <MenuItem onClick={(event) => setSideSubMenuAnchor(event.currentTarget)}>
+          <FlagIcon sx={{ mr: 1 }} />
+          Choose Side
+        </MenuItem>
+
+        <MenuItem onClick={(event) => setUnitsSubMenuAnchor(event.currentTarget)}>
+          <AddCircleOutlineIcon sx={{ mr: 1 }} />
+          Add Unit
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            addReferencePoint(contextMenu.coordinate);
+            setContextMenu((prev) => ({ ...prev, open: false }));
+          }}
         >
-        <AddLocationIcon sx={{ mr: 1 }} />
-        Add Reference Point
-      </MenuItem>
+          <AddLocationIcon sx={{ mr: 1 }} />
+          Add Reference Point
+        </MenuItem>
       </Menu>
 
       <Menu
         anchorEl={unitsSubMenuAnchor}
         open={Boolean(unitsSubMenuAnchor)}
         onClose={() => {
+          setSideSubMenuAnchor(null);
           setUnitsSubMenuAnchor(null);
           setAircraftSubMenuAnchor(null);
           setShipSubMenuAnchor(null);
           setAirbaseSubMenuAnchor(null);
           setFacilitySubMenuAnchor(null);
+          //setContextMenu(prev => ({ ...prev, open: false }));
         }}
         anchorOrigin={{
           vertical: "top",
@@ -2367,9 +2401,9 @@ export default function ScenarioMap({
         <MenuItem
           onClick={(event) => {
             setAircraftSubMenuAnchor(event.currentTarget)
-            currentSideColor = game.currentSideName.toLocaleLowerCase();
+            //currentSideColor = game.;
           }}
-        > 
+        >
           <EntityIcon type="aircraft" width={20} height={20} />
           Aircraft
         </MenuItem>
@@ -2395,12 +2429,21 @@ export default function ScenarioMap({
           <EntityIcon type="facility" width={20} height={20} />
           Facility
         </MenuItem>
-        
+
       </Menu>
+
       <Menu
         anchorEl={aircraftSubMenuAnchor}
         open={Boolean(aircraftSubMenuAnchor)}
-        onClose={() => setAircraftSubMenuAnchor(null)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+          //setContextMenu(prev => ({ ...prev, open: false }));
+        }}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -2427,10 +2470,18 @@ export default function ScenarioMap({
           </MenuItem>
         ))}
       </Menu>
+
       <Menu
         anchorEl={shipSubMenuAnchor}
         open={Boolean(shipSubMenuAnchor)}
-        onClose={() => setShipSubMenuAnchor(null)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+        }}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -2457,10 +2508,18 @@ export default function ScenarioMap({
           </MenuItem>
         ))}
       </Menu>
+
       <Menu
         anchorEl={airbaseSubMenuAnchor}
         open={Boolean(airbaseSubMenuAnchor)}
-        onClose={() => setAirbaseSubMenuAnchor(null)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+        }}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -2487,10 +2546,18 @@ export default function ScenarioMap({
           </MenuItem>
         ))}
       </Menu>
+
       <Menu
         anchorEl={facilitySubMenuAnchor}
         open={Boolean(facilitySubMenuAnchor)}
-        onClose={() => setFacilitySubMenuAnchor(null)}
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
+        }}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -2521,48 +2588,62 @@ export default function ScenarioMap({
       <Menu
         anchorEl={sideSubMenuAnchor}
         open={Boolean(sideSubMenuAnchor)}
-        onClose={() => setSideSubMenuAnchor(null)}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
+        onClose={() => {
+          setSideSubMenuAnchor(null);
+          setUnitsSubMenuAnchor(null);
+          setAircraftSubMenuAnchor(null);
+          setShipSubMenuAnchor(null);
+          setAirbaseSubMenuAnchor(null);
+          setFacilitySubMenuAnchor(null);
         }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         disableAutoFocusItem
       >
+        {game.currentScenario.sides.length === 0 && (
+          <MenuItem disabled>No sides defined</MenuItem>
+        )}
+
+        {game.currentScenario.sides.map(side => (
+          <MenuItem
+            key={side.id}
+            selected={side.id === game.currentSideId}
+            onClick={() => {
+              switchCurrentSide(side.id);
+              closeAllContextMenus();
+            }}
+          >
+            <span
+              style={{
+                width: 10,
+                height: 10,
+                backgroundColor: side.color,
+                display: 'inline-block',
+                marginRight: 8,
+                borderRadius: 10,
+                borderStyle: "solid",
+                borderWidth: 2,
+                borderColor: "white",
+              }}
+            />
+            {side.name}
+          </MenuItem>
+        ))}
+
+        {/* <Divider /> */}
+
         <MenuItem
           onClick={() => {
-            if (game.currentSideName != "BLUE") {
-              game.switchCurrentSide();
-            }
-            //game.currentSideName = 'blue'
-            //setCurrentSideName(game.currentSideName);
-            toastContext?.addToast(
-              `Side changed: ${game.currentSideName.toUpperCase()}`
-            );
-            setSideSubMenuAnchor(null);
+            // open the existing Side Editor in "add" mode
+            handleOpenSideEditor(null);
+            closeAllContextMenus();
           }}
         >
-          Blue
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            if (game.currentSideName != "RED") {
-              game.switchCurrentSide();
-            }
-            toastContext?.addToast(
-              `Side changed: ${game.currentSideName.toUpperCase()}`
-            );
-            setSideSubMenuAnchor(null);
-          }}
-        >
-          Red
+          {/* <Add fontSize="small" sx={{ mr: 1 }} /> */}
+          New Side…
         </MenuItem>
       </Menu>
 
-      
       {openSideEditor.open && openSideEditor.anchorEl && (
         <SideEditor
           open={openSideEditor.open}
@@ -2572,15 +2653,15 @@ export default function ScenarioMap({
           hostiles={
             openSideEditor.sideId
               ? game.currentScenario.relationships.getHostiles(
-                  openSideEditor.sideId
-                )
+                openSideEditor.sideId
+              )
               : []
           }
           allies={
             openSideEditor.sideId
               ? game.currentScenario.relationships.getAllies(
-                  openSideEditor.sideId
-                )
+                openSideEditor.sideId
+              )
               : []
           }
           updateSide={handleUpdateSide}
