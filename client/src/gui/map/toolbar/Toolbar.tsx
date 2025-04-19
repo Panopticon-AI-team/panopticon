@@ -244,8 +244,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   const [airbaseIconAnchorEl, setAirbaseIconAnchorEl] =
     useState<null | HTMLElement>(null);
   const airbaseClassMenuOpen = Boolean(airbaseIconAnchorEl);
-  const handleAirbaseIconClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAirbaseIconAnchorEl(event.currentTarget);
+  const handleAirbaseIconClick = () => {
+    props.addAirbaseOnClick("");
   };
   const handleAirbaseClose = () => {
     setAirbaseIconAnchorEl(null);
@@ -821,15 +821,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         </Menu>
         {/** Add Airbase Menu/Button */}
         <Tooltip title="Add Airbase">
-          <IconButton
-            id="add-airbase-icon-button"
-            aria-controls={
-              airbaseClassMenuOpen ? "airbase-classes-menu" : undefined
-            }
-            aria-haspopup="true"
-            aria-expanded={airbaseClassMenuOpen ? "true" : undefined}
-            onClick={handleAirbaseIconClick}
-          >
+          <IconButton onClick={handleAirbaseIconClick}>
             <EntityIcon type="airbase" />
           </IconButton>
         </Tooltip>
