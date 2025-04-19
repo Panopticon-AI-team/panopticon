@@ -233,6 +233,16 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     useState<null | HTMLElement>(null);
   const aircraftClassMenuOpen = Boolean(aircraftIconAnchorEl);
   const handleAircraftIconClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (
+      !props.game.currentSideId ||
+      props.game.currentScenario.sides.length === 0
+    ) {
+      toastContext?.addToast(
+        "Please select a side before adding an aircraft.",
+        "error"
+      );
+      return;
+    }
     setAircraftIconAnchorEl(event.currentTarget);
   };
   const handleAircraftIconClose = () => {
@@ -244,8 +254,18 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   const [airbaseIconAnchorEl, setAirbaseIconAnchorEl] =
     useState<null | HTMLElement>(null);
   const airbaseClassMenuOpen = Boolean(airbaseIconAnchorEl);
-  const handleAirbaseIconClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAirbaseIconAnchorEl(event.currentTarget);
+  const handleAirbaseIconClick = () => {
+    if (
+      !props.game.currentSideId ||
+      props.game.currentScenario.sides.length === 0
+    ) {
+      toastContext?.addToast(
+        "Please select a side before adding an airbase.",
+        "error"
+      );
+      return;
+    }
+    props.addAirbaseOnClick("");
   };
   const handleAirbaseClose = () => {
     setAirbaseIconAnchorEl(null);
@@ -259,6 +279,16 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   );
   const samClassMenuOpen = Boolean(samIconAnchorEl);
   const handleSamIconClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (
+      !props.game.currentSideId ||
+      props.game.currentScenario.sides.length === 0
+    ) {
+      toastContext?.addToast(
+        "Please select a side before adding a facility.",
+        "error"
+      );
+      return;
+    }
     setSamIconAnchorEl(event.currentTarget);
   };
   const handleSamIconClose = () => {
@@ -273,10 +303,34 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   );
   const shipClassMenuOpen = Boolean(shipIconAnchorEl);
   const handleShipIconClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (
+      !props.game.currentSideId ||
+      props.game.currentScenario.sides.length === 0
+    ) {
+      toastContext?.addToast(
+        "Please select a side before adding a ship.",
+        "error"
+      );
+      return;
+    }
     setShipIconAnchorEl(event.currentTarget);
   };
   const handleShipIconClose = () => {
     setShipIconAnchorEl(null);
+  };
+
+  const handleReferencePointIconClick = () => {
+    if (
+      !props.game.currentSideId ||
+      props.game.currentScenario.sides.length === 0
+    ) {
+      toastContext?.addToast(
+        "Please select a side before adding a reference point.",
+        "error"
+      );
+      return;
+    }
+    props.addReferencePointOnClick();
   };
 
   const handleSideChange = (newSelectedSideId: string) => {
@@ -821,15 +875,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         </Menu>
         {/** Add Airbase Menu/Button */}
         <Tooltip title="Add Airbase">
-          <IconButton
-            id="add-airbase-icon-button"
-            aria-controls={
-              airbaseClassMenuOpen ? "airbase-classes-menu" : undefined
-            }
-            aria-haspopup="true"
-            aria-expanded={airbaseClassMenuOpen ? "true" : undefined}
-            onClick={handleAirbaseIconClick}
-          >
+          <IconButton onClick={handleAirbaseIconClick}>
             <EntityIcon type="airbase" />
           </IconButton>
         </Tooltip>
@@ -991,7 +1037,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         </Menu>
         {/** Add Reference Point */}
         <Tooltip title="Add Reference Point">
-          <IconButton onClick={props.addReferencePointOnClick}>
+          <IconButton onClick={handleReferencePointIconClick}>
             <EntityIcon type="referencePoint" />
           </IconButton>
         </Tooltip>

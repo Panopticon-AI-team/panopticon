@@ -272,6 +272,7 @@ export default class Game {
         weapons: [this.getSampleWeapon(10, 0.25)],
         homeBaseId: airbase.id,
         rtb: false,
+        sideColor: airbase.sideColor,
       });
       airbase.aircraft.push(aircraft);
     }
@@ -482,6 +483,7 @@ export default class Game {
         weapons: [this.getSampleWeapon(10, 0.25)],
         homeBaseId: ship.id,
         rtb: false,
+        sideColor: ship.sideColor,
       });
       ship.aircraft.push(aircraft);
     }
