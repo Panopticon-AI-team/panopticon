@@ -39,6 +39,13 @@ export default function MapContextMenu({
     handleCloseOnMap();
   };
 
+  const commonPaperSx = {
+    borderRadius: 2,
+    boxShadow: 4,
+    minWidth: 180,
+    p: 0,
+  };
+
   return (
     <>
       <Menu
@@ -46,31 +53,48 @@ export default function MapContextMenu({
         onClose={closeAll}
         anchorReference="anchorPosition"
         anchorPosition={{ top: anchorPositionTop, left: anchorPositionLeft }}
+        slotProps={{
+          paper: { sx: commonPaperSx },
+        }}
       >
         <MenuItem
           onClick={() => {
             handleAddReferencePoint();
-            handleCloseOnMap();
+            closeAll();
           }}
+          sx={{ borderRadius: 1 }}
         >
           Add Reference Point
         </MenuItem>
         <MenuItem
           onClick={() => {
             handleAddAirbase();
-            handleCloseOnMap();
+            closeAll();
           }}
+          sx={{ borderRadius: 1 }}
         >
           Add Airbase
         </MenuItem>
-        <MenuItem onClick={(e) => setAircraftMenuAnchor(e.currentTarget)}>
-          Add Aircraft ▶
+        <MenuItem
+          onClick={(e) => setAircraftMenuAnchor(e.currentTarget)}
+          sx={{ justifyContent: "space-between", borderRadius: 1 }}
+        >
+          <span>Add Aircraft</span>
+          <span>▶</span>
         </MenuItem>
-        <MenuItem onClick={(e) => setShipMenuAnchor(e.currentTarget)}>
-          Add Ship ▶
+        <MenuItem
+          onClick={(e) => setShipMenuAnchor(e.currentTarget)}
+          sx={{ justifyContent: "space-between", borderRadius: 1 }}
+        >
+          <span>Add Ship</span>
+          <span>▶</span>
         </MenuItem>
-        <MenuItem onClick={(e) => setFacilityMenuAnchor(e.currentTarget)}>
-          Add Facility ▶
+        <MenuItem
+          onClick={(e) => setFacilityMenuAnchor(e.currentTarget)}
+          sx={{ justifyContent: "space-between", borderRadius: 1 }}
+        >
+          <span>Add Facility</span>
+          <span>▶</span>
         </MenuItem>
       </Menu>
 
@@ -80,6 +104,10 @@ export default function MapContextMenu({
         onClose={() => setAircraftMenuAnchor(null)}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "left" }}
+        slotProps={{
+          paper: { sx: commonPaperSx },
+          list: { onMouseLeave: () => setAircraftMenuAnchor(null) },
+        }}
       >
         {AircraftDb.map((aircraft) => (
           <MenuItem
@@ -88,6 +116,7 @@ export default function MapContextMenu({
               handleAddAircraft(aircraft.className);
               closeAll();
             }}
+            sx={{ borderRadius: 1 }}
           >
             {aircraft.className}
           </MenuItem>
@@ -100,6 +129,10 @@ export default function MapContextMenu({
         onClose={() => setShipMenuAnchor(null)}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "left" }}
+        slotProps={{
+          paper: { sx: commonPaperSx },
+          list: { onMouseLeave: () => setShipMenuAnchor(null) },
+        }}
       >
         {ShipDb.map((ship) => (
           <MenuItem
@@ -108,6 +141,7 @@ export default function MapContextMenu({
               handleAddShip(ship.className);
               closeAll();
             }}
+            sx={{ borderRadius: 1 }}
           >
             {ship.className}
           </MenuItem>
@@ -120,6 +154,10 @@ export default function MapContextMenu({
         onClose={() => setFacilityMenuAnchor(null)}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "left" }}
+        slotProps={{
+          paper: { sx: commonPaperSx },
+          list: { onMouseLeave: () => setFacilityMenuAnchor(null) },
+        }}
       >
         {FacilityDb.map((facility) => (
           <MenuItem
@@ -128,6 +166,7 @@ export default function MapContextMenu({
               handleAddFacility(facility.className);
               closeAll();
             }}
+            sx={{ borderRadius: 1 }}
           >
             {facility.className}
           </MenuItem>
