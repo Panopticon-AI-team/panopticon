@@ -24,9 +24,9 @@ import {
   CardHeader,
   Divider,
   IconButton,
-  Menu,
   Tooltip,
 } from "@mui/material";
+import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
 
 interface FacilityCardProps {

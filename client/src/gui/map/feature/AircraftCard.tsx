@@ -18,7 +18,6 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import {
   CardHeader,
   IconButton,
-  Menu,
   Paper,
   Table,
   TableBody,
@@ -29,6 +28,7 @@ import {
   Tooltip,
   ListItemButton,
 } from "@mui/material";
+import { Menu } from "@/gui/shared/ui/MuiComponents";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { colorPalette } from "@/utils/constants";

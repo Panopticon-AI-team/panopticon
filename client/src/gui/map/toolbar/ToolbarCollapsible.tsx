@@ -7,12 +7,12 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Menu,
   MenuItem,
   SvgIconProps,
   Tooltip,
   Typography,
 } from "@mui/material";
+import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import Stack from "@mui/material/Stack";

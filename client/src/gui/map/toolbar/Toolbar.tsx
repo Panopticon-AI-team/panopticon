@@ -8,11 +8,11 @@ import {
   ListItemIcon,
   ListItemText,
   ListSubheader,
-  Menu,
   MenuItem,
   Tooltip,
   Typography,
 } from "@mui/material";
+import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { visuallyHidden } from "@mui/utils";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
