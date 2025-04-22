@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import Popover from "@mui/material/Popover";
+import { Popover } from "@/gui/shared/ui/MuiComponents";
 
 interface FeaturePopupProps {
+  transformOriginVertical?: "top" | "bottom";
   anchorPositionTop: number;
   anchorPositionLeft: number;
   content: React.JSX.Element;
@@ -9,6 +10,7 @@ interface FeaturePopupProps {
 }
 
 export default function FeaturePopup({
+  transformOriginVertical = "bottom",
   anchorPositionTop,
   anchorPositionLeft,
   content,
@@ -36,7 +38,7 @@ export default function FeaturePopup({
           horizontal: "right",
         }}
         transformOrigin={{
-          vertical: "bottom",
+          vertical: transformOriginVertical,
           horizontal: "left",
         }}
       >

@@ -27,10 +27,10 @@ import {
   CardHeader,
   Divider,
   IconButton,
-  Menu,
   Tooltip,
   Typography,
 } from "@mui/material";
+import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
 
 interface ShipCardProps {

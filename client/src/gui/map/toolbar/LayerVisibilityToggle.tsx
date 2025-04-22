@@ -1,5 +1,6 @@
 import LayersIcon from "@mui/icons-material/Layers";
-import { Box, Popover, Tooltip } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
+import { Popover } from "@/gui/shared/ui/MuiComponents";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
