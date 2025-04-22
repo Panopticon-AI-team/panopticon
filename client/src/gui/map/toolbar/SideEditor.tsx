@@ -8,10 +8,10 @@ import {
   Stack,
   Box,
   MenuItem,
-  Popover,
   Paper,
   FormControl,
 } from "@mui/material";
+import { Popover } from "@/gui/shared/ui/MuiComponents";
 import TextField from "@/gui/shared/ui/TextField";
 import Side from "@/game/Side";
 import { COLOR_PALETTE, SIDE_COLOR } from "@/utils/colors";

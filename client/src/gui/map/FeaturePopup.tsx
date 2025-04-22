@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Popover from "@mui/material/Popover";
+import { Popover } from "@/gui/shared/ui/MuiComponents";
 
 interface FeaturePopupProps {
   anchorPositionTop: number;
