@@ -49,6 +49,7 @@ export default function MapContextMenu({
   return (
     <>
       <Menu
+        disableAutoFocusItem
         open
         onClose={closeAll}
         anchorReference="anchorPosition"
