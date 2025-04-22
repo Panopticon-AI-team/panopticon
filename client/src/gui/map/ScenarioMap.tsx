@@ -205,6 +205,7 @@ export default function ScenarioMap({
     open: false,
     top: 0,
     left: 0,
+    coordinates: [0, 0],
   });
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
@@ -338,12 +339,15 @@ export default function ScenarioMap({
       if (zoom) game.mapView.currentCameraZoom = zoom;
     });
 
-    theMap.getViewport().addEventListener("contextmenu", function (evt) {
-      evt.preventDefault();
+    theMap.getViewport().addEventListener("contextmenu", function (event) {
+      event.preventDefault();
+      const pixel = theMap.getEventPixel(event);
+      const coordinate = theMap.getCoordinateFromPixel(pixel);
       setOpenMapContextMenu({
         open: true,
-        top: evt.clientY,
-        left: evt.clientX,
+        top: event.clientY,
+        left: event.clientX,
+        coordinates: coordinate,
       });
     });
 
@@ -2234,6 +2238,27 @@ export default function ScenarioMap({
               ...openMapContextMenu,
               open: false,
             });
+          }}
+          handleAddReferencePoint={() => {
+            addReferencePoint(openMapContextMenu.coordinates);
+          }}
+          handleAddAirbase={() => {
+            addAirbase(openMapContextMenu.coordinates);
+          }}
+          handleAddAircraft={(unitClassName: string) => {
+            game.addingAircraft = true;
+            game.selectedUnitClassName = unitClassName;
+            handleAddUnit(openMapContextMenu.coordinates);
+          }}
+          handleAddShip={(unitClassName: string) => {
+            game.addingShip = true;
+            game.selectedUnitClassName = unitClassName;
+            handleAddUnit(openMapContextMenu.coordinates);
+          }}
+          handleAddFacility={(unitClassName: string) => {
+            game.addingFacility = true;
+            game.selectedUnitClassName = unitClassName;
+            handleAddUnit(openMapContextMenu.coordinates);
           }}
         />
       )}
