@@ -32,4 +32,151 @@ export default class Dba {
   getShipDb() {
     return this.shipDb;
   }
+
+  exportToJson() {
+    return JSON.stringify({
+      airbaseDb: this.airbaseDb,
+      aircraftDb: this.aircraftDb,
+      facilityDb: this.facilityDb,
+      shipDb: this.shipDb,
+    });
+  }
+
+  importFromJson(json: string) {
+    const data = JSON.parse(json);
+
+    const importAirbaseDb = data.airbaseDb as any[];
+    if (Array.isArray(importAirbaseDb) && importAirbaseDb.length > 0) {
+      const finalImportedAirbaseDb: IAirbaseModel[] = [];
+      importAirbaseDb.forEach((airbase) => {
+        const { name, latitude, longitude, country } = airbase;
+        if (!(name && latitude != null && longitude != null && country)) return;
+        finalImportedAirbaseDb.push({ name, latitude, longitude, country });
+      });
+      this.airbaseDb = finalImportedAirbaseDb;
+    }
+
+    const importAircraftDb = data.aircraftDb as any[];
+    if (Array.isArray(importAircraftDb) && importAircraftDb.length > 0) {
+      const finalImportedAircraftDb: IAircraftModel[] = [];
+      importAircraftDb.forEach((aircraft) => {
+        const {
+          className,
+          speed,
+          maxFuel,
+          fuelRate,
+          range,
+          dataSource,
+          units,
+        } = aircraft;
+        if (
+          !(
+            className &&
+            speed != null &&
+            maxFuel != null &&
+            fuelRate != null &&
+            range != null
+          )
+        )
+          return;
+
+        finalImportedAircraftDb.push({
+          className,
+          speed,
+          maxFuel,
+          fuelRate,
+          range,
+          dataSource: {
+            speedSrc: dataSource?.speedSrc ?? "",
+            maxFuelSrc: dataSource?.maxFuelSrc ?? "",
+            fuelRateSrc: dataSource?.fuelRateSrc ?? "",
+            rangeSrc: dataSource?.rangeSrc ?? "",
+          },
+          units: {
+            speedUnit: units?.speedUnit ?? "",
+            maxFuelUnit: units?.maxFuelUnit ?? "",
+            fuelRateUnit: units?.fuelRateUnit ?? "",
+            rangeUnit: units?.rangeUnit ?? "",
+          },
+        });
+      });
+      this.aircraftDb = finalImportedAircraftDb;
+    }
+
+    const importFacilityDb = data.facilityDb as any[];
+    if (Array.isArray(importFacilityDb) && importFacilityDb.length > 0) {
+      const finalImportedFacilityDb: IFacilityModel[] = [];
+      importFacilityDb.forEach((facility) => {
+        const { className, range } = facility;
+        if (!(className && range != null)) return;
+        finalImportedFacilityDb.push({ className, range });
+      });
+      this.facilityDb = finalImportedFacilityDb;
+    }
+
+    const importShipDb = data.shipDb as any[];
+    if (Array.isArray(importShipDb) && importShipDb.length > 0) {
+      const finalImportedShipDb: IShipModel[] = [];
+      importShipDb.forEach((ship) => {
+        const {
+          className,
+          speed,
+          maxFuel,
+          fuelRate,
+          range,
+          dataSource,
+          units,
+        } = ship;
+        if (
+          !(
+            className &&
+            speed != null &&
+            maxFuel != null &&
+            fuelRate != null &&
+            range != null
+          )
+        )
+          return;
+
+        const model: IShipModel = {
+          className,
+          speed,
+          maxFuel,
+          fuelRate,
+          range,
+        };
+
+        if (
+          dataSource &&
+          typeof dataSource.speedSrc === "string" &&
+          typeof dataSource.maxFuelSrc === "string"
+        ) {
+          model.dataSource = {
+            speedSrc: dataSource.speedSrc,
+            maxFuelSrc: dataSource.maxFuelSrc,
+            fuelRateSrc: dataSource.fuelRateSrc,
+            rangeSrc: dataSource.rangeSrc,
+          };
+        }
+
+        if (
+          units &&
+          typeof units.speedUnit === "string" &&
+          typeof units.maxFuelUnit === "string"
+        ) {
+          model.units = {
+            speedUnit: units.speedUnit,
+            maxFuelUnit: units.maxFuelUnit,
+            fuelRateUnit: units.fuelRateUnit,
+            rangeUnit: units.rangeUnit,
+          };
+        }
+
+        finalImportedShipDb.push(model);
+      });
+      this.shipDb = finalImportedShipDb;
+    }
+  }
+
+  importFromCsv(csv: string) {}
 }

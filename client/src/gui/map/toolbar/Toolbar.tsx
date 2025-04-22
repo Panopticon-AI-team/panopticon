@@ -22,7 +22,7 @@ import List from "@mui/material/List";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import Game from "@/game/Game";
-import { AircraftDb, AirbaseDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
+import { AircraftDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
 import { APP_DRAWER_WIDTH } from "@/utils/constants";
 import PanopticonLogoSvg from "@/gui/assets/svg/panopticon.svg?react";
 import ToolbarCollapsible from "@/gui/map/toolbar/ToolbarCollapsible";
@@ -43,6 +43,7 @@ import {
   Pause,
   PlayArrow,
   Save,
+  Storage,
   Undo,
 } from "@mui/icons-material";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
@@ -75,6 +76,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import LoginLogout from "@/gui/map/toolbar/LoginLogout";
 import { randomUUID } from "@/utils/generateUUID";
 import HealthCheck from "@/gui/map/toolbar/HealthCheck";
+import {
+  SetUnitDbContext,
+  UnitDbContext,
+} from "@/gui/contextProviders/contexts/UnitDbContext";
 
 interface ToolBarProps {
   mobileView: boolean;
@@ -190,6 +195,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     getCloudScenarios();
   }, [isAuthenticated]);
   const toastContext = useContext(ToastContext);
+  const unitDbContext = useContext(UnitDbContext);
+  const setUnitDbContext = useContext(SetUnitDbContext);
   const [selectedSideId, setSelectedSideId] = useState<string>(
     props.scenarioCurrentSideId
   );
@@ -301,7 +308,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   };
 
   const [selectedAirbaseUnitClass, setSelectedAirbaseUnitClass] =
-    useState<string>(AirbaseDb[0].name);
+    useState<string>(unitDbContext.getAirbaseDb()[0].name);
   const [airbaseIconAnchorEl, setAirbaseIconAnchorEl] =
     useState<null | HTMLElement>(null);
   const airbaseClassMenuOpen = Boolean(airbaseIconAnchorEl);
@@ -382,6 +389,16 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       return;
     }
     props.addReferencePointOnClick();
+  };
+
+  const [unitDbToolsIconAnchorEl, setUnitDbToolsIconAnchorEl] =
+    useState<null | HTMLElement>(null);
+  const unitDbToolsMenuOpen = Boolean(unitDbToolsIconAnchorEl);
+  const handleUnitDbToolsIconClick = (event: React.MouseEvent<HTMLElement>) => {
+    setUnitDbToolsIconAnchorEl(event.currentTarget);
+  };
+  const handleUnitDbToolsIconClose = () => {
+    setUnitDbToolsIconAnchorEl(null);
   };
 
   const handleSideChange = (newSelectedSideId: string) => {
@@ -679,9 +696,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         break;
       case "airbase": {
         setSelectedAirbaseUnitClass(unitClassName);
-        const airbaseTemplate = AirbaseDb.find(
-          (airbase) => airbase.name === unitClassName
-        );
+        const airbaseTemplate = unitDbContext
+          .getAirbaseDb()
+          .find((airbase) => airbase.name === unitClassName);
         props.addAirbaseOnClick([0, 0], airbaseTemplate?.name, [
           airbaseTemplate?.longitude ?? 0,
           airbaseTemplate?.latitude ?? 0,
@@ -761,9 +778,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       case "2":
         event.preventDefault();
         if (selectedAirbaseUnitClass) {
-          const airbaseTemplate = AirbaseDb.find(
-            (airbase) => airbase.name === selectedAirbaseUnitClass
-          );
+          const airbaseTemplate = unitDbContext
+            .getAirbaseDb()
+            .find((airbase) => airbase.name === selectedAirbaseUnitClass);
           props.addAirbaseOnClick([0, 0], airbaseTemplate?.name, [
             airbaseTemplate?.longitude ?? 0,
             airbaseTemplate?.latitude ?? 0,
@@ -1117,7 +1134,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               <ClearIcon sx={{ fontSize: 15, color: "red" }} />
             </IconButton>
           </Stack>
-          {AirbaseDb.map((airbase) => (
+          {unitDbContext.getAirbaseDb().map((airbase) => (
             <MenuItem
               onClick={(_event: React.MouseEvent<HTMLElement>) =>
                 handleUnitClassSelect("airbase", airbase.name)
@@ -1248,6 +1265,85 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             <EntityIcon type="referencePoint" />
           </IconButton>
         </Tooltip> */}
+        {/**  Unit Db Functions */}
+        <Tooltip title="Import/Export database">
+          <IconButton onClick={handleUnitDbToolsIconClick}>
+            <Storage />
+          </IconButton>
+        </Tooltip>
+        <Menu
+          id="unit-db-functions-menu"
+          anchorEl={unitDbToolsIconAnchorEl}
+          open={unitDbToolsMenuOpen}
+          onClose={handleUnitDbToolsIconClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          slotProps={{
+            root: { sx: { ".MuiList-root": { padding: 0 } } },
+            list: {
+              "aria-labelledby": "unit-db-functions-button",
+            },
+          }}
+        >
+          <MenuItem
+            onClick={(_event: React.MouseEvent<HTMLElement>) => {
+              const exportedUnitDb = unitDbContext.exportToJson();
+              const exportName = "unit_db";
+              const dataStr =
+                "data:text/json;charset=utf-8," +
+                encodeURIComponent(exportedUnitDb);
+              const downloadAnchorNode = document.createElement("a");
+              downloadAnchorNode.setAttribute("href", dataStr);
+              downloadAnchorNode.setAttribute("download", exportName + ".json");
+              document.body.appendChild(downloadAnchorNode); // required for firefox
+              downloadAnchorNode.click();
+              downloadAnchorNode.remove();
+              setUnitDbToolsIconAnchorEl(null);
+            }}
+            key={"export-unit-db"}
+          >
+            Export Unit Database
+          </MenuItem>
+          <MenuItem
+            onClick={(_event: React.MouseEvent<HTMLElement>) => {
+              props.pauseOnClick();
+              setScenarioPaused(true);
+              const input = document.createElement("input");
+              input.style.display = "none";
+              input.type = "file";
+              input.accept = ".json";
+              input.onchange = (event) => {
+                input.remove();
+                const file = (event.target as HTMLInputElement).files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.readAsText(file, "UTF-8");
+                  reader.onload = (readerEvent) => {
+                    const unitDbString = readerEvent.target?.result as string;
+                    unitDbContext.importFromJson(unitDbString);
+                    toastContext?.addToast(
+                      "Unit database uploaded successfully!",
+                      "success"
+                    );
+                    setUnitDbContext(unitDbContext);
+                    setUnitDbToolsIconAnchorEl(null);
+                  };
+                  reader.onerror = () => {
+                    reader.abort();
+                    toastContext?.addToast(
+                      "Failed to upload database.",
+                      "error"
+                    );
+                  };
+                }
+              };
+              input.click();
+            }}
+            key={"import-unit-db"}
+          >
+            Import Unit Database
+          </MenuItem>
+        </Menu>
         {/**  Enable Eraser */}
         <Tooltip title="Eraser">
           <IconButton onClick={handleEraserModeToggle}>
