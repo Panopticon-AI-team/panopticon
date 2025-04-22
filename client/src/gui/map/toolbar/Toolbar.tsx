@@ -74,6 +74,7 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginLogout from "@/gui/map/toolbar/LoginLogout";
 import { randomUUID } from "@/utils/generateUUID";
+import HealthCheck from "@/gui/map/toolbar/HealthCheck";
 
 interface ToolBarProps {
   mobileView: boolean;
@@ -1448,6 +1449,13 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             />
           </Stack>
           <Box sx={{ flexGrow: 1 }} />
+          <HealthCheck />
+          <Divider
+            orientation="vertical"
+            variant="middle"
+            flexItem
+            sx={{ borderColor: COLOR_PALETTE.DARK_GRAY, mr: 1.6 }}
+          />
           <LoginLogout />
         </MapToolbar>
       </AppBar>
