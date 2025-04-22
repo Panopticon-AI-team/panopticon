@@ -2240,22 +2240,72 @@ export default function ScenarioMap({
             });
           }}
           handleAddReferencePoint={() => {
+            if (
+              !game.currentSideId ||
+              game.currentScenario.sides.length === 0
+            ) {
+              toastContext?.addToast(
+                "Please select a side before adding an aircraft.",
+                "error"
+              );
+              return;
+            }
             addReferencePoint(openMapContextMenu.coordinates);
           }}
           handleAddAirbase={() => {
+            if (
+              !game.currentSideId ||
+              game.currentScenario.sides.length === 0
+            ) {
+              toastContext?.addToast(
+                "Please select a side before adding an aircraft.",
+                "error"
+              );
+              return;
+            }
             addAirbase(openMapContextMenu.coordinates);
           }}
           handleAddAircraft={(unitClassName: string) => {
+            if (
+              !game.currentSideId ||
+              game.currentScenario.sides.length === 0
+            ) {
+              toastContext?.addToast(
+                "Please select a side before adding an aircraft.",
+                "error"
+              );
+              return;
+            }
             game.addingAircraft = true;
             game.selectedUnitClassName = unitClassName;
             handleAddUnit(openMapContextMenu.coordinates);
           }}
           handleAddShip={(unitClassName: string) => {
+            if (
+              !game.currentSideId ||
+              game.currentScenario.sides.length === 0
+            ) {
+              toastContext?.addToast(
+                "Please select a side before adding an aircraft.",
+                "error"
+              );
+              return;
+            }
             game.addingShip = true;
             game.selectedUnitClassName = unitClassName;
             handleAddUnit(openMapContextMenu.coordinates);
           }}
           handleAddFacility={(unitClassName: string) => {
+            if (
+              !game.currentSideId ||
+              game.currentScenario.sides.length === 0
+            ) {
+              toastContext?.addToast(
+                "Please select a side before adding an aircraft.",
+                "error"
+              );
+              return;
+            }
             game.addingFacility = true;
             game.selectedUnitClassName = unitClassName;
             handleAddUnit(openMapContextMenu.coordinates);
