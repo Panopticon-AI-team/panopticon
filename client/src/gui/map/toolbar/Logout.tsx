@@ -13,6 +13,9 @@ const LogoutButton = () => {
           logout({ logoutParams: { returnTo: window.location.origin } })
         }
         label="Log Out"
+        sx={{
+          marginRight: "1em",
+        }}
       />
     </Tooltip>
   );

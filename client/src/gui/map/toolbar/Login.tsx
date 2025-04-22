@@ -10,6 +10,9 @@ const LoginButton = () => {
       variant="outlined"
       onClick={() => loginWithRedirect()}
       label="Log In"
+      sx={{
+        marginRight: "1em",
+      }}
     />
   );
 };
