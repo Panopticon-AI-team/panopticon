@@ -1016,7 +1016,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         }
       >
         {/** Add Aircraft Menu/Button */}
-        <Tooltip title="Add Aircraft">
+        {/* <Tooltip title="Add Aircraft">
           <IconButton
             id="add-aircraft-icon-button"
             aria-controls={
@@ -1028,7 +1028,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           >
             <EntityIcon type="aircraft" />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
         <Menu
           id="aircraft-classes-menu"
           anchorEl={aircraftIconAnchorEl}
@@ -1073,7 +1073,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           ))}
         </Menu>
         {/** Add Airbase Menu/Button */}
-        <Tooltip title="Add Airbase">
+        <Tooltip title="Add airbase from database">
           <IconButton
             id="add-airbase-icon-button"
             aria-controls={
@@ -1131,7 +1131,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           ))}
         </Menu>
         {/** Add Sam Menu/Button */}
-        <Tooltip title="Add Sam">
+        {/* <Tooltip title="Add Sam">
           <IconButton
             id="add-sam-icon-button"
             aria-controls={samClassMenuOpen ? "sam-classes-menu" : undefined}
@@ -1141,7 +1141,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           >
             <EntityIcon type="facility" />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
         <Menu
           id="sam-classes-menu"
           anchorEl={samIconAnchorEl}
@@ -1187,7 +1187,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           ))}
         </Menu>
         {/** Add Ship Menu/Button */}
-        <Tooltip title="Add Ship">
+        {/* <Tooltip title="Add Ship">
           <IconButton
             id="add-ship-icon-button"
             aria-controls={shipClassMenuOpen ? "ship-classes-menu" : undefined}
@@ -1197,7 +1197,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           >
             <EntityIcon type="ship" />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
         <Menu
           id="ship-classes-menu"
           anchorEl={shipIconAnchorEl}
@@ -1243,11 +1243,11 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           ))}
         </Menu>
         {/** Add Reference Point */}
-        <Tooltip title="Add Reference Point">
+        {/* <Tooltip title="Add Reference Point">
           <IconButton onClick={handleReferencePointIconClick}>
             <EntityIcon type="referencePoint" />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
         {/**  Enable Eraser */}
         <Tooltip title="Eraser">
           <IconButton onClick={handleEraserModeToggle}>
