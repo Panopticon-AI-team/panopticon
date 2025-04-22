@@ -64,6 +64,7 @@ import VectorLayer from "ol/layer/Vector";
 import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 import SideEditor from "@/gui/map/toolbar/SideEditor";
 import { useAuth0 } from "@auth0/auth0-react";
+import MapContextMenu from "@/gui/map/MapContextMenu";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -200,6 +201,11 @@ export default function ScenarioMap({
     sideId: null,
     anchorEl: null,
   });
+  const [openMapContextMenu, setOpenMapContextMenu] = useState({
+    open: false,
+    top: 0,
+    left: 0,
+  });
   const [featureLabelVisible, setFeatureLabelVisible] = useState(true);
   const [threatRangeVisible, setThreatRangeVisible] = useState(true);
   const [routeVisible, setRouteVisible] = useState(true);
@@ -233,7 +239,6 @@ export default function ScenarioMap({
   let routeMeasurementTooltipElement: HTMLDivElement | null = null;
   let routeMeasurementTooltip: Overlay | null = null;
   let routeMeasurementListener: EventsKey | undefined;
-  let mousePosition: number[];
   let teleportingUnit = false;
 
   const map = new OlMap({
@@ -308,6 +313,40 @@ export default function ScenarioMap({
 
   useEffect(() => {
     theMap.setTarget(mapRef.current!);
+
+    theMap.on("pointermove", function (event) {
+      const coordinatesLatLong = toLonLat(
+        event.coordinate,
+        theMap.getView().getProjection()
+      );
+      setCurrentMouseMapCoordinatesToContext({
+        latitude: coordinatesLatLong[1],
+        longitude: coordinatesLatLong[0],
+      });
+    });
+
+    theMap.on("moveend", function (event) {
+      const view = event.map.getView();
+      const center = view.getCenter();
+      const zoom = view.getZoom();
+      if (center) {
+        game.mapView.currentCameraCenter = toLonLat(
+          center,
+          view.getProjection()
+        );
+      }
+      if (zoom) game.mapView.currentCameraZoom = zoom;
+    });
+
+    theMap.getViewport().addEventListener("contextmenu", function (evt) {
+      evt.preventDefault();
+      setOpenMapContextMenu({
+        open: true,
+        top: evt.clientY,
+        left: evt.clientX,
+      });
+    });
+
     refreshAllLayers();
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
     loadFeatureEntitiesState();
@@ -319,33 +358,6 @@ export default function ScenarioMap({
   }, []);
 
   theMap.on("click", (event) => handleMapClick(event));
-
-  theMap.on("pointermove", function (event) {
-    mousePosition = event.coordinate;
-    const coordinatesLatLong = toLonLat(
-      event.coordinate,
-      theMap.getView().getProjection()
-    );
-    setCurrentMouseMapCoordinatesToContext({
-      latitude: coordinatesLatLong[1],
-      longitude: coordinatesLatLong[0],
-    });
-  });
-
-  theMap.on("moveend", function (event) {
-    const view = event.map.getView();
-    const center = view.getCenter();
-    const zoom = view.getZoom();
-    if (center) {
-      game.mapView.currentCameraCenter = toLonLat(center, view.getProjection());
-    }
-    if (zoom) game.mapView.currentCameraZoom = zoom;
-  });
-
-  // theMap.getViewport().addEventListener('contextmenu', function (evt) {
-  //   evt.preventDefault();
-  //   console.log(theMap.getEventPixel(evt));
-  // });
 
   function getSelectedFeatureType(featureId: string): string {
     let featureType = "";
@@ -2211,6 +2223,18 @@ export default function ScenarioMap({
           addSide={handleAddSide}
           deleteSide={handleDeleteSide}
           handleCloseOnMap={handleCloseSideEditor}
+        />
+      )}
+      {openMapContextMenu.open && (
+        <MapContextMenu
+          anchorPositionTop={openMapContextMenu.top}
+          anchorPositionLeft={openMapContextMenu.left}
+          handleCloseOnMap={() => {
+            setOpenMapContextMenu({
+              ...openMapContextMenu,
+              open: false,
+            });
+          }}
         />
       )}
     </>
