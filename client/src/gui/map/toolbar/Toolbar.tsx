@@ -4,7 +4,6 @@ import {
   Avatar,
   Button,
   CardActions,
-  CardHeader,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -38,7 +37,14 @@ import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Container } from "@mui/system";
-import { Pause, PlayArrow, Undo } from "@mui/icons-material";
+import {
+  Cloud,
+  Delete,
+  Pause,
+  PlayArrow,
+  Save,
+  Undo,
+} from "@mui/icons-material";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import DocumentScannerOutlinedIcon from "@mui/icons-material/DocumentScannerOutlined";
@@ -65,6 +71,9 @@ import {
   SELECTED_ICON_COLOR_FILTER,
   SIDE_COLOR,
 } from "@/utils/colors";
+import { useAuth0 } from "@auth0/auth0-react";
+import LoginLogout from "@/gui/map/toolbar/LoginLogout";
+import { randomUUID } from "@/utils/generateUUID";
 
 interface ToolBarProps {
   mobileView: boolean;
@@ -137,7 +146,44 @@ const toolbarStyle = {
   borderBottomColor: COLOR_PALETTE.DARK_GRAY,
 };
 
+interface CloudScenario {
+  scenarioId: string;
+  name: string;
+  scenarioString: string;
+}
+
 export default function Toolbar(props: Readonly<ToolBarProps>) {
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [cloudScenarios, setCloudScenarios] = useState<CloudScenario[]>([]);
+  const getCloudScenarios = async () => {
+    if (!import.meta.env.VITE_ENV || import.meta.env.VITE_ENV === "standalone")
+      return;
+    if (!isAuthenticated) return;
+    const accessToken = await getAccessTokenSilently();
+    const resp = await fetch(
+      `${import.meta.env.VITE_API_SERVER_URL}/api/v1/scenarios`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (resp.ok) {
+      const rawCloudScenarios: CloudScenario[] = await resp.json();
+      setCloudScenarios(rawCloudScenarios);
+    } else {
+      toastContext?.addToast(
+        "Failed to load scenarios from cloud. Please try again later.",
+        "error"
+      );
+    }
+  };
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    getCloudScenarios();
+  }, [isAuthenticated]);
   const toastContext = useContext(ToastContext);
   const [selectedSideId, setSelectedSideId] = useState<string>(
     props.scenarioCurrentSideId
@@ -355,6 +401,68 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     });
   };
 
+  const saveScenarioToCloud = async () => {
+    if (!import.meta.env.VITE_ENV || import.meta.env.VITE_ENV === "standalone")
+      return;
+    if (!isAuthenticated) return;
+    if (cloudScenarios.length >= 5) return;
+    const exportObject = props.game.exportCurrentScenario();
+    const accessToken = await getAccessTokenSilently();
+    const resp = await fetch(
+      `${import.meta.env.VITE_API_SERVER_URL}/api/v1/scenarios`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: exportObject,
+      }
+    );
+    if (!resp.ok) {
+      toastContext?.addToast(
+        "Failed to save scenario to cloud. Please try again later.",
+        "error"
+      );
+    } else {
+      const rawCloudScenarios: CloudScenario[] = await resp.json();
+      setCloudScenarios(rawCloudScenarios);
+      toastContext?.addToast(
+        "Scenario saved to cloud successfully!",
+        "success"
+      );
+    }
+  };
+
+  const deleteScenarioFromCloud = async (scenarioId: string) => {
+    if (!import.meta.env.VITE_ENV || import.meta.env.VITE_ENV === "standalone")
+      return;
+    if (!isAuthenticated) return;
+    const accessToken = await getAccessTokenSilently();
+    const resp = await fetch(
+      `${import.meta.env.VITE_API_SERVER_URL}/api/v1/scenarios/${scenarioId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (resp.ok) {
+      const updatedCloudScenarios = cloudScenarios.filter(
+        (scenario) => scenario.scenarioId !== scenarioId
+      );
+      setCloudScenarios(updatedCloudScenarios);
+      toastContext?.addToast("Scenario deleted successfully!", "success");
+    } else {
+      toastContext?.addToast(
+        "Failed to delete scenario. Please try again later.",
+        "error"
+      );
+    }
+  };
+
   const exportScenario = () => {
     props.pauseOnClick();
     const exportObject = props.game.exportCurrentScenario();
@@ -376,6 +484,24 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
 
   const newScenario = () => {
     loadPresetScenario("blank_scenario");
+  };
+
+  const loadCloudScenario = (scenarioId: string) => {
+    const scenario = cloudScenarios.find(
+      (scenario) => scenario.scenarioId === scenarioId
+    );
+    if (scenario) {
+      props.pauseOnClick();
+      setScenarioPaused(true);
+      loadScenario(scenario.scenarioString);
+      setCurrentScenarioString(scenario.scenarioString);
+      toastContext?.addToast("Scenario loaded successfully!", "success");
+    } else {
+      toastContext?.addToast(
+        "Failed to load scenario. Please refresh page or try again later.",
+        "error"
+      );
+    }
   };
 
   const loadPresetScenario = (presetScenarioName: string) => {
@@ -404,7 +530,17 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       try {
         props.pauseOnClick();
         setScenarioPaused(true);
-        const scenarioString = JSON.stringify(scenarioJson);
+        let scenarioJsonWithNewId = JSON.parse(JSON.stringify(scenarioJson));
+        if (
+          presetScenarioName === "blank_scenario" ||
+          presetScenarioName === "SCS" ||
+          presetScenarioName === "default_scenario"
+        ) {
+          if (scenarioJsonWithNewId.currentScenario?.id) {
+            scenarioJsonWithNewId.currentScenario.id = randomUUID();
+          }
+        }
+        const scenarioString = JSON.stringify(scenarioJsonWithNewId);
         loadScenario(scenarioString);
         setCurrentScenarioString(scenarioString);
         toastContext?.addToast("Scenario loaded successfully!", "success");
@@ -706,6 +842,51 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             value={scenario.name}
           >
             {scenario.displayName}
+          </MenuItem>
+        ))}
+        {cloudScenarios.map((scenario: CloudScenario) => (
+          <MenuItem
+            onClick={(_event: React.MouseEvent<HTMLElement>) =>
+              loadCloudScenario(scenario.scenarioId)
+            }
+            key={scenario.scenarioId}
+            value={scenario.scenarioId}
+            sx={{ paddingTop: 0 }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
+                <ListItemIcon sx={{ minWidth: 30 }}>
+                  <Cloud />
+                </ListItemIcon>
+                <ListItemText
+                  primary={scenario.name}
+                  sx={{
+                    flex: 1,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                />
+              </Box>
+
+              <IconButton
+                edge="end"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteScenarioFromCloud(scenario.scenarioId);
+                }}
+                sx={{ ml: 2 }}
+              >
+                <Delete color="error" />
+              </IconButton>
+            </Box>
           </MenuItem>
         ))}
       </Menu>
@@ -1266,6 +1447,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               openSideEditor={props.handleOpenSideEditor}
             />
           </Stack>
+          <Box sx={{ flexGrow: 1 }} />
+          <LoginLogout />
         </MapToolbar>
       </AppBar>
       {/** Side Drawer */}
@@ -1288,126 +1471,142 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           }}
         >
           <DrawerHeader />
-          {/** Context Notification Text Section */}
-          <Stack spacing={0.5} direction="column" sx={{ p: 0, mt: 1 }}>
-            <CurrentActionContextDisplay />
-          </Stack>
           {/** Scenario Section */}
           <Stack>
-            <CardHeader
-              sx={{ paddingBottom: 0 }}
-              action={
-                <Stack direction={"row"}>
-                  <Tooltip title="New Scenario">
-                    <IconButton onClick={newScenario}>
-                      <InsertDriveFileIcon
-                        fontSize="medium"
-                        sx={{ color: "#000000" }}
-                      />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Load Scenario">
-                    <IconButton onClick={handleLoadScenarioIconClick}>
-                      <UploadFileOutlinedIcon
-                        fontSize="medium"
-                        sx={{ color: "#171717" }}
-                      />
-                    </IconButton>
-                  </Tooltip>
-                  {presetScenarioSelectionMenu()}
-                  <Tooltip title="Save Scenario">
-                    <IconButton onClick={exportScenario}>
-                      <FileDownloadOutlinedIcon
-                        fontSize="medium"
-                        sx={{ color: "#171717" }}
-                      />
-                    </IconButton>
-                  </Tooltip>
-                  {/* Scenario Name Edit Menu/Button  */}
-                  <Tooltip title="Edit Scenario Name">
-                    <IconButton onClick={handleOpenScenarioEditNameMenu}>
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Menu
-                    anchorEl={scenarioEditNameAnchorEl}
-                    open={Boolean(scenarioEditNameAnchorEl)}
-                    onClose={handleCloseScenarioEditNameMenu}
-                    slotProps={{
-                      root: { sx: { ".MuiList-root": { padding: 0 } } },
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ textAlign: "center", p: 1 }}>
-                      Edit Scenario Name
-                    </Typography>
-
-                    <form
-                      onSubmit={handleScenarioNameSubmit}
-                      style={{
-                        width: "100%",
-                      }}
-                    >
-                      <Stack direction={"column"} spacing={1} sx={{ p: 1 }}>
-                        <TextField
-                          error={scenarioNameError}
-                          helperText={
-                            scenarioNameError
-                              ? 'Must be alphanumeric, ":,-" allowed, max 25'
-                              : ""
-                          }
-                          autoComplete="off"
-                          id="scenario-name-text-field"
-                          label="Scenario Name"
-                          sx={{ width: "100%" }}
-                          onChange={handleScenarioNameChange}
-                          defaultValue={scenarioName}
-                        />
-                        <Stack direction={"row"} spacing={1}>
-                          <Button
-                            disabled={
-                              !scenarioName.length ||
-                              props.game.currentScenario.name === scenarioName
-                            }
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            size="small"
-                          >
-                            Save
-                          </Button>
-                          <Button
-                            onClick={handleCloseScenarioEditNameMenu}
-                            type="button"
-                            fullWidth
-                            variant="contained"
-                            size="small"
-                            color="error"
-                          >
-                            Cancel
-                          </Button>
-                        </Stack>
-                      </Stack>
-                    </form>
-                  </Menu>
-                </Stack>
-              }
-              title={
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{ fontWeight: 400 }}
-                >
-                  Scenario
-                </Typography>
-              }
-            />
             {/** Scenario Name */}
             <Stack direction={"row"} sx={{ pl: 2, mb: 1 }}>
-              <Typography variant="caption" sx={{ fontWeight: 200 }}>
+              <Typography variant="h6" sx={{ fontWeight: 200 }}>
                 {props.game.currentScenario.name}
               </Typography>
             </Stack>
-            {/** Scenario Actions */}
+            {/** Context Notification Text Section */}
+            <Stack spacing={0.5} direction="column" sx={{ p: 0, mt: 0 }}>
+              <CurrentActionContextDisplay />
+            </Stack>
+            {/** Scenario Actions */}{" "}
+            <CardActions sx={{ display: "flex", justifyContent: "center" }}>
+              <Stack
+                direction="row"
+                divider={<Divider orientation="vertical" flexItem />}
+                spacing={1}
+                sx={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Tooltip title="New Scenario">
+                  <IconButton onClick={newScenario}>
+                    <InsertDriveFileIcon
+                      fontSize="medium"
+                      sx={{ color: "#000000" }}
+                    />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Load Scenario">
+                  <IconButton onClick={handleLoadScenarioIconClick}>
+                    <UploadFileOutlinedIcon
+                      fontSize="medium"
+                      sx={{ color: "#171717" }}
+                    />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip
+                  title={
+                    isAuthenticated
+                      ? cloudScenarios.length > 4
+                        ? "Cloud save limit reached. Please delete a scenario from the cloud to save a new one."
+                        : "Save to cloud"
+                      : "Login to save senario to cloud"
+                  }
+                >
+                  <IconButton onClick={saveScenarioToCloud}>
+                    <Save
+                      fontSize="medium"
+                      sx={{
+                        color: isAuthenticated
+                          ? "#171717"
+                          : COLOR_PALETTE.DARK_GRAY,
+                      }}
+                    />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Download Scenario">
+                  <IconButton onClick={exportScenario}>
+                    <FileDownloadOutlinedIcon
+                      fontSize="medium"
+                      sx={{ color: "#171717" }}
+                    />
+                  </IconButton>
+                </Tooltip>
+                {/* Scenario Name Edit Menu/Button  */}
+                <Tooltip title="Edit Scenario Name">
+                  <IconButton onClick={handleOpenScenarioEditNameMenu}>
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </CardActions>
+            <Menu
+              anchorEl={scenarioEditNameAnchorEl}
+              open={Boolean(scenarioEditNameAnchorEl)}
+              onClose={handleCloseScenarioEditNameMenu}
+              slotProps={{
+                root: { sx: { ".MuiList-root": { padding: 0 } } },
+              }}
+            >
+              <Typography variant="h6" sx={{ textAlign: "center", p: 1 }}>
+                Edit Scenario Name
+              </Typography>
+
+              <form
+                onSubmit={handleScenarioNameSubmit}
+                style={{
+                  width: "100%",
+                }}
+              >
+                <Stack direction={"column"} spacing={1} sx={{ p: 1 }}>
+                  <TextField
+                    error={scenarioNameError}
+                    helperText={
+                      scenarioNameError
+                        ? 'Must be alphanumeric, ":,-" allowed, max 25'
+                        : ""
+                    }
+                    autoComplete="off"
+                    id="scenario-name-text-field"
+                    label="Scenario Name"
+                    sx={{ width: "100%" }}
+                    onChange={handleScenarioNameChange}
+                    defaultValue={scenarioName}
+                  />
+                  <Stack direction={"row"} spacing={1}>
+                    <Button
+                      disabled={
+                        !scenarioName.length ||
+                        props.game.currentScenario.name === scenarioName
+                      }
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      size="small"
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      onClick={handleCloseScenarioEditNameMenu}
+                      type="button"
+                      fullWidth
+                      variant="contained"
+                      size="small"
+                      color="error"
+                    >
+                      Cancel
+                    </Button>
+                  </Stack>
+                </Stack>
+              </form>
+            </Menu>
+            {presetScenarioSelectionMenu()}
             <CardActions sx={{ display: "flex", justifyContent: "center" }}>
               <Stack
                 direction="row"

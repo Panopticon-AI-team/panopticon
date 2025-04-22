@@ -8,8 +8,10 @@
     "npm": "9.6.3 || >=10.5.0 <=10.9.2"
   },
   "scripts": {
-    "start": "vite --port 3000",
-    "build": "tsc -b && vite build",
+    "standalone": "vite --port 3000 --mode standalone",
+    "start": "vite --port 3000 --mode development",
+    "dev": "vite --port 3000 --mode development",
+    "build": "tsc -b && vite build --mode production",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
@@ -25,6 +27,8 @@
     "@mui/icons-material": "^7.0.0",
     "@mui/material": "^7.0.0",
     "@mui/system": "^7.0.0",
+    "@auth0/auth0-react": "^2.3.0",
+    "dotenv": "^16.5.0",
     "ol": "^10.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

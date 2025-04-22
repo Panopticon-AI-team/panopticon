@@ -63,6 +63,7 @@ import BaseVectorLayer from "ol/layer/BaseVector";
 import VectorLayer from "ol/layer/Vector";
 import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 import SideEditor from "@/gui/map/toolbar/SideEditor";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -217,6 +218,7 @@ export default function ScenarioMap({
     SetMouseMapCoordinatesContext
   );
   const toastContext = useContext(ToastContext);
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -256,6 +258,53 @@ export default function ScenarioMap({
     controls: [],
   });
   const [theMap, setTheMap] = useState(map);
+
+  useEffect(() => {
+    if (!import.meta.env.VITE_ENV || import.meta.env.VITE_ENV === "standalone")
+      return;
+    if (!isAuthenticated) return;
+
+    const fetchMapConfig = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        const resp = await fetch(
+          `${import.meta.env.VITE_API_SERVER_URL}/api/v1/map-config`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (resp.ok) {
+          const cfg = await resp.json();
+          const bml = new BaseMapLayers(
+            projection,
+            cfg.basicUrl,
+            cfg.satelliteJson
+          );
+          setTheMap((prevMap) => {
+            prevMap.setLayers([
+              ...bml.layers,
+              aircraftLayer.layer,
+              facilityLayer.layer,
+              airbasesLayer.layer,
+              threatRangeLayer.layer,
+              aircraftRouteLayer.layer,
+              shipRouteLayer.layer,
+              weaponLayer.layer,
+              featureLabelLayer.layer,
+              shipLayer.layer,
+              referencePointLayer.layer,
+            ]);
+            return prevMap;
+          });
+          setBaseMapLayers(bml);
+        }
+      } catch (error) {
+        console.error("Error fetching map config:", error);
+      }
+    };
+
+    fetchMapConfig();
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   useEffect(() => {
     theMap.setTarget(mapRef.current!);

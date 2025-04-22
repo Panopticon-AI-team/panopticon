@@ -3,19 +3,48 @@ import { MouseMapCoordinatesProvider } from "@/gui/contextProviders/providers/Mo
 import { ScenarioTimeProvider } from "@/gui/contextProviders/providers/ScenarioTimeProvider";
 import { ToastProvider } from "@/gui/contextProviders/providers/ToastProvider";
 import { RecordingStepProvider } from "@/gui/contextProviders/providers/RecordingStepProvider";
+import { Auth0Provider } from "@auth0/auth0-react";
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <ToastProvider>
-      <ScenarioTimeProvider>
-        <RecordingStepProvider>
-          <GameStatusProvider>
-            <MouseMapCoordinatesProvider>
-              {children}
-            </MouseMapCoordinatesProvider>
-          </GameStatusProvider>
-        </RecordingStepProvider>
-      </ScenarioTimeProvider>
-    </ToastProvider>
-  );
+  const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+  const redirectUri = import.meta.env.VITE_AUTH0_CALLBACK_URL;
+  const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+  const env_mode = import.meta.env.VITE_ENV;
+
+  const BaseProviders = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <ToastProvider>
+        <ScenarioTimeProvider>
+          <RecordingStepProvider>
+            <GameStatusProvider>
+              <MouseMapCoordinatesProvider>
+                {children}
+              </MouseMapCoordinatesProvider>
+            </GameStatusProvider>
+          </RecordingStepProvider>
+        </ScenarioTimeProvider>
+      </ToastProvider>
+    );
+  };
+
+  if (
+    !(domain && clientId && redirectUri && audience && env_mode) ||
+    env_mode === "standalone"
+  ) {
+    return BaseProviders({ children });
+  } else {
+    return (
+      <Auth0Provider
+        domain={domain}
+        clientId={clientId}
+        authorizationParams={{
+          audience: audience,
+          redirect_uri: redirectUri ?? window.location.origin,
+        }}
+      >
+        {BaseProviders({ children })}
+      </Auth0Provider>
+    );
+  }
 };
