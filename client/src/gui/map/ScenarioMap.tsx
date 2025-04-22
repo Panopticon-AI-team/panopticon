@@ -54,7 +54,6 @@ import {
 import BottomInfoDisplay from "@/gui/map/toolbar/BottomInfoDisplay";
 import LayerVisibilityPanelToggle from "@/gui/map/toolbar/LayerVisibilityToggle";
 import Toolbar from "@/gui/map/toolbar/Toolbar";
-import { AircraftDb, AirbaseDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
 import ReferencePointCard from "@/gui/map/feature/ReferencePointCard";
 import ReferencePoint from "@/game/units/ReferencePoint";
 import MissionCreatorCard from "@/gui/map/mission/MissionCreatorCard";
@@ -65,6 +64,7 @@ import { convertColorNameToSideColor, SIDE_COLOR } from "@/utils/colors";
 import SideEditor from "@/gui/map/toolbar/SideEditor";
 import { useAuth0 } from "@auth0/auth0-react";
 import MapContextMenu from "@/gui/map/MapContextMenu";
+import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -225,6 +225,7 @@ export default function ScenarioMap({
     SetMouseMapCoordinatesContext
   );
   const toastContext = useContext(ToastContext);
+  const unitDbContext = useContext(UnitDbContext);
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   const DrawerHeader = styled("div")(({ theme }) => ({
@@ -632,9 +633,9 @@ export default function ScenarioMap({
   function handleAddUnit(coordinates: number[]) {
     const unitClassSelected = game.selectedUnitClassName;
     if (game.addingAircraft) {
-      const aircraftTemplate = AircraftDb.find(
-        (aircraft) => aircraft.className === unitClassSelected
-      );
+      const aircraftTemplate = unitDbContext
+        .getAircraftDb()
+        .find((aircraft) => aircraft.className === unitClassSelected);
       addAircraft(
         coordinates,
         aircraftTemplate?.className,
@@ -645,9 +646,9 @@ export default function ScenarioMap({
       );
       game.addingAircraft = false;
     } else if (game.addingFacility) {
-      const facilityTemplate = FacilityDb.find(
-        (facility) => facility.className === unitClassSelected
-      );
+      const facilityTemplate = unitDbContext
+        .getFacilityDb()
+        .find((facility) => facility.className === unitClassSelected);
       addFacility(
         coordinates,
         facilityTemplate?.className,
@@ -655,15 +656,15 @@ export default function ScenarioMap({
       );
       game.addingFacility = false;
     } else if (game.addingAirbase) {
-      const airbaseTemplate = AirbaseDb.find(
-        (airbase) => airbase.name === unitClassSelected
-      );
+      const airbaseTemplate = unitDbContext
+        .getAirbaseDb()
+        .find((airbase) => airbase.name === unitClassSelected);
       addAirbase(coordinates, airbaseTemplate?.name);
       game.addingAirbase = false;
     } else if (game.addingShip) {
-      const shipTemplate = ShipDb.find(
-        (ship) => ship.className === unitClassSelected
-      );
+      const shipTemplate = unitDbContext
+        .getShipDb()
+        .find((ship) => ship.className === unitClassSelected);
       addShip(
         coordinates,
         shipTemplate?.className,
@@ -1119,7 +1120,7 @@ export default function ScenarioMap({
 
   function addAircraftToAirbase(airbaseId: string) {
     const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = AircraftDb[0].className;
+    const className = unitDbContext.getAircraftDb()[0].className;
     game.addAircraftToAirbase(aircraftName, className, airbaseId);
   }
 
@@ -1284,7 +1285,7 @@ export default function ScenarioMap({
 
   function addAircraftToShip(shipId: string) {
     const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = AircraftDb[0].className;
+    const className = unitDbContext.getAircraftDb()[0].className;
     game.addAircraftToShip(aircraftName, className, shipId);
   }
 
