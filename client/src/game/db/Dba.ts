@@ -48,12 +48,13 @@ export default class Dba {
     const importAirbaseDb = data.airbaseDb as any[];
     if (Array.isArray(importAirbaseDb) && importAirbaseDb.length > 0) {
       const finalImportedAirbaseDb: IAirbaseModel[] = [];
-      importAirbaseDb.forEach((airbase) => {
-        const { name, latitude, longitude, country } = airbase;
+      importAirbaseDb.forEach(({ name, latitude, longitude, country }) => {
         if (!(name && latitude != null && longitude != null && country)) return;
         finalImportedAirbaseDb.push({ name, latitude, longitude, country });
       });
-      this.airbaseDb = finalImportedAirbaseDb;
+      this.airbaseDb = finalImportedAirbaseDb.filter(
+        (unit, idx, all) => all.findIndex((u) => u.name === unit.name) === idx
+      );
     }
 
     const importAircraftDb = data.aircraftDb as any[];
@@ -100,18 +101,23 @@ export default class Dba {
           },
         });
       });
-      this.aircraftDb = finalImportedAircraftDb;
+      this.aircraftDb = finalImportedAircraftDb.filter(
+        (unit, idx, all) =>
+          all.findIndex((u) => u.className === unit.className) === idx
+      );
     }
 
     const importFacilityDb = data.facilityDb as any[];
     if (Array.isArray(importFacilityDb) && importFacilityDb.length > 0) {
       const finalImportedFacilityDb: IFacilityModel[] = [];
-      importFacilityDb.forEach((facility) => {
-        const { className, range } = facility;
+      importFacilityDb.forEach(({ className, range }) => {
         if (!(className && range != null)) return;
         finalImportedFacilityDb.push({ className, range });
       });
-      this.facilityDb = finalImportedFacilityDb;
+      this.facilityDb = finalImportedFacilityDb.filter(
+        (unit, idx, all) =>
+          all.findIndex((u) => u.className === unit.className) === idx
+      );
     }
 
     const importShipDb = data.shipDb as any[];
@@ -174,7 +180,10 @@ export default class Dba {
 
         finalImportedShipDb.push(model);
       });
-      this.shipDb = finalImportedShipDb;
+      this.shipDb = finalImportedShipDb.filter(
+        (unit, idx, all) =>
+          all.findIndex((u) => u.className === unit.className) === idx
+      );
     }
   }
 

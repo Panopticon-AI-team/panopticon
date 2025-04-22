@@ -1266,7 +1266,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           </IconButton>
         </Tooltip> */}
         {/**  Unit Db Functions */}
-        <Tooltip title="Import/Export database">
+        <Tooltip title="Database Tools">
           <IconButton onClick={handleUnitDbToolsIconClick}>
             <Storage />
           </IconButton>
