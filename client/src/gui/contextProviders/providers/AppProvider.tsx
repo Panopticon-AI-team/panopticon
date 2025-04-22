@@ -4,6 +4,7 @@ import { ScenarioTimeProvider } from "@/gui/contextProviders/providers/ScenarioT
 import { ToastProvider } from "@/gui/contextProviders/providers/ToastProvider";
 import { RecordingStepProvider } from "@/gui/contextProviders/providers/RecordingStepProvider";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { UnitDbProvider } from "@/gui/contextProviders/providers/UnitDbProvider";
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const domain = import.meta.env.VITE_AUTH0_DOMAIN;
@@ -15,15 +16,17 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const BaseProviders = ({ children }: { children: React.ReactNode }) => {
     return (
       <ToastProvider>
-        <ScenarioTimeProvider>
-          <RecordingStepProvider>
-            <GameStatusProvider>
-              <MouseMapCoordinatesProvider>
-                {children}
-              </MouseMapCoordinatesProvider>
-            </GameStatusProvider>
-          </RecordingStepProvider>
-        </ScenarioTimeProvider>
+        <UnitDbProvider>
+          <ScenarioTimeProvider>
+            <RecordingStepProvider>
+              <GameStatusProvider>
+                <MouseMapCoordinatesProvider>
+                  {children}
+                </MouseMapCoordinatesProvider>
+              </GameStatusProvider>
+            </RecordingStepProvider>
+          </ScenarioTimeProvider>
+        </UnitDbProvider>
       </ToastProvider>
     );
   };

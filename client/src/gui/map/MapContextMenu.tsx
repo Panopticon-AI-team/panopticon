@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { AircraftDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
+import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
 
 interface MapContextMenuProps {
   anchorPositionTop: number;
@@ -31,6 +31,7 @@ export default function MapContextMenu({
   );
   const [facilityMenuAnchor, setFacilityMenuAnchor] =
     useState<HTMLElement | null>(null);
+  const unitDbContext = useContext(UnitDbContext);
 
   const closeAll = () => {
     setAircraftMenuAnchor(null);
@@ -110,7 +111,7 @@ export default function MapContextMenu({
           list: { onMouseLeave: () => setAircraftMenuAnchor(null) },
         }}
       >
-        {AircraftDb.map((aircraft) => (
+        {unitDbContext.getAircraftDb().map((aircraft) => (
           <MenuItem
             key={aircraft.className}
             onClick={() => {
@@ -135,7 +136,7 @@ export default function MapContextMenu({
           list: { onMouseLeave: () => setShipMenuAnchor(null) },
         }}
       >
-        {ShipDb.map((ship) => (
+        {unitDbContext.getShipDb().map((ship) => (
           <MenuItem
             key={ship.className}
             onClick={() => {
@@ -160,7 +161,7 @@ export default function MapContextMenu({
           list: { onMouseLeave: () => setFacilityMenuAnchor(null) },
         }}
       >
-        {FacilityDb.map((facility) => (
+        {unitDbContext.getFacilityDb().map((facility) => (
           <MenuItem
             key={facility.className}
             onClick={() => {
