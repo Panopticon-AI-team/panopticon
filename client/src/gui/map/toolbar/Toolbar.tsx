@@ -1773,6 +1773,9 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                     onClick={props.toggleScenarioTimeCompressionOnClick}
                     variant="outlined"
                     label={props.scenarioTimeCompression + "x"}
+                    sx={{
+                      minWidth: "52px",
+                    }}
                   />
                 </Tooltip>
               </Stack>
