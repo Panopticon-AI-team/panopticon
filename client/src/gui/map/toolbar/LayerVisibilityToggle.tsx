@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import React, { useState } from "react";
 import { colorPalette } from "@/utils/constants";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface LayerVisibilityPanelToggleProps {
   featureLabelVisibility: boolean;
@@ -23,6 +24,8 @@ interface LayerVisibilityPanelToggleProps {
 export default function LayerVisibilityPanelToggle(
   props: Readonly<LayerVisibilityPanelToggleProps>
 ) {
+  const { isAuthenticated } = useAuth0();
+
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -67,7 +70,14 @@ export default function LayerVisibilityPanelToggle(
     <Card variant="outlined" sx={layersVisibilityPanelStyle}>
       <CardActions>
         <Stack spacing={1} direction="column">
-          <Tooltip title="Switch maps. Shortcut: 5" placement="right">
+          <Tooltip
+            title={
+              isAuthenticated
+                ? "Switch maps. Shortcut: 5"
+                : "Log in to access more map layers"
+            }
+            placement="right"
+          >
             <Button
               variant="outlined"
               sx={toggleStyle}

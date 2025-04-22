@@ -4,42 +4,62 @@ import OSM from "ol/source/OSM.js";
 import TileJSON from "ol/source/TileJSON.js";
 import { DEFAULT_OL_PROJECTION_CODE } from "@/utils/constants";
 
-const devMode = true;
 const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
-
-const layers: (TileLayer<OSM> | TileLayer<TileJSON>)[] = [];
-if (!devMode) {
-  const mapTilerKey = "";
-  const mapTilerBasicLayer = new TileLayer({
-    source: new OSM({
-      url: `https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${mapTilerKey}`,
-    }),
-  });
-  const mapTilerSatelliteSource = new TileJSON({
-    url: `https://api.maptiler.com/maps/satellite/tiles.json?key=${mapTilerKey}`,
-    tileSize: 512,
-    crossOrigin: "anonymous",
-  });
-  const mapTilerSatelliteLayer = new TileLayer({
-    source: mapTilerSatelliteSource,
-  });
-  layers.push(mapTilerBasicLayer);
-  layers.push(mapTilerSatelliteLayer);
-}
-const osmLayer = new TileLayer({ source: new OSM() });
-layers.push(osmLayer);
 
 export default class BaseMapLayers {
   layers: (TileLayer<OSM> | TileLayer<TileJSON>)[];
   projection: Projection;
   currentLayerIndex: number;
 
-  constructor(projection?: Projection, zIndex?: number) {
-    this.layers = layers;
+  constructor(
+    projection?: Projection,
+    mapTilerBasicUrl?: string,
+    mapTilerSatelliteUrl?: string,
+    zIndex?: number
+  ) {
+    this.layers = [];
+    if (mapTilerBasicUrl) {
+      this.layers.push(this.createMapTilerBasicLayer(mapTilerBasicUrl, zIndex));
+    }
+    if (mapTilerSatelliteUrl) {
+      this.layers.push(
+        this.createMapTilerSatelliteLayer(mapTilerSatelliteUrl, zIndex)
+      );
+    }
+    this.layers.push(this.createBaseOsmLayer(zIndex));
     this.projection = projection ?? defaultProjection!;
     this.layers.forEach((layer) => layer.setZIndex(zIndex ?? -1));
     this.currentLayerIndex = this.layers.length - 1;
   }
+
+  createBaseOsmLayer = (zIndex?: number) => {
+    const osmLayer = new TileLayer({ source: new OSM() });
+    osmLayer.setZIndex(zIndex ?? -1);
+    return osmLayer;
+  };
+
+  createMapTilerBasicLayer = (url: string, zIndex?: number) => {
+    const mapTilerBasicLayer = new TileLayer({
+      source: new OSM({
+        url: url,
+      }),
+    });
+    mapTilerBasicLayer.setZIndex(zIndex ?? -1);
+    return mapTilerBasicLayer;
+  };
+
+  createMapTilerSatelliteLayer = (url: string, zIndex?: number) => {
+    const mapTilerSatelliteSource = new TileJSON({
+      url: url,
+      tileSize: 512,
+      crossOrigin: "anonymous",
+    });
+    const mapTilerSatelliteLayer = new TileLayer({
+      source: mapTilerSatelliteSource,
+    });
+    mapTilerSatelliteLayer.setZIndex(zIndex ?? -1);
+    return mapTilerSatelliteLayer;
+  };
 
   toggleLayer = () => {
     this.currentLayerIndex = (this.currentLayerIndex + 1) % this.layers.length;

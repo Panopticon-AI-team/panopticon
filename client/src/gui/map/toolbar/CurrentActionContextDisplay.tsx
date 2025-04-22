@@ -3,8 +3,9 @@ import { Typography } from "@mui/material";
 import { GameStatusContext } from "@/gui/contextProviders/contexts/GameStatusContext";
 
 const currentActionContextDisplayStyle = {
-  textAlign: "center",
+  textAlign: "left",
   padding: "2px",
+  paddingLeft: "1.5em",
   color: "#4F4F4F",
   fontSize: "12px",
   fontStyle: "normal",
