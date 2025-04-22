@@ -1149,8 +1149,14 @@ export default function ScenarioMap({
     }
   }
 
-  function addAirbase(coordinates: number[], name?: string) {
-    coordinates = toLonLat(coordinates, theMap.getView().getProjection());
+  function addAirbase(
+    olCoordinates: number[],
+    name?: string,
+    realCoordinates?: number[]
+  ) {
+    const coordinates =
+      realCoordinates ??
+      toLonLat(olCoordinates, theMap.getView().getProjection());
     const airbaseName =
       (name ?? "Floridistan AFB") + " #" + randomInt(1, 5000).toString();
     const className = "Airfield";
@@ -1916,7 +1922,7 @@ export default function ScenarioMap({
         closeDrawer={handleDrawerClose}
         addAircraftOnClick={setAddingAircraft}
         addFacilityOnClick={setAddingFacility}
-        addAirbaseOnClick={setAddingAirbase}
+        addAirbaseOnClick={addAirbase}
         addShipOnClick={setAddingShip}
         addReferencePointOnClick={setAddingReferencePoint}
         playOnClick={handlePlayGameClick}

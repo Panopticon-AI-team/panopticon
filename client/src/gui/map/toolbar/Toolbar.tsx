@@ -82,7 +82,11 @@ interface ToolBarProps {
   featureEntitiesPlotted: FeatureEntityState[];
   addAircraftOnClick: (unitClassName: string) => void;
   addFacilityOnClick: (unitClassName: string) => void;
-  addAirbaseOnClick: (unitClassName: string) => void;
+  addAirbaseOnClick: (
+    coordinates: number[],
+    name?: string,
+    realCoordinates?: number[]
+  ) => void;
   addShipOnClick: (unitClassName: string) => void;
   addReferencePointOnClick: () => void;
   playOnClick: () => void;
@@ -301,7 +305,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   const [airbaseIconAnchorEl, setAirbaseIconAnchorEl] =
     useState<null | HTMLElement>(null);
   const airbaseClassMenuOpen = Boolean(airbaseIconAnchorEl);
-  const handleAirbaseIconClick = () => {
+  const handleAirbaseIconClick = (event: React.MouseEvent<HTMLElement>) => {
     if (
       !props.game.currentSideId ||
       props.game.currentScenario.sides.length === 0
@@ -312,7 +316,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       );
       return;
     }
-    props.addAirbaseOnClick("");
+    setAirbaseIconAnchorEl(event.currentTarget);
   };
   const handleAirbaseClose = () => {
     setAirbaseIconAnchorEl(null);
@@ -673,11 +677,18 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         props.addAircraftOnClick(unitClassName);
         handleAircraftIconClose();
         break;
-      case "airbase":
+      case "airbase": {
         setSelectedAirbaseUnitClass(unitClassName);
-        props.addAirbaseOnClick(unitClassName);
+        const airbaseTemplate = AirbaseDb.find(
+          (airbase) => airbase.name === unitClassName
+        );
+        props.addAirbaseOnClick([0, 0], airbaseTemplate?.name, [
+          airbaseTemplate?.longitude ?? 0,
+          airbaseTemplate?.latitude ?? 0,
+        ]);
         handleAirbaseClose();
         break;
+      }
       case "facility":
         setSelectedSamUnitClass(unitClassName);
         props.addFacilityOnClick(unitClassName);
@@ -750,7 +761,13 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       case "2":
         event.preventDefault();
         if (selectedAirbaseUnitClass) {
-          props.addAirbaseOnClick(selectedAirbaseUnitClass);
+          const airbaseTemplate = AirbaseDb.find(
+            (airbase) => airbase.name === selectedAirbaseUnitClass
+          );
+          props.addAirbaseOnClick([0, 0], airbaseTemplate?.name, [
+            airbaseTemplate?.longitude ?? 0,
+            airbaseTemplate?.latitude ?? 0,
+          ]);
         }
         break;
       case "3":
@@ -1057,7 +1074,15 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         </Menu>
         {/** Add Airbase Menu/Button */}
         <Tooltip title="Add Airbase">
-          <IconButton onClick={handleAirbaseIconClick}>
+          <IconButton
+            id="add-airbase-icon-button"
+            aria-controls={
+              airbaseClassMenuOpen ? "airbase-classes-menu" : undefined
+            }
+            aria-haspopup="true"
+            aria-expanded={airbaseClassMenuOpen ? "true" : undefined}
+            onClick={handleAirbaseIconClick}
+          >
             <EntityIcon type="airbase" />
           </IconButton>
         </Tooltip>
