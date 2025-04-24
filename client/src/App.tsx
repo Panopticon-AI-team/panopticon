@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { randomUUID } from "@/utils/generateUUID";
 import { get as getProjection, transform } from "ol/proj.js";
 import ScenarioMap from "@/gui/map/ScenarioMap";
@@ -7,8 +8,21 @@ import { DEFAULT_OL_PROJECTION_CODE } from "@/utils/constants";
 import SCSScenarioJson from "@/scenarios/SCS.json";
 import Box from "@mui/material/Box";
 import { useMediaQuery } from "@mui/material";
+import WelcomePopover from "@/WelcomePopover";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function App() {
+  const { isAuthenticated } = useAuth0();
+  const [openWelcomePopover, setOpenWelcomePopover] = useState(
+    import.meta.env.VITE_ENV === "production"
+  );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setOpenWelcomePopover(false);
+    }
+  }, [isAuthenticated]);
+
   const isMobile = useMediaQuery("(max-width:600px)");
   const currentScenario = new Scenario({
     id: randomUUID(),
@@ -33,6 +47,10 @@ export default function App() {
         game={theGame}
         projection={projection}
         mobileView={isMobile}
+      />
+      <WelcomePopover
+        open={openWelcomePopover}
+        onClose={() => setOpenWelcomePopover(false)}
       />
     </Box>
   );
