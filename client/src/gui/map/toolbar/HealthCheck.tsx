@@ -12,6 +12,7 @@ export default function HealthCheck() {
   const [status, setStatus] = useState("checking");
 
   useEffect(() => {
+    if (!env || env === "standalone") return;
     let active = true;
     setStatus("checking");
 
