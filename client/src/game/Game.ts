@@ -1306,7 +1306,7 @@ export default class Game {
     this.currentScenario.facilities.forEach((facility) => {
       this.currentScenario.aircraft.forEach((aircraft) => {
         if (this.currentScenario.isHostile(facility.sideId, aircraft.sideId)) {
-          const facilityWeapon = facility.getWeaponWithHighestRange();
+          const facilityWeapon = facility.getWeaponWithHighestEngagementRange();
           if (!facilityWeapon) return;
           if (
             isThreatDetected(aircraft, facility) &&
@@ -1325,7 +1325,7 @@ export default class Game {
       });
       this.currentScenario.weapons.forEach((weapon) => {
         if (this.currentScenario.isHostile(facility.sideId, weapon.sideId)) {
-          const facilityWeapon = facility.getWeaponWithHighestRange();
+          const facilityWeapon = facility.getWeaponWithHighestEngagementRange();
           if (!facilityWeapon) return;
           if (
             weapon.targetId === facility.id &&
@@ -1350,7 +1350,7 @@ export default class Game {
     this.currentScenario.ships.forEach((ship) => {
       this.currentScenario.aircraft.forEach((aircraft) => {
         if (this.currentScenario.isHostile(ship.sideId, aircraft.sideId)) {
-          const shipWeapon = ship.getWeaponWithHighestRange();
+          const shipWeapon = ship.getWeaponWithHighestEngagementRange();
           if (!shipWeapon) return;
           if (
             isThreatDetected(aircraft, ship) &&
@@ -1363,7 +1363,7 @@ export default class Game {
       });
       this.currentScenario.weapons.forEach((weapon) => {
         if (this.currentScenario.isHostile(ship.sideId, weapon.sideId)) {
-          const shipWeapon = ship.getWeaponWithHighestRange();
+          const shipWeapon = ship.getWeaponWithHighestEngagementRange();
           if (!shipWeapon) return;
           if (
             weapon.targetId === ship.id &&
@@ -1381,7 +1381,8 @@ export default class Game {
   aircraftAirToAirEngagement() {
     this.currentScenario.aircraft.forEach((aircraft) => {
       if (aircraft.weapons.length < 1) return;
-      const aircraftWeaponWithMaxRange = aircraft.getWeaponWithHighestRange();
+      const aircraftWeaponWithMaxRange =
+        aircraft.getWeaponWithHighestEngagementRange();
       if (!aircraftWeaponWithMaxRange) return;
       this.currentScenario.aircraft.forEach((enemyAircraft) => {
         if (
@@ -1531,7 +1532,7 @@ export default class Game {
               1000) /
             NAUTICAL_MILES_TO_METERS;
           const aircraftWeaponWithMaxRange =
-            attacker.getWeaponWithHighestRange();
+            attacker.getWeaponWithHighestEngagementRange();
           if (!aircraftWeaponWithMaxRange) return;
           if (
             (distanceBetweenWeaponLaunchPositionAndTargetNm !== null &&
@@ -1560,7 +1561,8 @@ export default class Game {
             distanceBetweenAttackerAndTargetNm <=
               aircraftWeaponWithMaxRange.getEngagementRange() * 1.1
           ) {
-            const aircraftWeapon = attacker.getWeaponWithHighestRange();
+            const aircraftWeapon =
+              attacker.getWeaponWithHighestEngagementRange();
             if (!aircraftWeapon) return;
             launchWeapon(
               this.currentScenario,

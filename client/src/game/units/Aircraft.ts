@@ -80,7 +80,7 @@ export default class Aircraft {
     return sum;
   }
 
-  getWeaponWithHighestRange(): Weapon | undefined {
+  getWeaponWithHighestEngagementRange(): Weapon | undefined {
     if (this.weapons.length === 0) return;
     return this.weapons.reduce((a, b) =>
       a.getEngagementRange() > b.getEngagementRange() ? a : b
@@ -89,7 +89,9 @@ export default class Aircraft {
 
   getWeaponEngagementRange(): number {
     if (this.weapons.length === 0) return 0;
-    return this.getWeaponWithHighestRange()?.getEngagementRange() ?? 0;
+    return (
+      this.getWeaponWithHighestEngagementRange()?.getEngagementRange() ?? 0
+    );
   }
 
   getDetectionRange(): number {
