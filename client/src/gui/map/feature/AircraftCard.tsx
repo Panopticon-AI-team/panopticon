@@ -27,17 +27,14 @@ import {
   Divider,
   Tooltip,
   ListItemButton,
-  TableHead,
-  MenuItem,
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { colorPalette } from "@/utils/constants";
-import { Add, MoreVert, Remove } from "@mui/icons-material";
+import { MoreVert } from "@mui/icons-material";
 import Weapon from "@/game/units/Weapon";
-import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
-import QuantitySlider from "@/gui/map/feature/shared/QuantitySlider";
+import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -110,51 +107,14 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     currentFuel: props.aircraft.currentFuel,
     currentFuelRate: props.aircraft.fuelRate,
   });
-  const [aircraftWeapons, setAircraftWeapons] = useState(
-    props.aircraft.weapons
-  );
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const [addWeaponMenuAnchorEl, setAddWeaponMenuAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const openAddWeaponMenu = Boolean(addWeaponMenuAnchorEl);
-  const [launchWeaponMenuAnchorEl, setLaunchWeaponMenuAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const openLaunchWeaponMenu = Boolean(launchWeaponMenuAnchorEl);
-  const [currentWeaponLaunchParams, setCurrentWeaponLaunchParams] = useState({
-    weaponId: "",
-    weaponMaxQuantity: 0,
-  });
-  const unitDbContext = useContext(UnitDbContext);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
-  };
-  const handleClickAddWeaponButton = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    setAddWeaponMenuAnchorEl(event.currentTarget);
-  };
-  const handleCloseAddWeaponMenu = () => {
-    setAddWeaponMenuAnchorEl(null);
-  };
-  const handleClickLaunchWeaponButton = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    weaponId: string
-  ) => {
-    const weapon = aircraftWeapons.find((w) => w.id === weaponId);
-    if (!weapon || (weapon && weapon.currentQuantity <= 0)) return;
-    setCurrentWeaponLaunchParams({
-      weaponId: weaponId,
-      weaponMaxQuantity: weapon.currentQuantity,
-    });
-    setLaunchWeaponMenuAnchorEl(event.currentTarget);
-  };
-  const handleCloseLaunchWeaponMenu = () => {
-    setLaunchWeaponMenuAnchorEl(null);
   };
 
   const _handleDeleteAircraft = () => {
@@ -165,15 +125,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
   const _handleMoveAircraft = () => {
     props.handleCloseOnMap();
     props.handleMoveAircraft(props.aircraft.id);
-  };
-
-  const _handleAircraftAttack = (weaponQuantity: number) => {
-    props.handleCloseOnMap();
-    props.handleAircraftAttack(
-      props.aircraft.id,
-      currentWeaponLaunchParams.weaponId,
-      weaponQuantity
-    );
   };
 
   const _handleAircraftRtb = () => {
@@ -188,31 +139,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
   const _handleTeleportAircraft = () => {
     props.handleCloseOnMap();
     props.handleTeleportUnit(props.aircraft.id);
-  };
-
-  const _handleAddWeapon = (weaponClassName: string) => {
-    const aircraftWeapons = props.handleAddWeapon(
-      props.aircraft.id,
-      weaponClassName
-    );
-    setAircraftWeapons([...aircraftWeapons]);
-  };
-
-  const _handleDeleteWeapon = (weaponId: string) => {
-    const aircraftWeapons = props.handleDeleteWeapon(
-      props.aircraft.id,
-      weaponId
-    );
-    setAircraftWeapons([...aircraftWeapons]);
-  };
-
-  const _handleUpdateWeaponQuantity = (weaponId: string, increment: number) => {
-    const aircraftWeapons = props.handleUpdateWeaponQuantity(
-      props.aircraft.id,
-      weaponId,
-      increment
-    );
-    setAircraftWeapons([...aircraftWeapons]);
   };
 
   const toggleEdit = () => {
@@ -485,165 +411,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     );
   };
 
-  const weaponsContent = () => {
-    return (
-      <>
-        <TableContainer
-          component={Paper}
-          sx={{
-            width: "100%",
-            minWidth: 420,
-            backgroundColor: "transparent",
-            boxShadow: "none",
-          }}
-        >
-          <Table size="small" aria-label="aircraft-weapons-table">
-            <TableHead>
-              <TableRow sx={tableRowStyle}>
-                <TableCell
-                  component="th"
-                  scope="row"
-                  align="right"
-                  sx={{ ...tableKeyCellStyle }}
-                >
-                  Name
-                </TableCell>
-                <TableCell
-                  component="th"
-                  scope="row"
-                  align="center"
-                  sx={{ ...tableKeyCellStyle, minWidth: "10em" }}
-                >
-                  Quantity
-                </TableCell>
-                <TableCell
-                  align="right"
-                  component="th"
-                  scope="row"
-                  sx={{ ...tableKeyCellStyle, minWidth: "5em" }}
-                >
-                  <Tooltip title={`Add Weapon`}>
-                    <IconButton
-                      id={"add-weapons-button"}
-                      onClick={handleClickAddWeaponButton}
-                    >
-                      <Add sx={{ color: "white" }} />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {aircraftWeapons.length === 0 && (
-                <TableRow sx={tableRowStyle}>
-                  <TableCell
-                    colSpan={3}
-                    align="center"
-                    sx={{ ...tableValueCellStyle, color: "gray" }}
-                  >
-                    No Weapons Available
-                  </TableCell>
-                </TableRow>
-              )}
-              {aircraftWeapons.length > 0 &&
-                aircraftWeapons.map((weapon, index) => (
-                  <TableRow
-                    sx={tableRowStyle}
-                    key={`${weapon.className}-${index}`}
-                  >
-                    <TableCell align="right" sx={tableValueCellStyle}>
-                      {weapon.className}
-                    </TableCell>
-                    <TableCell align="center" sx={tableValueCellStyle}>
-                      <>
-                        <Tooltip title={`Decrease Quantity`}>
-                          <IconButton
-                            onClick={() =>
-                              _handleUpdateWeaponQuantity(weapon.id, -1)
-                            }
-                          >
-                            <Remove sx={{ color: "white" }} />
-                          </IconButton>
-                        </Tooltip>
-                        {weapon.currentQuantity}
-                        <Tooltip title={`Increase Quantity`}>
-                          <IconButton
-                            onClick={() =>
-                              _handleUpdateWeaponQuantity(weapon.id, 1)
-                            }
-                          >
-                            <Add sx={{ color: "white" }} />
-                          </IconButton>
-                        </Tooltip>
-                      </>
-                    </TableCell>
-                    <TableCell align="right" sx={tableValueCellStyle}>
-                      <>
-                        <Tooltip title={`Launch Weapon`}>
-                          <IconButton
-                            onClick={(
-                              event: React.MouseEvent<HTMLButtonElement>
-                            ) => {
-                              handleClickLaunchWeaponButton(event, weapon.id);
-                            }}
-                          >
-                            <RocketLaunchIcon sx={{ color: "white" }} />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title={`Delete Weapon`}>
-                          <IconButton
-                            onClick={() => _handleDeleteWeapon(weapon.id)}
-                          >
-                            <DeleteIcon sx={{ color: "red" }} />
-                          </IconButton>
-                        </Tooltip>
-                      </>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Menu
-          id="add-weapons-menu"
-          anchorEl={addWeaponMenuAnchorEl}
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "left" }}
-          open={openAddWeaponMenu}
-          onClose={handleCloseAddWeaponMenu}
-          slotProps={{
-            root: { sx: { ".MuiList-root": { padding: 0 } } },
-            list: {
-              "aria-labelledby": "add-weapons-button",
-            },
-          }}
-        >
-          {unitDbContext.getWeaponDb().map((weapon) => (
-            <MenuItem
-              key={weapon.className}
-              onClick={() => {
-                _handleAddWeapon(weapon.className);
-                handleCloseAddWeaponMenu();
-              }}
-              sx={{ borderRadius: 1 }}
-            >
-              {weapon.className}
-            </MenuItem>
-          ))}
-        </Menu>
-        <QuantitySlider
-          open={openLaunchWeaponMenu}
-          anchorEl={launchWeaponMenuAnchorEl}
-          min={currentWeaponLaunchParams.weaponMaxQuantity > 0 ? 1 : 0}
-          max={currentWeaponLaunchParams.weaponMaxQuantity}
-          startValue={1}
-          handleCloseOnMap={handleCloseLaunchWeaponMenu}
-          handleConfirm={_handleAircraftAttack}
-        />
-      </>
-    );
-  };
-
   const defaultCardActions = (
     <Stack spacing={0.5} direction="column" onMouseLeave={handleClose}>
       <ListItemButton onClick={_handleMoveAircraft}>
@@ -798,7 +565,16 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         <CardContent sx={{ pt: 0 }}>
           {cardContentContext === "default" && aircraftDataContent()}
           {cardContentContext === "editing" && editingContent()}
-          {cardContentContext === "weapons" && weaponsContent()}
+          {cardContentContext === "weapons" && (
+            <WeaponTable
+              unitWithWeapon={props.aircraft}
+              handleAddWeapon={props.handleAddWeapon}
+              handleDeleteWeapon={props.handleDeleteWeapon}
+              handleUpdateWeaponQuantity={props.handleUpdateWeaponQuantity}
+              handleUnitAttack={props.handleAircraftAttack}
+              handleCloseOnMap={props.handleCloseOnMap}
+            />
+          )}
         </CardContent>
         {cardContentContext === "editing" && editingCardActions}
         {cardContentContext === "weapons" && weaponsCardActions}
