@@ -8,9 +8,9 @@ export const AircraftDb: IAircraftModel[] = [
   // fuel rates are generated with AI - use with a grain of salt.
   {
     className: "F-35A Lightning II",
-    speed: 1200,
+    speed: 1043,
     maxFuel: 18498,
-    fuelRate: 1000,
+    fuelRate: 6700,
     range: 1350,
     dataSource: {
       speedSrc:
@@ -22,17 +22,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "KC-135R Stratotanker",
-    speed: 530,
+    speed: 461,
     maxFuel: 200000,
-    fuelRate: 5000,
+    fuelRate: 33500,
     range: 1303,
     dataSource: {
       speedSrc:
@@ -44,17 +44,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "A-10C Thunderbolt II",
-    speed: 420,
+    speed: 366,
     maxFuel: 11000,
-    fuelRate: 1000,
+    fuelRate: 6700,
     range: 695,
     dataSource: {
       speedSrc:
@@ -66,17 +66,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "B-2 Spirit",
-    speed: 650,
+    speed: 565,
     maxFuel: 166999,
-    fuelRate: 5000,
+    fuelRate: 33500,
     range: 6000,
     dataSource: {
       speedSrc:
@@ -88,17 +88,17 @@ export const AircraftDb: IAircraftModel[] = [
         "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "F-22 Raptor",
-    speed: 1500,
+    speed: 1303,
     maxFuel: 18000,
-    fuelRate: 1000,
+    fuelRate: 6700,
     range: 1600,
     dataSource: {
       speedSrc:
@@ -110,17 +110,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "C-130 Hercules",
-    speed: 350,
+    speed: 304,
     maxFuel: 61360,
-    fuelRate: 5000,
+    fuelRate: 33500,
     range: 1700,
     dataSource: {
       speedSrc:
@@ -131,17 +131,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "C-17 Globemaster III",
-    speed: 570,
+    speed: 496,
     maxFuel: 181054,
-    fuelRate: 5000,
+    fuelRate: 33500,
     range: 2785,
     dataSource: {
       speedSrc:
@@ -152,17 +152,17 @@ export const AircraftDb: IAircraftModel[] = [
         "Global with in-flight refueling, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "F-16 Fighting Falcon",
-    speed: 1500,
+    speed: 1303,
     maxFuel: 12000,
-    fuelRate: 1000,
+    fuelRate: 6700,
     range: 1740,
     dataSource: {
       speedSrc:
@@ -174,17 +174,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "F-15 Eagle",
-    speed: 1875,
+    speed: 1629,
     maxFuel: 36200,
-    fuelRate: 1000,
+    fuelRate: 6700,
     range: 3000,
     dataSource: {
       speedSrc:
@@ -196,17 +196,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "F/A-18 Hornet",
-    speed: 1381,
+    speed: 1201,
     maxFuel: 14400,
-    fuelRate: 1000,
+    fuelRate: 6700,
     range: 1275,
     dataSource: {
       speedSrc:
@@ -217,17 +217,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "B-52 Stratofortress",
-    speed: 650,
+    speed: 565,
     maxFuel: 312197,
-    fuelRate: 5000,
+    fuelRate: 33500,
     range: 8800,
     dataSource: {
       speedSrc:
@@ -239,17 +239,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "F-4 Phantom II",
-    speed: 1400,
+    speed: 1217,
     maxFuel: 13890,
-    fuelRate: 1000,
+    fuelRate: 6700,
     range: 1750,
     dataSource: {
       speedSrc:
@@ -260,17 +260,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "B-1B Lancer",
-    speed: 900,
+    speed: 782,
     maxFuel: 265274,
-    fuelRate: 5000,
+    fuelRate: 33500,
     range: 5100,
     dataSource: {
       speedSrc:
@@ -282,17 +282,17 @@ export const AircraftDb: IAircraftModel[] = [
         "intercontinental, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "C-12 Huron",
-    speed: 284,
+    speed: 246,
     maxFuel: 4502,
-    fuelRate: 300,
+    fuelRate: 2010,
     range: 1450,
     dataSource: {
       speedSrc:
@@ -304,17 +304,17 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
   {
     className: "F-14 Tomcat",
-    speed: 1544,
+    speed: 1341,
     maxFuel: 16200,
-    fuelRate: 1000,
+    fuelRate: 6700,
     range: 2085,
     dataSource: {
       speedSrc:
@@ -325,9 +325,9 @@ export const AircraftDb: IAircraftModel[] = [
         "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html",
     },
     units: {
-      speedUnit: "mph",
+      speedUnit: "knots",
       maxFuelUnit: "lbs",
-      fuelRateUnit: "gallons/hour",
+      fuelRateUnit: "lbs/hr",
       rangeUnit: "nm",
     },
   },
@@ -690,42 +690,42 @@ export const ShipDb: IShipModel[] = [
   // TODO: Add additional data fields for Ships in the database (e.g dataSource: {...}, units: {...})
   {
     className: "Aircraft Carrier",
-    speed: 35, // mph
+    speed: 30.4, // knots
     maxFuel: 25200000, // lbs
     fuelRate: 1000000, // lbs/hr
     range: 8000, // NM
   },
   {
     className: "Destroyer",
-    speed: 40, // mph
+    speed: 34.8, // knots
     maxFuel: 3500000, // lbs
     fuelRate: 100000, // lbs/hr
     range: 5000, // NM
   },
   {
     className: "Frigate",
-    speed: 35, // mph
+    speed: 30.4, // knots
     maxFuel: 2800000, // lbs
     fuelRate: 80000, // lbs/hr
     range: 4500, // NM
   },
   {
     className: "Corvette",
-    speed: 32, // mph
+    speed: 27.8, // knots
     maxFuel: 1400000, // lbs
     fuelRate: 60000, // lbs/hr
     range: 3500, // NM
   },
   {
     className: "Amphibious Assault Ship",
-    speed: 25, // mph
+    speed: 21.7, // knots
     maxFuel: 8400000, // lbs
     fuelRate: 200000, // lbs/hr
     range: 6000, // NM
   },
   {
     className: "Patrol Boat",
-    speed: 40, // mph
+    speed: 34.8, // knots
     maxFuel: 350000, // lbs
     fuelRate: 30000, // lbs/hr
     range: 1500, // NM
@@ -736,9 +736,9 @@ export const WeaponDb: IWeaponModel[] = [
   // Air-to-Air / Air-to-Ground Missiles and Cruise Missiles
   {
     className: "AIM-120 AMRAAM",
-    speed: 2600,
-    maxFuel: 480,
-    fuelRate: 350,
+    speed: 2600, // knots
+    maxFuel: 480, // lbs
+    fuelRate: 350, // lbs/hr
     lethality: 0.65,
   },
   {

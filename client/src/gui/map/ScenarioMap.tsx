@@ -37,6 +37,7 @@ import AirbaseCard from "@/gui/map/feature/AirbaseCard";
 import AircraftCard from "@/gui/map/feature/AircraftCard";
 import FacilityCard from "@/gui/map/feature/FacilityCard";
 import ShipCard from "@/gui/map/feature/ShipCard";
+import WeaponCard from "@/gui/map/feature/WeaponCard";
 import BaseMapLayers from "@/gui/map/mapLayers/BaseMapLayers";
 import { routeDrawLineStyle } from "@/gui/map/mapLayers/FeatureLayerStyles";
 import {
@@ -65,7 +66,6 @@ import SideEditor from "@/gui/map/toolbar/SideEditor";
 import { useAuth0 } from "@auth0/auth0-react";
 import MapContextMenu from "@/gui/map/MapContextMenu";
 import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
-import WeaponCard from "./feature/WeaponCard";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -362,8 +362,6 @@ export default function ScenarioMap({
     refreshAllLayers();
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
     loadFeatureEntitiesState();
-
-    changeCursorType();
 
     return () => {
       if (!theMap) return;
@@ -686,9 +684,9 @@ export default function ScenarioMap({
       addAircraft(
         coordinates,
         aircraftTemplate?.className,
-        aircraftTemplate?.speed ? aircraftTemplate?.speed / 1.151 : undefined, // because of data in db, need to convert mph to kts
+        aircraftTemplate?.speed,
         aircraftTemplate?.maxFuel,
-        aircraftTemplate?.fuelRate ? aircraftTemplate?.fuelRate * 8 : undefined, // because of data in db, need to convert gal/hr to lbs/hr
+        aircraftTemplate?.fuelRate,
         aircraftTemplate?.range
       );
       game.addingAircraft = false;
@@ -715,9 +713,9 @@ export default function ScenarioMap({
       addShip(
         coordinates,
         shipTemplate?.className,
-        shipTemplate?.speed ? shipTemplate?.speed / 1.151 : undefined, // because of data in db, need to convert mph to kts
+        shipTemplate?.speed,
         shipTemplate?.maxFuel,
-        shipTemplate?.fuelRate, // in lbs/hr
+        shipTemplate?.fuelRate,
         shipTemplate?.range
       );
       game.addingShip = false;
