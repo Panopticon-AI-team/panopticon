@@ -139,7 +139,7 @@ export default function WeaponTable(props: Readonly<WeaponTableProps>) {
         component={Paper}
         sx={{
           width: "100%",
-          minWidth: 420,
+          minWidth: 500,
           backgroundColor: "transparent",
           boxShadow: "none",
         }}
@@ -158,8 +158,16 @@ export default function WeaponTable(props: Readonly<WeaponTableProps>) {
               <TableCell
                 component="th"
                 scope="row"
+                align="right"
+                sx={{ ...tableKeyCellStyle, minWidth: "6em" }}
+              >
+                Range
+              </TableCell>
+              <TableCell
+                component="th"
+                scope="row"
                 align="center"
-                sx={{ ...tableKeyCellStyle, minWidth: "10em" }}
+                sx={{ ...tableKeyCellStyle, minWidth: "8em" }}
               >
                 Quantity
               </TableCell>
@@ -200,6 +208,9 @@ export default function WeaponTable(props: Readonly<WeaponTableProps>) {
                 >
                   <TableCell align="right" sx={tableValueCellStyle}>
                     {weapon.className}
+                  </TableCell>
+                  <TableCell align="right" sx={tableValueCellStyle}>
+                    {weapon.getEngagementRange().toFixed(0)} NM
                   </TableCell>
                   <TableCell align="center" sx={tableValueCellStyle}>
                     <>
