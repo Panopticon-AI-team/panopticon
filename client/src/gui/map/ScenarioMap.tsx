@@ -364,7 +364,12 @@ export default function ScenarioMap({
     };
   }, []);
 
-  theMap.on("click", (event) => handleMapClick(event));
+  theMap.on("click", (event) => {
+    if (game.selectingTarget) {
+      event.stopPropagation();
+    }
+    handleMapClick(event);
+  });
 
   function changeCursorType(cursorType: string = "") {
     if (theMap) {
