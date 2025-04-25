@@ -185,7 +185,7 @@ export default function ReferencePointCard(
   };
 
   const defaultCardActions = (
-    <Stack spacing={0.5} direction="column">
+    <Stack spacing={0.5} direction="column" onMouseLeave={handleClose}>
       <ListItemButton onClick={_handleTeleportReferencePoint}>
         <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
       </ListItemButton>

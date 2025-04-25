@@ -205,7 +205,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
   };
 
   const defaultCardActions = (
-    <Stack spacing={0.5} direction="column">
+    <Stack spacing={0.5} direction="column" onMouseLeave={handleClose}>
       <ListItemButton onClick={_handleAddAircraft}>
         <AddIcon
           sx={{
