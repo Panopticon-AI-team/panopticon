@@ -5,6 +5,7 @@ import {
   Menu,
   MenuItem,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -12,6 +13,7 @@ import {
   TableHead,
   TableRow,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import QuantitySlider from "@/gui/map/feature/shared/QuantitySlider";
 import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
@@ -277,16 +279,37 @@ export default function WeaponTable(props: Readonly<WeaponTableProps>) {
         }}
       >
         {unitDbContext.getWeaponDb().map((weapon) => (
-          <MenuItem
+          <Tooltip
             key={weapon.className}
-            onClick={() => {
-              _handleAddWeapon(weapon.className);
-              handleCloseAddWeaponMenu();
-            }}
-            sx={{ borderRadius: 1 }}
+            placement="right"
+            arrow
+            title={
+              <Stack direction={"column"} spacing={0.1}>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Speed: {weapon.speed.toFixed(0)} KTS
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Max Fuel: {weapon.maxFuel.toFixed(2)} lbs
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Fuel Consumption: {weapon.fuelRate.toFixed(2)} lbs/hr
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Lethality: {(weapon.lethality * 100).toFixed(2)}%
+                </Typography>
+              </Stack>
+            }
           >
-            {weapon.className}
-          </MenuItem>
+            <MenuItem
+              onClick={() => {
+                _handleAddWeapon(weapon.className);
+                handleCloseAddWeaponMenu();
+              }}
+              sx={{ borderRadius: 1 }}
+            >
+              {weapon.className}
+            </MenuItem>
+          </Tooltip>
         ))}
       </Menu>
       <QuantitySlider
