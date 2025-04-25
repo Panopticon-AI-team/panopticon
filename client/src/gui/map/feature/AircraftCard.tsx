@@ -51,7 +51,6 @@ interface AircraftCardProps {
     aircraftName: string,
     aircraftClassName: string,
     aircraftSpeed: number,
-    aircraftWeaponQuantity: number,
     aircraftCurrentFuel: number,
     aircraftCurrentFuelRate: number
   ) => void;
@@ -89,7 +88,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     name: props.aircraft.name,
     className: props.aircraft.className,
     speed: props.aircraft.speed,
-    weaponQuantity: props.aircraft.getTotalWeaponQuantity(),
     currentFuel: props.aircraft.currentFuel,
     currentFuelRate: props.aircraft.fuelRate,
   });
@@ -142,7 +140,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
       tempEditData.name,
       tempEditData.className,
       tempEditData.speed,
-      tempEditData.weaponQuantity,
       tempEditData.currentFuel,
       tempEditData.currentFuelRate
     );
@@ -164,12 +161,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
       case "aircraft-speed-text-field": {
         const newSpeed = parseInt(event.target.value);
         if (newSpeed) setTempEditData({ ...tempEditData, speed: newSpeed });
-        break;
-      }
-      case "aircraft-weapon-quantity-text-field": {
-        const newWeaponCount = parseInt(event.target.value);
-        if (newWeaponCount)
-          setTempEditData({ ...tempEditData, weaponQuantity: newWeaponCount });
         break;
       }
       case "aircraft-current-fuel-text-field": {
@@ -286,14 +277,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             </TableRow>
             <TableRow sx={tableRowStyle}>
               <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
-                Weapon Quantity:
-              </TableCell>
-              <TableCell align="right" sx={tableValueCellStyle}>
-                {props.aircraft.getTotalWeaponQuantity()}
-              </TableCell>
-            </TableRow>
-            <TableRow sx={tableRowStyle}>
-              <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
                 Mission:
               </TableCell>
               <TableCell
@@ -379,19 +362,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           />
           <TextField
             autoComplete="off"
-            id="aircraft-weapon-quantity-text-field"
-            label="Weapon Quantity"
-            defaultValue={props.aircraft.getTotalWeaponQuantity().toString()}
-            onChange={_handleTextFieldChange}
-            sx={inputStyle}
-            slotProps={{
-              inputLabel: {
-                ...inputLabelStyle,
-              },
-            }}
-          />
-          <TextField
-            autoComplete="off"
             id="aircraft-current-fuel-text-field"
             label="Current Fuel"
             defaultValue={props.aircraft.currentFuel.toFixed(0)}
@@ -430,10 +400,6 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           }}
         />
         Plot Course
-      </ListItemButton>
-      <ListItemButton onClick={_handleAircraftAttack}>
-        <RocketLaunchIcon sx={{ mr: 0.5 }} />
-        Attack
       </ListItemButton>
       <ListItemButton onClick={_handleAircraftRtb}>
         <HomeIcon sx={{ mr: 0.5 }} /> Return To Base

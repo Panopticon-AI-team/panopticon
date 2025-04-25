@@ -155,23 +155,14 @@ export default class Scenario {
     aircraftName: string,
     aircraftClassName: string,
     aircraftSpeed: number,
-    aircraftWeaponQuantity: number,
     aircraftCurrentFuel: number,
-    aircraftFuelRate: number,
-    sampleWeapon: Weapon
+    aircraftFuelRate: number
   ) {
     const aircraft = this.getAircraft(aircraftId);
     if (aircraft) {
       aircraft.name = aircraftName;
       aircraft.className = aircraftClassName;
       aircraft.speed = aircraftSpeed;
-      if (aircraft.weapons.length < 1) {
-        aircraft.weapons = [sampleWeapon];
-      } else {
-        aircraft.weapons.forEach((weapon) => {
-          weapon.currentQuantity = aircraftWeaponQuantity;
-        });
-      }
       aircraft.currentFuel = aircraftCurrentFuel;
       aircraft.fuelRate = aircraftFuelRate;
     }
