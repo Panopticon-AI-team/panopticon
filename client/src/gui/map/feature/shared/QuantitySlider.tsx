@@ -16,6 +16,7 @@ interface QuantitySliderProps {
   min: number;
   max: number;
   startValue: number;
+  title?: string;
   handleCloseOnMap: () => void;
   handleConfirm: (value: number) => void;
 }
@@ -26,6 +27,7 @@ const QuantitySlider: React.FC<QuantitySliderProps> = ({
   min,
   max,
   startValue,
+  title,
   handleCloseOnMap,
   handleConfirm,
 }) => {
@@ -62,7 +64,7 @@ const QuantitySlider: React.FC<QuantitySliderProps> = ({
               component="div"
               sx={{ color: "white", textAlign: "center" }}
             >
-              How many to launch?
+              {title ?? "How many to launch?"}
             </Typography>
           }
         />
