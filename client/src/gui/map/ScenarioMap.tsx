@@ -356,6 +356,8 @@ export default function ScenarioMap({
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
     loadFeatureEntitiesState();
 
+    changeCursorType();
+
     return () => {
       if (!theMap) return;
       theMap.setTarget();
@@ -363,6 +365,12 @@ export default function ScenarioMap({
   }, []);
 
   theMap.on("click", (event) => handleMapClick(event));
+
+  function changeCursorType(cursorType: string = "") {
+    if (theMap) {
+      theMap.getViewport().style.cursor = cursorType;
+    }
+  }
 
   function getSelectedFeatureType(featureId: string): string {
     let featureType = "";
@@ -1362,6 +1370,7 @@ export default function ScenarioMap({
     setCurrentGameStatusToContext(
       game.scenarioPaused ? "Scenario paused" : "Scenario playing"
     );
+    changeCursorType("");
   }
 
   function handleAircraftAttack(
@@ -1376,6 +1385,7 @@ export default function ScenarioMap({
       currentWeaponQuantity: weaponQuantity,
     };
     setCurrentGameStatusToContext("Select an enemy target to attack");
+    changeCursorType("crosshair");
   }
 
   function handleShipAttack(shipId: string) {
