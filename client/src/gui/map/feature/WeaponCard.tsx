@@ -103,6 +103,14 @@ export default function WeaponCard(props: Readonly<WeaponCardProps>) {
           </TableRow>
           <TableRow sx={tableRowStyle}>
             <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
+              Speed:
+            </TableCell>
+            <TableCell align="right" sx={tableValueCellStyle}>
+              {props.weapon.speed.toFixed(0)} KTS
+            </TableCell>
+          </TableRow>
+          <TableRow sx={tableRowStyle}>
+            <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
               Altitude:
             </TableCell>
             <TableCell align="right" sx={tableValueCellStyle}>
