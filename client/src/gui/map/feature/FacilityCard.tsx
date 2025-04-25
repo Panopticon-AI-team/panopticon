@@ -28,6 +28,7 @@ import {
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
+import { MoreVert } from "@mui/icons-material";
 
 interface FacilityCardProps {
   facility: Facility;
@@ -319,11 +320,11 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                   </Tooltip>
                   <Tooltip title={`Delete ${props.facility.name}`}>
                     <IconButton onClick={_handleDeleteFacility}>
-                      <DeleteIcon sx={{ color: "white" }} />
+                      <DeleteIcon sx={{ color: "red" }} />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <Button
+                    <IconButton
                       id="facility-feature-actions-button"
                       aria-controls={
                         open ? "facility-feature-actions-menu" : undefined
@@ -331,12 +332,9 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
-                      variant="outlined"
-                      size="small"
-                      color="inherit"
                     >
-                      Actions
-                    </Button>
+                      <MoreVert sx={{ color: "white" }} />
+                    </IconButton>
                   </Tooltip>
                   <Menu
                     id="facility-feature-actions-menu"

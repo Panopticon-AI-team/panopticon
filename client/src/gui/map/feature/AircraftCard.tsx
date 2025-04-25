@@ -32,6 +32,7 @@ import { Menu } from "@/gui/shared/ui/MuiComponents";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { colorPalette } from "@/utils/constants";
+import { MoreVert } from "@mui/icons-material";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -494,11 +495,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                   </Tooltip>
                   <Tooltip title={`Delete ${props.aircraft.name}`}>
                     <IconButton onClick={_handleDeleteAircraft}>
-                      <DeleteIcon sx={{ color: "white" }} />
+                      <DeleteIcon sx={{ color: "red" }} />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <Button
+                    <IconButton
                       id="aircraft-feature-actions-button"
                       aria-controls={
                         open ? "aircraft-feature-actions-menu" : undefined
@@ -506,12 +507,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
-                      variant="outlined"
-                      size="small"
-                      color="inherit"
                     >
-                      Actions
-                    </Button>
+                      <MoreVert sx={{ color: "white" }} />
+                    </IconButton>
                   </Tooltip>
                   <Menu
                     id="aircraft-feature-actions-menu"

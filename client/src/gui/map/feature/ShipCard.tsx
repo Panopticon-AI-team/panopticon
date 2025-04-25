@@ -32,6 +32,7 @@ import {
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
+import { MoreVert } from "@mui/icons-material";
 
 interface ShipCardProps {
   ship: Ship;
@@ -440,11 +441,11 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
                   </Tooltip>
                   <Tooltip title={`Delete ${props.ship.name}`}>
                     <IconButton onClick={_handleDeleteShip}>
-                      <DeleteIcon sx={{ color: "white" }} />
+                      <DeleteIcon sx={{ color: "red" }} />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <Button
+                    <IconButton
                       id="ship-feature-actions-button"
                       aria-controls={
                         open ? "ship-feature-actions-menu" : undefined
@@ -452,12 +453,9 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
-                      variant="outlined"
-                      size="small"
-                      color="inherit"
                     >
-                      Actions
-                    </Button>
+                      <MoreVert sx={{ color: "white" }} />
+                    </IconButton>
                   </Tooltip>
                   <Menu
                     id="ship-feature-actions-menu"

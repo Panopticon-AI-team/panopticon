@@ -30,6 +30,7 @@ import {
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
+import { MoreVert } from "@mui/icons-material";
 
 interface AirbaseCardProps {
   airbase: Airbase;
@@ -270,11 +271,11 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
                   </Tooltip>
                   <Tooltip title={`Delete ${props.airbase.name}`}>
                     <IconButton onClick={_handleDeleteAirbase}>
-                      <DeleteIcon sx={{ color: "white" }} />
+                      <DeleteIcon sx={{ color: "red" }} />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <Button
+                    <IconButton
                       id="airbase-feature-actions-button"
                       aria-controls={
                         open ? "airbase-feature-actions-menu" : undefined
@@ -282,12 +283,9 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
-                      variant="outlined"
-                      size="small"
-                      color="inherit"
                     >
-                      Actions
-                    </Button>
+                      <MoreVert sx={{ color: "white" }} />
+                    </IconButton>
                   </Tooltip>
                   <Menu
                     id="airbase-feature-actions-menu"
