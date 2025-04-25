@@ -54,7 +54,7 @@ interface WeaponTableProps {
     weaponId: string,
     increment: number
   ) => Weapon[];
-  handleUnitAttack: (
+  handleUnitAttack?: (
     attackerId: string,
     weaponId: string,
     weaponQuantity: number
@@ -104,6 +104,7 @@ export default function WeaponTable(props: Readonly<WeaponTableProps>) {
   };
 
   const _handleUnitAttack = (weaponQuantity: number) => {
+    if (!props.handleUnitAttack) return;
     props.handleCloseOnMap();
     props.handleUnitAttack(
       props.unitWithWeapon.id,
@@ -239,17 +240,19 @@ export default function WeaponTable(props: Readonly<WeaponTableProps>) {
                   </TableCell>
                   <TableCell align="right" sx={tableValueCellStyle}>
                     <>
-                      <Tooltip title={`Launch Weapon`}>
-                        <IconButton
-                          onClick={(
-                            event: React.MouseEvent<HTMLButtonElement>
-                          ) => {
-                            handleClickLaunchWeaponButton(event, weapon.id);
-                          }}
-                        >
-                          <RocketLaunch sx={{ color: "white" }} />
-                        </IconButton>
-                      </Tooltip>
+                      {props.handleUnitAttack && (
+                        <Tooltip title={`Launch Weapon`}>
+                          <IconButton
+                            onClick={(
+                              event: React.MouseEvent<HTMLButtonElement>
+                            ) => {
+                              handleClickLaunchWeaponButton(event, weapon.id);
+                            }}
+                          >
+                            <RocketLaunch sx={{ color: "white" }} />
+                          </IconButton>
+                        </Tooltip>
+                      )}
                       <Tooltip title={`Delete Weapon`}>
                         <IconButton
                           onClick={() => _handleDeleteWeapon(weapon.id)}

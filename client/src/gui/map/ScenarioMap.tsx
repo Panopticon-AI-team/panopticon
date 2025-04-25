@@ -1508,13 +1508,49 @@ export default function ScenarioMap({
     return game.currentScenario.deleteWeaponFromAircraft(aircraftId, weaponId);
   }
 
-  function handleUpdateWeaponQuantity(
+  function handleUpdateAircraftWeaponQuantity(
     aircraftId: string,
     weaponId: string,
     increment: number
   ) {
-    return game.currentScenario.updateWeaponQuantity(
+    return game.currentScenario.updateAircraftWeaponQuantity(
       aircraftId,
+      weaponId,
+      increment
+    );
+  }
+
+  function handleAddWeaponToFacility(
+    facilityId: string,
+    weaponClassName: string
+  ) {
+    const weaponTemplate = unitDbContext
+      .getWeaponDb()
+      .find((weapon) => weapon.className === weaponClassName);
+    return game.currentScenario.addWeaponToFacility(
+      facilityId,
+      weaponTemplate?.className,
+      weaponTemplate?.speed, // in knots
+      weaponTemplate?.maxFuel,
+      weaponTemplate?.fuelRate, // in lbs/hr
+      weaponTemplate?.lethality
+    );
+  }
+
+  function handleDeleteWeaponFromFacility(
+    facilityId: string,
+    weaponId: string
+  ) {
+    return game.currentScenario.deleteWeaponFromFacility(facilityId, weaponId);
+  }
+
+  function handleUpdateFacilityWeaponQuantity(
+    facilityId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    return game.currentScenario.updateFacilityWeaponQuantity(
+      facilityId,
       weaponId,
       increment
     );
@@ -1777,15 +1813,13 @@ export default function ScenarioMap({
     facilityId: string,
     facilityName: string,
     facilityClassName: string,
-    facilityRange: number,
-    facilityWeaponQuantity: number
+    facilityRange: number
   ) {
     game.currentScenario.updateFacility(
       facilityId,
       facilityName,
       facilityClassName,
-      facilityRange,
-      facilityWeaponQuantity
+      facilityRange
     );
     threatRangeLayer.updateFacilityRangeFeature(facilityId, facilityRange);
     featureLabelLayer.updateFeatureLabelFeature(facilityId, facilityName);
@@ -2179,6 +2213,9 @@ export default function ScenarioMap({
             handleTeleportUnit={queueUnitForTeleport}
             handleDeleteFacility={removeFacility}
             handleEditFacility={updateFacility}
+            handleAddWeapon={handleAddWeaponToFacility}
+            handleDeleteWeapon={handleDeleteWeaponFromFacility}
+            handleUpdateWeaponQuantity={handleUpdateFacilityWeaponQuantity}
             anchorPositionTop={openFacilityCard.top}
             anchorPositionLeft={openFacilityCard.left}
             handleCloseOnMap={() => {
@@ -2222,7 +2259,7 @@ export default function ScenarioMap({
             handleTeleportUnit={queueUnitForTeleport}
             handleAddWeapon={handleAddWeaponToAircraft}
             handleDeleteWeapon={handleDeleteWeaponFromAircraft}
-            handleUpdateWeaponQuantity={handleUpdateWeaponQuantity}
+            handleUpdateWeaponQuantity={handleUpdateAircraftWeaponQuantity}
             anchorPositionTop={openAircraftCard.top}
             anchorPositionLeft={openAircraftCard.left}
             handleCloseOnMap={() => {

@@ -401,7 +401,7 @@ export default class Game {
       altitude: 0.0,
       range: range ?? 250,
       sideColor: this.currentScenario.getSideColor(this.currentSideId),
-      weapons: [this.getSampleWeapon(30, 0.1)],
+      weapons: [],
     });
     this.currentScenario.facilities.push(facility);
     return facility;

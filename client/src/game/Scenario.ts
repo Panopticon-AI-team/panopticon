@@ -166,7 +166,7 @@ export default class Scenario {
     return aircraftWeapons;
   }
 
-  updateWeaponQuantity(
+  updateAircraftWeaponQuantity(
     aircraftId: string,
     weaponId: string,
     increment: number
@@ -239,6 +239,94 @@ export default class Scenario {
     return aircraftWeapons;
   }
 
+  deleteWeaponFromFacility(facilityId: string, weaponId: string): Weapon[] {
+    const facility = this.getFacility(facilityId);
+    let facilityWeapons: Weapon[] = [];
+    if (facility) {
+      const weaponIndex = facility.weapons.findIndex(
+        (weapon) => weapon.id === weaponId
+      );
+      if (weaponIndex !== -1) {
+        facility.weapons.splice(weaponIndex, 1);
+      }
+      facilityWeapons = facility.weapons;
+    }
+    return facilityWeapons;
+  }
+
+  updateFacilityWeaponQuantity(
+    facilityId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    const facility = this.getFacility(facilityId);
+    let facilityWeapons: Weapon[] = [];
+    if (facility) {
+      const weapon = facility.weapons.find((weapon) => weapon.id === weaponId);
+      if (weapon) {
+        weapon.currentQuantity += increment;
+        if (weapon.currentQuantity < 0) {
+          weapon.currentQuantity = 0;
+        }
+      }
+      facilityWeapons = facility.weapons;
+    }
+    return facilityWeapons;
+  }
+
+  addWeaponToFacility(
+    facilityId: string,
+    weaponClassName?: string,
+    weaponSpeed?: number,
+    weaponMaxFuel?: number,
+    weaponFuelRate?: number,
+    weaponLethality?: number
+  ): Weapon[] {
+    const facility = this.getFacility(facilityId);
+    let facilityWeapons: Weapon[] = [];
+    if (facility) {
+      facilityWeapons = facility.weapons;
+      if (
+        !(
+          weaponClassName &&
+          weaponSpeed &&
+          weaponMaxFuel &&
+          weaponFuelRate &&
+          weaponLethality
+        )
+      ) {
+        return facilityWeapons;
+      }
+      if (
+        facility.weapons.find((weapon) => weapon.className === weaponClassName)
+      ) {
+        return facilityWeapons;
+      }
+      const weapon = new Weapon({
+        id: randomUUID(),
+        name: weaponClassName,
+        sideId: facility.sideId,
+        className: weaponClassName,
+        latitude: 0.0,
+        longitude: 0.0,
+        altitude: 10000.0,
+        heading: 90.0,
+        speed: weaponSpeed,
+        currentFuel: weaponMaxFuel,
+        maxFuel: weaponMaxFuel,
+        fuelRate: weaponFuelRate,
+        range: 100,
+        sideColor: facility.sideColor,
+        targetId: null,
+        lethality: weaponLethality,
+        maxQuantity: 1,
+        currentQuantity: 1,
+      });
+      facilityWeapons.push(weapon);
+    }
+    return facilityWeapons;
+  }
+
   updateAircraft(
     aircraftId: string,
     aircraftName: string,
@@ -261,17 +349,13 @@ export default class Scenario {
     facilityId: string,
     facilityName: string,
     facilityClassName: string,
-    facilityRange: number,
-    facilityWeaponQuantity: number
+    facilityRange: number
   ) {
     const facility = this.getFacility(facilityId);
     if (facility) {
       facility.name = facilityName;
       facility.className = facilityClassName;
       facility.range = facilityRange;
-      facility.weapons.forEach((weapon) => {
-        weapon.currentQuantity = facilityWeaponQuantity;
-      });
     }
   }
 
