@@ -662,9 +662,9 @@ export default function ScenarioMap({
       addAircraft(
         coordinates,
         aircraftTemplate?.className,
-        aircraftTemplate?.speed ? aircraftTemplate?.speed / 1.151 : undefined,
+        aircraftTemplate?.speed ? aircraftTemplate?.speed / 1.151 : undefined, // because of data in db, need to convert mph to kts
         aircraftTemplate?.maxFuel,
-        aircraftTemplate?.fuelRate ? aircraftTemplate?.fuelRate * 8 : undefined,
+        aircraftTemplate?.fuelRate ? aircraftTemplate?.fuelRate * 8 : undefined, // because of data in db, need to convert gal/hr to lbs/hr
         aircraftTemplate?.range
       );
       game.addingAircraft = false;
@@ -691,9 +691,9 @@ export default function ScenarioMap({
       addShip(
         coordinates,
         shipTemplate?.className,
-        shipTemplate?.speed ? shipTemplate?.speed / 1.151 : undefined,
+        shipTemplate?.speed ? shipTemplate?.speed / 1.151 : undefined, // because of data in db, need to convert mph to kts
         shipTemplate?.maxFuel,
-        shipTemplate?.fuelRate ? shipTemplate?.fuelRate * 8 : undefined,
+        shipTemplate?.fuelRate, // in lbs/hr
         shipTemplate?.range
       );
       game.addingShip = false;
@@ -1467,9 +1467,9 @@ export default function ScenarioMap({
     return game.currentScenario.addWeaponToAircraft(
       aircraftId,
       weaponTemplate?.className,
-      weaponTemplate?.speed ? weaponTemplate?.speed / 1.151 : undefined,
+      weaponTemplate?.speed, // in knots
       weaponTemplate?.maxFuel,
-      weaponTemplate?.fuelRate ? weaponTemplate?.fuelRate * 8 : undefined,
+      weaponTemplate?.fuelRate, // in lbs/hr
       weaponTemplate?.lethality
     );
   }
