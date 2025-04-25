@@ -10,7 +10,7 @@ import {
 } from "@/utils/mapFunctions";
 import {
   aircraftPursuit,
-  checkIfThreatIsWithinRange,
+  checkIfThreatIsWithinWeaponRange,
   checkTargetTrackedByCount,
   launchWeapon,
   routeAircraftToStrikePosition,
@@ -41,6 +41,12 @@ interface IMapView {
   currentCameraZoom: number;
 }
 
+interface IAttackParams {
+  currentAttackerId: string;
+  currentWeaponId: string;
+  currentWeaponQuantity: number;
+}
+
 export type Mission = PatrolMission | StrikeMission;
 
 export default class Game {
@@ -62,7 +68,11 @@ export default class Game {
   addingReferencePoint: boolean = false;
   addingShip: boolean = false;
   selectingTarget: boolean = false;
-  currentAttackerId: string = "";
+  currentAttackParams: IAttackParams = {
+    currentAttackerId: "",
+    currentWeaponId: "",
+    currentWeaponQuantity: 0,
+  };
   selectedUnitId: string = "";
   selectedUnitClassName: string | null = null;
   numberOfWaypoints: number = 50;
@@ -750,7 +760,13 @@ export default class Game {
     }
   }
 
-  handleAircraftAttack(aircraftId: string, targetId: string) {
+  handleAircraftAttack(
+    aircraftId: string,
+    targetId: string,
+    weaponId: string,
+    weaponQuantity: number
+  ) {
+    if (weaponQuantity <= 0) return;
     const target =
       this.currentScenario.getAircraft(targetId) ??
       this.currentScenario.getFacility(targetId) ??
@@ -758,14 +774,22 @@ export default class Game {
       this.currentScenario.getShip(targetId) ??
       this.currentScenario.getAirbase(targetId);
     const aircraft = this.currentScenario.getAircraft(aircraftId);
+    const weapon = aircraft?.weapons.find((weapon) => weapon.id === weaponId);
     if (
       target &&
       aircraft &&
+      weapon &&
       target?.sideId !== aircraft?.sideId &&
       target?.id !== aircraft?.id
     ) {
       this.recordHistory();
-      launchWeapon(this.currentScenario, aircraft, target);
+      launchWeapon(
+        this.currentScenario,
+        aircraft,
+        target,
+        weapon,
+        weaponQuantity
+      );
     }
   }
 
@@ -777,14 +801,16 @@ export default class Game {
       this.currentScenario.getShip(targetId) ??
       this.currentScenario.getAirbase(targetId);
     const ship = this.currentScenario.getShip(shipId);
+    const weapon = ship?.weapons[0];
     if (
       target &&
       ship &&
+      weapon &&
       target?.sideId !== ship?.sideId &&
       target?.id !== ship?.id
     ) {
       this.recordHistory();
-      launchWeapon(this.currentScenario, ship, target);
+      launchWeapon(this.currentScenario, ship, target, weapon, 1);
     }
   }
 
@@ -926,6 +952,31 @@ export default class Game {
       }),
     });
     savedScenario.aircraft.forEach((aircraft: Aircraft) => {
+      const aircraftWeapons: Weapon[] = aircraft.weapons?.map(
+        (weapon: Weapon) => {
+          return new Weapon({
+            id: weapon.id,
+            name: weapon.name,
+            sideId: weapon.sideId,
+            className: weapon.className,
+            latitude: weapon.latitude,
+            longitude: weapon.longitude,
+            altitude: weapon.altitude,
+            heading: weapon.heading,
+            speed: weapon.speed,
+            currentFuel: weapon.currentFuel,
+            maxFuel: weapon.maxFuel,
+            fuelRate: weapon.fuelRate,
+            range: weapon.range,
+            route: weapon.route,
+            targetId: weapon.targetId,
+            lethality: weapon.lethality,
+            maxQuantity: weapon.maxQuantity,
+            currentQuantity: weapon.currentQuantity,
+            sideColor: weapon.sideColor,
+          });
+        }
+      );
       const newAircraft = new Aircraft({
         id: aircraft.id,
         name: aircraft.name,
@@ -942,9 +993,7 @@ export default class Game {
         range: aircraft.range,
         route: aircraft.route,
         selected: aircraft.selected,
-        weapons: aircraft.weapons ?? [
-          this.getSampleWeapon(10, 0.25, aircraft.sideId),
-        ],
+        weapons: aircraftWeapons,
         homeBaseId: aircraft.homeBaseId,
         rtb: aircraft.rtb,
         targetId: aircraft.targetId ?? "",
@@ -955,6 +1004,31 @@ export default class Game {
     savedScenario.airbases.forEach((airbase: Airbase) => {
       const airbaseAircraft: Aircraft[] = [];
       airbase.aircraft.forEach((aircraft: Aircraft) => {
+        const aircraftWeapons: Weapon[] = aircraft.weapons?.map(
+          (weapon: Weapon) => {
+            return new Weapon({
+              id: weapon.id,
+              name: weapon.name,
+              sideId: weapon.sideId,
+              className: weapon.className,
+              latitude: weapon.latitude,
+              longitude: weapon.longitude,
+              altitude: weapon.altitude,
+              heading: weapon.heading,
+              speed: weapon.speed,
+              currentFuel: weapon.currentFuel,
+              maxFuel: weapon.maxFuel,
+              fuelRate: weapon.fuelRate,
+              range: weapon.range,
+              route: weapon.route,
+              targetId: weapon.targetId,
+              lethality: weapon.lethality,
+              maxQuantity: weapon.maxQuantity,
+              currentQuantity: weapon.currentQuantity,
+              sideColor: weapon.sideColor,
+            });
+          }
+        );
         const newAircraft = new Aircraft({
           id: aircraft.id,
           name: aircraft.name,
@@ -971,9 +1045,7 @@ export default class Game {
           range: aircraft.range,
           route: aircraft.route,
           selected: aircraft.selected,
-          weapons: aircraft.weapons ?? [
-            this.getSampleWeapon(10, 0.25, aircraft.sideId),
-          ],
+          weapons: aircraftWeapons,
           homeBaseId: aircraft.homeBaseId,
           rtb: aircraft.rtb,
           targetId: aircraft.targetId ?? "",
@@ -995,6 +1067,31 @@ export default class Game {
       loadedScenario.airbases.push(newAirbase);
     });
     savedScenario.facilities.forEach((facility: Facility) => {
+      const facilityWeapons: Weapon[] = facility.weapons?.map(
+        (weapon: Weapon) => {
+          return new Weapon({
+            id: weapon.id,
+            name: weapon.name,
+            sideId: weapon.sideId,
+            className: weapon.className,
+            latitude: weapon.latitude,
+            longitude: weapon.longitude,
+            altitude: weapon.altitude,
+            heading: weapon.heading,
+            speed: weapon.speed,
+            currentFuel: weapon.currentFuel,
+            maxFuel: weapon.maxFuel,
+            fuelRate: weapon.fuelRate,
+            range: weapon.range,
+            route: weapon.route,
+            targetId: weapon.targetId,
+            lethality: weapon.lethality,
+            maxQuantity: weapon.maxQuantity,
+            currentQuantity: weapon.currentQuantity,
+            sideColor: weapon.sideColor,
+          });
+        }
+      );
       const newFacility = new Facility({
         id: facility.id,
         name: facility.name,
@@ -1004,9 +1101,7 @@ export default class Game {
         longitude: facility.longitude,
         altitude: facility.altitude,
         range: facility.range,
-        weapons: facility.weapons ?? [
-          this.getSampleWeapon(30, 0.1, facility.sideId),
-        ],
+        weapons: facilityWeapons,
         sideColor: facility.sideColor,
       });
       loadedScenario.facilities.push(newFacility);
@@ -1038,6 +1133,31 @@ export default class Game {
     savedScenario.ships?.forEach((ship: Ship) => {
       const shipAircraft: Aircraft[] = [];
       ship.aircraft.forEach((aircraft: Aircraft) => {
+        const aircraftWeapons: Weapon[] = aircraft.weapons?.map(
+          (weapon: Weapon) => {
+            return new Weapon({
+              id: weapon.id,
+              name: weapon.name,
+              sideId: weapon.sideId,
+              className: weapon.className,
+              latitude: weapon.latitude,
+              longitude: weapon.longitude,
+              altitude: weapon.altitude,
+              heading: weapon.heading,
+              speed: weapon.speed,
+              currentFuel: weapon.currentFuel,
+              maxFuel: weapon.maxFuel,
+              fuelRate: weapon.fuelRate,
+              range: weapon.range,
+              route: weapon.route,
+              targetId: weapon.targetId,
+              lethality: weapon.lethality,
+              maxQuantity: weapon.maxQuantity,
+              currentQuantity: weapon.currentQuantity,
+              sideColor: weapon.sideColor,
+            });
+          }
+        );
         const newAircraft = new Aircraft({
           id: aircraft.id,
           name: aircraft.name,
@@ -1054,15 +1174,36 @@ export default class Game {
           range: aircraft.range,
           route: aircraft.route,
           selected: aircraft.selected,
-          weapons: aircraft.weapons ?? [
-            this.getSampleWeapon(10, 0.25, aircraft.sideId),
-          ],
+          weapons: aircraftWeapons,
           homeBaseId: aircraft.homeBaseId,
           rtb: aircraft.rtb,
           targetId: aircraft.targetId ?? "",
           sideColor: aircraft.sideColor,
         });
         shipAircraft.push(newAircraft);
+      });
+      const shipWeapons: Weapon[] = ship.weapons?.map((weapon: Weapon) => {
+        return new Weapon({
+          id: weapon.id,
+          name: weapon.name,
+          sideId: weapon.sideId,
+          className: weapon.className,
+          latitude: weapon.latitude,
+          longitude: weapon.longitude,
+          altitude: weapon.altitude,
+          heading: weapon.heading,
+          speed: weapon.speed,
+          currentFuel: weapon.currentFuel,
+          maxFuel: weapon.maxFuel,
+          fuelRate: weapon.fuelRate,
+          range: weapon.range,
+          route: weapon.route,
+          targetId: weapon.targetId,
+          lethality: weapon.lethality,
+          maxQuantity: weapon.maxQuantity,
+          currentQuantity: weapon.currentQuantity,
+          sideColor: weapon.sideColor,
+        });
       });
       const newShip = new Ship({
         id: ship.id,
@@ -1080,7 +1221,7 @@ export default class Game {
         range: ship.range,
         route: ship.route,
         sideColor: ship.sideColor,
-        weapons: ship.weapons ?? [this.getSampleWeapon(300, 0.15, ship.sideId)],
+        weapons: shipWeapons,
         aircraft: shipAircraft,
       });
       loadedScenario.ships.push(newShip);
@@ -1151,10 +1292,18 @@ export default class Game {
       this.currentScenario.aircraft.forEach((aircraft) => {
         if (this.currentScenario.isHostile(facility.sideId, aircraft.sideId)) {
           if (
-            checkIfThreatIsWithinRange(aircraft, facility) &&
+            checkIfThreatIsWithinWeaponRange(aircraft, facility) &&
             checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
           ) {
-            launchWeapon(this.currentScenario, facility, aircraft);
+            const facilityWeapon = facility.getWeaponWithHighestRange();
+            if (!facilityWeapon) return;
+            launchWeapon(
+              this.currentScenario,
+              facility,
+              aircraft,
+              facilityWeapon,
+              1
+            );
           }
         }
       });
@@ -1162,10 +1311,18 @@ export default class Game {
         if (this.currentScenario.isHostile(facility.sideId, weapon.sideId)) {
           if (
             weapon.targetId === facility.id &&
-            checkIfThreatIsWithinRange(weapon, facility) &&
+            checkIfThreatIsWithinWeaponRange(weapon, facility) &&
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
-            launchWeapon(this.currentScenario, facility, weapon);
+            const facilityWeapon = facility.getWeaponWithHighestRange();
+            if (!facilityWeapon) return;
+            launchWeapon(
+              this.currentScenario,
+              facility,
+              weapon,
+              facilityWeapon,
+              1
+            );
           }
         }
       });
@@ -1177,10 +1334,12 @@ export default class Game {
       this.currentScenario.aircraft.forEach((aircraft) => {
         if (this.currentScenario.isHostile(ship.sideId, aircraft.sideId)) {
           if (
-            checkIfThreatIsWithinRange(aircraft, ship) &&
+            checkIfThreatIsWithinWeaponRange(aircraft, ship) &&
             checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
           ) {
-            launchWeapon(this.currentScenario, ship, aircraft);
+            const shipWeapon = ship.getWeaponWithHighestRange();
+            if (!shipWeapon) return;
+            launchWeapon(this.currentScenario, ship, aircraft, shipWeapon, 1);
           }
         }
       });
@@ -1188,10 +1347,12 @@ export default class Game {
         if (this.currentScenario.isHostile(ship.sideId, weapon.sideId)) {
           if (
             weapon.targetId === ship.id &&
-            checkIfThreatIsWithinRange(weapon, ship) &&
+            checkIfThreatIsWithinWeaponRange(weapon, ship) &&
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
-            launchWeapon(this.currentScenario, ship, weapon);
+            const shipWeapon = ship.getWeaponWithHighestRange();
+            if (!shipWeapon) return;
+            launchWeapon(this.currentScenario, ship, weapon, shipWeapon, 1);
           }
         }
       });
@@ -1212,13 +1373,19 @@ export default class Game {
           (aircraft.targetId === "" || aircraft.targetId === enemyAircraft.id)
         ) {
           if (
-            checkIfThreatIsWithinRange(
+            checkIfThreatIsWithinWeaponRange(
               enemyAircraft,
               aircraftWeaponWithMaxRange
             ) &&
             checkTargetTrackedByCount(this.currentScenario, enemyAircraft) < 1
           ) {
-            launchWeapon(this.currentScenario, aircraft, enemyAircraft);
+            launchWeapon(
+              this.currentScenario,
+              aircraft,
+              enemyAircraft,
+              aircraftWeaponWithMaxRange,
+              1
+            );
             aircraft.targetId = enemyAircraft.id;
           }
         }
@@ -1229,13 +1396,19 @@ export default class Game {
         ) {
           if (
             enemyWeapon.targetId === aircraft.id &&
-            checkIfThreatIsWithinRange(
+            checkIfThreatIsWithinWeaponRange(
               enemyWeapon,
               aircraftWeaponWithMaxRange
             ) &&
             checkTargetTrackedByCount(this.currentScenario, enemyWeapon) < 1
           ) {
-            launchWeapon(this.currentScenario, aircraft, enemyWeapon);
+            launchWeapon(
+              this.currentScenario,
+              aircraft,
+              enemyWeapon,
+              aircraftWeaponWithMaxRange,
+              1
+            );
           }
         }
       });
@@ -1363,7 +1536,15 @@ export default class Game {
             distanceBetweenAttackerAndTargetNm <=
             aircraftWeaponWithMaxRange.range * 1.1
           ) {
-            launchWeapon(this.currentScenario, attacker, target);
+            const aircraftWeapon = attacker.getWeaponWithHighestRange();
+            if (!aircraftWeapon) return;
+            launchWeapon(
+              this.currentScenario,
+              attacker,
+              target,
+              aircraftWeapon,
+              1
+            );
             attacker.targetId = target.id;
           }
         }

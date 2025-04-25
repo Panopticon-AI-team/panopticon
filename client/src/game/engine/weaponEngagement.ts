@@ -21,7 +21,7 @@ import Ship from "@/game/units/Ship";
 
 export type Target = Aircraft | Facility | Weapon | Airbase | Ship;
 
-export function checkIfThreatIsWithinRange(
+export function checkIfThreatIsWithinWeaponRange(
   threat: Aircraft | Weapon,
   defender: Facility | Ship | Weapon
 ): boolean {
@@ -84,51 +84,68 @@ export function weaponEndgame(
 export function launchWeapon(
   currentScenario: Scenario,
   origin: Aircraft | Facility | Ship,
-  target: Target
+  target: Target,
+  launchedWeapon: Weapon,
+  launchedWeaponQuantity: number
 ) {
-  if (origin.weapons.length === 0) return;
+  if (
+    origin.weapons.length === 0 ||
+    launchedWeapon.currentQuantity < launchedWeaponQuantity
+  )
+    return;
 
-  const weaponWithMaxRangePrototype = origin.getWeaponWithHighestRange();
-  if (!weaponWithMaxRangePrototype) return;
+  // restore when weapons range in default scenarios are more sensible
+  // const weaponRange = launchedWeapon.getCurrentRange();
+  // const distanceToTarget = getDistanceBetweenTwoPoints(
+  //   origin.latitude,
+  //   origin.longitude,
+  //   target.latitude,
+  //   target.longitude
+  // );
+  // if (distanceToTarget > weaponRange) return;
 
   const nextWeaponCoordinates = getNextCoordinates(
     origin.latitude,
     origin.longitude,
     target.latitude,
     target.longitude,
-    weaponWithMaxRangePrototype.speed
+    launchedWeapon.speed
   );
   const nextWeaponLatitude = nextWeaponCoordinates[0];
   const nextWeaponLongitude = nextWeaponCoordinates[1];
   const newWeapon = new Weapon({
     id: randomUUID(),
-    name: weaponWithMaxRangePrototype.name,
+    name: launchedWeapon.name,
     sideId: origin.sideId,
-    className: weaponWithMaxRangePrototype.className,
+    className: launchedWeapon.className,
     latitude: nextWeaponLatitude,
     longitude: nextWeaponLongitude,
-    altitude: weaponWithMaxRangePrototype.altitude,
+    altitude: launchedWeapon.altitude,
     heading: getBearingBetweenTwoPoints(
       nextWeaponLatitude,
       nextWeaponLongitude,
       target.latitude,
       target.longitude
     ),
-    speed: weaponWithMaxRangePrototype.speed,
-    currentFuel: weaponWithMaxRangePrototype.currentFuel,
-    maxFuel: weaponWithMaxRangePrototype.maxFuel,
-    fuelRate: weaponWithMaxRangePrototype.fuelRate,
-    range: weaponWithMaxRangePrototype.range,
+    speed: launchedWeapon.speed,
+    currentFuel: launchedWeapon.currentFuel,
+    maxFuel: launchedWeapon.maxFuel,
+    fuelRate: launchedWeapon.fuelRate,
+    range: launchedWeapon.range,
     route: [[target.latitude, target.longitude]],
-    sideColor: weaponWithMaxRangePrototype.sideColor,
+    sideColor: launchedWeapon.sideColor,
     targetId: target.id,
-    lethality: weaponWithMaxRangePrototype.lethality,
-    maxQuantity: weaponWithMaxRangePrototype.maxQuantity,
-    currentQuantity: weaponWithMaxRangePrototype.currentQuantity,
+    lethality: launchedWeapon.lethality,
+    maxQuantity: launchedWeapon.maxQuantity,
+    currentQuantity: launchedWeapon.currentQuantity,
   });
   currentScenario.weapons.push(newWeapon);
-  origin.weapons[0].currentQuantity -= 1;
-  if (origin.weapons[0].currentQuantity < 1) origin.weapons.shift();
+  launchedWeapon.currentQuantity -= launchedWeaponQuantity;
+  if (launchedWeapon.currentQuantity < 1) {
+    origin.weapons = origin.weapons.filter(
+      (currentOriginWeapon) => currentOriginWeapon.id !== launchedWeapon.id
+    );
+  }
 }
 
 export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {

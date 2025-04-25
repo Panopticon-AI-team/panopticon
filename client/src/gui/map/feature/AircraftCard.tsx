@@ -27,12 +27,13 @@ import {
   Divider,
   Tooltip,
   ListItemButton,
+  TableHead,
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { colorPalette } from "@/utils/constants";
-import { MoreVert } from "@mui/icons-material";
+import { Delete, MoreVert, Remove } from "@mui/icons-material";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -42,7 +43,11 @@ interface AircraftCardProps {
   openMissionEditor: (selectedMissionId: string) => void;
   handleDeleteAircraft: (aircraftId: string) => void;
   handleMoveAircraft: (aircraftId: string) => void;
-  handleAircraftAttack: (aircraftId: string) => void;
+  handleAircraftAttack: (
+    aircraftId: string,
+    weaponId: string,
+    weaponQuantity: number
+  ) => void;
   handleAircraftRtb: (aircraftId: string) => void;
   handleDuplicateAircraft: (aircraftId: string) => void;
   handleTeleportUnit: (unitId: string) => void;
@@ -82,8 +87,11 @@ const tableValueCellStyle = {
   typography: "body1",
 };
 
+type CARD_CONTENT_CONTEXT = "default" | "editing" | "weapons";
+
 export default function AircraftCard(props: Readonly<AircraftCardProps>) {
-  const [editing, setEditing] = useState(false);
+  const [cardContentContext, setCardContentContext] =
+    useState<CARD_CONTENT_CONTEXT>("default");
   const [tempEditData, setTempEditData] = useState({
     name: props.aircraft.name,
     className: props.aircraft.className,
@@ -111,9 +119,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     props.handleMoveAircraft(props.aircraft.id);
   };
 
-  const _handleAircraftAttack = () => {
+  const _handleAircraftAttack = (weaponId: string, weaponQuantity: number) => {
     props.handleCloseOnMap();
-    props.handleAircraftAttack(props.aircraft.id);
+    props.handleAircraftAttack(props.aircraft.id, weaponId, weaponQuantity);
   };
 
   const _handleAircraftRtb = () => {
@@ -131,7 +139,16 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
   };
 
   const toggleEdit = () => {
-    setEditing(!editing);
+    setCardContentContext(
+      cardContentContext !== "editing" ? "editing" : "default"
+    );
+  };
+
+  const toggleWeapons = () => {
+    handleClose();
+    setCardContentContext(
+      cardContentContext !== "weapons" ? "weapons" : "default"
+    );
   };
 
   const handleSaveEditedAircraft = () => {
@@ -391,6 +408,73 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     );
   };
 
+  const weaponsContent = () => {
+    return (
+      <TableContainer
+        component={Paper}
+        sx={{
+          width: "100%",
+          backgroundColor: "transparent",
+          boxShadow: "none",
+        }}
+      >
+        <Table size="small" aria-label="aircraft-weapons-table">
+          <TableHead>
+            <TableRow sx={tableRowStyle}>
+              <TableCell
+                component="th"
+                scope="row"
+                sx={{ ...tableKeyCellStyle, minWidth: "12em" }}
+              >
+                Name
+              </TableCell>
+              <TableCell
+                component="th"
+                scope="row"
+                sx={{ ...tableKeyCellStyle, minWidth: "5em" }}
+              >
+                Quantity
+              </TableCell>
+              <TableCell
+                component="th"
+                scope="row"
+                sx={tableKeyCellStyle}
+              ></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {props.aircraft.weapons.map((weapon, index) => (
+              <TableRow sx={tableRowStyle} key={`${weapon.className}-${index}`}>
+                <TableCell sx={tableValueCellStyle}>
+                  {weapon.className}
+                </TableCell>
+                <TableCell sx={tableValueCellStyle}>
+                  {weapon.currentQuantity}
+                </TableCell>
+                <TableCell sx={tableValueCellStyle}>
+                  <>
+                    <Tooltip title={`Launch Weapon`}>
+                      <IconButton
+                        onClick={() => _handleAircraftAttack(weapon.id, 1)}
+                      >
+                        <RocketLaunchIcon sx={{ color: "white" }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={`Delete Weapon`}>
+                      <IconButton onClick={() => {}}>
+                        <DeleteIcon sx={{ color: "red" }} />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
+
   const defaultCardActions = (
     <Stack spacing={0.5} direction="column" onMouseLeave={handleClose}>
       <ListItemButton onClick={_handleMoveAircraft}>
@@ -400,6 +484,10 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           }}
         />
         Plot Course
+      </ListItemButton>
+      <ListItemButton onClick={toggleWeapons}>
+        <RocketLaunchIcon sx={{ mr: 0.5 }} />
+        View Weapons
       </ListItemButton>
       <ListItemButton onClick={_handleAircraftRtb}>
         <HomeIcon sx={{ mr: 0.5 }} /> Return To Base
@@ -437,6 +525,20 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     </Stack>
   );
 
+  const weaponsCardActions = (
+    <Stack direction={"row"} spacing={1} sx={{ p: 1, m: 1 }}>
+      <Button
+        fullWidth
+        variant="outlined"
+        size="small"
+        sx={{ color: "white", borderColor: "white" }}
+        onClick={toggleWeapons}
+      >
+        Back
+      </Button>
+    </Stack>
+  );
+
   const aircraftCard = (
     <Box sx={{ minWidth: 150 }}>
       <Card
@@ -452,7 +554,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         <CardHeader
           action={
             <>
-              {!editing && (
+              {cardContentContext === "default" && (
                 <Stack direction={"row"} spacing={0}>
                   <Tooltip title={`Edit ${props.aircraft.name}`}>
                     <IconButton onClick={toggleEdit}>
@@ -525,10 +627,12 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           sx={{ borderColor: "white", mb: 1 }}
         />
         <CardContent sx={{ pt: 0 }}>
-          {!editing && aircraftDataContent()}
-          {editing && editingContent()}
+          {cardContentContext === "default" && aircraftDataContent()}
+          {cardContentContext === "editing" && editingContent()}
+          {cardContentContext === "weapons" && weaponsContent()}
         </CardContent>
-        {editing && editingCardActions}
+        {cardContentContext === "editing" && editingCardActions}
+        {cardContentContext === "weapons" && weaponsCardActions}
       </Card>
     </Box>
   );

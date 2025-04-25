@@ -49,6 +49,8 @@ export default class Facility {
 
   getWeaponWithHighestRange(): Weapon | undefined {
     if (this.weapons.length === 0) return;
-    return this.weapons.reduce((a, b) => (a.range > b.range ? a : b));
+    return this.weapons.reduce((a, b) =>
+      a.getCurrentRange() > b.getCurrentRange() ? a : b
+    );
   }
 }
