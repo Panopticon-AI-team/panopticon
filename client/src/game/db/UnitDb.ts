@@ -2,9 +2,7 @@ import { IAirbaseModel } from "@/game/db/models/Airbase";
 import { IAircraftModel } from "@/game/db/models/Aircraft";
 import { IFacilityModel } from "@/game/db/models/Facility";
 import { IShipModel } from "@/game/db/models/Ship";
-import Facility from "@/game/units/Facility";
-
-export type UnitModel = IAirbaseModel | IAircraftModel | Facility | IShipModel;
+import { IWeaponModel } from "@/game/db/models/Weapon";
 
 export const AircraftDb: IAircraftModel[] = [
   // fuel rates are generated with AI - use with a grain of salt.
@@ -731,5 +729,188 @@ export const ShipDb: IShipModel[] = [
     maxFuel: 350000, // lbs
     fuelRate: 30000, // lbs/hr
     range: 1500, // NM
+  },
+];
+
+export const WeaponDb: IWeaponModel[] = [
+  // Air-to-Air / Air-to-Ground Missiles and Cruise Missiles
+  {
+    className: "AIM-120 AMRAAM",
+    speed: 2600,
+    maxFuel: 480,
+    fuelRate: 350,
+    lethality: 0.65,
+  },
+  {
+    className: "AIM-9 Sidewinder",
+    speed: 1500,
+    maxFuel: 100,
+    fuelRate: 80,
+    lethality: 0.6,
+  },
+  {
+    className: "AIM-54 Phoenix",
+    speed: 3500,
+    maxFuel: 1000,
+    fuelRate: 300,
+    lethality: 0.85,
+  },
+  {
+    className: "AGM-65 Maverick",
+    speed: 600,
+    maxFuel: 200,
+    fuelRate: 120,
+    lethality: 0.7,
+  },
+  {
+    className: "AGM-84 Harpoon",
+    speed: 475,
+    maxFuel: 700,
+    fuelRate: 150,
+    lethality: 0.8,
+  },
+  {
+    className: "AGM-86 ALCM",
+    speed: 490,
+    maxFuel: 9000,
+    fuelRate: 600,
+    lethality: 0.75,
+  },
+  {
+    className: "AGM-158 JASSM",
+    speed: 1200,
+    maxFuel: 18498,
+    fuelRate: 1000,
+    lethality: 0.8,
+  },
+  {
+    className: "BGM-109 Tomahawk",
+    speed: 490,
+    maxFuel: 10600,
+    fuelRate: 850,
+    lethality: 0.75,
+  },
+
+  // Ship-Launched and Fleet Air Defense Missiles
+  {
+    className: "RIM-66 Standard SM-2",
+    speed: 1983,
+    maxFuel: 500,
+    fuelRate: 200,
+    lethality: 0.85,
+  },
+  {
+    className: "RIM-174 Standard SM-6",
+    speed: 2313,
+    maxFuel: 1100,
+    fuelRate: 300,
+    lethality: 0.9,
+  },
+  {
+    className: "RGM-84 Harpoon",
+    speed: 475,
+    maxFuel: 700,
+    fuelRate: 150,
+    lethality: 0.8,
+  },
+  {
+    className: "RIM-116 RAM",
+    speed: 1653,
+    maxFuel: 250,
+    fuelRate: 100,
+    lethality: 0.8,
+  },
+
+  // Surface-to-Air (SAM) Missiles
+  {
+    className: "48N6 (S-400 Triumf)",
+    speed: 3966,
+    maxFuel: 1543,
+    fuelRate: 300,
+    lethality: 0.9,
+  },
+  {
+    className: "9M96 (S-300V4)",
+    speed: 2644,
+    maxFuel: 1000,
+    fuelRate: 200,
+    lethality: 0.85,
+  },
+  {
+    className: "77N6 (S-500 Prometey)",
+    speed: 4627,
+    maxFuel: 2000,
+    fuelRate: 500,
+    lethality: 0.9,
+  },
+  {
+    className: "9M317 (Buk-M3)",
+    speed: 1322,
+    maxFuel: 700,
+    fuelRate: 150,
+    lethality: 0.8,
+  },
+  {
+    className: "9M331 (Tor-M2)",
+    speed: 1851,
+    maxFuel: 300,
+    fuelRate: 100,
+    lethality: 0.75,
+  },
+  {
+    className: "57E6E (Pantsir-S1)",
+    speed: 2313,
+    maxFuel: 250,
+    fuelRate: 80,
+    lethality: 0.7,
+  },
+  {
+    className: "HQ-9",
+    speed: 2644,
+    maxFuel: 2000,
+    fuelRate: 400,
+    lethality: 0.85,
+  },
+  {
+    className: "HQ-19",
+    speed: 5949,
+    maxFuel: 3000,
+    fuelRate: 600,
+    lethality: 0.9,
+  },
+  {
+    className: "HQ-16",
+    speed: 1983,
+    maxFuel: 600,
+    fuelRate: 150,
+    lethality: 0.8,
+  },
+  {
+    className: "HQ-17",
+    speed: 1511,
+    maxFuel: 400,
+    fuelRate: 120,
+    lethality: 0.75,
+  },
+  {
+    className: "HQ-7",
+    speed: 2313,
+    maxFuel: 200,
+    fuelRate: 70,
+    lethality: 0.7,
+  },
+  {
+    className: "Aster 30",
+    speed: 2975,
+    maxFuel: 1600,
+    fuelRate: 350,
+    lethality: 0.85,
+  },
+  {
+    className: "Barak 8",
+    speed: 1851,
+    maxFuel: 200,
+    fuelRate: 150,
+    lethality: 0.8,
   },
 ];

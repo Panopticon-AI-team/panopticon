@@ -1,20 +1,29 @@
 import { IAircraftModel } from "@/game/db/models/Aircraft";
-import { AirbaseDb, AircraftDb, FacilityDb, ShipDb } from "@/game/db/UnitDb";
+import {
+  AirbaseDb,
+  AircraftDb,
+  FacilityDb,
+  ShipDb,
+  WeaponDb,
+} from "@/game/db/UnitDb";
 import { IAirbaseModel } from "@/game/db/models/Airbase";
 import { IFacilityModel } from "@/game/db/models/Facility";
 import { IShipModel } from "@/game/db/models/Ship";
+import { IWeaponModel } from "@/game/db/models/Weapon";
 
 export default class Dba {
   airbaseDb: IAirbaseModel[];
   aircraftDb: IAircraftModel[];
   facilityDb: IFacilityModel[];
   shipDb: IShipModel[];
+  weaponDb: IWeaponModel[];
 
   constructor() {
     this.airbaseDb = AirbaseDb;
     this.aircraftDb = AircraftDb;
     this.facilityDb = FacilityDb;
     this.shipDb = ShipDb;
+    this.weaponDb = WeaponDb;
   }
 
   getAircraftDb() {
@@ -33,12 +42,17 @@ export default class Dba {
     return this.shipDb;
   }
 
+  getWeaponDb() {
+    return this.weaponDb;
+  }
+
   exportToJson() {
     return JSON.stringify({
       airbaseDb: this.airbaseDb,
       aircraftDb: this.aircraftDb,
       facilityDb: this.facilityDb,
       shipDb: this.shipDb,
+      weaponDb: this.weaponDb,
     });
   }
 
@@ -181,6 +195,36 @@ export default class Dba {
         finalImportedShipDb.push(model);
       });
       this.shipDb = finalImportedShipDb.filter(
+        (unit, idx, all) =>
+          all.findIndex((u) => u.className === unit.className) === idx
+      );
+    }
+
+    const importWeaponDb = data.weaponDb as any[];
+    if (Array.isArray(importWeaponDb) && importWeaponDb.length > 0) {
+      const finalImportedWeaponDb: IWeaponModel[] = [];
+      importWeaponDb.forEach((weapon) => {
+        const { className, speed, maxFuel, fuelRate, lethality } = weapon;
+        if (
+          !(
+            className &&
+            speed != null &&
+            maxFuel != null &&
+            fuelRate != null &&
+            lethality != null
+          )
+        )
+          return;
+
+        finalImportedWeaponDb.push({
+          className,
+          speed,
+          maxFuel,
+          fuelRate,
+          lethality,
+        });
+      });
+      this.weaponDb = finalImportedWeaponDb.filter(
         (unit, idx, all) =>
           all.findIndex((u) => u.className === unit.className) === idx
       );

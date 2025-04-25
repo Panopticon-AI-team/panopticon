@@ -56,12 +56,16 @@ export default class Weapon {
     this.currentFuel = parameters.currentFuel;
     this.maxFuel = parameters.maxFuel;
     this.fuelRate = parameters.fuelRate;
-    this.range = parameters.range;
+    this.range = this.getCurrentRange();
     this.route = parameters.route ?? [];
     this.sideColor = convertColorNameToSideColor(parameters.sideColor);
     this.targetId = parameters.targetId;
     this.lethality = parameters.lethality;
     this.maxQuantity = parameters.maxQuantity;
     this.currentQuantity = parameters.currentQuantity;
+  }
+
+  getCurrentRange(): number {
+    return this.speed * (this.currentFuel / this.fuelRate);
   }
 }
