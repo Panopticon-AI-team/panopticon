@@ -78,7 +78,16 @@ export default class Ship {
   getWeaponWithHighestRange(): Weapon | undefined {
     if (this.weapons.length === 0) return;
     return this.weapons.reduce((a, b) =>
-      a.getCurrentRange() > b.getCurrentRange() ? a : b
+      a.getEngagementRange() > b.getEngagementRange() ? a : b
     );
+  }
+
+  getWeaponEngagementRange(): number {
+    if (this.weapons.length === 0) return 0;
+    return this.getWeaponWithHighestRange()?.getEngagementRange() ?? 0;
+  }
+
+  getDetectionRange(): number {
+    return this.range;
   }
 }

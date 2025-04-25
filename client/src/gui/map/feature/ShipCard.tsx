@@ -229,7 +229,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
           </TableRow>
           <TableRow sx={tableRowStyle}>
             <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
-              Range:
+              Detection Range:
             </TableCell>
             <TableCell align="right" sx={tableValueCellStyle}>
               {props.ship.range.toFixed(0)} NM

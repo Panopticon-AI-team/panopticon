@@ -174,7 +174,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
           </TableRow>
           <TableRow sx={tableRowStyle}>
             <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
-              Range:
+              Detection Range:
             </TableCell>
             <TableCell align="right" sx={tableValueCellStyle}>
               {props.facility.range.toFixed(0)} NM

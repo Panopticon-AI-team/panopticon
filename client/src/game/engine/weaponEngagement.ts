@@ -21,18 +21,32 @@ import Ship from "@/game/units/Ship";
 
 export type Target = Aircraft | Facility | Weapon | Airbase | Ship;
 
-export function checkIfThreatIsWithinWeaponRange(
+export function isThreatDetected(
   threat: Aircraft | Weapon,
-  defender: Facility | Ship | Weapon
+  detector: Facility | Ship | Aircraft
 ): boolean {
   const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
-  const defenderRangeGeometry = new Circle(
-    fromLonLat([defender.longitude, defender.latitude], projection!),
-    defender.range * NAUTICAL_MILES_TO_METERS
+  const detectorRangeGeometry = new Circle(
+    fromLonLat([detector.longitude, detector.latitude], projection!),
+    detector.getDetectionRange() * NAUTICAL_MILES_TO_METERS
   );
-  return defenderRangeGeometry.intersectsCoordinate(
+  return detectorRangeGeometry.intersectsCoordinate(
     fromLonLat([threat.longitude, threat.latitude], projection!)
   );
+}
+
+export function weaponCanEngageTarget(target: Target, weapon: Weapon) {
+  const weaponEngagementRange = weapon.getEngagementRange();
+  const distanceToTarget = getDistanceBetweenTwoPoints(
+    weapon.latitude,
+    weapon.longitude,
+    target.latitude,
+    target.longitude
+  );
+  if (distanceToTarget < weaponEngagementRange) {
+    return true;
+  }
+  return false;
 }
 
 export function checkTargetTrackedByCount(
@@ -93,16 +107,6 @@ export function launchWeapon(
     launchedWeapon.currentQuantity < launchedWeaponQuantity
   )
     return;
-
-  // restore when weapons range in default scenarios are more sensible
-  // const weaponRange = launchedWeapon.getCurrentRange();
-  // const distanceToTarget = getDistanceBetweenTwoPoints(
-  //   origin.latitude,
-  //   origin.longitude,
-  //   target.latitude,
-  //   target.longitude
-  // );
-  // if (distanceToTarget > weaponRange) return;
 
   const nextWeaponCoordinates = getNextCoordinates(
     origin.latitude,

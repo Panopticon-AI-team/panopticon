@@ -56,7 +56,6 @@ export default class Weapon {
     this.currentFuel = parameters.currentFuel;
     this.maxFuel = parameters.maxFuel;
     this.fuelRate = parameters.fuelRate;
-    // this.range = this.getCurrentRange(); // currently causing aircraft to engage with each other from faraway because range of weapons in default scenarios are very high
     this.range = parameters.range;
     this.route = parameters.route ?? [];
     this.sideColor = convertColorNameToSideColor(parameters.sideColor);
@@ -66,8 +65,7 @@ export default class Weapon {
     this.currentQuantity = parameters.currentQuantity;
   }
 
-  getCurrentRange(): number {
-    // return this.speed * (this.currentFuel / this.fuelRate); // currently causing aircraft to engage with each other from faraway because range of weapons in default scenarios are very high
-    return this.range;
+  getEngagementRange(): number {
+    return this.speed * (this.currentFuel / this.fuelRate);
   }
 }

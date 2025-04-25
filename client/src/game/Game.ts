@@ -10,11 +10,12 @@ import {
 } from "@/utils/mapFunctions";
 import {
   aircraftPursuit,
-  checkIfThreatIsWithinWeaponRange,
+  isThreatDetected,
   checkTargetTrackedByCount,
   launchWeapon,
   routeAircraftToStrikePosition,
   weaponEngagement,
+  weaponCanEngageTarget,
 } from "@/game/engine/weaponEngagement";
 import Airbase from "@/game/units/Airbase";
 import Side from "@/game/Side";
@@ -1291,12 +1292,13 @@ export default class Game {
     this.currentScenario.facilities.forEach((facility) => {
       this.currentScenario.aircraft.forEach((aircraft) => {
         if (this.currentScenario.isHostile(facility.sideId, aircraft.sideId)) {
+          const facilityWeapon = facility.getWeaponWithHighestRange();
+          if (!facilityWeapon) return;
           if (
-            checkIfThreatIsWithinWeaponRange(aircraft, facility) &&
+            isThreatDetected(aircraft, facility) &&
+            weaponCanEngageTarget(aircraft, facilityWeapon) &&
             checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
           ) {
-            const facilityWeapon = facility.getWeaponWithHighestRange();
-            if (!facilityWeapon) return;
             launchWeapon(
               this.currentScenario,
               facility,
@@ -1309,13 +1311,14 @@ export default class Game {
       });
       this.currentScenario.weapons.forEach((weapon) => {
         if (this.currentScenario.isHostile(facility.sideId, weapon.sideId)) {
+          const facilityWeapon = facility.getWeaponWithHighestRange();
+          if (!facilityWeapon) return;
           if (
             weapon.targetId === facility.id &&
-            checkIfThreatIsWithinWeaponRange(weapon, facility) &&
+            isThreatDetected(weapon, facility) &&
+            weaponCanEngageTarget(weapon, facilityWeapon) &&
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
-            const facilityWeapon = facility.getWeaponWithHighestRange();
-            if (!facilityWeapon) return;
             launchWeapon(
               this.currentScenario,
               facility,
@@ -1333,25 +1336,27 @@ export default class Game {
     this.currentScenario.ships.forEach((ship) => {
       this.currentScenario.aircraft.forEach((aircraft) => {
         if (this.currentScenario.isHostile(ship.sideId, aircraft.sideId)) {
+          const shipWeapon = ship.getWeaponWithHighestRange();
+          if (!shipWeapon) return;
           if (
-            checkIfThreatIsWithinWeaponRange(aircraft, ship) &&
+            isThreatDetected(aircraft, ship) &&
+            weaponCanEngageTarget(aircraft, shipWeapon) &&
             checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
           ) {
-            const shipWeapon = ship.getWeaponWithHighestRange();
-            if (!shipWeapon) return;
             launchWeapon(this.currentScenario, ship, aircraft, shipWeapon, 1);
           }
         }
       });
       this.currentScenario.weapons.forEach((weapon) => {
         if (this.currentScenario.isHostile(ship.sideId, weapon.sideId)) {
+          const shipWeapon = ship.getWeaponWithHighestRange();
+          if (!shipWeapon) return;
           if (
             weapon.targetId === ship.id &&
-            checkIfThreatIsWithinWeaponRange(weapon, ship) &&
+            isThreatDetected(weapon, ship) &&
+            weaponCanEngageTarget(weapon, shipWeapon) &&
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
-            const shipWeapon = ship.getWeaponWithHighestRange();
-            if (!shipWeapon) return;
             launchWeapon(this.currentScenario, ship, weapon, shipWeapon, 1);
           }
         }
@@ -1373,10 +1378,8 @@ export default class Game {
           (aircraft.targetId === "" || aircraft.targetId === enemyAircraft.id)
         ) {
           if (
-            checkIfThreatIsWithinWeaponRange(
-              enemyAircraft,
-              aircraftWeaponWithMaxRange
-            ) &&
+            isThreatDetected(enemyAircraft, aircraft) &&
+            weaponCanEngageTarget(enemyAircraft, aircraftWeaponWithMaxRange) &&
             checkTargetTrackedByCount(this.currentScenario, enemyAircraft) < 1
           ) {
             launchWeapon(
@@ -1396,10 +1399,8 @@ export default class Game {
         ) {
           if (
             enemyWeapon.targetId === aircraft.id &&
-            checkIfThreatIsWithinWeaponRange(
-              enemyWeapon,
-              aircraftWeaponWithMaxRange
-            ) &&
+            isThreatDetected(enemyWeapon, aircraft) &&
+            weaponCanEngageTarget(enemyWeapon, aircraftWeaponWithMaxRange) &&
             checkTargetTrackedByCount(this.currentScenario, enemyWeapon) < 1
           ) {
             launchWeapon(

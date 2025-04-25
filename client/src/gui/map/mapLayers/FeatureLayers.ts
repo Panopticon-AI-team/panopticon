@@ -44,7 +44,7 @@ type GameEntity =
   | Weapon
   | Ship
   | ReferencePoint;
-type GameEntityWithRange = Aircraft | Facility | Ship;
+type GameEntityWithRange = Facility | Ship;
 type GameEntityWithRoute = Aircraft | Ship;
 
 const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);
@@ -229,7 +229,7 @@ export class ThreatRangeLayer extends FeatureLayer {
       id: entity.id,
       geometry: new Circle(
         fromLonLat([entity.longitude, entity.latitude], this.projection),
-        entity.range * NAUTICAL_MILES_TO_METERS
+        entity.getDetectionRange() * NAUTICAL_MILES_TO_METERS
       ),
       sideColor: entity.sideColor,
     });
