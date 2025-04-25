@@ -286,7 +286,7 @@ export default function WeaponTable(props: Readonly<WeaponTableProps>) {
             title={
               <Stack direction={"column"} spacing={0.1}>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Speed: {weapon.speed.toFixed(0)} KTS
+                  Speed: {weapon.speed.toFixed(0)} kts
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                   Max Fuel: {weapon.maxFuel.toFixed(2)} lbs

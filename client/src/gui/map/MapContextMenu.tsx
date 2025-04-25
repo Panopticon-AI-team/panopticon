@@ -129,7 +129,7 @@ export default function MapContextMenu({
                   Fuel Consumption: {aircraft.fuelRate.toFixed(2)} gal/hr
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Detection Range: {aircraft.range.toFixed(0)} NM
+                  Detection Range: {aircraft.range.toFixed(0)} nm
                 </Typography>
               </Stack>
             }
@@ -166,7 +166,7 @@ export default function MapContextMenu({
             title={
               <Stack direction={"column"} spacing={0.1}>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Speed: {ship.speed.toFixed(0)} KTS
+                  Speed: {ship.speed.toFixed(0)} kts
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                   Max Fuel: {ship.maxFuel.toFixed(2)} lbs
@@ -175,7 +175,7 @@ export default function MapContextMenu({
                   Fuel Consumption: {ship.fuelRate.toFixed(2)} lbs/hr
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Detection Range: {ship.range.toFixed(0)} NM
+                  Detection Range: {ship.range.toFixed(0)} nm
                 </Typography>
               </Stack>
             }
@@ -212,7 +212,7 @@ export default function MapContextMenu({
             title={
               <Stack direction={"column"} spacing={0.1}>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Detection Range: {facility.range.toFixed(0)} NM
+                  Detection Range: {facility.range.toFixed(0)} nm
                 </Typography>
               </Stack>
             }
