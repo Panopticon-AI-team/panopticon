@@ -36,14 +36,16 @@ export function isThreatDetected(
 }
 
 export function weaponCanEngageTarget(target: Target, weapon: Weapon) {
-  const weaponEngagementRange = weapon.getEngagementRange();
-  const distanceToTarget = getDistanceBetweenTwoPoints(
+  const weaponEngagementRangeNm = weapon.getEngagementRange();
+  const distanceToTargetKm = getDistanceBetweenTwoPoints(
     weapon.latitude,
     weapon.longitude,
     target.latitude,
     target.longitude
   );
-  if (distanceToTarget < weaponEngagementRange) {
+  const distanceToTargetNm =
+    (distanceToTargetKm * 1000) / NAUTICAL_MILES_TO_METERS;
+  if (distanceToTargetNm < weaponEngagementRangeNm) {
     return true;
   }
   return false;
