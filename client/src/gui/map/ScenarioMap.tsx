@@ -1442,6 +1442,42 @@ export default function ScenarioMap({
     }
   }
 
+  function handleAddWeaponToAircraft(
+    aircraftId: string,
+    weaponClassName: string
+  ) {
+    const weaponTemplate = unitDbContext
+      .getWeaponDb()
+      .find((weapon) => weapon.className === weaponClassName);
+    return game.currentScenario.addWeaponToAircraft(
+      aircraftId,
+      weaponTemplate?.className,
+      weaponTemplate?.speed ? weaponTemplate?.speed / 1.151 : undefined,
+      weaponTemplate?.maxFuel,
+      weaponTemplate?.fuelRate ? weaponTemplate?.fuelRate * 8 : undefined,
+      weaponTemplate?.lethality
+    );
+  }
+
+  function handleDeleteWeaponFromAircraft(
+    aircraftId: string,
+    weaponId: string
+  ) {
+    return game.currentScenario.deleteWeaponFromAircraft(aircraftId, weaponId);
+  }
+
+  function handleUpdateWeaponQuantity(
+    aircraftId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    return game.currentScenario.updateWeaponQuantity(
+      aircraftId,
+      weaponId,
+      increment
+    );
+  }
+
   function handleCreatePatrolMission(
     missionName: string,
     assignedUnits: string[],
@@ -2142,6 +2178,9 @@ export default function ScenarioMap({
             handleAircraftRtb={handleAircraftRtb}
             handleDuplicateAircraft={handleDuplicateAircraft}
             handleTeleportUnit={queueUnitForTeleport}
+            handleAddWeapon={handleAddWeaponToAircraft}
+            handleDeleteWeapon={handleDeleteWeaponFromAircraft}
+            handleUpdateWeaponQuantity={handleUpdateWeaponQuantity}
             anchorPositionTop={openAircraftCard.top}
             anchorPositionLeft={openAircraftCard.left}
             handleCloseOnMap={() => {

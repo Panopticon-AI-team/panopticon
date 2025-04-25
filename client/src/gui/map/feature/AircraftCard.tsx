@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -28,12 +28,15 @@ import {
   Tooltip,
   ListItemButton,
   TableHead,
+  MenuItem,
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { colorPalette } from "@/utils/constants";
-import { Delete, MoreVert, Remove } from "@mui/icons-material";
+import { Add, MoreVert, Remove } from "@mui/icons-material";
+import Weapon from "@/game/units/Weapon";
+import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -59,6 +62,13 @@ interface AircraftCardProps {
     aircraftCurrentFuel: number,
     aircraftCurrentFuelRate: number
   ) => void;
+  handleAddWeapon: (aircraftId: string, weaponClassName: string) => Weapon[];
+  handleDeleteWeapon: (aircraftId: string, weaponId: string) => Weapon[];
+  handleUpdateWeaponQuantity: (
+    aircraftId: string,
+    weaponId: string,
+    increment: number
+  ) => Weapon[];
   handleCloseOnMap: () => void;
   anchorPositionTop: number;
   anchorPositionLeft: number;
@@ -99,14 +109,29 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     currentFuel: props.aircraft.currentFuel,
     currentFuelRate: props.aircraft.fuelRate,
   });
+  const [aircraftWeapons, setAircraftWeapons] = useState(
+    props.aircraft.weapons
+  );
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [addWeaponMenuAnchorEl, setAddWeaponMenuAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+  const openAddWeaponMenu = Boolean(addWeaponMenuAnchorEl);
+  const unitDbContext = useContext(UnitDbContext);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const handleClickAddWeaponButton = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setAddWeaponMenuAnchorEl(event.currentTarget);
+  };
+  const handleCloseAddWeaponMenu = () => {
+    setAddWeaponMenuAnchorEl(null);
   };
 
   const _handleDeleteAircraft = () => {
@@ -136,6 +161,31 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
   const _handleTeleportAircraft = () => {
     props.handleCloseOnMap();
     props.handleTeleportUnit(props.aircraft.id);
+  };
+
+  const _handleAddWeapon = (weaponClassName: string) => {
+    const aircraftWeapons = props.handleAddWeapon(
+      props.aircraft.id,
+      weaponClassName
+    );
+    setAircraftWeapons([...aircraftWeapons]);
+  };
+
+  const _handleDeleteWeapon = (weaponId: string) => {
+    const aircraftWeapons = props.handleDeleteWeapon(
+      props.aircraft.id,
+      weaponId
+    );
+    setAircraftWeapons([...aircraftWeapons]);
+  };
+
+  const _handleUpdateWeaponQuantity = (weaponId: string, increment: number) => {
+    const aircraftWeapons = props.handleUpdateWeaponQuantity(
+      props.aircraft.id,
+      weaponId,
+      increment
+    );
+    setAircraftWeapons([...aircraftWeapons]);
   };
 
   const toggleEdit = () => {
@@ -410,68 +460,146 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
 
   const weaponsContent = () => {
     return (
-      <TableContainer
-        component={Paper}
-        sx={{
-          width: "100%",
-          backgroundColor: "transparent",
-          boxShadow: "none",
-        }}
-      >
-        <Table size="small" aria-label="aircraft-weapons-table">
-          <TableHead>
-            <TableRow sx={tableRowStyle}>
-              <TableCell
-                component="th"
-                scope="row"
-                sx={{ ...tableKeyCellStyle, minWidth: "12em" }}
-              >
-                Name
-              </TableCell>
-              <TableCell
-                component="th"
-                scope="row"
-                sx={{ ...tableKeyCellStyle, minWidth: "5em" }}
-              >
-                Quantity
-              </TableCell>
-              <TableCell
-                component="th"
-                scope="row"
-                sx={tableKeyCellStyle}
-              ></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {props.aircraft.weapons.map((weapon, index) => (
-              <TableRow sx={tableRowStyle} key={`${weapon.className}-${index}`}>
-                <TableCell sx={tableValueCellStyle}>
-                  {weapon.className}
+      <>
+        <TableContainer
+          component={Paper}
+          sx={{
+            width: "100%",
+            backgroundColor: "transparent",
+            boxShadow: "none",
+          }}
+        >
+          <Table size="small" aria-label="aircraft-weapons-table">
+            <TableHead>
+              <TableRow sx={tableRowStyle}>
+                <TableCell
+                  component="th"
+                  scope="row"
+                  align="right"
+                  sx={{ ...tableKeyCellStyle }}
+                >
+                  Name
                 </TableCell>
-                <TableCell sx={tableValueCellStyle}>
-                  {weapon.currentQuantity}
+                <TableCell
+                  component="th"
+                  scope="row"
+                  align="center"
+                  sx={{ ...tableKeyCellStyle, minWidth: "10em" }}
+                >
+                  Quantity
                 </TableCell>
-                <TableCell sx={tableValueCellStyle}>
-                  <>
-                    <Tooltip title={`Launch Weapon`}>
-                      <IconButton
-                        onClick={() => _handleAircraftAttack(weapon.id, 1)}
-                      >
-                        <RocketLaunchIcon sx={{ color: "white" }} />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title={`Delete Weapon`}>
-                      <IconButton onClick={() => {}}>
-                        <DeleteIcon sx={{ color: "red" }} />
-                      </IconButton>
-                    </Tooltip>
-                  </>
+                <TableCell
+                  align="right"
+                  component="th"
+                  scope="row"
+                  sx={{ ...tableKeyCellStyle, minWidth: "5em" }}
+                >
+                  <Tooltip title={`Add Weapon`}>
+                    <IconButton
+                      id={"add-weapons-button"}
+                      onClick={handleClickAddWeaponButton}
+                    >
+                      <Add sx={{ color: "white" }} />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {aircraftWeapons.length === 0 && (
+                <TableRow sx={tableRowStyle}>
+                  <TableCell
+                    colSpan={3}
+                    align="center"
+                    sx={{ ...tableValueCellStyle, color: "gray" }}
+                  >
+                    No Weapons Available
+                  </TableCell>
+                </TableRow>
+              )}
+              {aircraftWeapons.length > 0 &&
+                aircraftWeapons.map((weapon, index) => (
+                  <TableRow
+                    sx={tableRowStyle}
+                    key={`${weapon.className}-${index}`}
+                  >
+                    <TableCell align="right" sx={tableValueCellStyle}>
+                      {weapon.className}
+                    </TableCell>
+                    <TableCell align="center" sx={tableValueCellStyle}>
+                      <>
+                        <Tooltip title={`Decrease Quantity`}>
+                          <IconButton
+                            onClick={() =>
+                              _handleUpdateWeaponQuantity(weapon.id, -1)
+                            }
+                          >
+                            <Remove sx={{ color: "white" }} />
+                          </IconButton>
+                        </Tooltip>
+                        {weapon.currentQuantity}
+                        <Tooltip title={`Increase Quantity`}>
+                          <IconButton
+                            onClick={() =>
+                              _handleUpdateWeaponQuantity(weapon.id, 1)
+                            }
+                          >
+                            <Add sx={{ color: "white" }} />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    </TableCell>
+                    <TableCell align="right" sx={tableValueCellStyle}>
+                      <>
+                        <Tooltip title={`Launch Weapon`}>
+                          <IconButton
+                            onClick={() => _handleAircraftAttack(weapon.id, 1)}
+                          >
+                            <RocketLaunchIcon sx={{ color: "white" }} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title={`Delete Weapon`}>
+                          <IconButton
+                            onClick={() => _handleDeleteWeapon(weapon.id)}
+                          >
+                            <DeleteIcon sx={{ color: "red" }} />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Menu
+          id="add-weapons-menu"
+          anchorEl={addWeaponMenuAnchorEl}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "left" }}
+          open={openAddWeaponMenu}
+          onClose={handleCloseAddWeaponMenu}
+          slotProps={{
+            root: { sx: { ".MuiList-root": { padding: 0 } } },
+            list: {
+              "aria-labelledby": "add-weapons-button",
+            },
+          }}
+        >
+          {unitDbContext.getWeaponDb().map((weapon) => (
+            <MenuItem
+              key={weapon.className}
+              onClick={() => {
+                _handleAddWeapon(weapon.className);
+                handleCloseAddWeaponMenu();
+              }}
+              sx={{ borderRadius: 1 }}
+            >
+              {weapon.className}
+            </MenuItem>
+          ))}
+        </Menu>
+      </>
     );
   };
 

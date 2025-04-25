@@ -12,6 +12,7 @@ import StrikeMission from "@/game/mission/StrikeMission";
 import { Mission } from "@/game/Game";
 import { SIDE_COLOR } from "@/utils/colors";
 import Relationships from "@/game/Relationships";
+import { randomUUID } from "@/utils/generateUUID";
 
 type HomeBase = Airbase | Ship;
 
@@ -148,6 +149,94 @@ export default class Scenario {
 
   updateScenarioName(name: string): void {
     this.name = name;
+  }
+
+  deleteWeaponFromAircraft(aircraftId: string, weaponId: string): Weapon[] {
+    const aircraft = this.getAircraft(aircraftId);
+    let aircraftWeapons: Weapon[] = [];
+    if (aircraft) {
+      const weaponIndex = aircraft.weapons.findIndex(
+        (weapon) => weapon.id === weaponId
+      );
+      if (weaponIndex !== -1) {
+        aircraft.weapons.splice(weaponIndex, 1);
+      }
+      aircraftWeapons = aircraft.weapons;
+    }
+    return aircraftWeapons;
+  }
+
+  updateWeaponQuantity(
+    aircraftId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    const aircraft = this.getAircraft(aircraftId);
+    let aircraftWeapons: Weapon[] = [];
+    if (aircraft) {
+      const weapon = aircraft.weapons.find((weapon) => weapon.id === weaponId);
+      if (weapon) {
+        weapon.currentQuantity += increment;
+        if (weapon.currentQuantity < 0) {
+          weapon.currentQuantity = 0;
+        }
+      }
+      aircraftWeapons = aircraft.weapons;
+    }
+    return aircraftWeapons;
+  }
+
+  addWeaponToAircraft(
+    aircraftId: string,
+    weaponClassName?: string,
+    weaponSpeed?: number,
+    weaponMaxFuel?: number,
+    weaponFuelRate?: number,
+    weaponLethality?: number
+  ): Weapon[] {
+    const aircraft = this.getAircraft(aircraftId);
+    let aircraftWeapons: Weapon[] = [];
+    if (aircraft) {
+      aircraftWeapons = aircraft.weapons;
+      if (
+        !(
+          weaponClassName &&
+          weaponSpeed &&
+          weaponMaxFuel &&
+          weaponFuelRate &&
+          weaponLethality
+        )
+      ) {
+        return aircraftWeapons;
+      }
+      if (
+        aircraft.weapons.find((weapon) => weapon.className === weaponClassName)
+      ) {
+        return aircraftWeapons;
+      }
+      const weapon = new Weapon({
+        id: randomUUID(),
+        name: weaponClassName,
+        sideId: aircraft.sideId,
+        className: weaponClassName,
+        latitude: 0.0,
+        longitude: 0.0,
+        altitude: 10000.0,
+        heading: 90.0,
+        speed: weaponSpeed,
+        currentFuel: weaponMaxFuel,
+        maxFuel: weaponMaxFuel,
+        fuelRate: weaponFuelRate,
+        range: 100,
+        sideColor: aircraft.sideColor,
+        targetId: null,
+        lethality: weaponLethality,
+        maxQuantity: 1,
+        currentQuantity: 1,
+      });
+      aircraftWeapons.push(weapon);
+    }
+    return aircraftWeapons;
   }
 
   updateAircraft(
