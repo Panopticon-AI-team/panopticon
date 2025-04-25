@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
+import { Stack, Tooltip, Typography } from "@mui/material";
 
 interface MapContextMenuProps {
   anchorPositionTop: number;
@@ -112,16 +113,37 @@ export default function MapContextMenu({
         }}
       >
         {unitDbContext.getAircraftDb().map((aircraft) => (
-          <MenuItem
+          <Tooltip
             key={aircraft.className}
-            onClick={() => {
-              handleAddAircraft(aircraft.className);
-              closeAll();
-            }}
-            sx={{ borderRadius: 1 }}
+            placement="right"
+            arrow
+            title={
+              <Stack direction={"column"} spacing={0.1}>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Speed: {aircraft.speed.toFixed(0)} mph
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Max Fuel: {aircraft.maxFuel.toFixed(2)} lbs
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Fuel Consumption: {aircraft.fuelRate.toFixed(2)} gal/hr
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Detection Range: {aircraft.range.toFixed(0)} NM
+                </Typography>
+              </Stack>
+            }
           >
-            {aircraft.className}
-          </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleAddAircraft(aircraft.className);
+                closeAll();
+              }}
+              sx={{ borderRadius: 1 }}
+            >
+              {aircraft.className}
+            </MenuItem>
+          </Tooltip>
         ))}
       </Menu>
 
@@ -137,16 +159,37 @@ export default function MapContextMenu({
         }}
       >
         {unitDbContext.getShipDb().map((ship) => (
-          <MenuItem
+          <Tooltip
             key={ship.className}
-            onClick={() => {
-              handleAddShip(ship.className);
-              closeAll();
-            }}
-            sx={{ borderRadius: 1 }}
+            placement="right"
+            arrow
+            title={
+              <Stack direction={"column"} spacing={0.1}>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Speed: {ship.speed.toFixed(0)} KTS
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Max Fuel: {ship.maxFuel.toFixed(2)} lbs
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Fuel Consumption: {ship.fuelRate.toFixed(2)} lbs/hr
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Detection Range: {ship.range.toFixed(0)} NM
+                </Typography>
+              </Stack>
+            }
           >
-            {ship.className}
-          </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleAddShip(ship.className);
+                closeAll();
+              }}
+              sx={{ borderRadius: 1 }}
+            >
+              {ship.className}
+            </MenuItem>
+          </Tooltip>
         ))}
       </Menu>
 
@@ -162,16 +205,28 @@ export default function MapContextMenu({
         }}
       >
         {unitDbContext.getFacilityDb().map((facility) => (
-          <MenuItem
+          <Tooltip
             key={facility.className}
-            onClick={() => {
-              handleAddFacility(facility.className);
-              closeAll();
-            }}
-            sx={{ borderRadius: 1 }}
+            placement="right"
+            arrow
+            title={
+              <Stack direction={"column"} spacing={0.1}>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Detection Range: {facility.range.toFixed(0)} NM
+                </Typography>
+              </Stack>
+            }
           >
-            {facility.className}
-          </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleAddFacility(facility.className);
+                closeAll();
+              }}
+              sx={{ borderRadius: 1 }}
+            >
+              {facility.className}
+            </MenuItem>
+          </Tooltip>
         ))}
       </Menu>
     </>
