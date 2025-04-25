@@ -1521,21 +1521,30 @@ export default class Game {
           if (!aircraftWeaponWithMaxRange) return;
           if (
             (distanceBetweenWeaponLaunchPositionAndTargetNm !== null &&
-              distanceBetweenWeaponLaunchPositionAndTargetNm >
-                aircraftWeaponWithMaxRange.range * 1.1) ||
+              (distanceBetweenWeaponLaunchPositionAndTargetNm >
+                attacker.getDetectionRange() * 1.1 ||
+                distanceBetweenWeaponLaunchPositionAndTargetNm >
+                  aircraftWeaponWithMaxRange.getEngagementRange() * 1.1)) ||
             (distanceBetweenWeaponLaunchPositionAndTargetNm === null &&
-              distanceBetweenAttackerAndTargetNm >
-                aircraftWeaponWithMaxRange.range * 1.1)
+              (distanceBetweenAttackerAndTargetNm >
+                attacker.getDetectionRange() * 1.1 ||
+                distanceBetweenAttackerAndTargetNm >
+                  aircraftWeaponWithMaxRange.getEngagementRange() * 1.1))
           ) {
             routeAircraftToStrikePosition(
               this.currentScenario,
               attacker,
               mission.assignedTargetIds[0],
-              aircraftWeaponWithMaxRange.range
+              Math.min(
+                attacker.getDetectionRange(),
+                aircraftWeaponWithMaxRange.getEngagementRange()
+              )
             );
           } else if (
             distanceBetweenAttackerAndTargetNm <=
-            aircraftWeaponWithMaxRange.range * 1.1
+              attacker.getDetectionRange() * 1.1 &&
+            distanceBetweenAttackerAndTargetNm <=
+              aircraftWeaponWithMaxRange.getEngagementRange() * 1.1
           ) {
             const aircraftWeapon = attacker.getWeaponWithHighestRange();
             if (!aircraftWeapon) return;
