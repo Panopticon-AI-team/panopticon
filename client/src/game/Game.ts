@@ -452,6 +452,7 @@ export default class Game {
           homeBaseId: aircraft.homeBaseId,
           rtb: false,
           targetId: aircraft.targetId,
+          sideColor: aircraft.sideColor,
         });
         this.currentScenario.aircraft.push(newAircraft);
         return newAircraft;
