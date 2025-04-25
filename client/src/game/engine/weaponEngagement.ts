@@ -108,42 +108,44 @@ export function launchWeapon(
   )
     return;
 
-  const nextWeaponCoordinates = getNextCoordinates(
-    origin.latitude,
-    origin.longitude,
-    target.latitude,
-    target.longitude,
-    launchedWeapon.speed
-  );
-  const nextWeaponLatitude = nextWeaponCoordinates[0];
-  const nextWeaponLongitude = nextWeaponCoordinates[1];
-  const newWeapon = new Weapon({
-    id: randomUUID(),
-    name: launchedWeapon.name,
-    sideId: origin.sideId,
-    className: launchedWeapon.className,
-    latitude: nextWeaponLatitude,
-    longitude: nextWeaponLongitude,
-    altitude: launchedWeapon.altitude,
-    heading: getBearingBetweenTwoPoints(
-      nextWeaponLatitude,
-      nextWeaponLongitude,
+  for (let i = 0; i < launchedWeaponQuantity; i++) {
+    const nextWeaponCoordinates = getNextCoordinates(
+      origin.latitude,
+      origin.longitude,
       target.latitude,
-      target.longitude
-    ),
-    speed: launchedWeapon.speed,
-    currentFuel: launchedWeapon.currentFuel,
-    maxFuel: launchedWeapon.maxFuel,
-    fuelRate: launchedWeapon.fuelRate,
-    range: launchedWeapon.range,
-    route: [[target.latitude, target.longitude]],
-    sideColor: launchedWeapon.sideColor,
-    targetId: target.id,
-    lethality: launchedWeapon.lethality,
-    maxQuantity: launchedWeapon.maxQuantity,
-    currentQuantity: launchedWeapon.currentQuantity,
-  });
-  currentScenario.weapons.push(newWeapon);
+      target.longitude,
+      launchedWeapon.speed
+    );
+    const nextWeaponLatitude = nextWeaponCoordinates[0];
+    const nextWeaponLongitude = nextWeaponCoordinates[1];
+    const newWeapon = new Weapon({
+      id: randomUUID(),
+      name: launchedWeapon.name,
+      sideId: origin.sideId,
+      className: launchedWeapon.className,
+      latitude: nextWeaponLatitude,
+      longitude: nextWeaponLongitude,
+      altitude: launchedWeapon.altitude,
+      heading: getBearingBetweenTwoPoints(
+        nextWeaponLatitude,
+        nextWeaponLongitude,
+        target.latitude,
+        target.longitude
+      ),
+      speed: launchedWeapon.speed,
+      currentFuel: launchedWeapon.currentFuel,
+      maxFuel: launchedWeapon.maxFuel,
+      fuelRate: launchedWeapon.fuelRate,
+      range: launchedWeapon.range,
+      route: [[target.latitude, target.longitude]],
+      sideColor: launchedWeapon.sideColor,
+      targetId: target.id,
+      lethality: launchedWeapon.lethality,
+      maxQuantity: 1,
+      currentQuantity: 1,
+    });
+    currentScenario.weapons.push(newWeapon);
+  }
   launchedWeapon.currentQuantity -= launchedWeaponQuantity;
   if (launchedWeapon.currentQuantity < 1) {
     origin.weapons = origin.weapons.filter(

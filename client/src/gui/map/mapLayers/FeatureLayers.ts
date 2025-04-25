@@ -44,7 +44,7 @@ type GameEntity =
   | Weapon
   | Ship
   | ReferencePoint;
-type GameEntityWithRange = Facility | Ship;
+type GameEntityWithRange = Aircraft | Facility | Ship;
 type GameEntityWithRoute = Aircraft | Ship;
 
 const defaultProjection = getProjection(DEFAULT_OL_PROJECTION_CODE);

@@ -712,7 +712,6 @@ export default function ScenarioMap({
     const excludedFeatureTypes = [
       "rangeRing",
       "route",
-      "weapon",
       "aircraftFeatureLabel",
       "facilityFeatureLabel",
       "airbaseFeatureLabel",
@@ -723,6 +722,7 @@ export default function ScenarioMap({
       "facility",
       "airbase",
       "ship",
+      "weapon",
       "referencePoint",
     ];
     theMap.forEachFeatureAtPixel(

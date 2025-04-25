@@ -44,6 +44,7 @@ export default function MultipleFeatureSelector({
       | "ship"
       | "facility"
       | "referencePoint"
+      | "weapon"
       | undefined
   ) => {
     if (featureType) {
