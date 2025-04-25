@@ -343,6 +343,13 @@ export default class Game {
       );
   }
 
+  removeWeapon(weaponId: string) {
+    this.recordHistory();
+    this.currentScenario.weapons = this.currentScenario.weapons.filter(
+      (weapon) => weapon.id !== weaponId
+    );
+  }
+
   removeAirbase(airbaseId: string) {
     this.recordHistory();
     this.currentScenario.airbases = this.currentScenario.airbases.filter(
@@ -743,6 +750,13 @@ export default class Game {
         }
       });
       return referencePoint;
+    }
+    const weapon = this.currentScenario.getWeapon(unitId);
+    if (weapon) {
+      this.recordHistory();
+      weapon.latitude = newLatitude;
+      weapon.longitude = newLongitude;
+      return weapon;
     }
   }
 

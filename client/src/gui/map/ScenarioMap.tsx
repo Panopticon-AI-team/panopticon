@@ -65,6 +65,7 @@ import SideEditor from "@/gui/map/toolbar/SideEditor";
 import { useAuth0 } from "@auth0/auth0-react";
 import MapContextMenu from "@/gui/map/MapContextMenu";
 import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
+import WeaponCard from "./feature/WeaponCard";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -184,6 +185,12 @@ export default function ScenarioMap({
     top: 0,
     left: 0,
     referencePointId: "",
+  });
+  const [openWeaponCard, setOpenWeaponCard] = useState({
+    open: false,
+    top: 0,
+    left: 0,
+    weaponId: "",
   });
   const [openMultipleFeatureSelector, setOpenMultipleFeatureSelector] =
     useState<IOpenMultipleFeatureSelector>({
@@ -632,6 +639,23 @@ export default function ScenarioMap({
           top: referencePointPixels[1],
           left: referencePointPixels[0],
           referencePointId: currentSelectedFeatureId,
+        });
+      } else if (
+        currentSelectedFeatureType === "weapon" &&
+        game.currentScenario.getWeapon(currentSelectedFeatureId)
+      ) {
+        if (game.eraserMode) {
+          removeWeapon(currentSelectedFeatureId);
+          return;
+        }
+        const weaponGeometry = feature.getGeometry() as Point;
+        const weaponCoordinate = weaponGeometry.getCoordinates();
+        const weaponPixels = theMap.getPixelFromCoordinate(weaponCoordinate);
+        setOpenWeaponCard({
+          open: true,
+          top: weaponPixels[1],
+          left: weaponPixels[0],
+          weaponId: currentSelectedFeatureId,
         });
       }
       setKeyboardShortcutsEnabled(false);
@@ -1263,6 +1287,11 @@ export default function ScenarioMap({
     handleFeatureEntityStateAction({ id: referencePointId }, "remove");
     if (featureLabelVisible)
       featureLabelLayer.removeFeatureById(referencePointId);
+  }
+
+  function removeWeapon(weaponId: string) {
+    game.removeWeapon(weaponId);
+    weaponLayer.removeFeatureById(weaponId);
   }
 
   function addShip(
@@ -2262,6 +2291,28 @@ export default function ScenarioMap({
                 top: 0,
                 left: 0,
                 referencePointId: "",
+              });
+              setKeyboardShortcutsEnabled(true);
+            }}
+          />
+        )}
+      {openWeaponCard.open &&
+        game.currentScenario.getWeapon(openWeaponCard.weaponId) && (
+          <WeaponCard
+            weapon={game.currentScenario.getWeapon(openWeaponCard.weaponId)!}
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getWeapon(openWeaponCard.weaponId)?.sideId
+            )}
+            handleTeleportUnit={queueUnitForTeleport}
+            handleDeleteWeapon={removeWeapon}
+            anchorPositionTop={openWeaponCard.top}
+            anchorPositionLeft={openWeaponCard.left}
+            handleCloseOnMap={() => {
+              setOpenWeaponCard({
+                open: false,
+                top: 0,
+                left: 0,
+                weaponId: "",
               });
               setKeyboardShortcutsEnabled(true);
             }}
