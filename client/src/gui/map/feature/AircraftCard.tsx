@@ -492,6 +492,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           component={Paper}
           sx={{
             width: "100%",
+            minWidth: 420,
             backgroundColor: "transparent",
             boxShadow: "none",
           }}

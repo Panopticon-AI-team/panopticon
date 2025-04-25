@@ -57,7 +57,11 @@ const QuantitySlider: React.FC<QuantitySliderProps> = ({
       <Card sx={{ bgcolor: "transparent", boxShadow: "none", minWidth: 260 }}>
         <CardHeader
           title={
-            <Typography variant="h6" component="div" sx={{ color: "white" }}>
+            <Typography
+              variant="subtitle1"
+              component="div"
+              sx={{ color: "white", textAlign: "center" }}
+            >
               How many to launch?
             </Typography>
           }
