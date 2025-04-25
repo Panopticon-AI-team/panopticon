@@ -37,6 +37,7 @@ import { colorPalette } from "@/utils/constants";
 import { Add, MoreVert, Remove } from "@mui/icons-material";
 import Weapon from "@/game/units/Weapon";
 import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
+import QuantitySlider from "@/gui/map/feature/shared/QuantitySlider";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -117,6 +118,13 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
   const [addWeaponMenuAnchorEl, setAddWeaponMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const openAddWeaponMenu = Boolean(addWeaponMenuAnchorEl);
+  const [launchWeaponMenuAnchorEl, setLaunchWeaponMenuAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+  const openLaunchWeaponMenu = Boolean(launchWeaponMenuAnchorEl);
+  const [currentWeaponLaunchParams, setCurrentWeaponLaunchParams] = useState({
+    weaponId: "",
+    weaponMaxQuantity: 0,
+  });
   const unitDbContext = useContext(UnitDbContext);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -133,6 +141,21 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
   const handleCloseAddWeaponMenu = () => {
     setAddWeaponMenuAnchorEl(null);
   };
+  const handleClickLaunchWeaponButton = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    weaponId: string
+  ) => {
+    const weapon = aircraftWeapons.find((w) => w.id === weaponId);
+    if (!weapon || (weapon && weapon.currentQuantity <= 0)) return;
+    setCurrentWeaponLaunchParams({
+      weaponId: weaponId,
+      weaponMaxQuantity: weapon.currentQuantity,
+    });
+    setLaunchWeaponMenuAnchorEl(event.currentTarget);
+  };
+  const handleCloseLaunchWeaponMenu = () => {
+    setLaunchWeaponMenuAnchorEl(null);
+  };
 
   const _handleDeleteAircraft = () => {
     props.handleCloseOnMap();
@@ -144,9 +167,13 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     props.handleMoveAircraft(props.aircraft.id);
   };
 
-  const _handleAircraftAttack = (weaponId: string, weaponQuantity: number) => {
+  const _handleAircraftAttack = (weaponQuantity: number) => {
     props.handleCloseOnMap();
-    props.handleAircraftAttack(props.aircraft.id, weaponId, weaponQuantity);
+    props.handleAircraftAttack(
+      props.aircraft.id,
+      currentWeaponLaunchParams.weaponId,
+      weaponQuantity
+    );
   };
 
   const _handleAircraftRtb = () => {
@@ -553,7 +580,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                       <>
                         <Tooltip title={`Launch Weapon`}>
                           <IconButton
-                            onClick={() => _handleAircraftAttack(weapon.id, 1)}
+                            onClick={(
+                              event: React.MouseEvent<HTMLButtonElement>
+                            ) => {
+                              handleClickLaunchWeaponButton(event, weapon.id);
+                            }}
                           >
                             <RocketLaunchIcon sx={{ color: "white" }} />
                           </IconButton>
@@ -599,6 +630,15 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             </MenuItem>
           ))}
         </Menu>
+        <QuantitySlider
+          open={openLaunchWeaponMenu}
+          anchorEl={launchWeaponMenuAnchorEl}
+          min={currentWeaponLaunchParams.weaponMaxQuantity > 0 ? 1 : 0}
+          max={currentWeaponLaunchParams.weaponMaxQuantity}
+          startValue={1}
+          handleCloseOnMap={handleCloseLaunchWeaponMenu}
+          handleConfirm={_handleAircraftAttack}
+        />
       </>
     );
   };
