@@ -808,7 +808,13 @@ export default class Game {
     }
   }
 
-  handleShipAttack(shipId: string, targetId: string) {
+  handleShipAttack(
+    shipId: string,
+    targetId: string,
+    weaponId: string,
+    weaponQuantity: number
+  ) {
+    if (weaponQuantity <= 0) return;
     const target =
       this.currentScenario.getAircraft(targetId) ??
       this.currentScenario.getFacility(targetId) ??
@@ -816,7 +822,7 @@ export default class Game {
       this.currentScenario.getShip(targetId) ??
       this.currentScenario.getAirbase(targetId);
     const ship = this.currentScenario.getShip(shipId);
-    const weapon = ship?.weapons[0];
+    const weapon = ship?.weapons.find((weapon) => weapon.id === weaponId);
     if (
       target &&
       ship &&
@@ -825,7 +831,7 @@ export default class Game {
       target?.id !== ship?.id
     ) {
       this.recordHistory();
-      launchWeapon(this.currentScenario, ship, target, weapon, 1);
+      launchWeapon(this.currentScenario, ship, target, weapon, weaponQuantity);
     }
   }
 

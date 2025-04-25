@@ -33,6 +33,8 @@ import {
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
 import { MoreVert } from "@mui/icons-material";
+import Weapon from "@/game/units/Weapon";
+import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
 
 interface ShipCardProps {
   ship: Ship;
@@ -41,17 +43,27 @@ interface ShipCardProps {
   handleLaunchAircraft: (shipId: string) => void;
   handleDeleteShip: (shipId: string) => void;
   handleMoveShip: (shipId: string) => void;
-  handleShipAttack: (shipId: string) => void;
+  handleShipAttack: (
+    shipId: string,
+    weaponId: string,
+    weaponQuantity: number
+  ) => void;
   handleTeleportUnit: (unitId: string) => void;
   handleEditShip: (
     shipId: string,
     shipName: string,
     shipClassName: string,
     shipSpeed: number,
-    shipWeaponQuantity: number,
     shipCurrentFuel: number,
     shipRange: number
   ) => void;
+  handleAddWeapon: (shipId: string, weaponClassName: string) => Weapon[];
+  handleDeleteWeapon: (shipId: string, weaponId: string) => Weapon[];
+  handleUpdateWeaponQuantity: (
+    shipId: string,
+    weaponId: string,
+    increment: number
+  ) => Weapon[];
   handleCloseOnMap: () => void;
   anchorPositionTop: number;
   anchorPositionLeft: number;
@@ -80,15 +92,17 @@ const tableValueCellStyle = {
   typography: "body1",
 };
 
+type CARD_CONTENT_CONTEXT = "default" | "editing" | "weapons";
+
 export default function ShipCard(props: Readonly<ShipCardProps>) {
-  const [editing, setEditing] = useState(false);
+  const [cardContentContext, setCardContentContext] =
+    useState<CARD_CONTENT_CONTEXT>("default");
   const [tempEditData, setTempEditData] = useState({
     name: props.ship.name,
     className: props.ship.className,
     speed: props.ship.speed,
     currentFuel: props.ship.currentFuel,
     range: props.ship.range,
-    weaponQuantity: props.ship.getTotalWeaponQuantity(),
   });
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -123,18 +137,22 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
     props.handleMoveShip(props.ship.id);
   };
 
-  const _handleShipAttack = () => {
-    props.handleCloseOnMap();
-    props.handleShipAttack(props.ship.id);
-  };
-
   const _handleTeleportShip = () => {
     props.handleCloseOnMap();
     props.handleTeleportUnit(props.ship.id);
   };
 
   const toggleEdit = () => {
-    setEditing(!editing);
+    setCardContentContext(
+      cardContentContext !== "editing" ? "editing" : "default"
+    );
+  };
+
+  const toggleWeapons = () => {
+    handleClose();
+    setCardContentContext(
+      cardContentContext !== "weapons" ? "weapons" : "default"
+    );
   };
 
   const handleSaveEditedShip = () => {
@@ -143,7 +161,6 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
       tempEditData.name,
       tempEditData.className,
       tempEditData.speed,
-      tempEditData.weaponQuantity,
       tempEditData.currentFuel,
       tempEditData.range
     );
@@ -165,12 +182,6 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
       case "ship-speed-text-field": {
         const newSpeed = parseInt(event.target.value);
         if (newSpeed) setTempEditData({ ...tempEditData, speed: newSpeed });
-        break;
-      }
-      case "ship-weapon-quantity-text-field": {
-        const newWeaponCount = parseInt(event.target.value);
-        if (newWeaponCount)
-          setTempEditData({ ...tempEditData, weaponQuantity: newWeaponCount });
         break;
       }
       case "ship-current-fuel-text-field": {
@@ -246,14 +257,6 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
           </TableRow>
           <TableRow sx={tableRowStyle}>
             <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
-              Weapon Quantity:
-            </TableCell>
-            <TableCell align="right" sx={tableValueCellStyle}>
-              {props.ship.getTotalWeaponQuantity()}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={tableRowStyle}>
-            <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
               Aircraft Quantity:
             </TableCell>
             <TableCell align="right" sx={tableValueCellStyle}>
@@ -320,19 +323,6 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
           />
           <TextField
             autoComplete="off"
-            id="ship-weapon-quantity-text-field"
-            label="Weapon Quantity"
-            defaultValue={props.ship.getTotalWeaponQuantity().toString()}
-            onChange={_handleTextFieldChange}
-            sx={inputStyle}
-            slotProps={{
-              inputLabel: {
-                ...inputLabelStyle,
-              },
-            }}
-          />
-          <TextField
-            autoComplete="off"
             id="ship-current-fuel-text-field"
             label="Current Fuel"
             defaultValue={props.ship.currentFuel.toFixed(0)}
@@ -372,9 +362,8 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
         />
         Plot Course
       </ListItemButton>
-      <ListItemButton onClick={_handleShipAttack}>
-        <RocketLaunchIcon sx={{ mr: 0.5 }} />
-        Attack
+      <ListItemButton onClick={toggleWeapons}>
+        <RocketLaunchIcon sx={{ mr: 0.5 }} /> View Weapons
       </ListItemButton>
       <ListItemButton onClick={_handleAddAircraft}>
         <AddIcon
@@ -417,6 +406,20 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
     </Stack>
   );
 
+  const weaponsCardActions = (
+    <Stack direction={"row"} spacing={1} sx={{ p: 1, m: 1 }}>
+      <Button
+        fullWidth
+        variant="outlined"
+        size="small"
+        sx={{ color: "white", borderColor: "white" }}
+        onClick={toggleWeapons}
+      >
+        Back
+      </Button>
+    </Stack>
+  );
+
   const shipCard = (
     <Box sx={{ minWidth: 150 }}>
       <Card
@@ -432,7 +435,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
         <CardHeader
           action={
             <>
-              {!editing && (
+              {cardContentContext === "default" && (
                 <Stack direction={"row"} spacing={0}>
                   <Tooltip title={`Edit ${props.ship.name}`}>
                     <IconButton onClick={toggleEdit}>
@@ -505,10 +508,21 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
           sx={{ borderColor: "white", mb: 1 }}
         />
         <CardContent sx={{ pt: 0 }}>
-          {!editing && shipDataContent}
-          {editing && editingContent()}
+          {cardContentContext === "default" && shipDataContent}
+          {cardContentContext === "editing" && editingContent()}
+          {cardContentContext === "weapons" && (
+            <WeaponTable
+              unitWithWeapon={props.ship}
+              handleAddWeapon={props.handleAddWeapon}
+              handleDeleteWeapon={props.handleDeleteWeapon}
+              handleUpdateWeaponQuantity={props.handleUpdateWeaponQuantity}
+              handleUnitAttack={props.handleShipAttack}
+              handleCloseOnMap={props.handleCloseOnMap}
+            />
+          )}
         </CardContent>
-        {editing && editingCardActions}
+        {cardContentContext === "editing" && editingCardActions}
+        {cardContentContext === "weapons" && weaponsCardActions}
       </Card>
     </Box>
   );

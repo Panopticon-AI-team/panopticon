@@ -489,7 +489,9 @@ export default function ScenarioMap({
         const targetId = targetFeature.getProperties()?.id;
         game.handleShipAttack(
           game.currentAttackParams.currentAttackerId,
-          targetId
+          targetId,
+          game.currentAttackParams.currentWeaponId,
+          game.currentAttackParams.currentWeaponQuantity
         );
         resetAttack();
         setCurrentGameStatusToContext("Target acquired");
@@ -1420,10 +1422,19 @@ export default function ScenarioMap({
     changeCursorType("crosshair");
   }
 
-  function handleShipAttack(shipId: string) {
+  function handleShipAttack(
+    shipId: string,
+    weaponId: string,
+    weaponQuantity: number = 1
+  ) {
     game.selectingTarget = true;
-    game.currentAttackParams.currentAttackerId = shipId;
+    game.currentAttackParams = {
+      currentAttackerId: shipId,
+      currentWeaponId: weaponId,
+      currentWeaponQuantity: weaponQuantity,
+    };
     setCurrentGameStatusToContext("Select an enemy target to attack");
+    changeCursorType("crosshair");
   }
 
   function queueAircraftForMovement(aircraftId: string) {
@@ -1551,6 +1562,36 @@ export default function ScenarioMap({
   ) {
     return game.currentScenario.updateFacilityWeaponQuantity(
       facilityId,
+      weaponId,
+      increment
+    );
+  }
+
+  function handleAddWeaponToShip(shipId: string, weaponClassName: string) {
+    const weaponTemplate = unitDbContext
+      .getWeaponDb()
+      .find((weapon) => weapon.className === weaponClassName);
+    return game.currentScenario.addWeaponToShip(
+      shipId,
+      weaponTemplate?.className,
+      weaponTemplate?.speed, // in knots
+      weaponTemplate?.maxFuel,
+      weaponTemplate?.fuelRate, // in lbs/hr
+      weaponTemplate?.lethality
+    );
+  }
+
+  function handleDeleteWeaponFromShip(shipId: string, weaponId: string) {
+    return game.currentScenario.deleteWeaponFromShip(shipId, weaponId);
+  }
+
+  function handleUpdateShipWeaponQuantity(
+    shipId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    return game.currentScenario.updateShipWeaponQuantity(
+      shipId,
       weaponId,
       increment
     );
@@ -1835,7 +1876,6 @@ export default function ScenarioMap({
     shipName: string,
     shipClassName: string,
     shipSpeed: number,
-    shipWeaponQuantity: number,
     shipCurrentFuel: number,
     shipRange: number
   ) {
@@ -1845,7 +1885,6 @@ export default function ScenarioMap({
       shipClassName,
       shipSpeed,
       shipCurrentFuel,
-      shipWeaponQuantity,
       shipRange
     );
     threatRangeLayer.updateShipRangeFeature(shipId, shipRange);
@@ -2287,6 +2326,9 @@ export default function ScenarioMap({
             handleShipAttack={handleShipAttack}
             handleTeleportUnit={queueUnitForTeleport}
             handleEditShip={updateShip}
+            handleAddWeapon={handleAddWeaponToShip}
+            handleDeleteWeapon={handleDeleteWeaponFromShip}
+            handleUpdateWeaponQuantity={handleUpdateShipWeaponQuantity}
             anchorPositionTop={openShipCard.top}
             anchorPositionLeft={openShipCard.left}
             handleCloseOnMap={() => {
