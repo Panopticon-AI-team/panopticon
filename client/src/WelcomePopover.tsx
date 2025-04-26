@@ -8,6 +8,7 @@ import {
   CardHeader,
   IconButton,
   CardContent,
+  Link,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { colorPalette } from "@/utils/constants";
@@ -111,6 +112,17 @@ const WelcomePopover: React.FC<WelcomePopoverProps> = ({ open, onClose }) => {
               onClick={onClose}
             />
             <LoginButton />
+            <Typography variant="body2">
+              By logging in you agree to our{" "}
+              <Link
+                href="http://panopticon-ai.com/privacy"
+                target="_blank"
+                rel="noopener"
+                underline="hover"
+              >
+                Privacy Policy
+              </Link>
+            </Typography>
           </Box>
         </CardContent>
       </Card>
