@@ -40,7 +40,7 @@ export default function HealthCheck() {
 
   let content;
   if (!env || env === "standalone") {
-    content = <Typography>Running in standalone mode</Typography>;
+    content = <Typography>Standalone mode</Typography>;
   } else if (status === "checking") {
     content = (
       <Box display="flex" alignItems="center" gap={1}>
