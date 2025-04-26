@@ -1521,6 +1521,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                   backgroundColor: "transparent",
                 },
                 display: { md: "flex" },
+                width: 47,
+                height: 47,
               }}
             >
               <PanopticonLogoSvg />
