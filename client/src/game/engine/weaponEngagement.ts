@@ -15,24 +15,41 @@ import {
   getNextCoordinates,
   getTerminalCoordinatesFromDistanceAndBearing,
   randomFloat,
+  randomInt,
 } from "@/utils/mapFunctions";
 import Airbase from "@/game/units/Airbase";
 import Ship from "@/game/units/Ship";
 
 export type Target = Aircraft | Facility | Weapon | Airbase | Ship;
 
-export function checkIfThreatIsWithinRange(
+export function isThreatDetected(
   threat: Aircraft | Weapon,
-  defender: Facility | Ship | Weapon
+  detector: Facility | Ship | Aircraft
 ): boolean {
   const projection = getProjection(DEFAULT_OL_PROJECTION_CODE);
-  const defenderRangeGeometry = new Circle(
-    fromLonLat([defender.longitude, defender.latitude], projection!),
-    defender.range * NAUTICAL_MILES_TO_METERS
+  const detectorRangeGeometry = new Circle(
+    fromLonLat([detector.longitude, detector.latitude], projection!),
+    detector.getDetectionRange() * NAUTICAL_MILES_TO_METERS
   );
-  return defenderRangeGeometry.intersectsCoordinate(
+  return detectorRangeGeometry.intersectsCoordinate(
     fromLonLat([threat.longitude, threat.latitude], projection!)
   );
+}
+
+export function weaponCanEngageTarget(target: Target, weapon: Weapon) {
+  const weaponEngagementRangeNm = weapon.getEngagementRange();
+  const distanceToTargetKm = getDistanceBetweenTwoPoints(
+    weapon.latitude,
+    weapon.longitude,
+    target.latitude,
+    target.longitude
+  );
+  const distanceToTargetNm =
+    (distanceToTargetKm * 1000) / NAUTICAL_MILES_TO_METERS;
+  if (distanceToTargetNm < weaponEngagementRangeNm) {
+    return true;
+  }
+  return false;
 }
 
 export function checkTargetTrackedByCount(
@@ -84,51 +101,60 @@ export function weaponEndgame(
 export function launchWeapon(
   currentScenario: Scenario,
   origin: Aircraft | Facility | Ship,
-  target: Target
+  target: Target,
+  launchedWeapon: Weapon,
+  launchedWeaponQuantity: number
 ) {
-  if (origin.weapons.length === 0) return;
+  if (
+    origin.weapons.length === 0 ||
+    launchedWeapon.currentQuantity < launchedWeaponQuantity
+  )
+    return;
 
-  const weaponWithMaxRangePrototype = origin.getWeaponWithHighestRange();
-  if (!weaponWithMaxRangePrototype) return;
-
-  const nextWeaponCoordinates = getNextCoordinates(
-    origin.latitude,
-    origin.longitude,
-    target.latitude,
-    target.longitude,
-    weaponWithMaxRangePrototype.speed
-  );
-  const nextWeaponLatitude = nextWeaponCoordinates[0];
-  const nextWeaponLongitude = nextWeaponCoordinates[1];
-  const newWeapon = new Weapon({
-    id: randomUUID(),
-    name: weaponWithMaxRangePrototype.name,
-    sideId: origin.sideId,
-    className: weaponWithMaxRangePrototype.className,
-    latitude: nextWeaponLatitude,
-    longitude: nextWeaponLongitude,
-    altitude: weaponWithMaxRangePrototype.altitude,
-    heading: getBearingBetweenTwoPoints(
-      nextWeaponLatitude,
-      nextWeaponLongitude,
+  for (let i = 0; i < launchedWeaponQuantity; i++) {
+    const nextWeaponCoordinates = getNextCoordinates(
+      origin.latitude,
+      origin.longitude,
       target.latitude,
-      target.longitude
-    ),
-    speed: weaponWithMaxRangePrototype.speed,
-    currentFuel: weaponWithMaxRangePrototype.currentFuel,
-    maxFuel: weaponWithMaxRangePrototype.maxFuel,
-    fuelRate: weaponWithMaxRangePrototype.fuelRate,
-    range: weaponWithMaxRangePrototype.range,
-    route: [[target.latitude, target.longitude]],
-    sideColor: weaponWithMaxRangePrototype.sideColor,
-    targetId: target.id,
-    lethality: weaponWithMaxRangePrototype.lethality,
-    maxQuantity: weaponWithMaxRangePrototype.maxQuantity,
-    currentQuantity: weaponWithMaxRangePrototype.currentQuantity,
-  });
-  currentScenario.weapons.push(newWeapon);
-  origin.weapons[0].currentQuantity -= 1;
-  if (origin.weapons[0].currentQuantity < 1) origin.weapons.shift();
+      target.longitude,
+      launchedWeapon.speed
+    );
+    const nextWeaponLatitude = nextWeaponCoordinates[0];
+    const nextWeaponLongitude = nextWeaponCoordinates[1];
+    const newWeapon = new Weapon({
+      id: randomUUID(),
+      name: `${launchedWeapon.name} #${randomInt(1000)}`,
+      sideId: origin.sideId,
+      className: launchedWeapon.className,
+      latitude: nextWeaponLatitude,
+      longitude: nextWeaponLongitude,
+      altitude: launchedWeapon.altitude,
+      heading: getBearingBetweenTwoPoints(
+        nextWeaponLatitude,
+        nextWeaponLongitude,
+        target.latitude,
+        target.longitude
+      ),
+      speed: launchedWeapon.speed,
+      currentFuel: launchedWeapon.currentFuel,
+      maxFuel: launchedWeapon.maxFuel,
+      fuelRate: launchedWeapon.fuelRate,
+      range: launchedWeapon.range,
+      route: [[target.latitude, target.longitude]],
+      sideColor: launchedWeapon.sideColor,
+      targetId: target.id,
+      lethality: launchedWeapon.lethality,
+      maxQuantity: 1,
+      currentQuantity: 1,
+    });
+    currentScenario.weapons.push(newWeapon);
+  }
+  launchedWeapon.currentQuantity -= launchedWeaponQuantity;
+  if (launchedWeapon.currentQuantity < 1) {
+    origin.weapons = origin.weapons.filter(
+      (currentOriginWeapon) => currentOriginWeapon.id !== launchedWeapon.id
+    );
+  }
 }
 
 export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
@@ -141,13 +167,14 @@ export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
   if (target) {
     const weaponRoute = weapon.route;
     if (weaponRoute.length > 0) {
+      // there is a weird bug where a weapon will be teleported a vast distance if it gets too close to the target but weaponEndgame is not called, current solution is to set threshold to 1 km
       if (
         getDistanceBetweenTwoPoints(
           weapon.latitude,
           weapon.longitude,
           target.latitude,
           target.longitude
-        ) < 0.5
+        ) < 1
       ) {
         weaponEndgame(currentScenario, weapon, target);
       } else {

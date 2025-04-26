@@ -12,6 +12,7 @@ import StrikeMission from "@/game/mission/StrikeMission";
 import { Mission } from "@/game/Game";
 import { SIDE_COLOR } from "@/utils/colors";
 import Relationships from "@/game/Relationships";
+import { randomUUID } from "@/utils/generateUUID";
 
 type HomeBase = Airbase | Ship;
 
@@ -150,28 +151,281 @@ export default class Scenario {
     this.name = name;
   }
 
+  deleteWeaponFromAircraft(aircraftId: string, weaponId: string): Weapon[] {
+    const aircraft = this.getAircraft(aircraftId);
+    let aircraftWeapons: Weapon[] = [];
+    if (aircraft) {
+      const weaponIndex = aircraft.weapons.findIndex(
+        (weapon) => weapon.id === weaponId
+      );
+      if (weaponIndex !== -1) {
+        aircraft.weapons.splice(weaponIndex, 1);
+      }
+      aircraftWeapons = aircraft.weapons;
+    }
+    return aircraftWeapons;
+  }
+
+  updateAircraftWeaponQuantity(
+    aircraftId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    const aircraft = this.getAircraft(aircraftId);
+    let aircraftWeapons: Weapon[] = [];
+    if (aircraft) {
+      const weapon = aircraft.weapons.find((weapon) => weapon.id === weaponId);
+      if (weapon) {
+        weapon.currentQuantity += increment;
+        if (weapon.currentQuantity < 0) {
+          weapon.currentQuantity = 0;
+        }
+      }
+      aircraftWeapons = aircraft.weapons;
+    }
+    return aircraftWeapons;
+  }
+
+  addWeaponToAircraft(
+    aircraftId: string,
+    weaponClassName?: string,
+    weaponSpeed?: number,
+    weaponMaxFuel?: number,
+    weaponFuelRate?: number,
+    weaponLethality?: number
+  ): Weapon[] {
+    const aircraft = this.getAircraft(aircraftId);
+    let aircraftWeapons: Weapon[] = [];
+    if (aircraft) {
+      aircraftWeapons = aircraft.weapons;
+      if (
+        !(
+          weaponClassName &&
+          weaponSpeed &&
+          weaponMaxFuel &&
+          weaponFuelRate &&
+          weaponLethality
+        )
+      ) {
+        return aircraftWeapons;
+      }
+      if (
+        aircraft.weapons.find((weapon) => weapon.className === weaponClassName)
+      ) {
+        return aircraftWeapons;
+      }
+      const weapon = new Weapon({
+        id: randomUUID(),
+        name: weaponClassName,
+        sideId: aircraft.sideId,
+        className: weaponClassName,
+        latitude: 0.0,
+        longitude: 0.0,
+        altitude: 10000.0,
+        heading: 90.0,
+        speed: weaponSpeed,
+        currentFuel: weaponMaxFuel,
+        maxFuel: weaponMaxFuel,
+        fuelRate: weaponFuelRate,
+        range: 100,
+        sideColor: aircraft.sideColor,
+        targetId: null,
+        lethality: weaponLethality,
+        maxQuantity: 1,
+        currentQuantity: 1,
+      });
+      aircraftWeapons.push(weapon);
+    }
+    return aircraftWeapons;
+  }
+
+  deleteWeaponFromFacility(facilityId: string, weaponId: string): Weapon[] {
+    const facility = this.getFacility(facilityId);
+    let facilityWeapons: Weapon[] = [];
+    if (facility) {
+      const weaponIndex = facility.weapons.findIndex(
+        (weapon) => weapon.id === weaponId
+      );
+      if (weaponIndex !== -1) {
+        facility.weapons.splice(weaponIndex, 1);
+      }
+      facilityWeapons = facility.weapons;
+    }
+    return facilityWeapons;
+  }
+
+  updateFacilityWeaponQuantity(
+    facilityId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    const facility = this.getFacility(facilityId);
+    let facilityWeapons: Weapon[] = [];
+    if (facility) {
+      const weapon = facility.weapons.find((weapon) => weapon.id === weaponId);
+      if (weapon) {
+        weapon.currentQuantity += increment;
+        if (weapon.currentQuantity < 0) {
+          weapon.currentQuantity = 0;
+        }
+      }
+      facilityWeapons = facility.weapons;
+    }
+    return facilityWeapons;
+  }
+
+  addWeaponToFacility(
+    facilityId: string,
+    weaponClassName?: string,
+    weaponSpeed?: number,
+    weaponMaxFuel?: number,
+    weaponFuelRate?: number,
+    weaponLethality?: number
+  ): Weapon[] {
+    const facility = this.getFacility(facilityId);
+    let facilityWeapons: Weapon[] = [];
+    if (facility) {
+      facilityWeapons = facility.weapons;
+      if (
+        !(
+          weaponClassName &&
+          weaponSpeed &&
+          weaponMaxFuel &&
+          weaponFuelRate &&
+          weaponLethality
+        )
+      ) {
+        return facilityWeapons;
+      }
+      if (
+        facility.weapons.find((weapon) => weapon.className === weaponClassName)
+      ) {
+        return facilityWeapons;
+      }
+      const weapon = new Weapon({
+        id: randomUUID(),
+        name: weaponClassName,
+        sideId: facility.sideId,
+        className: weaponClassName,
+        latitude: 0.0,
+        longitude: 0.0,
+        altitude: 10000.0,
+        heading: 90.0,
+        speed: weaponSpeed,
+        currentFuel: weaponMaxFuel,
+        maxFuel: weaponMaxFuel,
+        fuelRate: weaponFuelRate,
+        range: 100,
+        sideColor: facility.sideColor,
+        targetId: null,
+        lethality: weaponLethality,
+        maxQuantity: 1,
+        currentQuantity: 1,
+      });
+      facilityWeapons.push(weapon);
+    }
+    return facilityWeapons;
+  }
+
+  deleteWeaponFromShip(shipId: string, weaponId: string): Weapon[] {
+    const ship = this.getShip(shipId);
+    let shipWeapons: Weapon[] = [];
+    if (ship) {
+      const weaponIndex = ship.weapons.findIndex(
+        (weapon) => weapon.id === weaponId
+      );
+      if (weaponIndex !== -1) {
+        ship.weapons.splice(weaponIndex, 1);
+      }
+      shipWeapons = ship.weapons;
+    }
+    return shipWeapons;
+  }
+
+  updateShipWeaponQuantity(
+    shipId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    const ship = this.getShip(shipId);
+    let shipWeapons: Weapon[] = [];
+    if (ship) {
+      const weapon = ship.weapons.find((weapon) => weapon.id === weaponId);
+      if (weapon) {
+        weapon.currentQuantity += increment;
+        if (weapon.currentQuantity < 0) {
+          weapon.currentQuantity = 0;
+        }
+      }
+      shipWeapons = ship.weapons;
+    }
+    return shipWeapons;
+  }
+
+  addWeaponToShip(
+    shipId: string,
+    weaponClassName?: string,
+    weaponSpeed?: number,
+    weaponMaxFuel?: number,
+    weaponFuelRate?: number,
+    weaponLethality?: number
+  ): Weapon[] {
+    const ship = this.getShip(shipId);
+    let shipWeapons: Weapon[] = [];
+    if (ship) {
+      shipWeapons = ship.weapons;
+      if (
+        !(
+          weaponClassName &&
+          weaponSpeed &&
+          weaponMaxFuel &&
+          weaponFuelRate &&
+          weaponLethality
+        )
+      ) {
+        return shipWeapons;
+      }
+      if (ship.weapons.find((weapon) => weapon.className === weaponClassName)) {
+        return shipWeapons;
+      }
+      const weapon = new Weapon({
+        id: randomUUID(),
+        name: weaponClassName,
+        sideId: ship.sideId,
+        className: weaponClassName,
+        latitude: 0.0,
+        longitude: 0.0,
+        altitude: 10000.0,
+        heading: 90.0,
+        speed: weaponSpeed,
+        currentFuel: weaponMaxFuel,
+        maxFuel: weaponMaxFuel,
+        fuelRate: weaponFuelRate,
+        range: 100,
+        sideColor: ship.sideColor,
+        targetId: null,
+        lethality: weaponLethality,
+        maxQuantity: 1,
+        currentQuantity: 1,
+      });
+      shipWeapons.push(weapon);
+    }
+    return shipWeapons;
+  }
+
   updateAircraft(
     aircraftId: string,
     aircraftName: string,
     aircraftClassName: string,
     aircraftSpeed: number,
-    aircraftWeaponQuantity: number,
     aircraftCurrentFuel: number,
-    aircraftFuelRate: number,
-    sampleWeapon: Weapon
+    aircraftFuelRate: number
   ) {
     const aircraft = this.getAircraft(aircraftId);
     if (aircraft) {
       aircraft.name = aircraftName;
       aircraft.className = aircraftClassName;
       aircraft.speed = aircraftSpeed;
-      if (aircraft.weapons.length < 1) {
-        aircraft.weapons = [sampleWeapon];
-      } else {
-        aircraft.weapons.forEach((weapon) => {
-          weapon.currentQuantity = aircraftWeaponQuantity;
-        });
-      }
       aircraft.currentFuel = aircraftCurrentFuel;
       aircraft.fuelRate = aircraftFuelRate;
     }
@@ -181,17 +435,13 @@ export default class Scenario {
     facilityId: string,
     facilityName: string,
     facilityClassName: string,
-    facilityRange: number,
-    facilityWeaponQuantity: number
+    facilityRange: number
   ) {
     const facility = this.getFacility(facilityId);
     if (facility) {
       facility.name = facilityName;
       facility.className = facilityClassName;
       facility.range = facilityRange;
-      facility.weapons.forEach((weapon) => {
-        weapon.currentQuantity = facilityWeaponQuantity;
-      });
     }
   }
 
@@ -208,7 +458,6 @@ export default class Scenario {
     shipClassName: string,
     shipSpeed: number,
     shipCurrentFuel: number,
-    shipWeaponQuantity: number,
     shipRange: number
   ) {
     const ship = this.getShip(shipId);
@@ -218,9 +467,6 @@ export default class Scenario {
       ship.speed = shipSpeed;
       ship.currentFuel = shipCurrentFuel;
       ship.range = shipRange;
-      ship.weapons.forEach((weapon) => {
-        weapon.currentQuantity = shipWeaponQuantity;
-      });
     }
   }
 

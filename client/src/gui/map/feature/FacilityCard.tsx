@@ -28,6 +28,9 @@ import {
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
+import { MoreVert, RocketLaunch } from "@mui/icons-material";
+import Weapon from "@/game/units/Weapon";
+import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
 
 interface FacilityCardProps {
   facility: Facility;
@@ -39,9 +42,15 @@ interface FacilityCardProps {
     facilityId: string,
     facilityName: string,
     facilityClassName: string,
-    facilityRange: number,
-    facilityWeaponQuantity: number
+    facilityRange: number
   ) => void;
+  handleAddWeapon: (facilityId: string, weaponClassName: string) => Weapon[];
+  handleDeleteWeapon: (facilityId: string, weaponId: string) => Weapon[];
+  handleUpdateWeaponQuantity: (
+    facilityId: string,
+    weaponId: string,
+    increment: number
+  ) => Weapon[];
   anchorPositionTop: number;
   anchorPositionLeft: number;
 }
@@ -69,13 +78,15 @@ const tableValueCellStyle = {
   typography: "body1",
 };
 
+type CARD_CONTENT_CONTEXT = "default" | "editing" | "weapons";
+
 export default function FacilityCard(props: Readonly<FacilityCardProps>) {
-  const [editing, setEditing] = useState(false);
+  const [cardContentContext, setCardContentContext] =
+    useState<CARD_CONTENT_CONTEXT>("default");
   const [tempEditData, setTempEditData] = useState({
     name: props.facility.name,
     className: props.facility.className,
     range: props.facility.range,
-    weaponQuantity: props.facility.getTotalWeaponQuantity(),
   });
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -98,7 +109,16 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
   };
 
   const toggleEdit = () => {
-    setEditing(!editing);
+    setCardContentContext(
+      cardContentContext !== "editing" ? "editing" : "default"
+    );
+  };
+
+  const toggleWeapons = () => {
+    handleClose();
+    setCardContentContext(
+      cardContentContext !== "weapons" ? "weapons" : "default"
+    );
   };
 
   const handleSaveEditedFacility = () => {
@@ -106,8 +126,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
       props.facility.id,
       tempEditData.name,
       tempEditData.className,
-      tempEditData.range,
-      tempEditData.weaponQuantity
+      tempEditData.range
     );
     toggleEdit();
   };
@@ -127,12 +146,6 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
       case "facility-range-text-field": {
         const newRange = parseInt(event.target.value);
         if (newRange) setTempEditData({ ...tempEditData, range: newRange });
-        break;
-      }
-      case "facility-weapon-quantity-text-field": {
-        const newWeaponCount = parseInt(event.target.value);
-        if (newWeaponCount)
-          setTempEditData({ ...tempEditData, weaponQuantity: newWeaponCount });
         break;
       }
       case "default": {
@@ -173,18 +186,10 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
           </TableRow>
           <TableRow sx={tableRowStyle}>
             <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
-              Range:
+              Detection Range:
             </TableCell>
             <TableCell align="right" sx={tableValueCellStyle}>
               {props.facility.range.toFixed(0)} NM
-            </TableCell>
-          </TableRow>
-          <TableRow sx={tableRowStyle}>
-            <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
-              Weapon Quantity:
-            </TableCell>
-            <TableCell align="right" sx={tableValueCellStyle}>
-              {props.facility.getTotalWeaponQuantity()}
             </TableCell>
           </TableRow>
         </TableBody>
@@ -245,26 +250,16 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
               },
             }}
           />
-          <TextField
-            autoComplete="off"
-            id="facility-weapon-quantity-text-field"
-            label="Weapon Quantity"
-            defaultValue={props.facility.getTotalWeaponQuantity().toString()}
-            onChange={_handleTextFieldChange}
-            sx={inputStyle}
-            slotProps={{
-              inputLabel: {
-                ...inputLabelStyle,
-              },
-            }}
-          />
         </Stack>
       </form>
     );
   };
 
   const defaultCardActions = (
-    <Stack spacing={0.5} direction="column">
+    <Stack spacing={0.5} direction="column" onMouseLeave={handleClose}>
+      <ListItemButton onClick={toggleWeapons}>
+        <RocketLaunch sx={{ mr: 0.5 }} /> View Weapons
+      </ListItemButton>
       <ListItemButton onClick={_handleTeleportFacility}>
         <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
       </ListItemButton>
@@ -295,6 +290,20 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
     </Stack>
   );
 
+  const weaponsCardActions = (
+    <Stack direction={"row"} spacing={1} sx={{ p: 1, m: 1 }}>
+      <Button
+        fullWidth
+        variant="outlined"
+        size="small"
+        sx={{ color: "white", borderColor: "white" }}
+        onClick={toggleWeapons}
+      >
+        Back
+      </Button>
+    </Stack>
+  );
+
   const facilityCard = (
     <Box sx={{ minWidth: 150 }}>
       <Card
@@ -310,7 +319,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
         <CardHeader
           action={
             <>
-              {!editing && (
+              {cardContentContext === "default" && (
                 <Stack direction={"row"} spacing={0}>
                   <Tooltip title={`Edit ${props.facility.name}`}>
                     <IconButton onClick={toggleEdit}>
@@ -319,11 +328,11 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                   </Tooltip>
                   <Tooltip title={`Delete ${props.facility.name}`}>
                     <IconButton onClick={_handleDeleteFacility}>
-                      <DeleteIcon sx={{ color: "white" }} />
+                      <DeleteIcon sx={{ color: "red" }} />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <Button
+                    <IconButton
                       id="facility-feature-actions-button"
                       aria-controls={
                         open ? "facility-feature-actions-menu" : undefined
@@ -331,12 +340,9 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
-                      variant="outlined"
-                      size="small"
-                      color="inherit"
                     >
-                      Actions
-                    </Button>
+                      <MoreVert sx={{ color: "white" }} />
+                    </IconButton>
                   </Tooltip>
                   <Menu
                     id="facility-feature-actions-menu"
@@ -386,10 +392,20 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
           sx={{ borderColor: "white", mb: 1 }}
         />
         <CardContent sx={{ pt: 0 }}>
-          {!editing && facilityDataContent}
-          {editing && editingContent()}
+          {cardContentContext === "default" && facilityDataContent}
+          {cardContentContext === "editing" && editingContent()}
+          {cardContentContext === "weapons" && (
+            <WeaponTable
+              unitWithWeapon={props.facility}
+              handleAddWeapon={props.handleAddWeapon}
+              handleDeleteWeapon={props.handleDeleteWeapon}
+              handleUpdateWeaponQuantity={props.handleUpdateWeaponQuantity}
+              handleCloseOnMap={props.handleCloseOnMap}
+            />
+          )}
         </CardContent>
-        {editing && editingCardActions}
+        {cardContentContext === "editing" && editingCardActions}
+        {cardContentContext === "weapons" && weaponsCardActions}
       </Card>
     </Box>
   );

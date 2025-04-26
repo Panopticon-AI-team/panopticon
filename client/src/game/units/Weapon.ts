@@ -64,4 +64,8 @@ export default class Weapon {
     this.maxQuantity = parameters.maxQuantity;
     this.currentQuantity = parameters.currentQuantity;
   }
+
+  getEngagementRange(): number {
+    return this.speed * (this.currentFuel / this.fuelRate);
+  }
 }

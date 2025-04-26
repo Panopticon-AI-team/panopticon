@@ -37,6 +37,7 @@ import AirbaseCard from "@/gui/map/feature/AirbaseCard";
 import AircraftCard from "@/gui/map/feature/AircraftCard";
 import FacilityCard from "@/gui/map/feature/FacilityCard";
 import ShipCard from "@/gui/map/feature/ShipCard";
+import WeaponCard from "@/gui/map/feature/WeaponCard";
 import BaseMapLayers from "@/gui/map/mapLayers/BaseMapLayers";
 import { routeDrawLineStyle } from "@/gui/map/mapLayers/FeatureLayerStyles";
 import {
@@ -184,6 +185,12 @@ export default function ScenarioMap({
     top: 0,
     left: 0,
     referencePointId: "",
+  });
+  const [openWeaponCard, setOpenWeaponCard] = useState({
+    open: false,
+    top: 0,
+    left: 0,
+    weaponId: "",
   });
   const [openMultipleFeatureSelector, setOpenMultipleFeatureSelector] =
     useState<IOpenMultipleFeatureSelector>({
@@ -362,7 +369,18 @@ export default function ScenarioMap({
     };
   }, []);
 
-  theMap.on("click", (event) => handleMapClick(event));
+  theMap.on("click", (event) => {
+    if (game.selectingTarget) {
+      event.stopPropagation();
+    }
+    handleMapClick(event);
+  });
+
+  function changeCursorType(cursorType: string = "") {
+    if (theMap) {
+      theMap.getViewport().style.cursor = cursorType;
+    }
+  }
 
   function getSelectedFeatureType(featureId: string): string {
     let featureType = "";
@@ -381,7 +399,9 @@ export default function ScenarioMap({
       theMap.getEventPixel(event.originalEvent)
     );
     const selectedFeatureType = getSelectedFeatureType(game.selectedUnitId);
-    const attackerFeatureType = getSelectedFeatureType(game.currentAttackerId);
+    const attackerFeatureType = getSelectedFeatureType(
+      game.currentAttackParams.currentAttackerId
+    );
     if (selectedFeatureType === "aircraft" && routeMeasurementDrawLine) {
       context = "moveAircraft";
     } else if (selectedFeatureType === "ship" && routeMeasurementDrawLine) {
@@ -454,7 +474,12 @@ export default function ScenarioMap({
       case "aircraftSelectedAttackTarget": {
         const targetFeature = featuresAtPixel[0];
         const targetId = targetFeature.getProperties()?.id;
-        game.handleAircraftAttack(game.currentAttackerId, targetId);
+        game.handleAircraftAttack(
+          game.currentAttackParams.currentAttackerId,
+          targetId,
+          game.currentAttackParams.currentWeaponId,
+          game.currentAttackParams.currentWeaponQuantity
+        );
         resetAttack();
         setCurrentGameStatusToContext("Target acquired");
         break;
@@ -462,7 +487,12 @@ export default function ScenarioMap({
       case "shipSelectedAttackTarget": {
         const targetFeature = featuresAtPixel[0];
         const targetId = targetFeature.getProperties()?.id;
-        game.handleShipAttack(game.currentAttackerId, targetId);
+        game.handleShipAttack(
+          game.currentAttackParams.currentAttackerId,
+          targetId,
+          game.currentAttackParams.currentWeaponId,
+          game.currentAttackParams.currentWeaponQuantity
+        );
         resetAttack();
         setCurrentGameStatusToContext("Target acquired");
         break;
@@ -610,6 +640,23 @@ export default function ScenarioMap({
           left: referencePointPixels[0],
           referencePointId: currentSelectedFeatureId,
         });
+      } else if (
+        currentSelectedFeatureType === "weapon" &&
+        game.currentScenario.getWeapon(currentSelectedFeatureId)
+      ) {
+        if (game.eraserMode) {
+          removeWeapon(currentSelectedFeatureId);
+          return;
+        }
+        const weaponGeometry = feature.getGeometry() as Point;
+        const weaponCoordinate = weaponGeometry.getCoordinates();
+        const weaponPixels = theMap.getPixelFromCoordinate(weaponCoordinate);
+        setOpenWeaponCard({
+          open: true,
+          top: weaponPixels[1],
+          left: weaponPixels[0],
+          weaponId: currentSelectedFeatureId,
+        });
       }
       setKeyboardShortcutsEnabled(false);
     }
@@ -639,9 +686,9 @@ export default function ScenarioMap({
       addAircraft(
         coordinates,
         aircraftTemplate?.className,
-        aircraftTemplate?.speed ? aircraftTemplate?.speed / 1.151 : undefined,
+        aircraftTemplate?.speed,
         aircraftTemplate?.maxFuel,
-        aircraftTemplate?.fuelRate ? aircraftTemplate?.fuelRate * 8 : undefined,
+        aircraftTemplate?.fuelRate,
         aircraftTemplate?.range
       );
       game.addingAircraft = false;
@@ -668,9 +715,9 @@ export default function ScenarioMap({
       addShip(
         coordinates,
         shipTemplate?.className,
-        shipTemplate?.speed ? shipTemplate?.speed / 1.151 : undefined,
+        shipTemplate?.speed,
         shipTemplate?.maxFuel,
-        shipTemplate?.fuelRate ? shipTemplate?.fuelRate * 8 : undefined,
+        shipTemplate?.fuelRate,
         shipTemplate?.range
       );
       game.addingShip = false;
@@ -689,7 +736,6 @@ export default function ScenarioMap({
     const excludedFeatureTypes = [
       "rangeRing",
       "route",
-      "weapon",
       "aircraftFeatureLabel",
       "facilityFeatureLabel",
       "airbaseFeatureLabel",
@@ -700,6 +746,7 @@ export default function ScenarioMap({
       "facility",
       "airbase",
       "ship",
+      "weapon",
       "referencePoint",
     ];
     theMap.forEachFeatureAtPixel(
@@ -1242,6 +1289,11 @@ export default function ScenarioMap({
       featureLabelLayer.removeFeatureById(referencePointId);
   }
 
+  function removeWeapon(weaponId: string) {
+    game.removeWeapon(weaponId);
+    weaponLayer.removeFeatureById(weaponId);
+  }
+
   function addShip(
     coordinates: number[],
     className?: string,
@@ -1344,22 +1396,45 @@ export default function ScenarioMap({
 
   function resetAttack() {
     game.selectingTarget = false;
-    game.currentAttackerId = "";
+    game.currentAttackParams = {
+      currentAttackerId: "",
+      currentWeaponId: "",
+      currentWeaponQuantity: 0,
+    };
     setCurrentGameStatusToContext(
       game.scenarioPaused ? "Scenario paused" : "Scenario playing"
     );
+    changeCursorType("");
   }
 
-  function handleAircraftAttack(aircraftId: string) {
+  function handleAircraftAttack(
+    aircraftId: string,
+    weaponId: string,
+    weaponQuantity: number = 1
+  ) {
     game.selectingTarget = true;
-    game.currentAttackerId = aircraftId;
+    game.currentAttackParams = {
+      currentAttackerId: aircraftId,
+      currentWeaponId: weaponId,
+      currentWeaponQuantity: weaponQuantity,
+    };
     setCurrentGameStatusToContext("Select an enemy target to attack");
+    changeCursorType("crosshair");
   }
 
-  function handleShipAttack(shipId: string) {
+  function handleShipAttack(
+    shipId: string,
+    weaponId: string,
+    weaponQuantity: number = 1
+  ) {
     game.selectingTarget = true;
-    game.currentAttackerId = shipId;
+    game.currentAttackParams = {
+      currentAttackerId: shipId,
+      currentWeaponId: weaponId,
+      currentWeaponQuantity: weaponQuantity,
+    };
     setCurrentGameStatusToContext("Select an enemy target to attack");
+    changeCursorType("crosshair");
   }
 
   function queueAircraftForMovement(aircraftId: string) {
@@ -1418,6 +1493,108 @@ export default function ScenarioMap({
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(duplicatedAircraft);
     }
+  }
+
+  function handleAddWeaponToAircraft(
+    aircraftId: string,
+    weaponClassName: string
+  ) {
+    const weaponTemplate = unitDbContext
+      .getWeaponDb()
+      .find((weapon) => weapon.className === weaponClassName);
+    return game.currentScenario.addWeaponToAircraft(
+      aircraftId,
+      weaponTemplate?.className,
+      weaponTemplate?.speed, // in knots
+      weaponTemplate?.maxFuel,
+      weaponTemplate?.fuelRate, // in lbs/hr
+      weaponTemplate?.lethality
+    );
+  }
+
+  function handleDeleteWeaponFromAircraft(
+    aircraftId: string,
+    weaponId: string
+  ) {
+    return game.currentScenario.deleteWeaponFromAircraft(aircraftId, weaponId);
+  }
+
+  function handleUpdateAircraftWeaponQuantity(
+    aircraftId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    return game.currentScenario.updateAircraftWeaponQuantity(
+      aircraftId,
+      weaponId,
+      increment
+    );
+  }
+
+  function handleAddWeaponToFacility(
+    facilityId: string,
+    weaponClassName: string
+  ) {
+    const weaponTemplate = unitDbContext
+      .getWeaponDb()
+      .find((weapon) => weapon.className === weaponClassName);
+    return game.currentScenario.addWeaponToFacility(
+      facilityId,
+      weaponTemplate?.className,
+      weaponTemplate?.speed, // in knots
+      weaponTemplate?.maxFuel,
+      weaponTemplate?.fuelRate, // in lbs/hr
+      weaponTemplate?.lethality
+    );
+  }
+
+  function handleDeleteWeaponFromFacility(
+    facilityId: string,
+    weaponId: string
+  ) {
+    return game.currentScenario.deleteWeaponFromFacility(facilityId, weaponId);
+  }
+
+  function handleUpdateFacilityWeaponQuantity(
+    facilityId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    return game.currentScenario.updateFacilityWeaponQuantity(
+      facilityId,
+      weaponId,
+      increment
+    );
+  }
+
+  function handleAddWeaponToShip(shipId: string, weaponClassName: string) {
+    const weaponTemplate = unitDbContext
+      .getWeaponDb()
+      .find((weapon) => weapon.className === weaponClassName);
+    return game.currentScenario.addWeaponToShip(
+      shipId,
+      weaponTemplate?.className,
+      weaponTemplate?.speed, // in knots
+      weaponTemplate?.maxFuel,
+      weaponTemplate?.fuelRate, // in lbs/hr
+      weaponTemplate?.lethality
+    );
+  }
+
+  function handleDeleteWeaponFromShip(shipId: string, weaponId: string) {
+    return game.currentScenario.deleteWeaponFromShip(shipId, weaponId);
+  }
+
+  function handleUpdateShipWeaponQuantity(
+    shipId: string,
+    weaponId: string,
+    increment: number
+  ) {
+    return game.currentScenario.updateShipWeaponQuantity(
+      shipId,
+      weaponId,
+      increment
+    );
   }
 
   function handleCreatePatrolMission(
@@ -1659,7 +1836,6 @@ export default function ScenarioMap({
     aircraftName: string,
     aircraftClassName: string,
     aircraftSpeed: number,
-    aircraftWeaponQuantity: number,
     aircraftCurrentFuel: number,
     aircraftFuelRate: number
   ) {
@@ -1668,10 +1844,8 @@ export default function ScenarioMap({
       aircraftName,
       aircraftClassName,
       aircraftSpeed,
-      aircraftWeaponQuantity,
       aircraftCurrentFuel,
-      aircraftFuelRate,
-      game.getSampleWeapon(aircraftWeaponQuantity, 0.25)
+      aircraftFuelRate
     );
     featureLabelLayer.updateFeatureLabelFeature(aircraftId, aircraftName);
   }
@@ -1680,15 +1854,13 @@ export default function ScenarioMap({
     facilityId: string,
     facilityName: string,
     facilityClassName: string,
-    facilityRange: number,
-    facilityWeaponQuantity: number
+    facilityRange: number
   ) {
     game.currentScenario.updateFacility(
       facilityId,
       facilityName,
       facilityClassName,
-      facilityRange,
-      facilityWeaponQuantity
+      facilityRange
     );
     threatRangeLayer.updateFacilityRangeFeature(facilityId, facilityRange);
     featureLabelLayer.updateFeatureLabelFeature(facilityId, facilityName);
@@ -1704,7 +1876,6 @@ export default function ScenarioMap({
     shipName: string,
     shipClassName: string,
     shipSpeed: number,
-    shipWeaponQuantity: number,
     shipCurrentFuel: number,
     shipRange: number
   ) {
@@ -1714,7 +1885,6 @@ export default function ScenarioMap({
       shipClassName,
       shipSpeed,
       shipCurrentFuel,
-      shipWeaponQuantity,
       shipRange
     );
     threatRangeLayer.updateShipRangeFeature(shipId, shipRange);
@@ -2082,6 +2252,9 @@ export default function ScenarioMap({
             handleTeleportUnit={queueUnitForTeleport}
             handleDeleteFacility={removeFacility}
             handleEditFacility={updateFacility}
+            handleAddWeapon={handleAddWeaponToFacility}
+            handleDeleteWeapon={handleDeleteWeaponFromFacility}
+            handleUpdateWeaponQuantity={handleUpdateFacilityWeaponQuantity}
             anchorPositionTop={openFacilityCard.top}
             anchorPositionLeft={openFacilityCard.left}
             handleCloseOnMap={() => {
@@ -2123,6 +2296,9 @@ export default function ScenarioMap({
             handleAircraftRtb={handleAircraftRtb}
             handleDuplicateAircraft={handleDuplicateAircraft}
             handleTeleportUnit={queueUnitForTeleport}
+            handleAddWeapon={handleAddWeaponToAircraft}
+            handleDeleteWeapon={handleDeleteWeaponFromAircraft}
+            handleUpdateWeaponQuantity={handleUpdateAircraftWeaponQuantity}
             anchorPositionTop={openAircraftCard.top}
             anchorPositionLeft={openAircraftCard.left}
             handleCloseOnMap={() => {
@@ -2150,6 +2326,9 @@ export default function ScenarioMap({
             handleShipAttack={handleShipAttack}
             handleTeleportUnit={queueUnitForTeleport}
             handleEditShip={updateShip}
+            handleAddWeapon={handleAddWeaponToShip}
+            handleDeleteWeapon={handleDeleteWeaponFromShip}
+            handleUpdateWeaponQuantity={handleUpdateShipWeaponQuantity}
             anchorPositionTop={openShipCard.top}
             anchorPositionLeft={openShipCard.left}
             handleCloseOnMap={() => {
@@ -2189,6 +2368,28 @@ export default function ScenarioMap({
                 top: 0,
                 left: 0,
                 referencePointId: "",
+              });
+              setKeyboardShortcutsEnabled(true);
+            }}
+          />
+        )}
+      {openWeaponCard.open &&
+        game.currentScenario.getWeapon(openWeaponCard.weaponId) && (
+          <WeaponCard
+            weapon={game.currentScenario.getWeapon(openWeaponCard.weaponId)!}
+            sideName={game.currentScenario.getSideName(
+              game.currentScenario.getWeapon(openWeaponCard.weaponId)?.sideId
+            )}
+            handleTeleportUnit={queueUnitForTeleport}
+            handleDeleteWeapon={removeWeapon}
+            anchorPositionTop={openWeaponCard.top}
+            anchorPositionLeft={openWeaponCard.left}
+            handleCloseOnMap={() => {
+              setOpenWeaponCard({
+                open: false,
+                top: 0,
+                left: 0,
+                weaponId: "",
               });
               setKeyboardShortcutsEnabled(true);
             }}

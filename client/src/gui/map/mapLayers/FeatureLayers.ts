@@ -229,7 +229,7 @@ export class ThreatRangeLayer extends FeatureLayer {
       id: entity.id,
       geometry: new Circle(
         fromLonLat([entity.longitude, entity.latitude], this.projection),
-        entity.range * NAUTICAL_MILES_TO_METERS
+        entity.getDetectionRange() * NAUTICAL_MILES_TO_METERS
       ),
       sideColor: entity.sideColor,
     });

@@ -14,19 +14,33 @@ from blade.utils.utils import (
     get_next_coordinates,
     get_terminal_coordinates_from_distance_and_bearing,
     random_float,
+    random_int,
 )
 
 Target = Aircraft | Facility | Weapon | Airbase | Ship
 
 
-def check_if_threat_is_within_range(
-    threat: Aircraft | Weapon, defender: Facility | Ship | Weapon
+def is_threat_detected(
+    threat: Aircraft | Weapon, detector: Facility | Ship | Aircraft
 ) -> bool:
-    defender_geometry = Point([defender.latitude, defender.longitude]).buffer(
-        defender.range / 60  # rough conversion from nautical miles to degrees
+    detector_geometry = Point([detector.latitude, detector.longitude]).buffer(
+        detector.get_detection_range()
+        / 60  # rough conversion from nautical miles to degrees
     )
     threat_geometry = Point([threat.latitude, threat.longitude])
-    return defender_geometry.contains(threat_geometry)
+    return detector_geometry.contains(threat_geometry)
+
+
+def weapon_can_engage_target(target: Target, weapon: Weapon) -> bool:
+    weapon_engagement_range_nm = weapon.get_engagement_range()
+
+    distance_to_target_km = get_distance_between_two_points(
+        weapon.latitude, weapon.longitude, target.latitude, target.longitude
+    )
+
+    distance_to_target_nm = (distance_to_target_km * 1000) / NAUTICAL_MILES_TO_METERS
+
+    return distance_to_target_nm < weapon_engagement_range_nm
 
 
 def check_target_tracked_by_count(current_scenario: Scenario, target: Target) -> int:
@@ -58,53 +72,55 @@ def launch_weapon(
     current_scenario: Scenario,
     origin: Facility | Ship | Aircraft,
     target: Target,
+    launched_weapon: Weapon,
+    launched_weapon_quantity: int,
 ) -> None:
-    if len(origin.weapons) == 0:
+    if (
+        len(origin.weapons) == 0
+        or launched_weapon.current_quantity < launched_weapon_quantity
+    ):
         return
 
-    weapon_with_max_range_prototype = origin.get_weapon_with_highest_range()
-    if not weapon_with_max_range_prototype:
-        return
-
-    next_weapon_coordinates = get_next_coordinates(
-        origin.latitude,
-        origin.longitude,
-        target.latitude,
-        target.longitude,
-        weapon_with_max_range_prototype.speed,
-    )
-    next_weapon_latitude = next_weapon_coordinates[0]
-    next_weapon_longitude = next_weapon_coordinates[1]
-    new_weapon = Weapon(
-        id=str(uuid4()),
-        name=weapon_with_max_range_prototype.name,
-        side_id=origin.side_id,
-        class_name=weapon_with_max_range_prototype.class_name,
-        latitude=next_weapon_latitude,
-        longitude=next_weapon_longitude,
-        altitude=weapon_with_max_range_prototype.altitude,
-        heading=get_bearing_between_two_points(
-            next_weapon_latitude,
-            next_weapon_longitude,
+    for _ in range(launched_weapon_quantity):
+        next_weapon_coordinates = get_next_coordinates(
+            origin.latitude,
+            origin.longitude,
             target.latitude,
             target.longitude,
-        ),
-        speed=weapon_with_max_range_prototype.speed,
-        current_fuel=weapon_with_max_range_prototype.current_fuel,
-        max_fuel=weapon_with_max_range_prototype.max_fuel,
-        fuel_rate=weapon_with_max_range_prototype.fuel_rate,
-        range=weapon_with_max_range_prototype.range,
-        route=[[target.latitude, target.longitude]],
-        side_color=weapon_with_max_range_prototype.side_color,
-        target_id=target.id,
-        lethality=weapon_with_max_range_prototype.lethality,
-        current_quantity=weapon_with_max_range_prototype.current_quantity,
-        max_quantity=weapon_with_max_range_prototype.max_quantity,
-    )
-    current_scenario.weapons.append(new_weapon)
-    origin.weapons[0].current_quantity -= 1
-    if origin.weapons[0].current_quantity < 1:
-        origin.weapons.pop(0)
+            launched_weapon.speed,
+        )
+        next_weapon_latitude = next_weapon_coordinates[0]
+        next_weapon_longitude = next_weapon_coordinates[1]
+        new_weapon = Weapon(
+            id=str(uuid4()),
+            name=f"{launched_weapon.name} #{random_int(0, 1000)}",
+            side_id=origin.side_id,
+            class_name=launched_weapon.class_name,
+            latitude=next_weapon_latitude,
+            longitude=next_weapon_longitude,
+            altitude=launched_weapon.altitude,
+            heading=get_bearing_between_two_points(
+                next_weapon_latitude,
+                next_weapon_longitude,
+                target.latitude,
+                target.longitude,
+            ),
+            speed=launched_weapon.speed,
+            current_fuel=launched_weapon.current_fuel,
+            max_fuel=launched_weapon.max_fuel,
+            fuel_rate=launched_weapon.fuel_rate,
+            range=launched_weapon.range,
+            route=[[target.latitude, target.longitude]],
+            side_color=launched_weapon.side_color,
+            target_id=target.id,
+            lethality=launched_weapon.lethality,
+            current_quantity=1,
+            max_quantity=1,
+        )
+        current_scenario.weapons.append(new_weapon)
+    launched_weapon.current_quantity -= launched_weapon_quantity
+    if launched_weapon.current_quantity < 1:
+        origin.weapons.remove(launched_weapon)
 
 
 def weapon_engagement(current_scenario: Scenario, weapon: Weapon) -> None:
@@ -114,6 +130,7 @@ def weapon_engagement(current_scenario: Scenario, weapon: Weapon) -> None:
     else:
         weapon_route = weapon.route
         if len(weapon_route) > 0:
+            # there is a weird bug where a weapon will be teleported a vast distance if it gets too close to the target but weaponEndgame is not called, current solution is to set threshold to 1 km
             if (
                 get_distance_between_two_points(
                     weapon.latitude,
@@ -121,7 +138,7 @@ def weapon_engagement(current_scenario: Scenario, weapon: Weapon) -> None:
                     target.latitude,
                     target.longitude,
                 )
-                < 0.5
+                < 1
             ):
                 weapon_endgame(current_scenario, weapon, target)
             else:

@@ -7,6 +7,7 @@ import {
   Help,
   PinDrop,
   Radar,
+  DoubleArrow,
 } from "@mui/icons-material";
 
 export interface IEntityIconProps {
@@ -66,6 +67,16 @@ export default function EntityIcon({
     case "referencePoint":
       return (
         <PinDrop
+          sx={{
+            width: width,
+            height: height,
+            color: color,
+          }}
+        />
+      );
+    case "weapon":
+      return (
+        <DoubleArrow
           sx={{
             width: width,
             height: height,

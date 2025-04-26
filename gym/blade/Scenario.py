@@ -139,21 +139,14 @@ class Scenario:
         aircraft_name: str,
         aircraft_class_name: str,
         aircraft_speed: float,
-        aircraft_weapon_quantity: float,
         aircraft_current_fuel: float,
         aircraft_fuel_rate: float,
-        sample_weapon: Weapon,
     ):
         aircraft = self.get_aircraft(aircraft_id)
         if aircraft is not None:
             aircraft.name = aircraft_name
             aircraft.class_name = aircraft_class_name
             aircraft.speed = aircraft_speed
-            if len(aircraft.weapons) < 1:
-                aircraft.weapons = [sample_weapon]
-            else:
-                for weapon in aircraft.weapons:
-                    weapon.current_quantity = aircraft_weapon_quantity
             aircraft.current_fuel = aircraft_current_fuel
             aircraft.fuel_rate = aircraft_fuel_rate
 
@@ -163,19 +156,12 @@ class Scenario:
         facility_name: str,
         facility_class_name: str,
         facility_range: float,
-        facility_weapon_quantity: float,
-        sample_weapon: Weapon,
     ):
         facility = self.get_facility(facility_id)
         if facility is not None:
             facility.name = facility_name
             facility.class_name = facility_class_name
             facility.range = facility_range
-            if len(facility.weapons) < 1:
-                facility.weapons = [sample_weapon]
-            else:
-                for weapon in facility.weapons:
-                    weapon.current_quantity = facility_weapon_quantity
 
     def update_airbase(
         self,
@@ -192,22 +178,15 @@ class Scenario:
         ship_name: str,
         ship_class_name: str,
         ship_speed: float,
-        ship_weapon_quantity: float,
         ship_current_fuel: float,
         ship_fuel_rate: float,
         ship_range: float,
-        sample_weapon: Weapon,
     ):
         ship = self.get_ship(ship_id)
         if ship is not None:
             ship.name = ship_name
             ship.class_name = ship_class_name
             ship.speed = ship_speed
-            if len(ship.weapons) < 1:
-                ship.weapons = [sample_weapon]
-            else:
-                for weapon in ship.weapons:
-                    weapon.current_quantity = ship_weapon_quantity
             ship.current_fuel = ship_current_fuel
             ship.fuel_rate = ship_fuel_rate
             ship.range = ship_range
