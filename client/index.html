@@ -1,41 +1,59 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/panopticon_logo.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="BLADE: Battlefield Learning and Assessment Digital Environment"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://app.panopticon-ai.com/" />
+    <meta property="og:title" content="Panopticon AI | BLADE" />
+    <meta
+      property="og:description"
+      content="BLADE: Battlefield Learning and Assessment Digital Environment"
+    />
+    <meta
+      property="og:image"
+      content="https://panopticon-ai.com/images/title-logo.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://app.panopticon-ai.com/" />
+    <meta name="twitter:title" content="Panopticon AI | BLADE" />
+    <meta
+      name="twitter:description"
+      content="BLADE: Battlefield Learning and Assessment Digital Environment"
+    />
+    <meta
+      name="twitter:image"
+      content="https://panopticon-ai.com/images/title-logo.png"
+    />
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-5JBMJ01SH1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/panopticon_logo.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="BLADE: Battlefield Learning and Assessment Digital Environment" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://app.panopticon-ai.com/" />
-  <meta property="og:title" content="Panopticon AI | BLADE" />
-  <meta property="og:description" content="BLADE: Battlefield Learning and Assessment Digital Environment" />
-  <meta property="og:image" content="https://panopticon-ai.com/images/title-logo.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://app.panopticon-ai.com/" />
-  <meta name="twitter:title" content="Panopticon AI | BLADE" />
-  <meta name="twitter:description" content="BLADE: Battlefield Learning and Assessment Digital Environment" />
-  <meta name="twitter:image" content="https://panopticon-ai.com/images/title-logo.png" />
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5JBMJ01SH1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
+      gtag("config", "G-5JBMJ01SH1", {
+        cookie_flags: "SameSite=None;Secure",
+        cookie_domain: "panopticon-ai.com",
+      });
+    </script>
+    <title>Panopticon AI | BLADE</title>
+  </head>
 
-    gtag('config', 'G-5JBMJ01SH1', {
-      'cookie_flags': 'SameSite=None;Secure',
-      'cookie_domain': 'panopticon-ai.com'
-    });  
-  </script>
-  <title>Panopticon AI | BLADE</title>
-</head>
-
-<body>
-  <div id="root"></div>
-  <div id="toast-container"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
-
+  <body>
+    <div id="root"></div>
+    <div id="toast-container"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
