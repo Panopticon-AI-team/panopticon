@@ -25,11 +25,12 @@ from blade.utils.utils import (
 )
 from blade.engine.weaponEngagement import (
     aircraft_pursuit,
-    check_if_threat_is_within_range,
+    is_threat_detected,
     check_target_tracked_by_count,
     launch_weapon,
     route_aircraft_to_strike_position,
     weapon_engagement,
+    weapon_can_engage_target,
 )
 
 
@@ -55,32 +56,6 @@ class Game:
             "defaultZoom": 0,
             "currentCameraZoom": 0,
         }
-
-    def get_sample_weapon(
-        self, quantity: int, lethality: float, side_id: str
-    ) -> Weapon:
-        current_side_id = side_id if side_id is not None else self.current_side_id
-        side_color = self.current_scenario.get_side_color(current_side_id)
-        return Weapon(
-            id=str(uuid4()),
-            name="Sample Weapon",
-            side_id=current_side_id,
-            class_name="Sample Weapon",
-            latitude=0.0,
-            longitude=0.0,
-            altitude=10000.0,
-            heading=90.0,
-            speed=1000.0,
-            current_fuel=5000.0,
-            max_fuel=5000.0,
-            fuel_rate=5000.0,
-            range=100.0,
-            side_color=side_color,
-            target_id=None,
-            lethality=lethality,
-            max_quantity=quantity,
-            current_quantity=quantity,
-        )
 
     def remove_aircraft(self, aircraft_id: str) -> None:
         self.current_scenario.aircraft.remove(
@@ -256,7 +231,11 @@ class Game:
                 ship.route.append([new_latitude, new_longitude])
             return ship
 
-    def handle_aircraft_attack(self, aircraft_id: str, target_id: str) -> None:
+    def handle_aircraft_attack(
+        self, aircraft_id: str, target_id: str, weapon_id: str, weapon_quantity: int
+    ) -> None:
+        if weapon_quantity <= 0:
+            return
         target = self.current_scenario.get_target(target_id)
         aircraft = self.current_scenario.get_aircraft(aircraft_id)
         if (
@@ -265,13 +244,25 @@ class Game:
             and target.side_id != aircraft.side_id
             and target.id != aircraft.id
         ):
-            launch_weapon(self.current_scenario, aircraft, target)
+            weapon = aircraft.get_weapon(weapon_id)
+            if weapon:
+                launch_weapon(
+                    self.current_scenario, aircraft, target, weapon, weapon_quantity
+                )
 
-    def handle_ship_attack(self, ship_id: str, target_id: str) -> None:
+    def handle_ship_attack(
+        self, ship_id: str, target_id: str, weapon_id: str, weapon_quantity: int
+    ) -> None:
+        if weapon_quantity <= 0:
+            return
         target = self.current_scenario.get_target(target_id)
         ship = self.current_scenario.get_ship(ship_id)
         if target and ship and target.side_id != ship.side_id and target.id != ship.id:
-            launch_weapon(self.current_scenario, ship, target)
+            weapon = ship.get_weapon(weapon_id)
+            if weapon:
+                launch_weapon(
+                    self.current_scenario, ship, target, weapon, weapon_quantity
+                )
 
     def aircraft_return_to_base(self, aircraft_id: str) -> Aircraft | None:
         aircraft = self.current_scenario.get_aircraft(aircraft_id)
@@ -328,51 +319,97 @@ class Game:
         for facility in self.current_scenario.facilities:
             for aircraft in self.current_scenario.aircraft:
                 if self.current_scenario.is_hostile(facility.side_id, aircraft.side_id):
+                    facility_weapon = (
+                        facility.get_weapon_with_highest_engagement_range()
+                    )
+                    if facility_weapon is None:
+                        continue
                     if (
-                        check_if_threat_is_within_range(aircraft, facility)
+                        is_threat_detected(aircraft, facility)
+                        and weapon_can_engage_target(aircraft, facility_weapon)
                         and check_target_tracked_by_count(
                             self.current_scenario, aircraft
                         )
                         < 10
                     ):
-                        launch_weapon(self.current_scenario, facility, aircraft)
+                        launch_weapon(
+                            self.current_scenario,
+                            facility,
+                            aircraft,
+                            facility_weapon,
+                            1,
+                        )
             for weapon in self.current_scenario.weapons:
                 if self.current_scenario.is_hostile(facility.side_id, weapon.side_id):
+                    facility_weapon = (
+                        facility.get_weapon_with_highest_engagement_range()
+                    )
+                    if facility_weapon is None:
+                        continue
                     if (
                         weapon.target_id == facility.id
-                        and check_if_threat_is_within_range(weapon, facility)
+                        and is_threat_detected(weapon, facility)
+                        and weapon_can_engage_target(weapon, facility_weapon)
                         and check_target_tracked_by_count(self.current_scenario, weapon)
                         < 5
                     ):
-                        launch_weapon(self.current_scenario, facility, weapon)
+                        launch_weapon(
+                            self.current_scenario,
+                            facility,
+                            weapon,
+                            facility_weapon,
+                            1,
+                        )
 
     def ship_auto_defense(self) -> None:
         for ship in self.current_scenario.ships:
             for aircraft in self.current_scenario.aircraft:
                 if self.current_scenario.is_hostile(ship.side_id, aircraft.side_id):
+                    ship_weapon = ship.get_weapon_with_highest_engagement_range()
+                    if ship_weapon is None:
+                        continue
                     if (
-                        check_if_threat_is_within_range(aircraft, ship)
+                        is_threat_detected(aircraft, ship)
+                        and weapon_can_engage_target(aircraft, ship_weapon)
                         and check_target_tracked_by_count(
                             self.current_scenario, aircraft
                         )
                         < 10
                     ):
-                        launch_weapon(self.current_scenario, ship, aircraft)
+                        launch_weapon(
+                            self.current_scenario,
+                            ship,
+                            aircraft,
+                            ship_weapon,
+                            1,
+                        )
             for weapon in self.current_scenario.weapons:
                 if self.current_scenario.is_hostile(ship.side_id, weapon.side_id):
+                    ship_weapon = ship.get_weapon_with_highest_engagement_range()
+                    if ship_weapon is None:
+                        continue
                     if (
                         weapon.target_id == ship.id
-                        and check_if_threat_is_within_range(weapon, ship)
+                        and is_threat_detected(weapon, ship)
+                        and weapon_can_engage_target(weapon, ship_weapon)
                         and check_target_tracked_by_count(self.current_scenario, weapon)
                         < 5
                     ):
-                        launch_weapon(self.current_scenario, ship, weapon)
+                        launch_weapon(
+                            self.current_scenario,
+                            ship,
+                            weapon,
+                            ship_weapon,
+                            1,
+                        )
 
     def aircraft_air_to_air_engagement(self) -> None:
         for aircraft in self.current_scenario.aircraft:
             if len(aircraft.weapons) == 0:
                 continue
-            aircraft_weapon_with_max_range = aircraft.get_weapon_with_highest_range()
+            aircraft_weapon_with_max_range = (
+                aircraft.get_weapon_with_highest_engagement_range()
+            )
             if aircraft_weapon_with_max_range is None:
                 continue
             for enemy_aircraft in self.current_scenario.aircraft:
@@ -382,7 +419,8 @@ class Game:
                     aircraft.target_id == "" or aircraft.target_id == enemy_aircraft.id
                 ):
                     if (
-                        check_if_threat_is_within_range(
+                        is_threat_detected(enemy_aircraft, aircraft)
+                        and weapon_can_engage_target(
                             enemy_aircraft, aircraft_weapon_with_max_range
                         )
                         and check_target_tracked_by_count(
@@ -390,7 +428,13 @@ class Game:
                         )
                         < 1
                     ):
-                        launch_weapon(self.current_scenario, aircraft, enemy_aircraft)
+                        launch_weapon(
+                            self.current_scenario,
+                            aircraft,
+                            enemy_aircraft,
+                            aircraft_weapon_with_max_range,
+                            1,
+                        )
                         aircraft.target_id = enemy_aircraft.id
             for enemy_weapon in self.current_scenario.weapons:
                 if self.current_scenario.is_hostile(
@@ -398,7 +442,8 @@ class Game:
                 ):
                     if (
                         enemy_weapon.target_id == aircraft.id
-                        and check_if_threat_is_within_range(
+                        and is_threat_detected(enemy_weapon, aircraft)
+                        and weapon_can_engage_target(
                             enemy_weapon, aircraft_weapon_with_max_range
                         )
                         and check_target_tracked_by_count(
@@ -406,7 +451,13 @@ class Game:
                         )
                         < 1
                     ):
-                        launch_weapon(self.current_scenario, aircraft, enemy_weapon)
+                        launch_weapon(
+                            self.current_scenario,
+                            aircraft,
+                            enemy_weapon,
+                            aircraft_weapon_with_max_range,
+                            1,
+                        )
             if aircraft.target_id and aircraft.target_id != "":
                 aircraft_pursuit(self.current_scenario, aircraft)
 
@@ -530,30 +581,50 @@ class Game:
                     * 1000
                 ) / NAUTICAL_MILES_TO_METERS
                 aircraft_weapon_with_max_range = (
-                    attacker.get_weapon_with_highest_range()
+                    attacker.get_weapon_with_highest_engagement_range()
                 )
                 if aircraft_weapon_with_max_range is None:
                     continue
                 if (
                     distance_between_weapon_launch_position_and_target_nm is not None
-                    and distance_between_weapon_launch_position_and_target_nm
-                    > aircraft_weapon_with_max_range.range * 1.1
+                    and (
+                        distance_between_weapon_launch_position_and_target_nm
+                        > attacker.get_detection_range() * 1.1
+                        or distance_between_weapon_launch_position_and_target_nm
+                        > aircraft_weapon_with_max_range.get_engagement_range() * 1.1
+                    )
                 ) or (
                     distance_between_weapon_launch_position_and_target_nm is None
-                    and distance_between_attacker_and_target_nm
-                    > aircraft_weapon_with_max_range.range * 1.1
+                    and (
+                        distance_between_attacker_and_target_nm
+                        > attacker.get_detection_range() * 1.1
+                        or distance_between_attacker_and_target_nm
+                        > aircraft_weapon_with_max_range.get_engagement_range() * 1.1
+                    )
                 ):
                     route_aircraft_to_strike_position(
                         self.current_scenario,
                         attacker,
                         mission.assigned_target_ids[0],
-                        aircraft_weapon_with_max_range.range,
+                        min(
+                            attacker.get_detection_range(),
+                            aircraft_weapon_with_max_range.get_engagement_range(),
+                        ),
                     )
                 elif (
                     distance_between_attacker_and_target_nm
-                    <= aircraft_weapon_with_max_range.range * 1.1
+                    <= attacker.get_detection_range() * 1.1
+                    and distance_between_attacker_and_target_nm
+                    <= aircraft_weapon_with_max_range.get_engagement_range() * 1.1
                 ):
-                    launch_weapon(self.current_scenario, attacker, target)
+                    launched_weapon = (
+                        attacker.get_weapon_with_highest_engagement_range()
+                    )
+                    if launched_weapon is None:
+                        continue
+                    launch_weapon(
+                        self.current_scenario, attacker, target, launched_weapon, 1
+                    )
                     attacker.target_id = target.id
 
     def update_all_aircraft_position(self) -> None:
@@ -815,10 +886,6 @@ class Game:
                             current_quantity=weapon["currentQuantity"],
                         )
                     )
-            else:
-                aircraft_weapons.append(
-                    self.get_sample_weapon(10, 0.25, aircraft["sideId"])
-                )
             loaded_scenario.aircraft.append(
                 Aircraft(
                     id=aircraft["id"],
@@ -874,10 +941,6 @@ class Game:
                                 current_quantity=weapon["currentQuantity"],
                             )
                         )
-                else:
-                    aircraft_weapons.append(
-                        self.get_sample_weapon(10, 0.25, aircraft["sideId"])
-                    )
                 new_aircraft = Aircraft(
                     id=aircraft["id"],
                     name=aircraft["name"],
@@ -943,10 +1006,6 @@ class Game:
                             current_quantity=weapon["currentQuantity"],
                         )
                     )
-            else:
-                facility_weapons.append(
-                    self.get_sample_weapon(10, 0.25, facility["sideId"])
-                )
             loaded_scenario.facilities.append(
                 Facility(
                     id=facility["id"],
@@ -1014,10 +1073,6 @@ class Game:
                                 current_quantity=weapon["currentQuantity"],
                             )
                         )
-                else:
-                    aircraft_weapons.append(
-                        self.get_sample_weapon(10, 0.25, aircraft["sideId"])
-                    )
                 new_aircraft = Aircraft(
                     id=aircraft["id"],
                     name=aircraft["name"],
@@ -1067,8 +1122,6 @@ class Game:
                             current_quantity=weapon["currentQuantity"],
                         )
                     )
-            else:
-                ship_weapons.append(self.get_sample_weapon(10, 0.25, ship["sideId"]))
             loaded_scenario.ships.append(
                 Ship(
                     id=ship["id"],

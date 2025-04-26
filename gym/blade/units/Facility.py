@@ -32,10 +32,13 @@ class Facility:
     def get_total_weapon_quantity(self) -> int:
         return sum([weapon.current_quantity for weapon in self.weapons])
 
-    def get_weapon_with_highest_range(self) -> Weapon | None:
+    def get_weapon_with_highest_engagement_range(self) -> Weapon | None:
         if len(self.weapons) == 0:
             return None
-        return max(self.weapons, key=lambda weapon: weapon.range)
+        return max(self.weapons, key=lambda weapon: weapon.get_engagement_range())
+
+    def get_detection_range(self) -> float:
+        return self.range
 
     def to_dict(self):
         return {

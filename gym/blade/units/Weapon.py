@@ -48,6 +48,9 @@ class Weapon:
         self.route = route if route is not None else []
         self.side_color = convert_color_name_to_side_color(side_color)
 
+    def get_engagement_range(self) -> float:
+        return self.speed * (self.current_fuel / self.fuel_rate)
+
     def to_dict(self):
         return {
             "id": str(self.id),
