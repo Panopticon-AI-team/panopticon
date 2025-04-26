@@ -438,7 +438,7 @@ export default class Game {
       route: [],
       selected: false,
       sideColor: this.currentScenario.getSideColor(this.currentSideId),
-      weapons: [this.getSampleWeapon(300, 0.15, this.currentSideId)],
+      weapons: [],
       aircraft: [],
     });
     this.currentScenario.ships.push(ship);
@@ -617,34 +617,6 @@ export default class Game {
     this.currentScenario.missions = this.currentScenario.missions.filter(
       (mission) => mission.id !== missionId
     );
-  }
-
-  getSampleWeapon(
-    quantity: number,
-    lethality: number,
-    sideId: string = this.currentSideId
-  ) {
-    const weapon = new Weapon({
-      id: randomUUID(),
-      name: "Sample Weapon",
-      sideId: sideId,
-      className: "Sample Weapon",
-      latitude: 0.0,
-      longitude: 0.0,
-      altitude: 10000.0,
-      heading: 90.0,
-      speed: 1000.0,
-      currentFuel: 5000.0,
-      maxFuel: 5000.0,
-      fuelRate: 5000.0,
-      range: 100,
-      sideColor: this.currentScenario.getSideColor(sideId),
-      targetId: null,
-      lethality: lethality,
-      maxQuantity: quantity,
-      currentQuantity: quantity,
-    });
-    return weapon;
   }
 
   moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {

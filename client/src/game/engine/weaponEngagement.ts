@@ -15,6 +15,7 @@ import {
   getNextCoordinates,
   getTerminalCoordinatesFromDistanceAndBearing,
   randomFloat,
+  randomInt,
 } from "@/utils/mapFunctions";
 import Airbase from "@/game/units/Airbase";
 import Ship from "@/game/units/Ship";
@@ -122,7 +123,7 @@ export function launchWeapon(
     const nextWeaponLongitude = nextWeaponCoordinates[1];
     const newWeapon = new Weapon({
       id: randomUUID(),
-      name: launchedWeapon.name,
+      name: `${launchedWeapon.name} #${randomInt(1000)}`,
       sideId: origin.sideId,
       className: launchedWeapon.className,
       latitude: nextWeaponLatitude,
@@ -166,13 +167,14 @@ export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
   if (target) {
     const weaponRoute = weapon.route;
     if (weaponRoute.length > 0) {
+      // there is a weird bug where a weapon will be teleported a vast distance if it gets too close to the target but weaponEndgame is not called, current solution is to set threshold to 1 km
       if (
         getDistanceBetweenTwoPoints(
           weapon.latitude,
           weapon.longitude,
           target.latitude,
           target.longitude
-        ) < 0.5
+        ) < 1
       ) {
         weaponEndgame(currentScenario, weapon, target);
       } else {
