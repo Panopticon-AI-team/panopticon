@@ -7,6 +7,7 @@ import {
   getBearingBetweenTwoPoints,
   getNextCoordinates,
   getDistanceBetweenTwoPoints,
+  randomInt,
 } from "@/utils/mapFunctions";
 import {
   aircraftPursuit,
@@ -256,30 +257,37 @@ export default class Game {
   }
 
   addAircraftToAirbase(
-    aircraftName: string,
+    airbaseId: string,
     className: string,
-    airbaseId: string
+    speed?: number,
+    maxFuel?: number,
+    fuelRate?: number,
+    range?: number
   ) {
+    let airbaseAircraft: Aircraft[] = [];
     if (!this.currentSideId) {
-      return;
+      return airbaseAircraft;
     }
     const airbase = this.currentScenario.getAirbase(airbaseId);
     if (airbase) {
       this.recordHistory();
+      airbaseAircraft = airbase.aircraft;
+      if (!(className && speed && maxFuel && fuelRate && range))
+        return airbaseAircraft;
       const aircraft = new Aircraft({
         id: randomUUID(),
-        name: aircraftName,
+        name: `${className} #${randomInt(0, 1000)}`,
         sideId: airbase.sideId,
         className: className,
         latitude: airbase.latitude - 0.5,
         longitude: airbase.longitude - 0.5,
         altitude: 10000.0,
         heading: 90.0,
-        speed: 300.0,
-        currentFuel: 10000.0,
-        maxFuel: 10000.0,
-        fuelRate: 5000.0,
-        range: 100,
+        speed: speed,
+        currentFuel: maxFuel,
+        maxFuel: maxFuel,
+        fuelRate: fuelRate,
+        range: range,
         weapons: [],
         homeBaseId: airbase.id,
         rtb: false,
@@ -287,6 +295,23 @@ export default class Game {
       });
       airbase.aircraft.push(aircraft);
     }
+    return airbaseAircraft;
+  }
+
+  removeAircraftFromAirbase(airbaseId: string, aircraftId: string): Aircraft[] {
+    let airbaseAircraft: Aircraft[] = [];
+    if (!this.currentSideId) {
+      return airbaseAircraft;
+    }
+    this.recordHistory();
+    const airbase = this.currentScenario.getAirbase(airbaseId);
+    if (airbase) {
+      airbase.aircraft = airbase.aircraft.filter(
+        (aircraft) => aircraft.id !== aircraftId
+      );
+      airbaseAircraft = airbase.aircraft;
+    }
+    return airbaseAircraft;
   }
 
   addAirbase(
@@ -732,14 +757,21 @@ export default class Game {
     }
   }
 
-  launchAircraftFromAirbase(airbaseId: string) {
+  launchAircraftFromAirbase(airbaseId: string, aircraftId: string) {
     if (!this.currentSideId) {
       return;
     }
     const airbase = this.currentScenario.getAirbase(airbaseId);
     if (airbase && airbase.aircraft.length > 0) {
       this.recordHistory();
-      const aircraft = airbase.aircraft.pop();
+      let aircraft: Aircraft | undefined;
+      airbase.aircraft = airbase.aircraft.filter((airbaseAircraft) => {
+        if (airbaseAircraft.id === aircraftId) {
+          aircraft = airbaseAircraft;
+          return false;
+        }
+        return true;
+      });
       if (aircraft) {
         this.currentScenario.aircraft.push(aircraft);
         return aircraft;
@@ -879,6 +911,7 @@ export default class Game {
           homeBaseId: homeBase.id,
           rtb: false,
           targetId: aircraft.targetId,
+          sideColor: aircraft.sideColor,
         });
         homeBase.aircraft.push(newAircraft);
         this.removeAircraft(aircraft.id);

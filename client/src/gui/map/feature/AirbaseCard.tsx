@@ -12,7 +12,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import TextField from "@/gui/shared/ui/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import AddIcon from "@mui/icons-material/Add";
 import FlightIcon from "@mui/icons-material/Flight";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import {
@@ -31,12 +30,18 @@ import {
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
 import { MoreVert } from "@mui/icons-material";
+import Aircraft from "@/game/units/Aircraft";
+import AircraftTable from "@/gui/map/feature/shared/AircraftTable";
 
 interface AirbaseCardProps {
   airbase: Airbase;
   sideName: string;
-  handleAddAircraft: (airbaseId: string) => void;
-  handleLaunchAircraft: (airbaseId: string) => void;
+  handleAddAircraft: (
+    airbaseId: string,
+    aircraftClassName: string
+  ) => Aircraft[];
+  handleDeleteAircraft: (airbaseId: string, aircraftId: string) => Aircraft[];
+  handleLaunchAircraft: (airbaseId: string, aircraftId: string) => Aircraft[];
   handleTeleportUnit: (unitId: string) => void;
   handleDeleteAirbase: (airbaseId: string) => void;
   handleCloseOnMap: () => void;
@@ -68,11 +73,11 @@ const tableValueCellStyle = {
   typography: "body1",
 };
 
+type CARD_CONTENT_CONTEXT = "default" | "editing" | "aircraft";
+
 export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
-  const [editing, setEditing] = useState(false);
-  const [aircraftCount, setAircraftCount] = useState(
-    props.airbase.aircraft.length
-  );
+  const [cardContentContext, setCardContentContext] =
+    useState<CARD_CONTENT_CONTEXT>("default");
   const [tempEditData, setTempEditData] = useState({
     name: props.airbase.name,
   });
@@ -86,16 +91,6 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
     setAnchorEl(null);
   };
 
-  const _handleAddAircraft = () => {
-    props.handleAddAircraft(props.airbase.id);
-    setAircraftCount(props.airbase.aircraft.length);
-  };
-
-  const _handleLaunchAircraft = () => {
-    props.handleLaunchAircraft(props.airbase.id);
-    setAircraftCount(props.airbase.aircraft.length);
-  };
-
   const _handleDeleteAirbase = () => {
     props.handleCloseOnMap();
     props.handleDeleteAirbase(props.airbase.id);
@@ -107,7 +102,16 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
   };
 
   const toggleEdit = () => {
-    setEditing(!editing);
+    setCardContentContext(
+      cardContentContext !== "editing" ? "editing" : "default"
+    );
+  };
+
+  const toggleAircraft = () => {
+    handleClose();
+    setCardContentContext(
+      cardContentContext !== "aircraft" ? "aircraft" : "default"
+    );
   };
 
   const handleSaveEditedAirbase = () => {
@@ -159,14 +163,6 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
               {props.airbase.altitude.toFixed(2)} FT
             </TableCell>
           </TableRow>
-          <TableRow sx={tableRowStyle}>
-            <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
-              Aircraft Quantity:
-            </TableCell>
-            <TableCell align="right" sx={tableValueCellStyle}>
-              {aircraftCount}
-            </TableCell>
-          </TableRow>
         </TableBody>
       </Table>
     </TableContainer>
@@ -206,16 +202,13 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
 
   const defaultCardActions = (
     <Stack spacing={0.5} direction="column" onMouseLeave={handleClose}>
-      <ListItemButton onClick={_handleAddAircraft}>
-        <AddIcon
+      <ListItemButton onClick={toggleAircraft}>
+        <FlightIcon
           sx={{
             mr: 0.5,
           }}
         />
-        Add Aicraft
-      </ListItemButton>
-      <ListItemButton onClick={_handleLaunchAircraft}>
-        <FlightIcon sx={{ mr: 0.5 }} /> Launch Aircraft
+        View Aicraft
       </ListItemButton>
       <ListItemButton onClick={_handleTeleportAirbase}>
         <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
@@ -247,6 +240,20 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
     </Stack>
   );
 
+  const aircraftCardActions = (
+    <Stack direction={"row"} spacing={1} sx={{ p: 1, m: 1 }}>
+      <Button
+        fullWidth
+        variant="outlined"
+        size="small"
+        sx={{ color: "white", borderColor: "white" }}
+        onClick={toggleAircraft}
+      >
+        Back
+      </Button>
+    </Stack>
+  );
+
   const airbaseCard = (
     <Box sx={{ minWidth: 150 }}>
       <Card
@@ -262,7 +269,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
         <CardHeader
           action={
             <>
-              {!editing && (
+              {cardContentContext === "default" && (
                 <Stack direction={"row"} spacing={0}>
                   <Tooltip title={`Edit ${props.airbase.name}`}>
                     <IconButton onClick={toggleEdit}>
@@ -335,10 +342,20 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
           sx={{ borderColor: "white", mb: 1 }}
         />
         <CardContent sx={{ pt: 0 }}>
-          {!editing && airbaseDataContent}
-          {editing && editingContent()}
+          {cardContentContext === "default" && airbaseDataContent}
+          {cardContentContext === "editing" && editingContent()}
+          {cardContentContext === "aircraft" && (
+            <AircraftTable
+              unitWithAircraft={props.airbase}
+              handleAddAircraft={props.handleAddAircraft}
+              handleDeleteAircraft={props.handleDeleteAircraft}
+              handleLaunchAircraft={props.handleLaunchAircraft}
+              handleCloseOnMap={props.handleCloseOnMap}
+            />
+          )}
         </CardContent>
-        {editing && editingCardActions}
+        {cardContentContext === "editing" && editingCardActions}
+        {cardContentContext === "aircraft" && aircraftCardActions}
       </Card>
     </Box>
   );

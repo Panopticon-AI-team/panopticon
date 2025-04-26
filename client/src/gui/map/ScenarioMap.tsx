@@ -66,6 +66,7 @@ import SideEditor from "@/gui/map/toolbar/SideEditor";
 import { useAuth0 } from "@auth0/auth0-react";
 import MapContextMenu from "@/gui/map/MapContextMenu";
 import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
+import Aircraft from "@/game/units/Aircraft";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -1165,10 +1166,22 @@ export default function ScenarioMap({
     }
   }
 
-  function addAircraftToAirbase(airbaseId: string) {
-    const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = unitDbContext.getAircraftDb()[0].className;
-    game.addAircraftToAirbase(aircraftName, className, airbaseId);
+  function addAircraftToAirbase(airbaseId: string, aircraftClassName: string) {
+    const aircraftTemplate = unitDbContext
+      .getAircraftDb()
+      .find((aircraft) => aircraft.className === aircraftClassName);
+    return game.addAircraftToAirbase(
+      airbaseId,
+      aircraftClassName,
+      aircraftTemplate?.speed,
+      aircraftTemplate?.maxFuel,
+      aircraftTemplate?.fuelRate,
+      aircraftTemplate?.range
+    );
+  }
+
+  function removeAircraftFromAirbase(airbaseId: string, aircraftId: string) {
+    return game.removeAircraftFromAirbase(airbaseId, aircraftId);
   }
 
   function addFacility(
@@ -1385,13 +1398,22 @@ export default function ScenarioMap({
     if (teleportedUnit) refreshAllLayers();
   }
 
-  function launchAircraftFromAirbase(airbaseId: string) {
-    const launchedAircraft = game.launchAircraftFromAirbase(airbaseId);
+  function launchAircraftFromAirbase(airbaseId: string, aircraftId: string) {
+    const launchedAircraft = game.launchAircraftFromAirbase(
+      airbaseId,
+      aircraftId
+    );
     if (launchedAircraft) {
       aircraftLayer.addAircraftFeature(launchedAircraft);
       if (featureLabelVisible)
         featureLabelLayer.addFeatureLabelFeature(launchedAircraft);
     }
+    let airbaseAircraft: Aircraft[] = [];
+    const airbase = game.currentScenario.getAirbase(airbaseId);
+    if (airbase) {
+      airbaseAircraft = airbase.aircraft;
+    }
+    return airbaseAircraft;
   }
 
   function resetAttack() {
@@ -2222,6 +2244,7 @@ export default function ScenarioMap({
               game.currentScenario.getAirbase(openAirbaseCard.airbaseId)?.sideId
             )}
             handleAddAircraft={addAircraftToAirbase}
+            handleDeleteAircraft={removeAircraftFromAirbase}
             handleLaunchAircraft={launchAircraftFromAirbase}
             handleDeleteAirbase={removeAirbase}
             handleEditAirbase={updateAirbase}
