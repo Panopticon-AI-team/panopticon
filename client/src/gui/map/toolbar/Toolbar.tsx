@@ -1034,7 +1034,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
         }
       >
         {/** Add Aircraft Menu/Button */}
-        {/* <Tooltip title="Add Aircraft">
+        <Tooltip title="Add Aircraft">
           <IconButton
             id="add-aircraft-icon-button"
             aria-controls={
@@ -1046,7 +1046,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           >
             <EntityIcon type="aircraft" />
           </IconButton>
-        </Tooltip> */}
+        </Tooltip>
         <Menu
           id="aircraft-classes-menu"
           anchorEl={aircraftIconAnchorEl}
@@ -1077,7 +1077,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               <ClearIcon sx={{ fontSize: 15, color: "red" }} />
             </IconButton>
           </Stack>
-          {AircraftDb.map((aircraft) => (
+          {unitDbContext.getAircraftDb().map((aircraft) => (
             <MenuItem
               onClick={(_event: React.MouseEvent<HTMLElement>) =>
                 handleUnitClassSelect("aircraft", aircraft.className)
@@ -1149,7 +1149,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           ))}
         </Menu>
         {/** Add Sam Menu/Button */}
-        {/* <Tooltip title="Add Sam">
+        <Tooltip title="Add Sam">
           <IconButton
             id="add-sam-icon-button"
             aria-controls={samClassMenuOpen ? "sam-classes-menu" : undefined}
@@ -1159,7 +1159,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           >
             <EntityIcon type="facility" />
           </IconButton>
-        </Tooltip> */}
+        </Tooltip>
         <Menu
           id="sam-classes-menu"
           anchorEl={samIconAnchorEl}
@@ -1191,7 +1191,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               <ClearIcon sx={{ fontSize: 15, color: "red" }} />
             </IconButton>
           </Stack>
-          {FacilityDb.map((facility) => (
+          {unitDbContext.getFacilityDb().map((facility) => (
             <MenuItem
               onClick={(_event: React.MouseEvent<HTMLElement>) =>
                 handleUnitClassSelect("facility", facility.className)
@@ -1205,7 +1205,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           ))}
         </Menu>
         {/** Add Ship Menu/Button */}
-        {/* <Tooltip title="Add Ship">
+        <Tooltip title="Add Ship">
           <IconButton
             id="add-ship-icon-button"
             aria-controls={shipClassMenuOpen ? "ship-classes-menu" : undefined}
@@ -1215,7 +1215,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           >
             <EntityIcon type="ship" />
           </IconButton>
-        </Tooltip> */}
+        </Tooltip>
         <Menu
           id="ship-classes-menu"
           anchorEl={shipIconAnchorEl}
@@ -1247,7 +1247,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
               <ClearIcon sx={{ fontSize: 15, color: "red" }} />
             </IconButton>
           </Stack>
-          {ShipDb.map((ship) => (
+          {unitDbContext.getShipDb().map((ship) => (
             <MenuItem
               onClick={(_event: React.MouseEvent<HTMLElement>) =>
                 handleUnitClassSelect("ship", ship.className)
@@ -1261,11 +1261,11 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
           ))}
         </Menu>
         {/** Add Reference Point */}
-        {/* <Tooltip title="Add Reference Point">
+        <Tooltip title="Add Reference Point">
           <IconButton onClick={handleReferencePointIconClick}>
             <EntityIcon type="referencePoint" />
           </IconButton>
-        </Tooltip> */}
+        </Tooltip>
         {/**  Unit Db Functions */}
         <Tooltip title="Database Tools">
           <IconButton onClick={handleUnitDbToolsIconClick}>
