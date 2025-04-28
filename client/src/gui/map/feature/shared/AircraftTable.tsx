@@ -15,10 +15,6 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import Aircraft from "@/game/units/Aircraft";
 import { Add, Delete, Flight } from "@mui/icons-material";
@@ -274,7 +270,6 @@ function AircraftTableToolbar(props: AircraftTableToolbarProps) {
             <MenuItem
               onClick={() => {
                 props.handleAddAircraft(aircraft.className);
-                handleCloseAddAircraftMenu();
               }}
               sx={{ borderRadius: 1 }}
             >
