@@ -66,6 +66,7 @@ import SideEditor from "@/gui/map/toolbar/SideEditor";
 import { useAuth0 } from "@auth0/auth0-react";
 import MapContextMenu from "@/gui/map/MapContextMenu";
 import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
+import Aircraft from "@/game/units/Aircraft";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -1165,10 +1166,22 @@ export default function ScenarioMap({
     }
   }
 
-  function addAircraftToAirbase(airbaseId: string) {
-    const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = unitDbContext.getAircraftDb()[0].className;
-    game.addAircraftToAirbase(aircraftName, className, airbaseId);
+  function addAircraftToAirbase(airbaseId: string, aircraftClassName: string) {
+    const aircraftTemplate = unitDbContext
+      .getAircraftDb()
+      .find((aircraft) => aircraft.className === aircraftClassName);
+    return game.addAircraftToAirbase(
+      airbaseId,
+      aircraftClassName,
+      aircraftTemplate?.speed,
+      aircraftTemplate?.maxFuel,
+      aircraftTemplate?.fuelRate,
+      aircraftTemplate?.range
+    );
+  }
+
+  function removeAircraftFromAirbase(airbaseId: string, aircraftIds: string[]) {
+    return game.removeAircraftFromAirbase(airbaseId, aircraftIds);
   }
 
   function addFacility(
@@ -1335,10 +1348,22 @@ export default function ScenarioMap({
     }
   }
 
-  function addAircraftToShip(shipId: string) {
-    const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = unitDbContext.getAircraftDb()[0].className;
-    game.addAircraftToShip(aircraftName, className, shipId);
+  function addAircraftToShip(shipId: string, aircraftClassName: string) {
+    const aircraftTemplate = unitDbContext
+      .getAircraftDb()
+      .find((aircraft) => aircraft.className === aircraftClassName);
+    return game.addAircraftToShip(
+      shipId,
+      aircraftClassName,
+      aircraftTemplate?.speed,
+      aircraftTemplate?.maxFuel,
+      aircraftTemplate?.fuelRate,
+      aircraftTemplate?.range
+    );
+  }
+
+  function removeAircraftFromShip(shipId: string, aircraftIds: string[]) {
+    return game.removeAircraftFromShip(shipId, aircraftIds);
   }
 
   function removeShip(shipId: string) {
@@ -1357,13 +1382,21 @@ export default function ScenarioMap({
     game.moveShip(shipId, destinationLatitude, destinationLongitude);
   }
 
-  function launchAircraftFromShip(shipId: string) {
-    const launchedAircraft = game.launchAircraftFromShip(shipId);
-    if (launchedAircraft) {
-      aircraftLayer.addAircraftFeature(launchedAircraft);
-      if (featureLabelVisible)
-        featureLabelLayer.addFeatureLabelFeature(launchedAircraft);
+  function launchAircraftFromShip(shipId: string, aircraftIds: string[]) {
+    const launchedAircraft = game.launchAircraftFromShip(shipId, aircraftIds);
+    if (launchedAircraft.length > 0) {
+      launchedAircraft.forEach((aircraft) => {
+        aircraftLayer.addAircraftFeature(aircraft);
+        if (featureLabelVisible)
+          featureLabelLayer.addFeatureLabelFeature(aircraft);
+      });
     }
+    let shipAircraft: Aircraft[] = [];
+    const ship = game.currentScenario.getShip(shipId);
+    if (ship) {
+      shipAircraft = ship.aircraft;
+    }
+    return shipAircraft;
   }
 
   function moveAircraft(aircraftId: string, coordinates: number[]) {
@@ -1385,13 +1418,24 @@ export default function ScenarioMap({
     if (teleportedUnit) refreshAllLayers();
   }
 
-  function launchAircraftFromAirbase(airbaseId: string) {
-    const launchedAircraft = game.launchAircraftFromAirbase(airbaseId);
-    if (launchedAircraft) {
-      aircraftLayer.addAircraftFeature(launchedAircraft);
-      if (featureLabelVisible)
-        featureLabelLayer.addFeatureLabelFeature(launchedAircraft);
+  function launchAircraftFromAirbase(airbaseId: string, aircraftIds: string[]) {
+    const launchedAircraft = game.launchAircraftFromAirbase(
+      airbaseId,
+      aircraftIds
+    );
+    if (launchedAircraft.length > 0) {
+      launchedAircraft.forEach((aircraft) => {
+        aircraftLayer.addAircraftFeature(aircraft);
+        if (featureLabelVisible)
+          featureLabelLayer.addFeatureLabelFeature(aircraft);
+      });
     }
+    let airbaseAircraft: Aircraft[] = [];
+    const airbase = game.currentScenario.getAirbase(airbaseId);
+    if (airbase) {
+      airbaseAircraft = airbase.aircraft;
+    }
+    return airbaseAircraft;
   }
 
   function resetAttack() {
@@ -2222,6 +2266,7 @@ export default function ScenarioMap({
               game.currentScenario.getAirbase(openAirbaseCard.airbaseId)?.sideId
             )}
             handleAddAircraft={addAircraftToAirbase}
+            handleDeleteAircraft={removeAircraftFromAirbase}
             handleLaunchAircraft={launchAircraftFromAirbase}
             handleDeleteAirbase={removeAirbase}
             handleEditAirbase={updateAirbase}
@@ -2320,6 +2365,7 @@ export default function ScenarioMap({
               game.currentScenario.getShip(openShipCard.shipId)?.sideId
             )}
             handleAddAircraft={addAircraftToShip}
+            handleDeleteAircraft={removeAircraftFromShip}
             handleLaunchAircraft={launchAircraftFromShip}
             handleDeleteShip={removeShip}
             handleMoveShip={queueShipForMovement}
