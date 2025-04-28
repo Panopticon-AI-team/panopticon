@@ -486,6 +486,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   };
 
   const exportScenario = () => {
+    if (!isAuthenticated) return;
     props.pauseOnClick();
     const exportObject = props.game.exportCurrentScenario();
     const [localDateString, time] = getLocalDateTime().split("T");
@@ -1661,11 +1662,21 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                     />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Download Scenario">
+                <Tooltip
+                  title={
+                    isAuthenticated
+                      ? "Download Scenario"
+                      : "Login to download scenario"
+                  }
+                >
                   <IconButton onClick={exportScenario}>
                     <FileDownloadOutlinedIcon
                       fontSize="medium"
-                      sx={{ color: "#171717" }}
+                      sx={{
+                        color: isAuthenticated
+                          ? "#171717"
+                          : COLOR_PALETTE.DARK_GRAY,
+                      }}
                     />
                   </IconButton>
                 </Tooltip>
