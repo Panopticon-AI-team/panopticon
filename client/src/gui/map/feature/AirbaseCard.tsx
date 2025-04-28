@@ -40,8 +40,14 @@ interface AirbaseCardProps {
     airbaseId: string,
     aircraftClassName: string
   ) => Aircraft[];
-  handleDeleteAircraft: (airbaseId: string, aircraftId: string) => Aircraft[];
-  handleLaunchAircraft: (airbaseId: string, aircraftId: string) => Aircraft[];
+  handleDeleteAircraft: (
+    airbaseId: string,
+    aircraftIds: string[]
+  ) => Aircraft[];
+  handleLaunchAircraft: (
+    airbaseId: string,
+    aircraftIds: string[]
+  ) => Aircraft[];
   handleTeleportUnit: (unitId: string) => void;
   handleDeleteAirbase: (airbaseId: string) => void;
   handleCloseOnMap: () => void;

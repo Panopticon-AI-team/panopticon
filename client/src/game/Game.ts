@@ -298,7 +298,10 @@ export default class Game {
     return airbaseAircraft;
   }
 
-  removeAircraftFromAirbase(airbaseId: string, aircraftId: string): Aircraft[] {
+  removeAircraftFromAirbase(
+    airbaseId: string,
+    aircraftIds: string[]
+  ): Aircraft[] {
     let airbaseAircraft: Aircraft[] = [];
     if (!this.currentSideId) {
       return airbaseAircraft;
@@ -307,7 +310,7 @@ export default class Game {
     const airbase = this.currentScenario.getAirbase(airbaseId);
     if (airbase) {
       airbase.aircraft = airbase.aircraft.filter(
-        (aircraft) => aircraft.id !== aircraftId
+        (aircraft) => !aircraftIds.includes(aircraft.id)
       );
       airbaseAircraft = airbase.aircraft;
     }
@@ -757,26 +760,29 @@ export default class Game {
     }
   }
 
-  launchAircraftFromAirbase(airbaseId: string, aircraftId: string) {
+  launchAircraftFromAirbase(airbaseId: string, aircraftIds: string[]) {
     if (!this.currentSideId) {
-      return;
+      return [];
     }
     const airbase = this.currentScenario.getAirbase(airbaseId);
     if (airbase && airbase.aircraft.length > 0) {
       this.recordHistory();
-      let aircraft: Aircraft | undefined;
+      const launchedAircraft: Aircraft[] = [];
       airbase.aircraft = airbase.aircraft.filter((airbaseAircraft) => {
-        if (airbaseAircraft.id === aircraftId) {
-          aircraft = airbaseAircraft;
+        if (aircraftIds.includes(airbaseAircraft.id)) {
+          launchedAircraft.push(airbaseAircraft);
           return false;
         }
         return true;
       });
-      if (aircraft) {
-        this.currentScenario.aircraft.push(aircraft);
-        return aircraft;
+      if (launchedAircraft.length > 0) {
+        launchedAircraft.forEach((aircraft) => {
+          this.currentScenario.aircraft.push(aircraft);
+        });
+        return launchedAircraft;
       }
     }
+    return [];
   }
 
   handleAircraftAttack(

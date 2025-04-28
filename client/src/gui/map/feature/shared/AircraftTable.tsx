@@ -158,6 +158,8 @@ function AircraftTableHead(props: AircraftTableHeadProps) {
 interface AircraftTableToolbarProps {
   numSelected: number;
   handleAddAircraft: (aircraftClassName: string) => void;
+  handleDeleteAircraft: () => void;
+  handleLaunchAircraft: () => void;
 }
 function AircraftTableToolbar(props: AircraftTableToolbarProps) {
   const { numSelected } = props;
@@ -213,12 +215,12 @@ function AircraftTableToolbar(props: AircraftTableToolbarProps) {
       {numSelected > 0 ? (
         <>
           <Tooltip title={`Launch Aircraft`}>
-            <IconButton onClick={() => {}}>
+            <IconButton onClick={props.handleLaunchAircraft}>
               <Flight sx={{ color: "black" }} />
             </IconButton>
           </Tooltip>
           <Tooltip title={`Delete Aircraft`}>
-            <IconButton onClick={() => {}}>
+            <IconButton onClick={props.handleDeleteAircraft}>
               <Delete sx={{ color: "red" }} />
             </IconButton>
           </Tooltip>
@@ -288,8 +290,8 @@ function AircraftTableToolbar(props: AircraftTableToolbarProps) {
 interface AircraftTableProps {
   unitWithAircraft: Airbase | Ship;
   handleAddAircraft: (baseId: string, aircraftClassName: string) => Aircraft[];
-  handleDeleteAircraft: (baseId: string, aircraftId: string) => Aircraft[];
-  handleLaunchAircraft: (baseId: string, aircraftId: string) => Aircraft[];
+  handleDeleteAircraft: (baseId: string, aircraftIds: string[]) => Aircraft[];
+  handleLaunchAircraft: (baseId: string, aircraftIds: string[]) => Aircraft[];
 }
 
 const getDataRows = (aircraft: Aircraft[]) => {
@@ -304,7 +306,7 @@ const getDataRows = (aircraft: Aircraft[]) => {
 export default function AircraftTable(props: AircraftTableProps) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof AircraftData>("name");
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [selected, setSelected] = React.useState<string[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(true);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -320,6 +322,22 @@ export default function AircraftTable(props: AircraftTableProps) {
     const baseAircraft = props.handleAddAircraft(
       props.unitWithAircraft.id,
       aircraftClassName
+    );
+    setRows(getDataRows(baseAircraft));
+  };
+
+  const _handleDeleteAircraft = (aircraftIds: string[]) => {
+    const baseAircraft = props.handleDeleteAircraft(
+      props.unitWithAircraft.id,
+      aircraftIds
+    );
+    setRows(getDataRows(baseAircraft));
+  };
+
+  const _handleLaunchAircraft = (aircraftIds: string[]) => {
+    const baseAircraft = props.handleLaunchAircraft(
+      props.unitWithAircraft.id,
+      aircraftIds
     );
     setRows(getDataRows(baseAircraft));
   };
@@ -344,7 +362,7 @@ export default function AircraftTable(props: AircraftTableProps) {
 
   const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
     const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly string[] = [];
+    let newSelected: string[] = [];
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
@@ -389,6 +407,14 @@ export default function AircraftTable(props: AircraftTableProps) {
         <AircraftTableToolbar
           numSelected={selected.length}
           handleAddAircraft={_handleAddAircraft}
+          handleDeleteAircraft={() => {
+            _handleDeleteAircraft(selected);
+            setSelected([]);
+          }}
+          handleLaunchAircraft={() => {
+            _handleLaunchAircraft(selected);
+            setSelected([]);
+          }}
         />
         <TableContainer>
           <Table
