@@ -31,8 +31,26 @@
       name="twitter:image"
       content="https://panopticon-ai.com/images/title-logo.png"
     />
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-5JBMJ01SH1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-5JBMJ01SH1", {
+        cookie_flags: "SameSite=None;Secure",
+        cookie_domain: "panopticon-ai.com",
+      });
+    </script>
     <title>Panopticon AI | BLADE</title>
   </head>
+
   <body>
     <div id="root"></div>
     <div id="toast-container"></div>
