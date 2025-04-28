@@ -506,27 +506,38 @@ export default class Game {
     }
   }
 
-  addAircraftToShip(aircraftName: string, className: string, shipId: string) {
+  addAircraftToShip(
+    shipId: string,
+    className: string,
+    speed?: number,
+    maxFuel?: number,
+    fuelRate?: number,
+    range?: number
+  ) {
+    let shipAircraft: Aircraft[] = [];
     if (!this.currentSideId) {
-      return;
+      return shipAircraft;
     }
     const ship = this.currentScenario.getShip(shipId);
     if (ship) {
       this.recordHistory();
+      shipAircraft = ship.aircraft;
+      if (!(className && speed && maxFuel && fuelRate && range))
+        return shipAircraft;
       const aircraft = new Aircraft({
         id: randomUUID(),
-        name: aircraftName,
+        name: `${className} #${randomInt(0, 1000)}`,
         sideId: ship.sideId,
         className: className,
         latitude: ship.latitude - 0.5,
         longitude: ship.longitude - 0.5,
         altitude: 10000.0,
         heading: 90.0,
-        speed: 300.0,
-        currentFuel: 10000.0,
-        maxFuel: 10000.0,
-        fuelRate: 5000.0,
-        range: 100,
+        speed: speed,
+        currentFuel: maxFuel,
+        maxFuel: maxFuel,
+        fuelRate: fuelRate,
+        range: range,
         weapons: [],
         homeBaseId: ship.id,
         rtb: false,
@@ -534,21 +545,48 @@ export default class Game {
       });
       ship.aircraft.push(aircraft);
     }
+    return shipAircraft;
   }
 
-  launchAircraftFromShip(shipId: string) {
+  launchAircraftFromShip(shipId: string, aircraftIds: string[]) {
     if (!this.currentSideId) {
-      return;
+      return [];
     }
     const ship = this.currentScenario.getShip(shipId);
     if (ship && ship.aircraft.length > 0) {
-      const aircraft = ship.aircraft.pop();
-      if (aircraft) {
-        this.recordHistory();
-        this.currentScenario.aircraft.push(aircraft);
-        return aircraft;
+      this.recordHistory();
+      const launchedAircraft: Aircraft[] = [];
+      ship.aircraft = ship.aircraft.filter((shipAircraft) => {
+        if (aircraftIds.includes(shipAircraft.id)) {
+          launchedAircraft.push(shipAircraft);
+          return false;
+        }
+        return true;
+      });
+      if (launchedAircraft.length > 0) {
+        launchedAircraft.forEach((aircraft) => {
+          this.currentScenario.aircraft.push(aircraft);
+        });
+        return launchedAircraft;
       }
     }
+    return [];
+  }
+
+  removeAircraftFromShip(shipId: string, aircraftIds: string[]): Aircraft[] {
+    let shipAircraft: Aircraft[] = [];
+    if (!this.currentSideId) {
+      return shipAircraft;
+    }
+    this.recordHistory();
+    const ship = this.currentScenario.getShip(shipId);
+    if (ship) {
+      ship.aircraft = ship.aircraft.filter(
+        (aircraft) => !aircraftIds.includes(aircraft.id)
+      );
+      shipAircraft = ship.aircraft;
+    }
+    return shipAircraft;
   }
 
   removeShip(shipId: string) {

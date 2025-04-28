@@ -1348,10 +1348,22 @@ export default function ScenarioMap({
     }
   }
 
-  function addAircraftToShip(shipId: string) {
-    const aircraftName = "Raptor #" + randomInt(1, 5000).toString();
-    const className = unitDbContext.getAircraftDb()[0].className;
-    game.addAircraftToShip(aircraftName, className, shipId);
+  function addAircraftToShip(shipId: string, aircraftClassName: string) {
+    const aircraftTemplate = unitDbContext
+      .getAircraftDb()
+      .find((aircraft) => aircraft.className === aircraftClassName);
+    return game.addAircraftToShip(
+      shipId,
+      aircraftClassName,
+      aircraftTemplate?.speed,
+      aircraftTemplate?.maxFuel,
+      aircraftTemplate?.fuelRate,
+      aircraftTemplate?.range
+    );
+  }
+
+  function removeAircraftFromShip(shipId: string, aircraftIds: string[]) {
+    return game.removeAircraftFromShip(shipId, aircraftIds);
   }
 
   function removeShip(shipId: string) {
@@ -1370,13 +1382,21 @@ export default function ScenarioMap({
     game.moveShip(shipId, destinationLatitude, destinationLongitude);
   }
 
-  function launchAircraftFromShip(shipId: string) {
-    const launchedAircraft = game.launchAircraftFromShip(shipId);
-    if (launchedAircraft) {
-      aircraftLayer.addAircraftFeature(launchedAircraft);
-      if (featureLabelVisible)
-        featureLabelLayer.addFeatureLabelFeature(launchedAircraft);
+  function launchAircraftFromShip(shipId: string, aircraftIds: string[]) {
+    const launchedAircraft = game.launchAircraftFromShip(shipId, aircraftIds);
+    if (launchedAircraft.length > 0) {
+      launchedAircraft.forEach((aircraft) => {
+        aircraftLayer.addAircraftFeature(aircraft);
+        if (featureLabelVisible)
+          featureLabelLayer.addFeatureLabelFeature(aircraft);
+      });
     }
+    let shipAircraft: Aircraft[] = [];
+    const ship = game.currentScenario.getShip(shipId);
+    if (ship) {
+      shipAircraft = ship.aircraft;
+    }
+    return shipAircraft;
   }
 
   function moveAircraft(aircraftId: string, coordinates: number[]) {
@@ -2345,6 +2365,7 @@ export default function ScenarioMap({
               game.currentScenario.getShip(openShipCard.shipId)?.sideId
             )}
             handleAddAircraft={addAircraftToShip}
+            handleDeleteAircraft={removeAircraftFromShip}
             handleLaunchAircraft={launchAircraftFromShip}
             handleDeleteShip={removeShip}
             handleMoveShip={queueShipForMovement}

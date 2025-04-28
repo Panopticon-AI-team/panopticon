@@ -13,7 +13,6 @@ import Stack from "@mui/material/Stack";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import AddIcon from "@mui/icons-material/Add";
 import FlightIcon from "@mui/icons-material/Flight";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import {
@@ -35,12 +34,24 @@ import { colorPalette } from "@/utils/constants";
 import { MoreVert } from "@mui/icons-material";
 import Weapon from "@/game/units/Weapon";
 import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
+import Aircraft from "@/game/units/Aircraft";
+import AircraftTable from "@/gui/map/feature/shared/AircraftTable";
 
 interface ShipCardProps {
   ship: Ship;
   sideName: string;
-  handleAddAircraft: (shipId: string) => void;
-  handleLaunchAircraft: (shipId: string) => void;
+  handleAddAircraft: (
+    airbaseId: string,
+    aircraftClassName: string
+  ) => Aircraft[];
+  handleDeleteAircraft: (
+    airbaseId: string,
+    aircraftIds: string[]
+  ) => Aircraft[];
+  handleLaunchAircraft: (
+    airbaseId: string,
+    aircraftIds: string[]
+  ) => Aircraft[];
   handleDeleteShip: (shipId: string) => void;
   handleMoveShip: (shipId: string) => void;
   handleShipAttack: (
@@ -92,7 +103,7 @@ const tableValueCellStyle = {
   typography: "body1",
 };
 
-type CARD_CONTENT_CONTEXT = "default" | "editing" | "weapons";
+type CARD_CONTENT_CONTEXT = "default" | "editing" | "weapons" | "aircraft";
 
 export default function ShipCard(props: Readonly<ShipCardProps>) {
   const [cardContentContext, setCardContentContext] =
@@ -116,16 +127,6 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
   const [aircraftCount, setAircraftCount] = useState(
     props.ship.aircraft.length
   );
-
-  const _handleAddAircraft = () => {
-    props.handleAddAircraft(props.ship.id);
-    setAircraftCount(props.ship.aircraft.length);
-  };
-
-  const _handleLaunchAircraft = () => {
-    props.handleLaunchAircraft(props.ship.id);
-    setAircraftCount(props.ship.aircraft.length);
-  };
 
   const _handleDeleteShip = () => {
     props.handleCloseOnMap();
@@ -152,6 +153,13 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
     handleClose();
     setCardContentContext(
       cardContentContext !== "weapons" ? "weapons" : "default"
+    );
+  };
+
+  const toggleAircraft = () => {
+    handleClose();
+    setCardContentContext(
+      cardContentContext !== "aircraft" ? "aircraft" : "default"
     );
   };
 
@@ -255,14 +263,6 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
               {props.ship.maxFuel.toFixed(0) + " LBS"}
             </TableCell>
           </TableRow>
-          <TableRow sx={tableRowStyle}>
-            <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
-              Aircraft Quantity:
-            </TableCell>
-            <TableCell align="right" sx={tableValueCellStyle}>
-              {aircraftCount}
-            </TableCell>
-          </TableRow>
         </TableBody>
       </Table>
     </TableContainer>
@@ -362,19 +362,11 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
         />
         Plot Course
       </ListItemButton>
+      <ListItemButton onClick={toggleAircraft}>
+        <FlightIcon sx={{ mr: 0.5 }} /> View Aircraft
+      </ListItemButton>
       <ListItemButton onClick={toggleWeapons}>
         <RocketLaunchIcon sx={{ mr: 0.5 }} /> View Weapons
-      </ListItemButton>
-      <ListItemButton onClick={_handleAddAircraft}>
-        <AddIcon
-          sx={{
-            mr: 0.5,
-          }}
-        />
-        Add Aicraft
-      </ListItemButton>
-      <ListItemButton onClick={_handleLaunchAircraft}>
-        <FlightIcon sx={{ mr: 0.5 }} /> Launch Aircraft
       </ListItemButton>
       <ListItemButton onClick={_handleTeleportShip}>
         <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
@@ -414,6 +406,20 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
         size="small"
         sx={{ color: "white", borderColor: "white" }}
         onClick={toggleWeapons}
+      >
+        Back
+      </Button>
+    </Stack>
+  );
+
+  const aircraftCardActions = (
+    <Stack direction={"row"} spacing={1} sx={{ p: 1, m: 1 }}>
+      <Button
+        fullWidth
+        variant="outlined"
+        size="small"
+        sx={{ color: "white", borderColor: "white" }}
+        onClick={toggleAircraft}
       >
         Back
       </Button>
@@ -520,9 +526,18 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
               handleCloseOnMap={props.handleCloseOnMap}
             />
           )}
+          {cardContentContext === "aircraft" && (
+            <AircraftTable
+              unitWithAircraft={props.ship}
+              handleAddAircraft={props.handleAddAircraft}
+              handleDeleteAircraft={props.handleDeleteAircraft}
+              handleLaunchAircraft={props.handleLaunchAircraft}
+            />
+          )}
         </CardContent>
         {cardContentContext === "editing" && editingCardActions}
         {cardContentContext === "weapons" && weaponsCardActions}
+        {cardContentContext === "aircraft" && aircraftCardActions}
       </Card>
     </Box>
   );
