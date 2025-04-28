@@ -22,6 +22,11 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import Aircraft from "@/game/units/Aircraft";
 import { Add, Delete, Flight } from "@mui/icons-material";
+import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
+import { Menu } from "@/gui/shared/ui/MuiComponents";
+import { MenuItem, Stack } from "@mui/material";
+import Airbase from "@/game/units/Airbase";
+import Ship from "@/game/units/Ship";
 
 interface AircraftData {
   id: string;
@@ -152,9 +157,24 @@ function AircraftTableHead(props: AircraftTableHeadProps) {
 
 interface AircraftTableToolbarProps {
   numSelected: number;
+  handleAddAircraft: (aircraftClassName: string) => void;
 }
 function AircraftTableToolbar(props: AircraftTableToolbarProps) {
   const { numSelected } = props;
+  const unitDbContext = React.useContext(UnitDbContext);
+
+  const [addAircraftMenuAnchorEl, setAddAircraftMenuAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+  const openAddWeaponMenu = Boolean(addAircraftMenuAnchorEl);
+  const handleClickAddAircraftButton = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setAddAircraftMenuAnchorEl(event.currentTarget);
+  };
+  const handleCloseAddAircraftMenu = () => {
+    setAddAircraftMenuAnchorEl(null);
+  };
+
   return (
     <Toolbar
       sx={[
@@ -205,17 +225,71 @@ function AircraftTableToolbar(props: AircraftTableToolbarProps) {
         </>
       ) : (
         <Tooltip title={`Add Aircraft`}>
-          <IconButton id={"add-aircraft-button"} onClick={() => {}}>
+          <IconButton
+            id={"add-aircraft-button"}
+            onClick={handleClickAddAircraftButton}
+          >
             <Add sx={{ color: "black" }} />
           </IconButton>
         </Tooltip>
       )}
+      <Menu
+        id="add-aircraft-menu"
+        anchorEl={addAircraftMenuAnchorEl}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "left" }}
+        open={openAddWeaponMenu}
+        onClose={handleCloseAddAircraftMenu}
+        slotProps={{
+          root: { sx: { ".MuiList-root": { padding: 0 } } },
+          list: {
+            "aria-labelledby": "add-aircraft-button",
+          },
+        }}
+      >
+        {unitDbContext.getAircraftDb().map((aircraft) => (
+          <Tooltip
+            key={aircraft.className}
+            placement="right"
+            arrow
+            title={
+              <Stack direction={"column"} spacing={0.1}>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Speed: {aircraft.speed.toFixed(0)} kts
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Max Fuel: {aircraft.maxFuel.toFixed(2)} lbs
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Fuel Consumption: {aircraft.fuelRate.toFixed(2)} lbs/hr
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  Detection Range: {aircraft.range.toFixed(0)} nm
+                </Typography>
+              </Stack>
+            }
+          >
+            <MenuItem
+              onClick={() => {
+                props.handleAddAircraft(aircraft.className);
+                handleCloseAddAircraftMenu();
+              }}
+              sx={{ borderRadius: 1 }}
+            >
+              {aircraft.className}
+            </MenuItem>
+          </Tooltip>
+        ))}
+      </Menu>
     </Toolbar>
   );
 }
 
 interface AircraftTableProps {
-  aircraft: Aircraft[];
+  unitWithAircraft: Airbase | Ship;
+  handleAddAircraft: (baseId: string, aircraftClassName: string) => Aircraft[];
+  handleDeleteAircraft: (baseId: string, aircraftId: string) => Aircraft[];
+  handleLaunchAircraft: (baseId: string, aircraftId: string) => Aircraft[];
 }
 
 const getDataRows = (aircraft: Aircraft[]) => {
@@ -235,12 +309,20 @@ export default function AircraftTable(props: AircraftTableProps) {
   const [dense, setDense] = React.useState(true);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState<AircraftData[]>(
-    getDataRows(props.aircraft)
+    getDataRows(props.unitWithAircraft.aircraft)
   );
 
   React.useEffect(() => {
-    setRows(getDataRows(props.aircraft));
+    setRows(getDataRows(props.unitWithAircraft.aircraft));
   }, []);
+
+  const _handleAddAircraft = (aircraftClassName: string) => {
+    const baseAircraft = props.handleAddAircraft(
+      props.unitWithAircraft.id,
+      aircraftClassName
+    );
+    setRows(getDataRows(baseAircraft));
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -298,13 +380,16 @@ export default function AircraftTable(props: AircraftTableProps) {
       [...rows]
         .sort(getComparator(order, orderBy))
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
+    [order, orderBy, page, rowsPerPage, rows]
   );
 
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <AircraftTableToolbar numSelected={selected.length} />
+        <AircraftTableToolbar
+          numSelected={selected.length}
+          handleAddAircraft={_handleAddAircraft}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 500 }}

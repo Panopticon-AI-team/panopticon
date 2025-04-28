@@ -346,12 +346,10 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
           {cardContentContext === "editing" && editingContent()}
           {cardContentContext === "aircraft" && (
             <AircraftTable
-              // unitWithAircraft={props.airbase}
-              // handleAddAircraft={props.handleAddAircraft}
-              // handleDeleteAircraft={props.handleDeleteAircraft}
-              // handleLaunchAircraft={props.handleLaunchAircraft}
-              // handleCloseOnMap={props.handleCloseOnMap}
-              aircraft={props.airbase.aircraft}
+              unitWithAircraft={props.airbase}
+              handleAddAircraft={props.handleAddAircraft}
+              handleDeleteAircraft={props.handleDeleteAircraft}
+              handleLaunchAircraft={props.handleLaunchAircraft}
             />
           )}
         </CardContent>
