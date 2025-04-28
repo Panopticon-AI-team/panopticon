@@ -1,284 +1,386 @@
-import { useContext, useState } from "react";
-import { Add, Delete, Flight } from "@mui/icons-material";
-import {
-  IconButton,
-  Menu,
-  MenuItem,
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
+import * as React from "react";
+import { alpha } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import { visuallyHidden } from "@mui/utils";
 import Aircraft from "@/game/units/Aircraft";
-import Ship from "@/game/units/Ship";
-import Airbase from "@/game/units/Airbase";
+import { Add, Delete, Flight } from "@mui/icons-material";
 
-const tableRowStyle = {
-  border: 0,
-};
-
-const tableKeyCellStyle = {
-  whiteSpace: "nowrap",
-  color: "white",
-  border: "none",
-  p: 0.5,
-  typography: "body1",
-};
-
-const tableValueCellStyle = {
-  wordBreak: "break-word",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  maxWidth: 200,
-  color: "white",
-  border: "none",
-  p: 0.5,
-  typography: "body1",
-};
-
-interface AircraftTableProps {
-  unitWithAircraft: Airbase | Ship;
-  handleAddAircraft: (baseId: string, aircraftClassName: string) => Aircraft[];
-  handleDeleteAircraft: (baseId: string, aircraftId: string) => Aircraft[];
-  handleLaunchAircraft: (baseId: string, aircraftId: string) => Aircraft[];
-  handleCloseOnMap: () => void;
+interface AircraftData {
+  id: string;
+  name: string;
+  className: string;
+  currentFuel: number;
 }
 
-export default function AircraftTable(props: Readonly<AircraftTableProps>) {
-  const [baseAircraft, setBaseAircraft] = useState(
-    props.unitWithAircraft.aircraft
-  );
-  const unitDbContext = useContext(UnitDbContext);
+function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
 
-  const [addAircraftMenuAnchorEl, setAddAircraftMenuAnchorEl] =
-    useState<null | HTMLElement>(null);
-  const openAddWeaponMenu = Boolean(addAircraftMenuAnchorEl);
-  const handleClickAddAircraftButton = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    setAddAircraftMenuAnchorEl(event.currentTarget);
-  };
-  const handleCloseAddAircraftMenu = () => {
-    setAddAircraftMenuAnchorEl(null);
-  };
+type Order = "asc" | "desc";
 
-  const _handleAddAircraft = (aircraftClassName: string) => {
-    const baseAircraft = props.handleAddAircraft(
-      props.unitWithAircraft.id,
-      aircraftClassName
-    );
-    setBaseAircraft([...baseAircraft]);
-  };
+function getComparator<Key extends keyof any>(
+  order: Order,
+  orderBy: Key
+): (
+  a: { [key in Key]: number | string },
+  b: { [key in Key]: number | string }
+) => number {
+  return order === "desc"
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
 
-  const _handleDeleteAircraft = (aircraftId: string) => {
-    const baseAircraft = props.handleDeleteAircraft(
-      props.unitWithAircraft.id,
-      aircraftId
-    );
-    setBaseAircraft([...baseAircraft]);
-  };
+interface HeadCell {
+  disablePadding: boolean;
+  id: keyof AircraftData;
+  label: string;
+  numeric: boolean;
+}
 
-  const _handleLaunchAircraft = (aircraftId: string) => {
-    const baseAircraft = props.handleLaunchAircraft(
-      props.unitWithAircraft.id,
-      aircraftId
-    );
-    setBaseAircraft([...baseAircraft]);
-  };
+const headCells: readonly HeadCell[] = [
+  {
+    id: "name",
+    numeric: false,
+    disablePadding: true,
+    label: "Name",
+  },
+  {
+    id: "className",
+    numeric: false,
+    disablePadding: false,
+    label: "Class",
+  },
+  {
+    id: "currentFuel",
+    numeric: true,
+    disablePadding: false,
+    label: "Fuel (lbs)",
+  },
+];
 
-  const ellipsifyAircraftName = (name: string) => {
-    const maxLength = 20;
-    if (name.length > maxLength) {
-      return name.substring(0, maxLength) + "...";
-    }
-    return name;
-  };
+interface AircraftTableHeadProps {
+  numSelected: number;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof AircraftData
+  ) => void;
+  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  order: Order;
+  orderBy: string;
+  rowCount: number;
+}
+
+function AircraftTableHead(props: AircraftTableHeadProps) {
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
+  const createSortHandler =
+    (property: keyof AircraftData) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
 
   return (
-    <>
-      <Paper
-        sx={{
-          width: "100%",
-          overflow: "hidden",
-          backgroundColor: "transparent",
-          boxShadow: "none",
-        }}
-      >
-        <TableContainer
-          component={Paper}
-          sx={{
-            width: "100%",
-            minWidth: 600,
-            maxHeight: 300,
-            backgroundColor: "transparent",
-            boxShadow: "none",
-          }}
-        >
-          <Table
-            stickyHeader
-            size="small"
-            aria-label="unitWithAircraft-aircraft-table"
+    <TableHead>
+      <TableRow>
+        <TableCell padding="checkbox">
+          <Checkbox
+            color="primary"
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            slotProps={{
+              input: {
+                "aria-label": "select all aircraft",
+              },
+            }}
+          />
+        </TableCell>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.id === "name" ? "left" : "right"}
+            padding={headCell.disablePadding ? "none" : "normal"}
+            sortDirection={orderBy === headCell.id ? order : false}
           >
-            <TableHead>
-              <TableRow sx={{ ...tableRowStyle }}>
-                <TableCell
-                  component="th"
-                  scope="row"
-                  align="right"
-                  sx={{ ...tableKeyCellStyle, backgroundColor: "#282c34" }}
-                >
-                  Name
-                </TableCell>
-                <TableCell
-                  component="th"
-                  scope="row"
-                  align="right"
-                  sx={{
-                    ...tableKeyCellStyle,
-                    backgroundColor: "#282c34",
-                    minWidth: "6em",
-                  }}
-                >
-                  Class
-                </TableCell>
-                <TableCell
-                  component="th"
-                  scope="row"
-                  align="right"
-                  sx={{
-                    ...tableKeyCellStyle,
-                    backgroundColor: "#282c34",
-                    minWidth: "6em",
-                  }}
-                >
-                  Fuel
-                </TableCell>
-                <TableCell
-                  align="right"
-                  component="th"
-                  scope="row"
-                  sx={{
-                    ...tableKeyCellStyle,
-                    backgroundColor: "#282c34",
-                    minWidth: "5em",
-                  }}
-                >
-                  <Tooltip title={`Add Aircraft`}>
-                    <IconButton
-                      id={"add-aircraft-button"}
-                      onClick={handleClickAddAircraftButton}
-                    >
-                      <Add sx={{ color: "white" }} />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            </TableHead>
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : "asc"}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <Box component="span" sx={visuallyHidden}>
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
+
+interface AircraftTableToolbarProps {
+  numSelected: number;
+}
+function AircraftTableToolbar(props: AircraftTableToolbarProps) {
+  const { numSelected } = props;
+  return (
+    <Toolbar
+      sx={[
+        {
+          pl: { sm: 2 },
+          pr: { xs: 1, sm: 1 },
+        },
+        numSelected > 0 && {
+          bgcolor: (theme) =>
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
+        },
+      ]}
+    >
+      {numSelected > 0 ? (
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          color="inherit"
+          variant="subtitle1"
+          component="div"
+        >
+          {numSelected} aircraft selected
+        </Typography>
+      ) : (
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          Aircraft
+        </Typography>
+      )}
+      {numSelected > 0 ? (
+        <>
+          <Tooltip title={`Launch Aircraft`}>
+            <IconButton onClick={() => {}}>
+              <Flight sx={{ color: "black" }} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`Delete Aircraft`}>
+            <IconButton onClick={() => {}}>
+              <Delete sx={{ color: "red" }} />
+            </IconButton>
+          </Tooltip>
+        </>
+      ) : (
+        <Tooltip title={`Add Aircraft`}>
+          <IconButton id={"add-aircraft-button"} onClick={() => {}}>
+            <Add sx={{ color: "black" }} />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Toolbar>
+  );
+}
+
+interface AircraftTableProps {
+  aircraft: Aircraft[];
+}
+
+const getDataRows = (aircraft: Aircraft[]) => {
+  return aircraft.map((aircraft) => ({
+    id: aircraft.id,
+    name: aircraft.name,
+    className: aircraft.className,
+    currentFuel: aircraft.currentFuel,
+  }));
+};
+
+export default function AircraftTable(props: AircraftTableProps) {
+  const [order, setOrder] = React.useState<Order>("asc");
+  const [orderBy, setOrderBy] = React.useState<keyof AircraftData>("name");
+  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [page, setPage] = React.useState(0);
+  const [dense, setDense] = React.useState(true);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rows, setRows] = React.useState<AircraftData[]>(
+    getDataRows(props.aircraft)
+  );
+
+  React.useEffect(() => {
+    setRows(getDataRows(props.aircraft));
+  }, []);
+
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof AircraftData
+  ) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelected = rows.map((n) => n.id);
+      setSelected(newSelected);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected: readonly string[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
+  const visibleRows = React.useMemo(
+    () =>
+      [...rows]
+        .sort(getComparator(order, orderBy))
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [order, orderBy, page, rowsPerPage]
+  );
+
+  return (
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
+        <AircraftTableToolbar numSelected={selected.length} />
+        <TableContainer>
+          <Table
+            sx={{ minWidth: 500 }}
+            aria-labelledby="tableTitle"
+            size={dense ? "small" : "medium"}
+          >
+            <AircraftTableHead
+              numSelected={selected.length}
+              order={order}
+              orderBy={orderBy}
+              onSelectAllClick={handleSelectAllClick}
+              onRequestSort={handleRequestSort}
+              rowCount={rows.length}
+            />
             <TableBody>
-              {baseAircraft.length === 0 && (
-                <TableRow sx={tableRowStyle}>
-                  <TableCell
-                    colSpan={3}
-                    align="center"
-                    sx={{ ...tableValueCellStyle, color: "gray" }}
+              {visibleRows.map((row, index) => {
+                const isItemSelected = selected.includes(row.id);
+                const labelId = `aircraft-table-checkbox-${index}`;
+
+                return (
+                  <TableRow
+                    hover
+                    onClick={(event) => handleClick(event, row.id)}
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    key={row.id}
+                    selected={isItemSelected}
+                    sx={{ cursor: "pointer" }}
                   >
-                    No Aircraft Available
-                  </TableCell>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={isItemSelected}
+                        slotProps={{
+                          input: {
+                            "aria-labelledby": labelId,
+                          },
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell
+                      component="th"
+                      id={labelId}
+                      scope="row"
+                      padding="none"
+                    >
+                      {row.name}
+                    </TableCell>
+                    <TableCell align="right">{row.className}</TableCell>
+                    <TableCell align="right">{row.currentFuel}</TableCell>
+                  </TableRow>
+                );
+              })}
+              {emptyRows > 0 && (
+                <TableRow
+                  style={{
+                    height: (dense ? 33 : 53) * emptyRows,
+                  }}
+                >
+                  <TableCell colSpan={6} />
                 </TableRow>
               )}
-              {baseAircraft.length > 0 &&
-                baseAircraft.map((aircraft, index) => (
-                  <TableRow sx={tableRowStyle} key={aircraft.id}>
-                    <TableCell align="right" sx={tableValueCellStyle}>
-                      {ellipsifyAircraftName(aircraft.name)}
-                    </TableCell>
-                    <TableCell align="right" sx={tableValueCellStyle}>
-                      {aircraft.className}
-                    </TableCell>
-                    <TableCell align="right" sx={tableValueCellStyle}>
-                      {aircraft.currentFuel}
-                    </TableCell>
-                    <TableCell align="right" sx={tableValueCellStyle}>
-                      <>
-                        <Tooltip title={`Launch Aircraft`}>
-                          <IconButton
-                            onClick={() => {
-                              _handleLaunchAircraft(aircraft.id);
-                            }}
-                          >
-                            <Flight sx={{ color: "white" }} />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title={`Delete Aircraft`}>
-                          <IconButton
-                            onClick={() => _handleDeleteAircraft(aircraft.id)}
-                          >
-                            <Delete sx={{ color: "red" }} />
-                          </IconButton>
-                        </Tooltip>
-                      </>
-                    </TableCell>
-                  </TableRow>
-                ))}
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Paper>
-      <Menu
-        id="add-aircraft-menu"
-        anchorEl={addAircraftMenuAnchorEl}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        transformOrigin={{ vertical: "top", horizontal: "left" }}
-        open={openAddWeaponMenu}
-        onClose={handleCloseAddAircraftMenu}
-        slotProps={{
-          root: { sx: { ".MuiList-root": { padding: 0 } } },
-          list: {
-            "aria-labelledby": "add-aircraft-button",
-          },
-        }}
-      >
-        {unitDbContext.getAircraftDb().map((aircraft) => (
-          <Tooltip
-            key={aircraft.className}
-            placement="right"
-            arrow
-            title={
-              <Stack direction={"column"} spacing={0.1}>
-                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Speed: {aircraft.speed.toFixed(0)} kts
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Max Fuel: {aircraft.maxFuel.toFixed(2)} lbs
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Fuel Consumption: {aircraft.fuelRate.toFixed(2)} lbs/hr
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  Detection Range: {aircraft.range.toFixed(0)} nm
-                </Typography>
-              </Stack>
-            }
-          >
-            <MenuItem
-              onClick={() => {
-                _handleAddAircraft(aircraft.className);
-                handleCloseAddAircraftMenu();
-              }}
-              sx={{ borderRadius: 1 }}
-            >
-              {aircraft.className}
-            </MenuItem>
-          </Tooltip>
-        ))}
-      </Menu>
-    </>
+    </Box>
   );
 }
