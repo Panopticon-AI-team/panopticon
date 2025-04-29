@@ -7,6 +7,8 @@ Platform: [our app](https://app.panopticon-ai.com/).
 
 ![image](https://github.com/user-attachments/assets/839cace4-dcbd-4abf-81b0-0b93afbfd8a8)
 
+Our Discord Channel: [https://discord.gg/gtUZAbbV](https://discord.gg/gtUZAbbV)
+
 ## Documentation
 
 See the [docs](https://docs.panopticon-ai.com/) for full details, including installation guides, walkthroughs, platform/gameplay information, and more.
