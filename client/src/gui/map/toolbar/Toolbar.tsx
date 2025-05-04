@@ -125,6 +125,7 @@ interface ToolBarProps {
   toggleRouteVisibility: (routeVisibility: boolean) => void;
   toggleBaseMapLayer: () => void;
   keyboardShortcutsEnabled: boolean;
+  handleRouteDrawEnd: () => void;
   toggleMissionCreator: () => void;
   openMissionEditor: (selectedMissionId: string) => void;
   handleOpenSideEditor: (sideId: string | null) => void;
@@ -820,6 +821,11 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
       case "9":
         event.preventDefault();
         props.toggleFeatureLabelVisibility(!props.featureLabelVisibility);
+        break;
+      case "Escape":
+        event.preventDefault();
+        console.log("Escape key pressed");
+        props.handleRouteDrawEnd();
         break;
       default:
         break;
