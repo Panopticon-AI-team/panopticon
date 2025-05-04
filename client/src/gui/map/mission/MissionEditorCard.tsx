@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -20,6 +20,7 @@ import { Target } from "@/game/engine/weaponEngagement";
 import SelectField from "@/gui/shared/ui/SelectField";
 import TextField from "@/gui/shared/ui/TextField";
 import { Mission } from "@/game/Game";
+import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
 
 interface MissionEditorCardProps {
   missions: Mission[];
@@ -108,6 +109,7 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
       : []
   );
   const [missionName, setMissionName] = useState<string>(selectedMission.name);
+  const toastContext = useContext(ToastContext);
 
   useEffect(() => {
     const newSelectedMission =
@@ -136,25 +138,28 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
 
   const validateMissionPropertiesInput = () => {
     if (missionName === "") {
-      alert("Mission name cannot be empty");
+      toastContext?.addToast("Mission name cannot be empty", "error");
       return false;
     }
     if (selectedAircraft.length === 0) {
-      alert("Please select at least one unit");
+      toastContext?.addToast("Please select at least one unit", "error");
       return false;
     }
     if (
       selectedMission instanceof PatrolMission &&
       selectedReferencePoints.length < 3
     ) {
-      alert("Please select at least three reference points to define an area");
+      toastContext?.addToast(
+        "Please select at least three reference points to define an area",
+        "error"
+      );
       return false;
     }
     if (
       selectedMission instanceof StrikeMission &&
       selectedTargets.length === 0
     ) {
-      alert("Please select at least one target");
+      toastContext?.addToast("Please select at least one target", "error");
       return false;
     }
     return true;
