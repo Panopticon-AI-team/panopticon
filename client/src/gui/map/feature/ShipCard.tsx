@@ -31,7 +31,6 @@ import {
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
-import { MoreVert } from "@mui/icons-material";
 import Weapon from "@/game/units/Weapon";
 import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
 import Aircraft from "@/game/units/Aircraft";
@@ -454,7 +453,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <IconButton
+                    <Button
                       id="ship-feature-actions-button"
                       aria-controls={
                         open ? "ship-feature-actions-menu" : undefined
@@ -462,9 +461,12 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
                     >
-                      <MoreVert sx={{ color: "white" }} />
-                    </IconButton>
+                      Actions
+                    </Button>
                   </Tooltip>
                   <Menu
                     id="ship-feature-actions-menu"

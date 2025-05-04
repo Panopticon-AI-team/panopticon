@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
-import { MoreVert, RocketLaunch } from "@mui/icons-material";
+import { RocketLaunch } from "@mui/icons-material";
 import Weapon from "@/game/units/Weapon";
 import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
 
@@ -332,7 +332,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <IconButton
+                    <Button
                       id="facility-feature-actions-button"
                       aria-controls={
                         open ? "facility-feature-actions-menu" : undefined
@@ -340,9 +340,12 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
                     >
-                      <MoreVert sx={{ color: "white" }} />
-                    </IconButton>
+                      Actions
+                    </Button>
                   </Tooltip>
                   <Menu
                     id="facility-feature-actions-menu"
