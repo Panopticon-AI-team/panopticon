@@ -32,7 +32,6 @@ import { Menu } from "@/gui/shared/ui/MuiComponents";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { colorPalette } from "@/utils/constants";
-import { MoreVert } from "@mui/icons-material";
 import Weapon from "@/game/units/Weapon";
 import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
 
@@ -503,7 +502,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <IconButton
+                    <Button
                       id="aircraft-feature-actions-button"
                       aria-controls={
                         open ? "aircraft-feature-actions-menu" : undefined
@@ -511,9 +510,12 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
                     >
-                      <MoreVert sx={{ color: "white" }} />
-                    </IconButton>
+                      Actions
+                    </Button>
                   </Tooltip>
                   <Menu
                     id="aircraft-feature-actions-menu"

@@ -28,7 +28,6 @@ import {
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
-import { MoreVert } from "@mui/icons-material";
 
 interface ReferencePointCardProps {
   referencePoint: ReferencePoint;
@@ -244,7 +243,7 @@ export default function ReferencePointCard(
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <IconButton
+                    <Button
                       id="reference-point-feature-actions-button"
                       aria-controls={
                         open
@@ -254,9 +253,12 @@ export default function ReferencePointCard(
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
                     >
-                      <MoreVert sx={{ color: "white" }} />
-                    </IconButton>
+                      Actions
+                    </Button>
                   </Tooltip>
                   <Menu
                     id="reference-point-feature-actions-menu"

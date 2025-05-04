@@ -29,7 +29,6 @@ import {
 } from "@mui/material";
 import { Menu } from "@/gui/shared/ui/MuiComponents";
 import { colorPalette } from "@/utils/constants";
-import { MoreVert } from "@mui/icons-material";
 import Aircraft from "@/game/units/Aircraft";
 import AircraftTable from "@/gui/map/feature/shared/AircraftTable";
 
@@ -288,7 +287,7 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={`More Actions`}>
-                    <IconButton
+                    <Button
                       id="airbase-feature-actions-button"
                       aria-controls={
                         open ? "airbase-feature-actions-menu" : undefined
@@ -296,9 +295,12 @@ export default function AirbaseCard(props: Readonly<AirbaseCardProps>) {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       onClick={handleClick}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
                     >
-                      <MoreVert sx={{ color: "white" }} />
-                    </IconButton>
+                      Actions
+                    </Button>
                   </Tooltip>
                   <Menu
                     id="airbase-feature-actions-menu"
