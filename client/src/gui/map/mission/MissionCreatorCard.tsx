@@ -216,6 +216,9 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
             value={selectedMissionType}
             onChange={(value) => {
               setSelectedMissionType(value as "Patrol" | "Strike");
+              setMissionName(
+                createPlaceholderMissionName(value as "Patrol" | "Strike")
+              );
             }}
           />
         </FormControl>
