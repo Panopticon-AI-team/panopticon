@@ -486,23 +486,24 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
   };
 
   const exportScenario = () => {
-    if (!isAuthenticated) return;
-    props.pauseOnClick();
-    const exportObject = props.game.exportCurrentScenario();
-    const [localDateString, time] = getLocalDateTime().split("T");
-    const timestamp = `${localDateString.replace(/-/g, "_")}_T${time}`;
-    const currentScenarioName = !scenarioName
-      ? "panopticon_scenario"
-      : scenarioName.trim().replace(/\s+/g, "_").toLowerCase();
-    const exportName = currentScenarioName + "_" + timestamp;
-    const dataStr =
-      "data:text/json;charset=utf-8," + encodeURIComponent(exportObject);
-    const downloadAnchorNode = document.createElement("a");
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", exportName + ".json");
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+    if (isAuthenticated || import.meta.env.VITE_ENV !== "production") {
+      props.pauseOnClick();
+      const exportObject = props.game.exportCurrentScenario();
+      const [localDateString, time] = getLocalDateTime().split("T");
+      const timestamp = `${localDateString.replace(/-/g, "_")}_T${time}`;
+      const currentScenarioName = !scenarioName
+        ? "panopticon_scenario"
+        : scenarioName.trim().replace(/\s+/g, "_").toLowerCase();
+      const exportName = currentScenarioName + "_" + timestamp;
+      const dataStr =
+        "data:text/json;charset=utf-8," + encodeURIComponent(exportObject);
+      const downloadAnchorNode = document.createElement("a");
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", exportName + ".json");
+      document.body.appendChild(downloadAnchorNode); // required for firefox
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    }
   };
 
   const newScenario = () => {
@@ -1664,7 +1665,7 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                 </Tooltip>
                 <Tooltip
                   title={
-                    isAuthenticated
+                    isAuthenticated || import.meta.env.VITE_ENV !== "production"
                       ? "Download Scenario"
                       : "Login to download scenario"
                   }
@@ -1673,9 +1674,11 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
                     <FileDownloadOutlinedIcon
                       fontSize="medium"
                       sx={{
-                        color: isAuthenticated
-                          ? "#171717"
-                          : COLOR_PALETTE.DARK_GRAY,
+                        color:
+                          isAuthenticated ||
+                          import.meta.env.VITE_ENV !== "production"
+                            ? "#171717"
+                            : COLOR_PALETTE.DARK_GRAY,
                       }}
                     />
                   </IconButton>
