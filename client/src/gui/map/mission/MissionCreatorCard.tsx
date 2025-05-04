@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useContext } from "react";
 import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
 import { colorPalette } from "@/utils/constants";
@@ -17,6 +17,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import SelectField from "@/gui/shared/ui/SelectField";
 import TextField from "@/gui/shared/ui/TextField";
+import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
 
 interface MissionCreatorCardProps {
   aircraft: Aircraft[];
@@ -81,25 +82,29 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
   const [missionName, setMissionName] = useState<string>(
     createPlaceholderMissionName(selectedMissionType)
   );
+  const toastContext = useContext(ToastContext);
 
   const validateMissionPropertiesInput = () => {
     if (missionName === "") {
-      alert("Mission name cannot be empty");
+      toastContext?.addToast("Mission name cannot be empty", "error");
       return false;
     }
     if (selectedAircraft.length === 0) {
-      alert("Please select at least one unit");
+      toastContext?.addToast("Please select at least one unit", "error");
       return false;
     }
     if (
       selectedMissionType === "Patrol" &&
       selectedReferencePoints.length < 3
     ) {
-      alert("Please select at least three reference points to define an area");
+      toastContext?.addToast(
+        "Please select at least three reference points to define an area",
+        "error"
+      );
       return false;
     }
     if (selectedMissionType === "Strike" && selectedTargets.length === 0) {
-      alert("Please select at least one target");
+      toastContext?.addToast("Please select at least one target", "error");
       return false;
     }
     return true;
