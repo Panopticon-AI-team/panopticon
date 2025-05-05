@@ -525,9 +525,9 @@ class Game:
                 if all_attackers_expended:
                     is_mission_ongoing = False
 
-                if not is_mission_ongoing:
-                    for attacker in attackers:
-                        self.aircraft_return_to_base(attacker.id)
+                # if not is_mission_ongoing:
+                #     for attacker in attackers:
+                #         self.aircraft_return_to_base(attacker.id)
 
                 return is_mission_ongoing
             else:
@@ -689,11 +689,11 @@ class Game:
             )
             if aircraft.current_fuel <= 0:
                 self.remove_aircraft(aircraft.id)
-            elif (
-                aircraft.current_fuel < fuel_needed_to_return_to_base * 1.1
-                and not aircraft.rtb
-            ):
-                self.aircraft_return_to_base(aircraft.id)
+            # elif (
+            #     aircraft.current_fuel < fuel_needed_to_return_to_base * 1.1
+            #     and not aircraft.rtb
+            # ):
+            #     self.aircraft_return_to_base(aircraft.id)
 
     def update_all_ship_position(self) -> None:
         for ship in self.current_scenario.ships:
