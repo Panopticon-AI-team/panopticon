@@ -33,6 +33,7 @@ import PlaybackRecorder from "@/game/playback/PlaybackRecorder";
 import RecordingPlayer from "@/game/playback/RecordingPlayer";
 import { SIDE_COLOR } from "@/utils/colors";
 import Relationships from "@/game/Relationships";
+import Dba from "@/game/db/Dba";
 
 const MAX_HISTORY_SIZE = 20;
 
@@ -81,6 +82,8 @@ export default class Game {
   godMode: boolean = true;
   eraserMode: boolean = false;
   history: string[] = [];
+  unitDba: Dba = new Dba();
+  demoMode: boolean = true; // flag for features that should be removed in the final product
 
   constructor(currentScenario: Scenario) {
     this.currentScenario = currentScenario;
@@ -218,6 +221,70 @@ export default class Game {
     }
   }
 
+  getDefaultWeapons(
+    weaponKeys: Record<string, number>,
+    sideId: string,
+    sideColor: SIDE_COLOR
+  ): Weapon[] {
+    const weapons: Weapon[] = [];
+    const weaponTemplates = this.unitDba
+      .getWeaponDb()
+      .filter((weapon) => weapon.className in weaponKeys);
+    weaponTemplates.forEach((weapon) => {
+      const weaponQuantity = weaponKeys[weapon.className];
+      const newWeapon = new Weapon({
+        id: randomUUID(),
+        name: weapon.className,
+        sideId: sideId,
+        className: weapon.className,
+        latitude: 0.0,
+        longitude: 0.0,
+        altitude: 10000.0,
+        heading: 90.0,
+        speed: weapon.speed,
+        currentFuel: weapon.maxFuel,
+        maxFuel: weapon.maxFuel,
+        fuelRate: weapon.fuelRate,
+        range: 100,
+        sideColor: sideColor,
+        targetId: null,
+        lethality: weapon.lethality,
+        maxQuantity: weaponQuantity,
+        currentQuantity: weaponQuantity,
+      });
+      weapons.push(newWeapon);
+    });
+
+    return weapons;
+  }
+
+  getDefaultAircraftWeapons(sideId: string, sideColor: SIDE_COLOR): Weapon[] {
+    const aircraftWeaponKeys: Record<string, number> = {
+      "AIM-120 AMRAAM": 4,
+      "AIM-9 Sidewinder": 2,
+      "AGM-65 Maverick": 2,
+    };
+    return this.getDefaultWeapons(aircraftWeaponKeys, sideId, sideColor);
+  }
+
+  getDefaultFacilityWeapons(sideId: string, sideColor: SIDE_COLOR): Weapon[] {
+    const facilityWeaponKeys: Record<string, number> = {
+      "48N6 (S-400 Triumf)": 8,
+      "9M96 (S-300V4)": 12,
+      "57E6E (Pantsir-S1)": 16,
+    };
+    return this.getDefaultWeapons(facilityWeaponKeys, sideId, sideColor);
+  }
+
+  getDefaultShipWeapons(sideId: string, sideColor: SIDE_COLOR): Weapon[] {
+    const shipWeaponKeys: Record<string, number> = {
+      "RIM-174 Standard SM-6": 96,
+      "RIM-116 RAM": 42,
+      "RGM-84 Harpoon": 8,
+    };
+    return this.getDefaultWeapons(shipWeaponKeys, sideId, sideColor);
+  }
+
   addAircraft(
     aircraftName: string,
     className: string,
@@ -247,7 +314,12 @@ export default class Game {
       fuelRate: fuelRate ?? 5000.0,
       range: range ?? 100,
       sideColor: this.currentScenario.getSideColor(this.currentSideId),
-      weapons: [],
+      weapons: this.demoMode
+        ? this.getDefaultAircraftWeapons(
+            this.currentSideId,
+            this.currentScenario.getSideColor(this.currentSideId)
+          )
+        : [],
       homeBaseId: "",
       rtb: false,
       targetId: "",
@@ -288,7 +360,12 @@ export default class Game {
         maxFuel: maxFuel,
         fuelRate: fuelRate,
         range: range,
-        weapons: [],
+        weapons: this.demoMode
+          ? this.getDefaultAircraftWeapons(
+              this.currentSideId,
+              this.currentScenario.getSideColor(this.currentSideId)
+            )
+          : [],
         homeBaseId: airbase.id,
         rtb: false,
         sideColor: airbase.sideColor,
@@ -429,7 +506,12 @@ export default class Game {
       altitude: 0.0,
       range: range ?? 250,
       sideColor: this.currentScenario.getSideColor(this.currentSideId),
-      weapons: [],
+      weapons: this.demoMode
+        ? this.getDefaultFacilityWeapons(
+            this.currentSideId,
+            this.currentScenario.getSideColor(this.currentSideId)
+          )
+        : [],
     });
     this.currentScenario.facilities.push(facility);
     return facility;
@@ -466,7 +548,12 @@ export default class Game {
       route: [],
       selected: false,
       sideColor: this.currentScenario.getSideColor(this.currentSideId),
-      weapons: [],
+      weapons: this.demoMode
+        ? this.getDefaultShipWeapons(
+            this.currentSideId,
+            this.currentScenario.getSideColor(this.currentSideId)
+          )
+        : [],
       aircraft: [],
     });
     this.currentScenario.ships.push(ship);
@@ -538,7 +625,12 @@ export default class Game {
         maxFuel: maxFuel,
         fuelRate: fuelRate,
         range: range,
-        weapons: [],
+        weapons: this.demoMode
+          ? this.getDefaultAircraftWeapons(
+              this.currentSideId,
+              this.currentScenario.getSideColor(this.currentSideId)
+            )
+          : [],
         homeBaseId: ship.id,
         rtb: false,
         sideColor: ship.sideColor,
