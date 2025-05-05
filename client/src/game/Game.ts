@@ -1627,11 +1627,11 @@ export default class Game {
             (attacker) => attacker.getTotalWeaponQuantity() === 0
           );
           if (allAttackersHaveExpendedWeapons) isMissionOngoing = false;
-          if (!isMissionOngoing) {
-            attackers.forEach(
-              (attacker) => attacker && this.aircraftReturnToBase(attacker.id)
-            );
-          }
+          // if (!isMissionOngoing) {
+          //   attackers.forEach(
+          //     (attacker) => attacker && this.aircraftReturnToBase(attacker.id)
+          //   );
+          // }
           return isMissionOngoing;
         } else {
           return true;
@@ -1808,12 +1808,13 @@ export default class Game {
         this.getFuelNeededToReturnToBase(aircraft);
       if (aircraft.currentFuel <= 0) {
         this.removeAircraft(aircraft.id);
-      } else if (
-        aircraft.currentFuel < fuelNeededToReturnToBase * 1.1 &&
-        !aircraft.rtb
-      ) {
-        this.aircraftReturnToBase(aircraft.id);
       }
+      // else if (
+      //   aircraft.currentFuel < fuelNeededToReturnToBase * 1.1 &&
+      //   !aircraft.rtb
+      // ) {
+      //   this.aircraftReturnToBase(aircraft.id);
+      // }
     });
   }
 
