@@ -74,11 +74,19 @@ export default function SimulationLogs(props: SimulationLogsProps) {
   const [messageTypeFilterSelections, setMessageTypeFilterSelections] =
     useState<SimulationLogType[]>([]);
 
-  useEffect(() => {
+  const handleClose = () => {
+    props.handleCloseOnMap();
+  };
+
+  const scrollToBottom = () => {
     const container = logsContainerRef.current;
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
     setFilteredSimulationLogs(filterSimulationLogs(simulationLogs));
   }, [simulationLogs]);
 
@@ -240,7 +248,7 @@ export default function SimulationLogs(props: SimulationLogsProps) {
                   </Tooltip>
                   <IconButton
                     sx={closeButtonStyle}
-                    onClick={props.handleCloseOnMap}
+                    onClick={handleClose}
                     aria-label="close"
                   >
                     <CloseIcon color="error" />

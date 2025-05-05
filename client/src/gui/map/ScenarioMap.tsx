@@ -1086,7 +1086,10 @@ export default function ScenarioMap({
     // const gameStepElapsed = new Date().getTime() - gameStepStartTime;
 
     setCurrentScenarioTimeToContext(observation.currentTime);
-    setCurrentSimulationLogsToContext([...game.simulationLogs.getLogs()]);
+    if (game.simulationLogs.getHasNewLogs()) {
+      setCurrentSimulationLogsToContext([...game.simulationLogs.getLogs()]);
+      game.simulationLogs.setHasNewLogs(false);
+    }
 
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation);
@@ -2216,7 +2219,12 @@ export default function ScenarioMap({
         }}
         openSimulationLogs={openSimulationLogs}
         updateCurrentSimulationLogsToContext={() => {
-          setCurrentSimulationLogsToContext([...game.simulationLogs.getLogs()]);
+          if (game.simulationLogs.getHasNewLogs()) {
+            setCurrentSimulationLogsToContext([
+              ...game.simulationLogs.getLogs(),
+            ]);
+            game.simulationLogs.setHasNewLogs(false);
+          }
         }}
         updateCurrentScenarioSidesToContext={() => {
           setCurrentScenarioSidesToContext([...game.currentScenario.sides]);

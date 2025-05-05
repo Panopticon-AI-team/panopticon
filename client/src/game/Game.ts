@@ -1111,7 +1111,7 @@ export default class Game {
     this.currentSideId = importObject.currentSideId;
     this.selectedUnitId = importObject.selectedUnitId;
     this.mapView = importObject.mapView;
-    this.simulationLogs = new SimulationLogs();
+    this.simulationLogs.clearLogs();
 
     const savedScenario = importObject.currentScenario;
     const savedSides = savedScenario.sides.map((side: Side) => {

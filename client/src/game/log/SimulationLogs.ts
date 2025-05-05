@@ -24,6 +24,7 @@ export interface SimulationLog {
 
 export default class SimulationLogs {
   private logs: SimulationLog[] = [];
+  private hasNewLogs: boolean = false;
 
   addLog(
     sideId: string,
@@ -39,6 +40,15 @@ export default class SimulationLogs {
       message,
     };
     this.logs.push(newLog);
+    this.hasNewLogs = true;
+  }
+
+  getHasNewLogs() {
+    return this.hasNewLogs;
+  }
+
+  setHasNewLogs(hasNewLogs: boolean) {
+    this.hasNewLogs = hasNewLogs;
   }
 
   getLogs(
@@ -69,5 +79,6 @@ export default class SimulationLogs {
 
   clearLogs() {
     this.logs = [];
+    this.hasNewLogs = true;
   }
 }
