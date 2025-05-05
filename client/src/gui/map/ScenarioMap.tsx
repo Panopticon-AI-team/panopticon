@@ -1499,7 +1499,9 @@ export default function ScenarioMap({
         aircraft.sideColor
       );
       aircraft.rtb = false;
-      setCurrentGameStatusToContext("Click on the map to move the aircraft");
+      setCurrentGameStatusToContext(
+        "Click on the map to plot a route for the aircraft. Click on the same location twice or press the 'Escape' key to stop plotting."
+      );
     }
   }
 
@@ -1517,7 +1519,9 @@ export default function ScenarioMap({
         ),
         ship.sideColor
       );
-      setCurrentGameStatusToContext("Click on the map to move the ship");
+      setCurrentGameStatusToContext(
+        "Click on the map to plot a route for the ship. Click on the same location twice or press the 'Escape' key to stop plotting."
+      );
     }
   }
 
@@ -2021,6 +2025,14 @@ export default function ScenarioMap({
     theMap.addOverlay(routeMeasurementTooltip);
   }
 
+  function finishRouteDrawLine() {
+    theMap.getInteractions().forEach((interaction) => {
+      if (interaction instanceof Draw) {
+        interaction.finishDrawing();
+      }
+    });
+  }
+
   function cleanUpRouteDrawLineAndMeasurementTooltip() {
     if (routeMeasurementDrawLine)
       theMap.removeInteraction(routeMeasurementDrawLine);
@@ -2053,6 +2065,30 @@ export default function ScenarioMap({
     const output = (length / NAUTICAL_MILES_TO_METERS).toFixed(2) + " " + "NM";
     return output;
   };
+
+  function handleRouteDrawEnd() {
+    cleanUpRouteDrawLineAndMeasurementTooltip();
+    const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
+    if (aircraft) {
+      aircraft.selected = !aircraft.selected;
+      aircraftLayer.updateAircraftFeature(
+        aircraft.id,
+        aircraft.selected,
+        aircraft.heading
+      );
+    }
+    const ship = game.currentScenario.getShip(game.selectedUnitId);
+    if (ship) {
+      ship.selected = !ship.selected;
+      shipLayer.updateShipFeature(ship.id, ship.selected, ship.heading);
+    }
+    game.commitRoute(game.selectedUnitId);
+    game.selectedUnitId = "";
+    setCurrentGameStatusToContext(
+      game.scenarioPaused ? "Scenario paused" : "Scenario playing"
+    );
+    refreshRouteLayer(game.currentScenario);
+  }
 
   function addRouteMeasurementInteraction(
     startCoordinates: number[],
@@ -2095,27 +2131,7 @@ export default function ScenarioMap({
     });
 
     routeMeasurementDrawLine.on("drawend", function (_event) {
-      cleanUpRouteDrawLineAndMeasurementTooltip();
-      const aircraft = game.currentScenario.getAircraft(game.selectedUnitId);
-      if (aircraft) {
-        aircraft.selected = !aircraft.selected;
-        aircraftLayer.updateAircraftFeature(
-          aircraft.id,
-          aircraft.selected,
-          aircraft.heading
-        );
-      }
-      const ship = game.currentScenario.getShip(game.selectedUnitId);
-      if (ship) {
-        ship.selected = !ship.selected;
-        shipLayer.updateShipFeature(ship.id, ship.selected, ship.heading);
-      }
-      game.commitRoute(game.selectedUnitId);
-      game.selectedUnitId = "";
-      setCurrentGameStatusToContext(
-        game.scenarioPaused ? "Scenario paused" : "Scenario playing"
-      );
-      refreshRouteLayer(game.currentScenario);
+      handleRouteDrawEnd();
     });
 
     routeMeasurementDrawLine.appendCoordinates([startCoordinates]);
@@ -2173,6 +2189,7 @@ export default function ScenarioMap({
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
+        finishRouteDrawLine={finishRouteDrawLine}
         toggleMissionCreator={() => {
           setKeyboardShortcutsEnabled(missionCreatorActive);
           setMissionCreatorActive(!missionCreatorActive);
