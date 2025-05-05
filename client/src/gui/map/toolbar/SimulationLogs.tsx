@@ -1,31 +1,15 @@
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Draggable from "react-draggable";
 import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Box from "@mui/material/Box";
 import { SimulationLogsContext } from "@/gui/contextProviders/contexts/SimulationLogsContext";
 import { colorPalette } from "@/utils/constants";
 import { CardHeader, IconButton, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-
-export enum SimulationLogType {
-  WEAPON_LAUNCHED = "WEAPON_LAUNCHED",
-  WEAPON_HIT = "WEAPON_HIT",
-  WEAPON_MISSED = "WEAPON_MISSED",
-  WEAPON_EXPENDED = "WEAPON_EXPENDED",
-  WEAPON_CRASHED = "WEAPON_CRASHED",
-  STRIKE_MISSION_SUCCESS = "STRIKE_MISSION_SUCCESS",
-  STRIKE_MISSION_ABORTED = "STRIKE_MISSION_ABORTED",
-  RETURN_TO_BASE = "RETURN_TO_BASE",
-  AIRCRAFT_CRASHED = "AIRCRAFT_CRASHED",
-  OTHER = "OTHER",
-}
-
-export interface SimulationLog {
-  id: string;
-  timestamp: number;
-  type: SimulationLogType;
-  sideId: string;
-  message: string;
-}
+import { unixToLocalTime } from "@/utils/dateTimeFunctions";
+import { ScenarioSidesContext } from "@/gui/contextProviders/contexts/ScenarioSidesContext";
+import Side from "@/game/Side";
 
 const cardStyle = {
   minWidth: "400px",
@@ -43,7 +27,13 @@ const closeButtonStyle = {
 const cardHeaderStyle = {
   backgroundColor: colorPalette.white,
   color: "black",
-  height: "50px",
+};
+
+const logsContainerStyle = {
+  height: "300px",
+  overflowY: "auto" as const,
+  padding: "1em",
+  backgroundColor: colorPalette.lightGray,
 };
 
 interface SimulationLogsProps {
@@ -52,11 +42,27 @@ interface SimulationLogsProps {
 
 export default function SimulationLogs(props: SimulationLogsProps) {
   const nodeRef = useRef(null);
+  const logsContainerRef = useRef<HTMLDivElement>(null);
   const simulationLogs = useContext(SimulationLogsContext);
+  const scenarioSides = useContext(ScenarioSidesContext);
+  const [scenarioSidesMap, setScenarioSidesMap] = useState<
+    Record<string, Side>
+  >({});
 
-  const cardContent = () => {
-    return <></>;
-  };
+  useEffect(() => {
+    const container = logsContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [simulationLogs]);
+
+  useEffect(() => {
+    const sidesMap: Record<string, Side> = {};
+    scenarioSides.forEach((side) => {
+      sidesMap[side.id] = side;
+    });
+    setScenarioSidesMap(sidesMap);
+  }, [scenarioSides]);
 
   return (
     <div
@@ -82,11 +88,31 @@ export default function SimulationLogs(props: SimulationLogsProps) {
             }
             title={
               <Typography variant="body1" component="h1" sx={{ pl: 1 }}>
-                Mission Creator
+                Simulation Logs
               </Typography>
             }
           />
-          {cardContent()}
+          <CardContent sx={{ p: 0 }}>
+            <Box ref={logsContainerRef} sx={logsContainerStyle}>
+              {simulationLogs.length === 0 ? (
+                <Typography variant="body2" color="textSecondary">
+                  No logs yet.
+                </Typography>
+              ) : (
+                simulationLogs.map((log) => (
+                  <Typography
+                    key={log.id}
+                    variant="body2"
+                    sx={{ whiteSpace: "pre-wrap", mb: 0.5 }}
+                  >
+                    [{unixToLocalTime(log.timestamp)}][
+                    {scenarioSidesMap[log.sideId]?.name ?? "UNKNOWN"}]{" "}
+                    {log.message}
+                  </Typography>
+                ))
+              )}
+            </Box>
+          </CardContent>
         </Card>
       </Draggable>
     </div>
