@@ -1491,7 +1491,6 @@ export default function ScenarioMap({
         aircraft.selected,
         aircraft.heading
       );
-      setKeyboardShortcutsEnabled(true);
       addRouteMeasurementInteraction(
         fromLonLat(
           [aircraft.longitude, aircraft.latitude],
@@ -1513,7 +1512,6 @@ export default function ScenarioMap({
       ship.selected = true;
       shipLayer.updateShipFeature(ship.id, ship.selected, ship.heading);
       shipRouteLayer.removeFeatureById(ship.id);
-      setKeyboardShortcutsEnabled(true);
       addRouteMeasurementInteraction(
         fromLonLat(
           [ship.longitude, ship.latitude],
@@ -2027,10 +2025,12 @@ export default function ScenarioMap({
     theMap.addOverlay(routeMeasurementTooltip);
   }
 
-  function abortRouteDrawLine() {
-    routeMeasurementDrawLine?.abortDrawing();
-    routeMeasurementDrawLine?.finishDrawing();
-    handleRouteDrawEnd();
+  function finishRouteDrawLine() {
+    theMap.getInteractions().forEach((interaction) => {
+      if (interaction instanceof Draw) {
+        interaction.finishDrawing();
+      }
+    });
   }
 
   function cleanUpRouteDrawLineAndMeasurementTooltip() {
@@ -2189,7 +2189,7 @@ export default function ScenarioMap({
         toggleRouteVisibility={toggleRouteVisibility}
         toggleBaseMapLayer={toggleBaseMapLayer}
         keyboardShortcutsEnabled={keyboardShortcutsEnabled}
-        handleRouteDrawEnd={abortRouteDrawLine}
+        finishRouteDrawLine={finishRouteDrawLine}
         toggleMissionCreator={() => {
           setKeyboardShortcutsEnabled(missionCreatorActive);
           setMissionCreatorActive(!missionCreatorActive);
