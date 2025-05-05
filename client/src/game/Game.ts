@@ -34,6 +34,7 @@ import RecordingPlayer from "@/game/playback/RecordingPlayer";
 import { SIDE_COLOR } from "@/utils/colors";
 import Relationships from "@/game/Relationships";
 import Dba from "@/game/db/Dba";
+import SimulationLogs, { SimulationLogType } from "@/game/log/SimulationLogs";
 
 const MAX_HISTORY_SIZE = 20;
 
@@ -84,6 +85,7 @@ export default class Game {
   history: string[] = [];
   unitDba: Dba = new Dba();
   demoMode: boolean = true; // flag for features that should be removed in the final product
+  simulationLogs: SimulationLogs = new SimulationLogs();
 
   constructor(currentScenario: Scenario) {
     this.currentScenario = currentScenario;
@@ -943,7 +945,8 @@ export default class Game {
         aircraft,
         target,
         weapon,
-        weaponQuantity
+        weaponQuantity,
+        this.simulationLogs
       );
     }
   }
@@ -971,7 +974,14 @@ export default class Game {
       target?.id !== ship?.id
     ) {
       this.recordHistory();
-      launchWeapon(this.currentScenario, ship, target, weapon, weaponQuantity);
+      launchWeapon(
+        this.currentScenario,
+        ship,
+        target,
+        weapon,
+        weaponQuantity,
+        this.simulationLogs
+      );
     }
   }
 
@@ -980,6 +990,12 @@ export default class Game {
     if (aircraft) {
       this.recordHistory();
       if (aircraft.rtb) {
+        this.simulationLogs.addLog(
+          aircraft.sideId,
+          `${aircraft.name} cancelled RTB`,
+          this.currentScenario.currentTime,
+          SimulationLogType.RETURN_TO_BASE
+        );
         aircraft.rtb = false;
         aircraft.route = [];
         return aircraft;
@@ -993,6 +1009,12 @@ export default class Game {
           if (aircraft.homeBaseId !== homeBase.id)
             aircraft.homeBaseId = homeBase.id;
           this.moveAircraft(aircraftId, homeBase.latitude, homeBase.longitude);
+          this.simulationLogs.addLog(
+            aircraft.sideId,
+            `${aircraft.name} returning to ${homeBase.name}`,
+            this.currentScenario.currentTime,
+            SimulationLogType.RETURN_TO_BASE
+          );
           return this.commitRoute(aircraftId);
         }
       }
@@ -1089,6 +1111,7 @@ export default class Game {
     this.currentSideId = importObject.currentSideId;
     this.selectedUnitId = importObject.selectedUnitId;
     this.mapView = importObject.mapView;
+    this.simulationLogs = new SimulationLogs();
 
     const savedScenario = importObject.currentScenario;
     const savedSides = savedScenario.sides.map((side: Side) => {
@@ -1465,7 +1488,8 @@ export default class Game {
               facility,
               aircraft,
               facilityWeapon,
-              1
+              1,
+              this.simulationLogs
             );
           }
         }
@@ -1485,7 +1509,8 @@ export default class Game {
               facility,
               weapon,
               facilityWeapon,
-              1
+              1,
+              this.simulationLogs
             );
           }
         }
@@ -1504,7 +1529,14 @@ export default class Game {
             weaponCanEngageTarget(aircraft, shipWeapon) &&
             checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
           ) {
-            launchWeapon(this.currentScenario, ship, aircraft, shipWeapon, 1);
+            launchWeapon(
+              this.currentScenario,
+              ship,
+              aircraft,
+              shipWeapon,
+              1,
+              this.simulationLogs
+            );
           }
         }
       });
@@ -1518,7 +1550,14 @@ export default class Game {
             weaponCanEngageTarget(weapon, shipWeapon) &&
             checkTargetTrackedByCount(this.currentScenario, weapon) < 5
           ) {
-            launchWeapon(this.currentScenario, ship, weapon, shipWeapon, 1);
+            launchWeapon(
+              this.currentScenario,
+              ship,
+              weapon,
+              shipWeapon,
+              1,
+              this.simulationLogs
+            );
           }
         }
       });
@@ -1549,7 +1588,8 @@ export default class Game {
               aircraft,
               enemyAircraft,
               aircraftWeaponWithMaxRange,
-              1
+              1,
+              this.simulationLogs
             );
             aircraft.targetId = enemyAircraft.id;
           }
@@ -1570,7 +1610,8 @@ export default class Game {
               aircraft,
               enemyWeapon,
               aircraftWeaponWithMaxRange,
-              1
+              1,
+              this.simulationLogs
             );
           }
         }
@@ -1618,15 +1659,39 @@ export default class Game {
             this.currentScenario.getShip(mission.assignedTargetIds[0]) ||
             this.currentScenario.getAirbase(mission.assignedTargetIds[0]) ||
             this.currentScenario.getAircraft(mission.assignedTargetIds[0]);
-          if (!target) isMissionOngoing = false;
+          if (!target) {
+            isMissionOngoing = false;
+            this.simulationLogs.addLog(
+              mission.sideId,
+              `Strike mission '${mission.name}' has been completed because the target is no longer available`,
+              this.currentScenario.currentTime,
+              SimulationLogType.STRIKE_MISSION_SUCCESS
+            );
+          }
           const attackers = mission.assignedUnitIds
             .map((attackerId) => this.currentScenario.getAircraft(attackerId))
             .filter((attacker) => attacker !== undefined);
-          if (attackers.length < 1) isMissionOngoing = false;
+          if (attackers.length < 1) {
+            isMissionOngoing = false;
+            this.simulationLogs.addLog(
+              mission.sideId,
+              `Strike mission '${mission.name}' has been completed because the attackers are no longer available`,
+              this.currentScenario.currentTime,
+              SimulationLogType.STRIKE_MISSION_ABORTED
+            );
+          }
           const allAttackersHaveExpendedWeapons = attackers.every(
             (attacker) => attacker.getTotalWeaponQuantity() === 0
           );
-          if (allAttackersHaveExpendedWeapons) isMissionOngoing = false;
+          if (allAttackersHaveExpendedWeapons) {
+            isMissionOngoing = false;
+            this.simulationLogs.addLog(
+              mission.sideId,
+              `Strike mission '${mission.name}' has been completed because the attackers have expended all their weapons`,
+              this.currentScenario.currentTime,
+              SimulationLogType.STRIKE_MISSION_ABORTED
+            );
+          }
           // if (!isMissionOngoing) {
           //   attackers.forEach(
           //     (attacker) => attacker && this.aircraftReturnToBase(attacker.id)
@@ -1716,7 +1781,8 @@ export default class Game {
               attacker,
               target,
               aircraftWeapon,
-              1
+              1,
+              this.simulationLogs
             );
             attacker.targetId = target.id;
           }
@@ -1808,6 +1874,12 @@ export default class Game {
         this.getFuelNeededToReturnToBase(aircraft);
       if (aircraft.currentFuel <= 0) {
         this.removeAircraft(aircraft.id);
+        this.simulationLogs.addLog(
+          aircraft.sideId,
+          `${aircraft.name} has run out of fuel and crashed`,
+          this.currentScenario.currentTime,
+          SimulationLogType.AIRCRAFT_CRASHED
+        );
       }
       // else if (
       //   aircraft.currentFuel < fuelNeededToReturnToBase * 1.1 &&
@@ -1875,7 +1947,7 @@ export default class Game {
     this.updateUnitsOnStrikeMission();
 
     this.currentScenario.weapons.forEach((weapon) => {
-      weaponEngagement(this.currentScenario, weapon);
+      weaponEngagement(this.currentScenario, weapon, this.simulationLogs);
     });
 
     this.updateAllAircraftPosition();

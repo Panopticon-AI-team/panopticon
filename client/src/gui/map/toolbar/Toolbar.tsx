@@ -40,6 +40,7 @@ import { Container } from "@mui/system";
 import {
   Cloud,
   Delete,
+  Message,
   Pause,
   PlayArrow,
   Save,
@@ -129,6 +130,9 @@ interface ToolBarProps {
   toggleMissionCreator: () => void;
   openMissionEditor: (selectedMissionId: string) => void;
   handleOpenSideEditor: (sideId: string | null) => void;
+  openSimulationLogs: () => void;
+  updateCurrentSimulationLogsToContext: () => void;
+  updateCurrentScenarioSidesToContext: () => void;
   openDrawer: () => void;
   closeDrawer: () => void;
 }
@@ -599,6 +603,8 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
     }
     props.refreshAllLayers();
     props.updateCurrentScenarioTimeToContext();
+    props.updateCurrentSimulationLogsToContext();
+    props.updateCurrentScenarioSidesToContext();
     props.loadFeatureEntitiesState();
   };
 
@@ -1373,6 +1379,18 @@ export default function Toolbar(props: Readonly<ToolBarProps>) {
             <GodModeIcon
               sx={{
                 color: props.game.godMode ? SIDE_COLOR.GREEN : SIDE_COLOR.BLACK,
+                width: 24,
+                height: 24,
+              }}
+            />
+          </IconButton>
+        </Tooltip>
+        {/**  Open Simulation Logs*/}
+        <Tooltip title="Simulation Logs">
+          <IconButton onClick={props.openSimulationLogs}>
+            <Message
+              sx={{
+                color: SIDE_COLOR.BLACK,
                 width: 24,
                 height: 24,
               }}

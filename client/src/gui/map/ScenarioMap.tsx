@@ -67,6 +67,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import MapContextMenu from "@/gui/map/MapContextMenu";
 import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
 import Aircraft from "@/game/units/Aircraft";
+import { SetSimulationLogsContext } from "@/gui/contextProviders/contexts/SimulationLogsContext";
+import SimulationLogs from "./toolbar/SimulationLogs";
+import { SetScenarioSidesContext } from "@/gui/contextProviders/contexts/ScenarioSidesContext";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -226,6 +229,9 @@ export default function ScenarioMap({
     open: false,
     selectedMissionId: "",
   });
+  const [simulationLogsActive, setSimulationLogsActive] = useState({
+    open: false,
+  });
   const setCurrentScenarioTimeToContext = useContext(SetScenarioTimeContext);
   const setCurrentRecordingStepToContext = useContext(SetRecordingStepContext);
   const setCurrentGameStatusToContext = useContext(SetGameStatusContext);
@@ -234,6 +240,10 @@ export default function ScenarioMap({
   );
   const toastContext = useContext(ToastContext);
   const unitDbContext = useContext(UnitDbContext);
+  const setCurrentSimulationLogsToContext = useContext(
+    SetSimulationLogsContext
+  );
+  const setCurrentScenarioSidesToContext = useContext(SetScenarioSidesContext);
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   const DrawerHeader = styled("div")(({ theme }) => ({
@@ -971,6 +981,7 @@ export default function ScenarioMap({
         );
         switchCurrentSide(game.currentSideId);
         setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+        setCurrentScenarioSidesToContext([...game.currentScenario.sides]);
         setCurrentRecordingStepToContext(
           game.recordingPlayer.getCurrentStepIndex()
         );
@@ -1075,6 +1086,7 @@ export default function ScenarioMap({
     // const gameStepElapsed = new Date().getTime() - gameStepStartTime;
 
     setCurrentScenarioTimeToContext(observation.currentTime);
+    setCurrentSimulationLogsToContext([...game.simulationLogs.getLogs()]);
 
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation);
@@ -1750,6 +1762,14 @@ export default function ScenarioMap({
     });
   }
 
+  function openSimulationLogs() {
+    setSimulationLogsActive({ open: true });
+  }
+
+  function closeSimulationLogs() {
+    setSimulationLogsActive({ open: false });
+  }
+
   function handleOpenSideEditor(sideId: string | null) {
     const anchorEl = document.getElementById("side-select");
     if (!anchorEl) return;
@@ -2194,6 +2214,13 @@ export default function ScenarioMap({
           setKeyboardShortcutsEnabled(missionCreatorActive);
           setMissionCreatorActive(!missionCreatorActive);
         }}
+        openSimulationLogs={openSimulationLogs}
+        updateCurrentSimulationLogsToContext={() => {
+          setCurrentSimulationLogsToContext([...game.simulationLogs.getLogs()]);
+        }}
+        updateCurrentScenarioSidesToContext={() => {
+          setCurrentScenarioSidesToContext([...game.currentScenario.sides]);
+        }}
         featureEntitiesPlotted={featureEntitiesState}
         openMissionEditor={openMissionEditor}
         handleOpenSideEditor={handleOpenSideEditor}
@@ -2267,6 +2294,10 @@ export default function ScenarioMap({
             handleCloseOnMap={closeMissionEditor}
           />
         )}
+
+      {simulationLogsActive.open && (
+        <SimulationLogs handleCloseOnMap={closeSimulationLogs} />
+      )}
 
       <Main open={drawerOpen}>
         <DrawerHeader />
