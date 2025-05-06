@@ -68,7 +68,7 @@ import MapContextMenu from "@/gui/map/MapContextMenu";
 import { UnitDbContext } from "@/gui/contextProviders/contexts/UnitDbContext";
 import Aircraft from "@/game/units/Aircraft";
 import { SetSimulationLogsContext } from "@/gui/contextProviders/contexts/SimulationLogsContext";
-import SimulationLogs from "./toolbar/SimulationLogs";
+import SimulationLogs from "@/gui/map/toolbar/SimulationLogs";
 import { SetScenarioSidesContext } from "@/gui/contextProviders/contexts/ScenarioSidesContext";
 
 interface ScenarioMapProps {
@@ -229,9 +229,8 @@ export default function ScenarioMap({
     open: false,
     selectedMissionId: "",
   });
-  const [simulationLogsActive, setSimulationLogsActive] = useState({
-    open: false,
-  });
+  const [simulationLogsActive, setSimulationLogsActive] =
+    useState<boolean>(false);
   const setCurrentScenarioTimeToContext = useContext(SetScenarioTimeContext);
   const setCurrentRecordingStepToContext = useContext(SetRecordingStepContext);
   const setCurrentGameStatusToContext = useContext(SetGameStatusContext);
@@ -1765,11 +1764,11 @@ export default function ScenarioMap({
   }
 
   function openSimulationLogs() {
-    setSimulationLogsActive({ open: true });
+    setSimulationLogsActive(true);
   }
 
   function closeSimulationLogs() {
-    setSimulationLogsActive({ open: false });
+    setSimulationLogsActive(false);
   }
 
   function updateCurrentSimulationLogsToContext() {
@@ -2304,7 +2303,7 @@ export default function ScenarioMap({
           />
         )}
 
-      {simulationLogsActive.open && (
+      {simulationLogsActive && (
         <SimulationLogs handleCloseOnMap={closeSimulationLogs} />
       )}
 
