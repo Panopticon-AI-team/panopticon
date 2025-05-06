@@ -10,24 +10,18 @@ import Box from "@mui/material/Box";
 import { useMediaQuery } from "@mui/material";
 import WelcomePopover from "@/WelcomePopover";
 import { useAuth0 } from "@auth0/auth0-react";
-import { SetScenarioSidesContext } from "@/gui/contextProviders/contexts/ScenarioSidesContext";
 
 export default function App() {
   const { isAuthenticated } = useAuth0();
   const [openWelcomePopover, setOpenWelcomePopover] = useState(
     import.meta.env.VITE_ENV === "production"
   );
-  const setCurrentScenarioSidesToContext = useContext(SetScenarioSidesContext);
 
   useEffect(() => {
     if (isAuthenticated) {
       setOpenWelcomePopover(false);
     }
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    setCurrentScenarioSidesToContext(theGame.currentScenario.sides);
-  });
 
   const isMobile = useMediaQuery("(max-width:600px)");
   const currentScenario = new Scenario({

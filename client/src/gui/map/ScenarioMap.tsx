@@ -372,6 +372,7 @@ export default function ScenarioMap({
 
     refreshAllLayers();
     setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+    setCurrentScenarioSidesToContext(game.currentScenario.sides);
     loadFeatureEntitiesState();
 
     return () => {
@@ -981,6 +982,7 @@ export default function ScenarioMap({
         );
         switchCurrentSide(game.currentSideId);
         setCurrentScenarioTimeToContext(game.currentScenario.currentTime);
+        updateCurrentSimulationLogsToContext();
         setCurrentScenarioSidesToContext([...game.currentScenario.sides]);
         setCurrentRecordingStepToContext(
           game.recordingPlayer.getCurrentStepIndex()
@@ -1086,10 +1088,7 @@ export default function ScenarioMap({
     // const gameStepElapsed = new Date().getTime() - gameStepStartTime;
 
     setCurrentScenarioTimeToContext(observation.currentTime);
-    if (game.simulationLogs.getHasNewLogs()) {
-      setCurrentSimulationLogsToContext([...game.simulationLogs.getLogs()]);
-      game.simulationLogs.setHasNewLogs(false);
-    }
+    updateCurrentSimulationLogsToContext();
 
     // const guiDrawStartTime = new Date().getTime();
     drawNextFrame(observation);
@@ -1773,6 +1772,13 @@ export default function ScenarioMap({
     setSimulationLogsActive({ open: false });
   }
 
+  function updateCurrentSimulationLogsToContext() {
+    if (game.simulationLogs.getHasNewLogs()) {
+      setCurrentSimulationLogsToContext([...game.simulationLogs.getLogs()]);
+      game.simulationLogs.setHasNewLogs(false);
+    }
+  }
+
   function handleOpenSideEditor(sideId: string | null) {
     const anchorEl = document.getElementById("side-select");
     if (!anchorEl) return;
@@ -2218,14 +2224,9 @@ export default function ScenarioMap({
           setMissionCreatorActive(!missionCreatorActive);
         }}
         openSimulationLogs={openSimulationLogs}
-        updateCurrentSimulationLogsToContext={() => {
-          if (game.simulationLogs.getHasNewLogs()) {
-            setCurrentSimulationLogsToContext([
-              ...game.simulationLogs.getLogs(),
-            ]);
-            game.simulationLogs.setHasNewLogs(false);
-          }
-        }}
+        updateCurrentSimulationLogsToContext={
+          updateCurrentSimulationLogsToContext
+        }
         updateCurrentScenarioSidesToContext={() => {
           setCurrentScenarioSidesToContext([...game.currentScenario.sides]);
         }}
