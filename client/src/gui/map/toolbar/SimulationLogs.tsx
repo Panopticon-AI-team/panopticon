@@ -56,14 +56,22 @@ interface SimulationLogsProps {
 export default function SimulationLogs(props: SimulationLogsProps) {
   const nodeRef = useRef(null);
   const logsContainerRef = useRef<HTMLDivElement>(null);
+  const lastRenderedLogIdRef = useRef<string | null>(null);
   const simulationLogs = useContext(SimulationLogsContext);
-  const [filteredSimulationLogs, setFilteredSimulationLogs] = useState<
-    SimulationLog[]
+  const [simulationLogElements, setSimulationLogElements] = useState<
+    JSX.Element[]
   >([]);
   const scenarioSides = useContext(ScenarioSidesContext);
+  const getScenarioSidesMap = () => {
+    const sidesMap: Record<string, Side> = {};
+    scenarioSides.forEach((side) => {
+      sidesMap[side.id] = side;
+    });
+    return sidesMap;
+  };
   const [scenarioSidesMap, setScenarioSidesMap] = useState<
     Record<string, Side>
-  >({});
+  >(getScenarioSidesMap());
   const [openFilterMenuAnchorEl, setOpenFilterMenuAnchorEl] =
     useState<boolean>(false);
   const [filterMenuAnchorEl, setFilterMenuAnchorEl] =
@@ -86,20 +94,59 @@ export default function SimulationLogs(props: SimulationLogsProps) {
   };
 
   useEffect(() => {
-    scrollToBottom();
-    setFilteredSimulationLogs(filterSimulationLogs(simulationLogs));
-  }, [simulationLogs]);
-
-  useEffect(() => {
-    const sidesMap: Record<string, Side> = {};
-    scenarioSides.forEach((side) => {
-      sidesMap[side.id] = side;
-    });
-    setScenarioSidesMap(sidesMap);
+    setScenarioSidesMap(getScenarioSidesMap());
   }, [scenarioSides]);
 
   useEffect(() => {
-    setFilteredSimulationLogs(filterSimulationLogs(simulationLogs));
+    if (simulationLogs.length === 0) {
+      lastRenderedLogIdRef.current = null;
+      setSimulationLogElements([]);
+      return;
+    } else if (simulationLogs.length > simulationLogElements.length) {
+      const lastIndex = simulationLogs.findIndex(
+        (log) => log.id === lastRenderedLogIdRef.current
+      );
+      const newSimulationLogElements: JSX.Element[] = simulationLogs
+        .slice(lastIndex + 1, simulationLogs.length)
+        .filter((log) => {
+          if (filterSimulationLogs([log]).length > 0) {
+            lastRenderedLogIdRef.current = log.id;
+            return true;
+          }
+          return false;
+        })
+        .map((log) => {
+          return createMessageLogComponent(log);
+        });
+      setSimulationLogElements((prev) => [
+        ...prev,
+        ...newSimulationLogElements,
+      ]);
+      scrollToBottom();
+      return;
+    } else if (simulationLogs.length < simulationLogElements.length) {
+      const newSimulationLogElements: JSX.Element[] = simulationLogs.map(
+        (log) => {
+          return createMessageLogComponent(log);
+        }
+      );
+      lastRenderedLogIdRef.current =
+        simulationLogs[simulationLogs.length - 1]?.id;
+      setSimulationLogElements(newSimulationLogElements);
+      scrollToBottom();
+      return;
+    } else {
+      return;
+    }
+  }, [simulationLogs]);
+
+  useEffect(() => {
+    const filteredLogs = filterSimulationLogs(simulationLogs);
+    lastRenderedLogIdRef.current = filteredLogs[filteredLogs.length - 1]?.id;
+    setSimulationLogElements(
+      filteredLogs.map((log) => createMessageLogComponent(log))
+    );
+    scrollToBottom();
   }, [sideFilterSelections, messageTypeFilterSelections]);
 
   const filterSimulationLogs = (simulationLogs: SimulationLog[]) => {
@@ -216,6 +263,38 @@ export default function SimulationLogs(props: SimulationLogsProps) {
     );
   };
 
+  const createMessageLogComponent = (log: SimulationLog) => {
+    const side = scenarioSidesMap[log.sideId];
+    const sideName = side?.name ?? "UNKNOWN";
+    const sideColor = side?.color ?? SIDE_COLOR.BLACK;
+    return (
+      <Typography
+        key={log.id}
+        variant="body2"
+        sx={{
+          whiteSpace: "pre-wrap",
+          mb: 0.5,
+        }}
+      >
+        [
+        <Typography
+          component="span"
+          sx={{ color: "black", fontSize: "inherit" }}
+        >
+          {unixToLocalTime(log.timestamp)}
+        </Typography>
+        ][
+        <Typography
+          component="span"
+          sx={{ color: sideColor, fontSize: "inherit" }}
+        >
+          {sideName}
+        </Typography>
+        ] {log.message}
+      </Typography>
+    );
+  };
+
   return (
     <div
       style={{
@@ -265,39 +344,12 @@ export default function SimulationLogs(props: SimulationLogsProps) {
           />
           <CardContent sx={{ p: 0 }}>
             <Box ref={logsContainerRef} sx={logsContainerStyle}>
-              {filteredSimulationLogs.length === 0 ? (
+              {simulationLogElements.length === 0 ? (
                 <Typography variant="body2" color="textSecondary">
                   No logs yet.
                 </Typography>
               ) : (
-                filteredSimulationLogs.map((log) => {
-                  const side = scenarioSidesMap[log.sideId];
-                  const sideName = side?.name ?? "UNKNOWN";
-                  const sideColor = side?.color ?? SIDE_COLOR.BLACK;
-                  return (
-                    <Typography
-                      key={log.id}
-                      variant="body2"
-                      sx={{ whiteSpace: "pre-wrap", mb: 0.5 }}
-                    >
-                      [
-                      <Typography
-                        component="span"
-                        sx={{ color: "black", fontSize: "inherit" }}
-                      >
-                        {unixToLocalTime(log.timestamp)}
-                      </Typography>
-                      ][
-                      <Typography
-                        component="span"
-                        sx={{ color: sideColor, fontSize: "inherit" }}
-                      >
-                        {sideName}
-                      </Typography>
-                      ] {log.message}
-                    </Typography>
-                  );
-                })
+                simulationLogElements
               )}
             </Box>
           </CardContent>
