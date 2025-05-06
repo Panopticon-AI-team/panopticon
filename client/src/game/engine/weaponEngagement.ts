@@ -19,6 +19,7 @@ import {
 } from "@/utils/mapFunctions";
 import Airbase from "@/game/units/Airbase";
 import Ship from "@/game/units/Ship";
+import SimulationLogs, { SimulationLogType } from "@/game/log/SimulationLogs";
 
 export type Target = Aircraft | Facility | Weapon | Airbase | Ship;
 
@@ -66,7 +67,8 @@ export function checkTargetTrackedByCount(
 export function weaponEndgame(
   currentScenario: Scenario,
   weapon: Weapon,
-  target: Target
+  target: Target,
+  simulationLogs: SimulationLogs
 ): boolean {
   currentScenario.weapons = currentScenario.weapons.filter(
     (currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id
@@ -93,8 +95,20 @@ export function weaponEndgame(
         (currentScenarioShip) => currentScenarioShip.id !== target.id
       );
     }
+    simulationLogs.addLog(
+      weapon.sideId,
+      `${weapon.name} has hit and destroyed ${target.name}`,
+      currentScenario.currentTime,
+      SimulationLogType.WEAPON_HIT
+    );
     return true;
   }
+  simulationLogs.addLog(
+    weapon.sideId,
+    `${weapon.name} has missed ${target.name}`,
+    currentScenario.currentTime,
+    SimulationLogType.WEAPON_MISSED
+  );
   return false;
 }
 
@@ -103,7 +117,8 @@ export function launchWeapon(
   origin: Aircraft | Facility | Ship,
   target: Target,
   launchedWeapon: Weapon,
-  launchedWeaponQuantity: number
+  launchedWeaponQuantity: number,
+  simulationLogs: SimulationLogs
 ) {
   if (
     origin.weapons.length === 0 ||
@@ -150,14 +165,30 @@ export function launchWeapon(
     currentScenario.weapons.push(newWeapon);
   }
   launchedWeapon.currentQuantity -= launchedWeaponQuantity;
+  simulationLogs.addLog(
+    origin.sideId,
+    `${origin.name} launched ${launchedWeaponQuantity}x ${launchedWeapon.name} at ${target.name}`,
+    currentScenario.currentTime,
+    SimulationLogType.WEAPON_LAUNCHED
+  );
   if (launchedWeapon.currentQuantity < 1) {
     origin.weapons = origin.weapons.filter(
       (currentOriginWeapon) => currentOriginWeapon.id !== launchedWeapon.id
     );
+    simulationLogs.addLog(
+      origin.sideId,
+      `${origin.name} has expended all stores of ${launchedWeapon.name}`,
+      currentScenario.currentTime,
+      SimulationLogType.WEAPON_EXPENDED
+    );
   }
 }
 
-export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
+export function weaponEngagement(
+  currentScenario: Scenario,
+  weapon: Weapon,
+  simulationLogs: SimulationLogs
+) {
   const target =
     currentScenario.getAircraft(weapon.targetId) ??
     currentScenario.getFacility(weapon.targetId) ??
@@ -176,7 +207,7 @@ export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
           target.longitude
         ) < 1
       ) {
-        weaponEndgame(currentScenario, weapon, target);
+        weaponEndgame(currentScenario, weapon, target, simulationLogs);
       } else {
         const nextWeaponCoordinates = getNextCoordinates(
           weapon.latitude,
@@ -201,11 +232,23 @@ export function weaponEngagement(currentScenario: Scenario, weapon: Weapon) {
         currentScenario.weapons = currentScenario.weapons.filter(
           (currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id
         );
+        simulationLogs.addLog(
+          weapon.sideId,
+          `${weapon.name} has run out of fuel and is no longer operational`,
+          currentScenario.currentTime,
+          SimulationLogType.WEAPON_CRASHED
+        );
       }
     }
   } else {
     currentScenario.weapons = currentScenario.weapons.filter(
       (currentScenarioWeapon) => currentScenarioWeapon.id !== weapon.id
+    );
+    simulationLogs.addLog(
+      weapon.sideId,
+      `${weapon.name} has lost its target and is no longer operational`,
+      currentScenario.currentTime,
+      SimulationLogType.WEAPON_CRASHED
     );
   }
 }
