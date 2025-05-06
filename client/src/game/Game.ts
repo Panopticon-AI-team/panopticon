@@ -1481,26 +1481,36 @@ export default class Game {
 
   facilityAutoDefense() {
     this.currentScenario.facilities.forEach((facility) => {
-      this.currentScenario.aircraft.forEach((aircraft) => {
-        if (this.currentScenario.isHostile(facility.sideId, aircraft.sideId)) {
-          const facilityWeapon = facility.getWeaponWithHighestEngagementRange();
-          if (!facilityWeapon) return;
+      if (
+        this.currentScenario.checkSideDoctrine(
+          facility.sideId,
+          DoctrineType.SAM_ATTACK_HOSTILE
+        )
+      ) {
+        this.currentScenario.aircraft.forEach((aircraft) => {
           if (
-            isThreatDetected(aircraft, facility) &&
-            weaponCanEngageTarget(aircraft, facilityWeapon) &&
-            checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
+            this.currentScenario.isHostile(facility.sideId, aircraft.sideId)
           ) {
-            launchWeapon(
-              this.currentScenario,
-              facility,
-              aircraft,
-              facilityWeapon,
-              1,
-              this.simulationLogs
-            );
+            const facilityWeapon =
+              facility.getWeaponWithHighestEngagementRange();
+            if (!facilityWeapon) return;
+            if (
+              isThreatDetected(aircraft, facility) &&
+              weaponCanEngageTarget(aircraft, facilityWeapon) &&
+              checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
+            ) {
+              launchWeapon(
+                this.currentScenario,
+                facility,
+                aircraft,
+                facilityWeapon,
+                1,
+                this.simulationLogs
+              );
+            }
           }
-        }
-      });
+        });
+      }
       this.currentScenario.weapons.forEach((weapon) => {
         if (this.currentScenario.isHostile(facility.sideId, weapon.sideId)) {
           const facilityWeapon = facility.getWeaponWithHighestEngagementRange();
@@ -1527,26 +1537,33 @@ export default class Game {
 
   shipAutoDefense() {
     this.currentScenario.ships.forEach((ship) => {
-      this.currentScenario.aircraft.forEach((aircraft) => {
-        if (this.currentScenario.isHostile(ship.sideId, aircraft.sideId)) {
-          const shipWeapon = ship.getWeaponWithHighestEngagementRange();
-          if (!shipWeapon) return;
-          if (
-            isThreatDetected(aircraft, ship) &&
-            weaponCanEngageTarget(aircraft, shipWeapon) &&
-            checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
-          ) {
-            launchWeapon(
-              this.currentScenario,
-              ship,
-              aircraft,
-              shipWeapon,
-              1,
-              this.simulationLogs
-            );
+      if (
+        this.currentScenario.checkSideDoctrine(
+          ship.sideId,
+          DoctrineType.SHIP_ATTACK_HOSTILE
+        )
+      ) {
+        this.currentScenario.aircraft.forEach((aircraft) => {
+          if (this.currentScenario.isHostile(ship.sideId, aircraft.sideId)) {
+            const shipWeapon = ship.getWeaponWithHighestEngagementRange();
+            if (!shipWeapon) return;
+            if (
+              isThreatDetected(aircraft, ship) &&
+              weaponCanEngageTarget(aircraft, shipWeapon) &&
+              checkTargetTrackedByCount(this.currentScenario, aircraft) < 10
+            ) {
+              launchWeapon(
+                this.currentScenario,
+                ship,
+                aircraft,
+                shipWeapon,
+                1,
+                this.simulationLogs
+              );
+            }
           }
-        }
-      });
+        });
+      }
       this.currentScenario.weapons.forEach((weapon) => {
         if (this.currentScenario.isHostile(ship.sideId, weapon.sideId)) {
           const shipWeapon = ship.getWeaponWithHighestEngagementRange();
@@ -1577,31 +1594,41 @@ export default class Game {
       const aircraftWeaponWithMaxRange =
         aircraft.getWeaponWithHighestEngagementRange();
       if (!aircraftWeaponWithMaxRange) return;
-      this.currentScenario.aircraft.forEach((enemyAircraft) => {
-        if (
-          this.currentScenario.isHostile(
-            aircraft.sideId,
-            enemyAircraft.sideId
-          ) &&
-          (aircraft.targetId === "" || aircraft.targetId === enemyAircraft.id)
-        ) {
+      if (
+        this.currentScenario.checkSideDoctrine(
+          aircraft.sideId,
+          DoctrineType.AIRCRAFT_ATTACK_HOSTILE
+        )
+      ) {
+        this.currentScenario.aircraft.forEach((enemyAircraft) => {
           if (
-            isThreatDetected(enemyAircraft, aircraft) &&
-            weaponCanEngageTarget(enemyAircraft, aircraftWeaponWithMaxRange) &&
-            checkTargetTrackedByCount(this.currentScenario, enemyAircraft) < 1
+            this.currentScenario.isHostile(
+              aircraft.sideId,
+              enemyAircraft.sideId
+            ) &&
+            (aircraft.targetId === "" || aircraft.targetId === enemyAircraft.id)
           ) {
-            launchWeapon(
-              this.currentScenario,
-              aircraft,
-              enemyAircraft,
-              aircraftWeaponWithMaxRange,
-              1,
-              this.simulationLogs
-            );
-            aircraft.targetId = enemyAircraft.id;
+            if (
+              isThreatDetected(enemyAircraft, aircraft) &&
+              weaponCanEngageTarget(
+                enemyAircraft,
+                aircraftWeaponWithMaxRange
+              ) &&
+              checkTargetTrackedByCount(this.currentScenario, enemyAircraft) < 1
+            ) {
+              launchWeapon(
+                this.currentScenario,
+                aircraft,
+                enemyAircraft,
+                aircraftWeaponWithMaxRange,
+                1,
+                this.simulationLogs
+              );
+              aircraft.targetId = enemyAircraft.id;
+            }
           }
-        }
-      });
+        });
+      }
       this.currentScenario.weapons.forEach((enemyWeapon) => {
         if (
           this.currentScenario.isHostile(aircraft.sideId, enemyWeapon.sideId)
@@ -1623,7 +1650,14 @@ export default class Game {
           }
         }
       });
-      if (aircraft.targetId && aircraft.targetId !== "")
+      if (
+        this.currentScenario.checkSideDoctrine(
+          aircraft.sideId,
+          DoctrineType.AIRCRAFT_CHASE_HOSTILE
+        ) &&
+        aircraft.targetId &&
+        aircraft.targetId !== ""
+      )
         aircraftPursuit(this.currentScenario, aircraft);
     });
   }
@@ -1699,11 +1733,17 @@ export default class Game {
               SimulationLogType.STRIKE_MISSION_ABORTED
             );
           }
-          // if (!isMissionOngoing) {
-          //   attackers.forEach(
-          //     (attacker) => attacker && this.aircraftReturnToBase(attacker.id)
-          //   );
-          // }
+          if (
+            !isMissionOngoing &&
+            this.currentScenario.checkSideDoctrine(
+              mission.sideId,
+              DoctrineType.AIRCRAFT_RTB_WHEN_STRIKE_MISSION_COMPLETE
+            )
+          ) {
+            attackers.forEach(
+              (attacker) => attacker && this.aircraftReturnToBase(attacker.id)
+            );
+          }
           return isMissionOngoing;
         } else {
           return true;
@@ -1887,13 +1927,16 @@ export default class Game {
           this.currentScenario.currentTime,
           SimulationLogType.AIRCRAFT_CRASHED
         );
+      } else if (
+        aircraft.currentFuel < fuelNeededToReturnToBase * 1.1 &&
+        !aircraft.rtb &&
+        this.currentScenario.checkSideDoctrine(
+          aircraft.sideId,
+          DoctrineType.AIRCRAFT_RTB_WHEN_OUT_OF_RANGE
+        )
+      ) {
+        this.aircraftReturnToBase(aircraft.id);
       }
-      // else if (
-      //   aircraft.currentFuel < fuelNeededToReturnToBase * 1.1 &&
-      //   !aircraft.rtb
-      // ) {
-      //   this.aircraftReturnToBase(aircraft.id);
-      // }
     });
   }
 
