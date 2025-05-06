@@ -99,7 +99,7 @@ export function weaponEndgame(
       weapon.sideId,
       `${weapon.name} has hit and destroyed ${target.name}`,
       currentScenario.currentTime,
-      SimulationLogType.TARGET_DESTROYED
+      SimulationLogType.WEAPON_HIT
     );
     return true;
   }
