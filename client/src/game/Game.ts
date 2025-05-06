@@ -35,6 +35,7 @@ import { SIDE_COLOR } from "@/utils/colors";
 import Relationships from "@/game/Relationships";
 import Dba from "@/game/db/Dba";
 import SimulationLogs, { SimulationLogType } from "@/game/log/SimulationLogs";
+import { DoctrineType, SideDoctrine } from "@/game/Doctrine";
 
 const MAX_HISTORY_SIZE = 20;
 
@@ -95,7 +96,8 @@ export default class Game {
     sideName: string,
     sideColor: SIDE_COLOR,
     sideHostiles: string[],
-    sideAllies: string[]
+    sideAllies: string[],
+    sideDoctrine: SideDoctrine
   ) {
     const side = new Side({
       id: randomUUID(),
@@ -108,6 +110,7 @@ export default class Game {
       sideHostiles,
       sideAllies
     );
+    this.currentScenario.updateSideDoctrine(side.id, sideDoctrine);
   }
 
   updateSide(
@@ -115,7 +118,8 @@ export default class Game {
     sideName: string,
     sideColor: SIDE_COLOR,
     sideHostiles: string[],
-    sideAllies: string[]
+    sideAllies: string[],
+    sideDoctrine: SideDoctrine
   ) {
     const side = this.currentScenario.getSide(sideId);
     if (side) {
@@ -187,6 +191,7 @@ export default class Game {
         sideHostiles,
         sideAllies
       );
+      this.currentScenario.updateSideDoctrine(side.id, sideDoctrine);
     }
   }
 
@@ -218,6 +223,7 @@ export default class Game {
         (referencePoint) => referencePoint.sideId !== sideId
       );
     this.currentScenario.relationships.deleteSide(sideId);
+    this.currentScenario.removeSideDoctrine(sideId);
     if (this.currentSideId === sideId) {
       this.currentSideId = this.currentScenario.sides[0]?.id ?? "";
     }
@@ -1135,6 +1141,7 @@ export default class Game {
         hostiles: savedScenario.relationships?.hostiles ?? {},
         allies: savedScenario.relationships?.allies ?? {},
       }),
+      doctrine: savedScenario.doctrine,
     });
     savedScenario.aircraft.forEach((aircraft: Aircraft) => {
       const aircraftWeapons: Weapon[] = aircraft.weapons?.map(

@@ -70,6 +70,7 @@ import Aircraft from "@/game/units/Aircraft";
 import { SetSimulationLogsContext } from "@/gui/contextProviders/contexts/SimulationLogsContext";
 import SimulationLogs from "@/gui/map/toolbar/SimulationLogs";
 import { SetScenarioSidesContext } from "@/gui/contextProviders/contexts/ScenarioSidesContext";
+import { SideDoctrine } from "@/game/Doctrine";
 
 interface ScenarioMapProps {
   zoom: number;
@@ -1802,9 +1803,10 @@ export default function ScenarioMap({
     sideName: string,
     sideColor: SIDE_COLOR,
     sideHostiles: string[],
-    sideAllies: string[]
+    sideAllies: string[],
+    sideDoctrine: SideDoctrine
   ) {
-    game.addSide(sideName, sideColor, sideHostiles, sideAllies);
+    game.addSide(sideName, sideColor, sideHostiles, sideAllies, sideDoctrine);
     if (game.currentScenario.sides.length === 1) {
       switchCurrentSide(game.currentScenario.sides[0].id);
     }
@@ -1815,9 +1817,17 @@ export default function ScenarioMap({
     sideName: string,
     sideColor: SIDE_COLOR,
     sideHostiles: string[],
-    sideAllies: string[]
+    sideAllies: string[],
+    sideDoctrine: SideDoctrine
   ) {
-    game.updateSide(sideId, sideName, sideColor, sideHostiles, sideAllies);
+    game.updateSide(
+      sideId,
+      sideName,
+      sideColor,
+      sideHostiles,
+      sideAllies,
+      sideDoctrine
+    );
     refreshAllLayers();
     loadFeatureEntitiesState();
   }
@@ -2532,6 +2542,11 @@ export default function ScenarioMap({
                   openSideEditor.sideId
                 )
               : []
+          }
+          doctrine={
+            openSideEditor.sideId
+              ? game.currentScenario.getSideDoctrine(openSideEditor.sideId)
+              : game.currentScenario.getDefaultSideDoctrine()
           }
           updateSide={handleUpdateSide}
           addSide={handleAddSide}
