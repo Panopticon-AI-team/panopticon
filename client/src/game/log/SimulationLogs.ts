@@ -65,11 +65,11 @@ export default class SimulationLogs {
         messageTypes.includes(log.type)
       );
     }
-    if (orderBy === "asc") {
-      filteredLogs.sort((a, b) => a.timestamp - b.timestamp);
-    } else {
-      filteredLogs.sort((a, b) => b.timestamp - a.timestamp);
-    }
+    // if (orderBy === "asc") {
+    //   filteredLogs.sort((a, b) => a.timestamp - b.timestamp);
+    // } else {
+    //   filteredLogs.sort((a, b) => b.timestamp - a.timestamp);
+    // }
     if (numMessages) {
       return filteredLogs.slice(0, numMessages);
     }
