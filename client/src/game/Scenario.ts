@@ -85,7 +85,6 @@ export default class Scenario {
     return {
       [DoctrineType.AIRCRAFT_ATTACK_HOSTILE]: true,
       [DoctrineType.AIRCRAFT_CHASE_HOSTILE]: true,
-      [DoctrineType.AIRCRAFT_RTB_WHEN_OUT_OF_AMMO]: false,
       [DoctrineType.AIRCRAFT_RTB_WHEN_OUT_OF_RANGE]: false,
       [DoctrineType.AIRCRAFT_RTB_WHEN_STRIKE_MISSION_COMPLETE]: false,
       [DoctrineType.SAM_ATTACK_HOSTILE]: true,
