@@ -1,10 +1,10 @@
 export enum DoctrineType {
-  AIRCRAFT_ATTACK_HOSTILE = "Aircraft attack hostile",
-  AIRCRAFT_CHASE_HOSTILE = "Aircraft chase hostile",
+  AIRCRAFT_ATTACK_HOSTILE = "Aircraft attack hostile aircraft",
+  AIRCRAFT_CHASE_HOSTILE = "Aircraft chase hostile aircraft",
   AIRCRAFT_RTB_WHEN_OUT_OF_RANGE = "Aircraft RTB when out of range of homebase",
   AIRCRAFT_RTB_WHEN_STRIKE_MISSION_COMPLETE = "Aircraft RTB when strike mission complete",
-  SAM_ATTACK_HOSTILE = "SAMs attack hostile",
-  SHIP_ATTACK_HOSTILE = "Ships attack hostile",
+  SAM_ATTACK_HOSTILE = "SAMs attack hostile aircraft",
+  SHIP_ATTACK_HOSTILE = "Ships attack hostile aircraft",
 }
 
 export interface SideDoctrine {
