@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { randomUUID } from "@/utils/generateUUID";
 import { get as getProjection, transform } from "ol/proj.js";
 import ScenarioMap from "@/gui/map/ScenarioMap";
