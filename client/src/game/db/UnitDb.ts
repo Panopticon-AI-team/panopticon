@@ -11,7 +11,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 1043,
     maxFuel: 18498,
     fuelRate: 6700,
-    range: 1350,
+    range: 120, // original transit range was 1350 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/478441/f-35a-lightning-ii/",
@@ -33,7 +33,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 461,
     maxFuel: 200000,
     fuelRate: 33500,
-    range: 1303,
+    range: 50, // original transit range was 1303 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/174560/kc-135r-stratotanker/",
@@ -55,7 +55,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 366,
     maxFuel: 11000,
     fuelRate: 6700,
-    range: 695,
+    range: 20, // original transit range was 695 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104490/a-10c-thunderbolt-ii/",
@@ -77,7 +77,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 565,
     maxFuel: 166999,
     fuelRate: 33500,
-    range: 6000,
+    range: 50, // original transit range was 6000 nm
     dataSource: {
       speedSrc:
         "high subsonic, https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104481/b-2-spirit/",
@@ -99,7 +99,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 1303,
     maxFuel: 18000,
     fuelRate: 6700,
-    range: 1600,
+    range: 150, // original transit range was 1600 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104506/f-22-raptor/",
@@ -121,7 +121,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 304,
     maxFuel: 61360,
     fuelRate: 33500,
-    range: 1700,
+    range: 40, // original transit range was 1700 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1555054/c-130-hercules/",
@@ -142,7 +142,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 496,
     maxFuel: 181054,
     fuelRate: 33500,
-    range: 2785,
+    range: 40, // original transit range was 2785 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/1529726/c-17-globemaster-iii/",
@@ -163,7 +163,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 1303,
     maxFuel: 12000,
     fuelRate: 6700,
-    range: 1740,
+    range: 100, // original transit range was 1740 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104505/f-16-fighting-falcon/",
@@ -185,7 +185,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 1629,
     maxFuel: 36200,
     fuelRate: 6700,
-    range: 3000,
+    range: 120, // original transit range was 3000 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104501/f-15-eagle/",
@@ -207,7 +207,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 1201,
     maxFuel: 14400,
     fuelRate: 6700,
-    range: 1275,
+    range: 100, // original transit range was 1275 nm
     dataSource: {
       speedSrc:
         "https://www.navy.mil/Resources/Fact-Files/Display-FactFiles/Article/2383479/fa-18a-d-hornet-and-fa-18ef-super-hornet-strike-fighter/",
@@ -228,7 +228,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 565,
     maxFuel: 312197,
     fuelRate: 33500,
-    range: 8800,
+    range: 100, // original transit range was 8800 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104465/b-52h-stratofortress/",
@@ -250,7 +250,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 1217,
     maxFuel: 13890,
     fuelRate: 6700,
-    range: 1750,
+    range: 50, // original transit range was 1750 nm
     dataSource: {
       speedSrc:
         "https://www.holloman.af.mil/About/Fact-Sheets/Display/Article/317295/f-4-phantom-ii/",
@@ -271,7 +271,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 782,
     maxFuel: 265274,
     fuelRate: 33500,
-    range: 5100,
+    range: 80, // original transit range was 5100 nm
     dataSource: {
       speedSrc:
         "https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104500/b-1b-lancer/",
@@ -293,7 +293,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 246,
     maxFuel: 4502,
     fuelRate: 2010,
-    range: 1450,
+    range: 30, // original transit range was 1450 nm
     dataSource: {
       speedSrc:
         "https://www.5af.pacaf.af.mil/About-Us/Fact-Sheets/Display/Article/1482851/c-12-huron/",
@@ -315,7 +315,7 @@ export const AircraftDb: IAircraftModel[] = [
     speed: 1341,
     maxFuel: 16200,
     fuelRate: 6700,
-    range: 2085,
+    range: 200, // original transit range was 2085 nm
     dataSource: {
       speedSrc:
         "https://www.history.navy.mil/content/history/museums/nnam/explore/collections/aircraft/f/f-14a-tomcat.html",
