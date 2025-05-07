@@ -174,18 +174,27 @@ def aircraft_pursuit(
         return
     if len(aircraft.weapons) < 1:
         return
+    
+    TRAIL_DISTANCE_NM = 5
+    trail_km = (TRAIL_DISTANCE_NM * NAUTICAL_MILES_TO_METERS) / 1000
+    behind_bearing = (target.heading + 180) % 360
+    trail_position = get_terminal_coordinates_from_distance_and_bearing(
+        target.latitude,
+        target.longitude,
+        trail_km,
+        behind_bearing,
+    )
+    trail_latitude = trail_position[0]
+    trail_longitude = trail_position[1]
+
     aircraft.route = [
-        [
-            target.latitude if target.latitude - 0.1 < -90 else target.latitude - 0.1,
-            (
-                target.longitude
-                if target.longitude - 0.1 < -180
-                else target.longitude - 0.1
-            ),
-        ]
+        [trail_latitude, trail_longitude],
     ]
     aircraft.heading = get_bearing_between_two_points(
-        aircraft.latitude, aircraft.longitude, target.latitude, target.longitude
+        aircraft.latitude,
+        aircraft.longitude,
+        trail_latitude,
+        trail_longitude,
     )
 
 
