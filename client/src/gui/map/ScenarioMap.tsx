@@ -1923,7 +1923,8 @@ export default function ScenarioMap({
     aircraftClassName: string,
     aircraftSpeed: number,
     aircraftCurrentFuel: number,
-    aircraftFuelRate: number
+    aircraftFuelRate: number,
+    aircraftRange: number
   ) {
     game.currentScenario.updateAircraft(
       aircraftId,
@@ -1931,7 +1932,8 @@ export default function ScenarioMap({
       aircraftClassName,
       aircraftSpeed,
       aircraftCurrentFuel,
-      aircraftFuelRate
+      aircraftFuelRate,
+      aircraftRange
     );
     featureLabelLayer.updateFeatureLabelFeature(aircraftId, aircraftName);
   }

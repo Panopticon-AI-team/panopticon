@@ -474,7 +474,8 @@ export default class Scenario {
     aircraftClassName: string,
     aircraftSpeed: number,
     aircraftCurrentFuel: number,
-    aircraftFuelRate: number
+    aircraftFuelRate: number,
+    aircraftRange: number
   ) {
     const aircraft = this.getAircraft(aircraftId);
     if (aircraft) {
@@ -483,6 +484,7 @@ export default class Scenario {
       aircraft.speed = aircraftSpeed;
       aircraft.currentFuel = aircraftCurrentFuel;
       aircraft.fuelRate = aircraftFuelRate;
+      aircraft.range = aircraftRange;
     }
   }
 
