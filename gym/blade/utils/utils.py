@@ -116,6 +116,9 @@ def get_next_coordinates(
     )  # prevent divide-by-zero
     leg_distance_km = total_distance_km / total_time_seconds
 
+    if total_distance_km < leg_distance_km:
+        return [destination_latitude, destination_longitude]
+
     return get_terminal_coordinates_from_distance_and_bearing(
         origin_latitude, origin_longitude, leg_distance_km, heading
     )

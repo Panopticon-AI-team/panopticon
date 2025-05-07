@@ -124,6 +124,10 @@ export function getNextCoordinates(
   const totalTimeSeconds = Math.max(Math.floor(totalTimeHours * 3600), 0.0001); // seconds
   const legDistanceKm = totalDistanceKm / totalTimeSeconds;
 
+  if (totalDistanceKm < legDistanceKm) {
+    return [destinationLatitude, destinationLongitude];
+  }
+
   return getTerminalCoordinatesFromDistanceAndBearing(
     originLatitude,
     originLongitude,
