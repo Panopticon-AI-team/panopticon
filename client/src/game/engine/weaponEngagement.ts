@@ -260,17 +260,25 @@ export function aircraftPursuit(currentScenario: Scenario, aircraft: Aircraft) {
     return;
   }
   if (aircraft.weapons.length < 1) return;
-  aircraft.route = [
-    [
-      target.latitude - 0.1 < -90 ? target.latitude : target.latitude - 0.1,
-      target.longitude - 0.1 < -180 ? target.longitude : target.longitude - 0.1,
-    ],
-  ];
+
+  const TRAIL_DISTANCE_NM = 5;
+  const trailKm = (TRAIL_DISTANCE_NM * NAUTICAL_MILES_TO_METERS) / 1000;
+  const behindBearing = (target.heading + 180) % 360;
+  const trailPosition = getTerminalCoordinatesFromDistanceAndBearing(
+    target.latitude,
+    target.longitude,
+    trailKm,
+    behindBearing
+  );
+  const trailLat = trailPosition[0];
+  const trailLon = trailPosition[1];
+
+  aircraft.route = [[trailLat, trailLon]];
   aircraft.heading = getBearingBetweenTwoPoints(
     aircraft.latitude,
     aircraft.longitude,
-    target.latitude,
-    target.longitude
+    trailLat,
+    trailLon
   );
 }
 
