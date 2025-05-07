@@ -13,6 +13,7 @@ import { Mission } from "@/game/Game";
 import { SIDE_COLOR } from "@/utils/colors";
 import Relationships from "@/game/Relationships";
 import { randomUUID } from "@/utils/generateUUID";
+import Doctrine, { DoctrineType, SideDoctrine } from "@/game/Doctrine";
 
 type HomeBase = Airbase | Ship;
 
@@ -32,6 +33,7 @@ interface IScenario {
   referencePoints?: ReferencePoint[];
   missions?: PatrolMission[];
   relationships?: Relationships;
+  doctrine?: Doctrine;
 }
 
 export default class Scenario {
@@ -50,6 +52,7 @@ export default class Scenario {
   referencePoints: ReferencePoint[];
   missions: Mission[];
   relationships: Relationships;
+  doctrine: Doctrine;
 
   constructor(parameters: IScenario) {
     this.id = parameters.id;
@@ -67,6 +70,58 @@ export default class Scenario {
     this.referencePoints = parameters.referencePoints ?? [];
     this.missions = parameters.missions ?? [];
     this.relationships = parameters.relationships ?? new Relationships({});
+    this.doctrine = parameters.doctrine ?? this.getDefaultDoctrine();
+  }
+
+  getDefaultDoctrine(): Doctrine {
+    const defaultDoctrine: Doctrine = {};
+    this.sides.forEach((side) => {
+      defaultDoctrine[side.id] = this.getDefaultSideDoctrine();
+    });
+    return defaultDoctrine;
+  }
+
+  getDefaultSideDoctrine(): SideDoctrine {
+    return {
+      [DoctrineType.AIRCRAFT_ATTACK_HOSTILE]: true,
+      [DoctrineType.AIRCRAFT_CHASE_HOSTILE]: true,
+      [DoctrineType.AIRCRAFT_RTB_WHEN_OUT_OF_RANGE]: false,
+      [DoctrineType.AIRCRAFT_RTB_WHEN_STRIKE_MISSION_COMPLETE]: false,
+      [DoctrineType.SAM_ATTACK_HOSTILE]: true,
+      [DoctrineType.SHIP_ATTACK_HOSTILE]: true,
+    };
+  }
+
+  getSideDoctrine(sideId: string): SideDoctrine {
+    if (!this.doctrine[sideId]) {
+      this.doctrine[sideId] = this.getDefaultSideDoctrine();
+    }
+    return this.doctrine[sideId];
+  }
+
+  checkSideDoctrine(sideId: string, doctrineType: DoctrineType): boolean {
+    if (!this.doctrine[sideId]) return false;
+    return this.doctrine[sideId][doctrineType] ?? false;
+  }
+
+  updateSideDoctrine(sideId: string, sideDoctrine?: SideDoctrine) {
+    if (!this.doctrine[sideId]) {
+      this.doctrine[sideId] = this.getDefaultSideDoctrine();
+    }
+    if (sideDoctrine) {
+      Object.keys(sideDoctrine).forEach((key) => {
+        const doctrineKey = key as DoctrineType;
+        if (this.doctrine[sideId][doctrineKey] !== undefined) {
+          this.doctrine[sideId][doctrineKey] = sideDoctrine[doctrineKey];
+        }
+      });
+    }
+  }
+
+  removeSideDoctrine(sideId: string) {
+    if (this.doctrine[sideId]) {
+      delete this.doctrine[sideId];
+    }
   }
 
   getSide(sideId: string | null | undefined): Side | undefined {

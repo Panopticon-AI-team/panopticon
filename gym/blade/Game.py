@@ -13,6 +13,7 @@ from blade.mission.StrikeMission import StrikeMission
 from blade.Scenario import Scenario
 from blade.Side import Side
 from blade.Relationships import Relationships
+from blade.Doctrine import DoctrineType
 
 from blade.utils.constants import NAUTICAL_MILES_TO_METERS
 from blade.utils.colors import SIDE_COLOR
@@ -317,28 +318,31 @@ class Game:
 
     def facility_auto_defense(self) -> None:
         for facility in self.current_scenario.facilities:
-            for aircraft in self.current_scenario.aircraft:
-                if self.current_scenario.is_hostile(facility.side_id, aircraft.side_id):
-                    facility_weapon = (
-                        facility.get_weapon_with_highest_engagement_range()
-                    )
-                    if facility_weapon is None:
-                        continue
-                    if (
-                        is_threat_detected(aircraft, facility)
-                        and weapon_can_engage_target(aircraft, facility_weapon)
-                        and check_target_tracked_by_count(
-                            self.current_scenario, aircraft
+            if self.current_scenario.check_side_doctrine(
+                facility.side_id, DoctrineType.SAM_ATTACK_HOSTILE
+            ):
+                for aircraft in self.current_scenario.aircraft:
+                    if self.current_scenario.is_hostile(facility.side_id, aircraft.side_id):
+                        facility_weapon = (
+                            facility.get_weapon_with_highest_engagement_range()
                         )
-                        < 10
-                    ):
-                        launch_weapon(
-                            self.current_scenario,
-                            facility,
-                            aircraft,
-                            facility_weapon,
-                            1,
-                        )
+                        if facility_weapon is None:
+                            continue
+                        if (
+                            is_threat_detected(aircraft, facility)
+                            and weapon_can_engage_target(aircraft, facility_weapon)
+                            and check_target_tracked_by_count(
+                                self.current_scenario, aircraft
+                            )
+                            < 10
+                        ):
+                            launch_weapon(
+                                self.current_scenario,
+                                facility,
+                                aircraft,
+                                facility_weapon,
+                                1,
+                            )
             for weapon in self.current_scenario.weapons:
                 if self.current_scenario.is_hostile(facility.side_id, weapon.side_id):
                     facility_weapon = (
@@ -363,26 +367,29 @@ class Game:
 
     def ship_auto_defense(self) -> None:
         for ship in self.current_scenario.ships:
-            for aircraft in self.current_scenario.aircraft:
-                if self.current_scenario.is_hostile(ship.side_id, aircraft.side_id):
-                    ship_weapon = ship.get_weapon_with_highest_engagement_range()
-                    if ship_weapon is None:
-                        continue
-                    if (
-                        is_threat_detected(aircraft, ship)
-                        and weapon_can_engage_target(aircraft, ship_weapon)
-                        and check_target_tracked_by_count(
-                            self.current_scenario, aircraft
-                        )
-                        < 10
-                    ):
-                        launch_weapon(
-                            self.current_scenario,
-                            ship,
-                            aircraft,
-                            ship_weapon,
-                            1,
-                        )
+            if self.current_scenario.check_side_doctrine(
+                ship.side_id, DoctrineType.SHIP_ATTACK_HOSTILE
+            ):
+                for aircraft in self.current_scenario.aircraft:
+                    if self.current_scenario.is_hostile(ship.side_id, aircraft.side_id):
+                        ship_weapon = ship.get_weapon_with_highest_engagement_range()
+                        if ship_weapon is None:
+                            continue
+                        if (
+                            is_threat_detected(aircraft, ship)
+                            and weapon_can_engage_target(aircraft, ship_weapon)
+                            and check_target_tracked_by_count(
+                                self.current_scenario, aircraft
+                            )
+                            < 10
+                        ):
+                            launch_weapon(
+                                self.current_scenario,
+                                ship,
+                                aircraft,
+                                ship_weapon,
+                                1,
+                            )
             for weapon in self.current_scenario.weapons:
                 if self.current_scenario.is_hostile(ship.side_id, weapon.side_id):
                     ship_weapon = ship.get_weapon_with_highest_engagement_range()
@@ -412,30 +419,33 @@ class Game:
             )
             if aircraft_weapon_with_max_range is None:
                 continue
-            for enemy_aircraft in self.current_scenario.aircraft:
-                if self.current_scenario.is_hostile(
-                    aircraft.side_id, enemy_aircraft.side_id
-                ) and (
-                    aircraft.target_id == "" or aircraft.target_id == enemy_aircraft.id
-                ):
-                    if (
-                        is_threat_detected(enemy_aircraft, aircraft)
-                        and weapon_can_engage_target(
-                            enemy_aircraft, aircraft_weapon_with_max_range
-                        )
-                        and check_target_tracked_by_count(
-                            self.current_scenario, enemy_aircraft
-                        )
-                        < 1
+            if self.current_scenario.check_side_doctrine(
+                aircraft.side_id, DoctrineType.AIRCRAFT_ATTACK_HOSTILE
+            ):
+                for enemy_aircraft in self.current_scenario.aircraft:
+                    if self.current_scenario.is_hostile(
+                        aircraft.side_id, enemy_aircraft.side_id
+                    ) and (
+                        aircraft.target_id == "" or aircraft.target_id == enemy_aircraft.id
                     ):
-                        launch_weapon(
-                            self.current_scenario,
-                            aircraft,
-                            enemy_aircraft,
-                            aircraft_weapon_with_max_range,
-                            1,
-                        )
-                        aircraft.target_id = enemy_aircraft.id
+                        if (
+                            is_threat_detected(enemy_aircraft, aircraft)
+                            and weapon_can_engage_target(
+                                enemy_aircraft, aircraft_weapon_with_max_range
+                            )
+                            and check_target_tracked_by_count(
+                                self.current_scenario, enemy_aircraft
+                            )
+                            < 1
+                        ):
+                            launch_weapon(
+                                self.current_scenario,
+                                aircraft,
+                                enemy_aircraft,
+                                aircraft_weapon_with_max_range,
+                                1,
+                            )
+                            aircraft.target_id = enemy_aircraft.id
             for enemy_weapon in self.current_scenario.weapons:
                 if self.current_scenario.is_hostile(
                     aircraft.side_id, enemy_weapon.side_id
@@ -458,7 +468,9 @@ class Game:
                             aircraft_weapon_with_max_range,
                             1,
                         )
-            if aircraft.target_id and aircraft.target_id != "":
+            if self.current_scenario.check_side_doctrine(
+                aircraft.side_id, DoctrineType.AIRCRAFT_CHASE_HOSTILE
+            ) and aircraft.target_id and aircraft.target_id != "":
                 aircraft_pursuit(self.current_scenario, aircraft)
 
     def update_units_on_patrol_mission(self):
@@ -525,9 +537,11 @@ class Game:
                 if all_attackers_expended:
                     is_mission_ongoing = False
 
-                # if not is_mission_ongoing:
-                #     for attacker in attackers:
-                #         self.aircraft_return_to_base(attacker.id)
+                if self.current_scenario.check_side_doctrine(
+                    mission.side_id, DoctrineType.AIRCRAFT_RTB_WHEN_STRIKE_MISSION_COMPLETE
+                ) and not is_mission_ongoing:
+                    for attacker in attackers:
+                        self.aircraft_return_to_base(attacker.id)
 
                 return is_mission_ongoing
             else:
@@ -689,11 +703,14 @@ class Game:
             )
             if aircraft.current_fuel <= 0:
                 self.remove_aircraft(aircraft.id)
-            # elif (
-            #     aircraft.current_fuel < fuel_needed_to_return_to_base * 1.1
-            #     and not aircraft.rtb
-            # ):
-            #     self.aircraft_return_to_base(aircraft.id)
+            elif (
+                self.current_scenario.check_side_doctrine(
+                    aircraft.side_id, DoctrineType.AIRCRAFT_RTB_WHEN_OUT_OF_RANGE
+                ) and
+                aircraft.current_fuel < fuel_needed_to_return_to_base * 1.1
+                and not aircraft.rtb
+            ):
+                self.aircraft_return_to_base(aircraft.id)
 
     def update_all_ship_position(self) -> None:
         for ship in self.current_scenario.ships:
@@ -858,6 +875,7 @@ class Game:
                     else {}
                 ),
             ),
+            doctrine=saved_scenario["doctrine"]
         )
         for aircraft in saved_scenario["aircraft"]:
             aircraft_weapons = []

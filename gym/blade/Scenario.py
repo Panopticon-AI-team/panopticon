@@ -12,6 +12,7 @@ from blade.mission.StrikeMission import StrikeMission
 from blade.utils.utils import get_distance_between_two_points
 from blade.utils.colors import SIDE_COLOR
 from blade.Relationships import Relationships
+from blade.Doctrine import Doctrine, DoctrineType, SideDoctrine
 
 HomeBase = Airbase | Ship
 
@@ -36,6 +37,7 @@ class Scenario:
         reference_points: list[ReferencePoint] = None,
         missions: list[PatrolMission | StrikeMission] = None,
         relationships: Relationships = Relationships(),
+        doctrine: Doctrine = None,
     ):
         self.id = id
         self.name = name
@@ -52,6 +54,45 @@ class Scenario:
         self.reference_points = reference_points if reference_points is not None else []
         self.missions = missions if missions is not None else []
         self.relationships = relationships
+        self.doctrine = doctrine if doctrine is not None else self.get_default_doctrine()
+
+    def get_default_doctrine(self) -> Doctrine:
+        default_doctrine: Doctrine = {}
+        for side in self.sides:
+            default_doctrine[side.id] = self.get_default_side_doctrine()
+        return default_doctrine
+
+    def get_default_side_doctrine(self) -> SideDoctrine:
+        return {
+            DoctrineType.AIRCRAFT_ATTACK_HOSTILE: True,
+            DoctrineType.AIRCRAFT_CHASE_HOSTILE: True,
+            DoctrineType.AIRCRAFT_RTB_WHEN_OUT_OF_RANGE: False,
+            DoctrineType.AIRCRAFT_RTB_WHEN_STRIKE_MISSION_COMPLETE: False,
+            DoctrineType.SAM_ATTACK_HOSTILE: True,
+            DoctrineType.SHIP_ATTACK_HOSTILE: True,
+        }
+
+    def get_side_doctrine(self, side_id: str) -> SideDoctrine:
+        if side_id not in self.doctrine:
+            self.doctrine[side_id] = self.get_default_side_doctrine()
+        return self.doctrine[side_id]
+
+    def check_side_doctrine(self, side_id: str, doctrine_type: DoctrineType) -> bool:
+        if side_id not in self.doctrine:
+            return False
+        return self.doctrine[side_id].get(doctrine_type, False)
+
+    def update_side_doctrine(self, side_id: str, side_doctrine: SideDoctrine = None) -> None:
+        if side_id not in self.doctrine:
+            self.doctrine[side_id] = self.get_default_side_doctrine()
+        if side_doctrine:
+            for key in side_doctrine:
+                if key in self.doctrine[side_id]:
+                    self.doctrine[side_id][key] = side_doctrine[key]
+
+    def remove_side_doctrine(self, side_id: str) -> None:
+        if side_id in self.doctrine:
+            del self.doctrine[side_id]
 
     def get_side(self, side_id: str | None) -> Side | None:
         for side in self.sides:

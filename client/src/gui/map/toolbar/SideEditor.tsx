@@ -10,6 +10,9 @@ import {
   MenuItem,
   Paper,
   FormControl,
+  FormGroup,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { Popover } from "@/gui/shared/ui/MuiComponents";
 import TextField from "@/gui/shared/ui/TextField";
@@ -17,6 +20,7 @@ import Side from "@/game/Side";
 import { COLOR_PALETTE, SIDE_COLOR } from "@/utils/colors";
 import EntityIcon from "@/gui/map/toolbar/EntityIcon";
 import SelectField from "@/gui/shared/ui/SelectField";
+import { SideDoctrine } from "@/game/Doctrine";
 
 interface SideEditorProps {
   open: boolean;
@@ -25,18 +29,21 @@ interface SideEditorProps {
   sides: Side[];
   hostiles: string[];
   allies: string[];
+  doctrine: SideDoctrine;
   updateSide: (
     sideId: string,
     sideName: string,
     sideColor: SIDE_COLOR,
     sideHostiles: string[],
-    sideAllies: string[]
+    sideAllies: string[],
+    sideDoctrine: SideDoctrine
   ) => void;
   addSide: (
     sideName: string,
     sideColor: SIDE_COLOR,
     sideHostiles: string[],
-    sideAllies: string[]
+    sideAllies: string[],
+    sideDoctrine: SideDoctrine
   ) => void;
   deleteSide: (sideId: string) => void;
   handleCloseOnMap: () => void;
@@ -82,6 +89,9 @@ const SideEditor = (props: SideEditorProps) => {
       .map((allyId) => props.sides.find((side) => side.id === allyId)?.id ?? "")
       .filter((id) => id !== "")
   );
+  const [sideDoctrine, setSideDoctrine] = useState<SideDoctrine>(
+    props.doctrine
+  );
   const otherSides = props.sides.filter(
     (side: Side) =>
       (props.side?.id && side.id !== props.side?.id) || !props.side
@@ -114,14 +124,15 @@ const SideEditor = (props: SideEditorProps) => {
       sideName,
       sideColor,
       sideHostiles,
-      sideAllies
+      sideAllies,
+      sideDoctrine
     );
     props.handleCloseOnMap();
   };
 
   const handleAddSide = () => {
     if (!validateSidePropertiesInput()) return;
-    props.addSide(sideName, sideColor, sideHostiles, sideAllies);
+    props.addSide(sideName, sideColor, sideHostiles, sideAllies, sideDoctrine);
     props.handleCloseOnMap();
   };
 
@@ -129,10 +140,17 @@ const SideEditor = (props: SideEditorProps) => {
     props.handleCloseOnMap();
   };
 
+  const handleDoctrineChange = (doctrineType: string, value: boolean) => {
+    setSideDoctrine((prevState) => ({
+      ...prevState,
+      [doctrineType]: value,
+    }));
+  };
+
   const cardContent = () => {
     return (
       <CardContent sx={cardContentStyle}>
-        <Stack sx={bottomButtonsStackStyle} direction="row" spacing={2}>
+        <Stack direction="row" spacing={2}>
           {/** Side Name Text Field */}
           <TextField
             id="side-name"
@@ -224,6 +242,28 @@ const SideEditor = (props: SideEditorProps) => {
             multiple
           />
         </FormControl>
+        <FormGroup sx={{ pl: 2 }}>
+          {/** Doctrine Switches */}
+          {Object.entries(sideDoctrine).map(([key, value]) => {
+            return (
+              <FormControlLabel
+                key={key}
+                control={
+                  <Switch
+                    checked={value}
+                    onChange={(event) => {
+                      handleDoctrineChange(key, event.target.checked);
+                    }}
+                  />
+                }
+                label={key}
+                sx={{
+                  color: colorPalette.black,
+                }}
+              />
+            );
+          })}
+        </FormGroup>
         {/* Form Action/Buttons */}
         <Stack sx={bottomButtonsStackStyle} direction="row" spacing={2}>
           {!props.side ? (
