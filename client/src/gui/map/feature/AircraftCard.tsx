@@ -57,7 +57,8 @@ interface AircraftCardProps {
     aircraftClassName: string,
     aircraftSpeed: number,
     aircraftCurrentFuel: number,
-    aircraftCurrentFuelRate: number
+    aircraftCurrentFuelRate: number,
+    aircraftRange: number
   ) => void;
   handleAddWeapon: (aircraftId: string, weaponClassName: string) => Weapon[];
   handleDeleteWeapon: (aircraftId: string, weaponId: string) => Weapon[];
@@ -105,6 +106,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     speed: props.aircraft.speed,
     currentFuel: props.aircraft.currentFuel,
     currentFuelRate: props.aircraft.fuelRate,
+    range: props.aircraft.range,
   });
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -160,7 +162,8 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
       tempEditData.className,
       tempEditData.speed,
       tempEditData.currentFuel,
-      tempEditData.currentFuelRate
+      tempEditData.currentFuelRate,
+      tempEditData.range
     );
     toggleEdit();
   };
@@ -193,6 +196,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
           setTempEditData({ ...tempEditData, currentFuelRate: newFuelRate });
         break;
       }
+      case "aircraft-range-text-field": {
+        const newRange = parseInt(event.target.value);
+        if (newRange) setTempEditData({ ...tempEditData, range: newRange });
+        break;
+      }
       case "default": {
         break;
       }
@@ -213,7 +221,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             }
           }
 
-          if (["speed", "currentFuel", "fuelRate", "maxFuel"].includes(key)) {
+          if (
+            ["speed", "currentFuel", "fuelRate", "maxFuel", "range"].includes(
+              key
+            )
+          ) {
             if (key === "speed") {
               transformedValue = `${value.toFixed(0)} KTS`;
             } else if (key === "maxFuel") {
@@ -222,6 +234,8 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
               transformedValue = `${value.toFixed(0)} LBS/HR`;
             } else if (key === "currentFuel") {
               transformedValue = value.toFixed(2);
+            } else if (key === "range") {
+              transformedValue = `${value.toFixed(0)} NM`;
             }
           }
 
@@ -283,7 +297,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
               </TableCell>
               <TableCell align="right" sx={tableValueCellStyle}>
                 {props.aircraft.currentFuel.toFixed(0)} /{" "}
-                {props.aircraft.maxFuel.toFixed(0)}
+                {props.aircraft.maxFuel.toFixed(0)} LBS
               </TableCell>
             </TableRow>
             <TableRow sx={tableRowStyle}>
@@ -291,7 +305,15 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
                 Fuel Consumption:
               </TableCell>
               <TableCell align="right" sx={tableValueCellStyle}>
-                {props.aircraft.fuelRate.toFixed(2)}
+                {props.aircraft.fuelRate.toFixed(2)} LBS/HR
+              </TableCell>
+            </TableRow>
+            <TableRow sx={tableRowStyle}>
+              <TableCell component="th" scope="row" sx={tableKeyCellStyle}>
+                Detection Range:
+              </TableCell>
+              <TableCell align="right" sx={tableValueCellStyle}>
+                {props.aircraft.range.toFixed(0)} NM
               </TableCell>
             </TableRow>
             <TableRow sx={tableRowStyle}>
@@ -397,6 +419,19 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
             id="aircraft-current-fuel-rate-text-field"
             label="Fuel Consumption"
             defaultValue={props.aircraft.fuelRate.toFixed(0)}
+            onChange={_handleTextFieldChange}
+            sx={inputStyle}
+            slotProps={{
+              inputLabel: {
+                ...inputLabelStyle,
+              },
+            }}
+          />
+          <TextField
+            autoComplete="off"
+            id="aircraft-range-text-field"
+            label="Range"
+            defaultValue={props.aircraft.range.toFixed(0)}
             onChange={_handleTextFieldChange}
             sx={inputStyle}
             slotProps={{
