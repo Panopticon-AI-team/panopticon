@@ -28,9 +28,9 @@ exclude_patterns = []
 # override the sidebar — remove about.html, use only templates Classic provides
 html_sidebars = {
     "**": [
-        "globaltoc.html",  # full, always-visible TOC
-        "searchbox.html",  # search field
-    ]
+        "globaltoc.html",
+        "searchbox.html",
+    ],
 }
 
 # options specific to alabaster
@@ -40,7 +40,6 @@ html_theme_options = {
     # do not collapse branches by default
     "globaltoc_collapse": False,
     # how many levels of headings to show under each caption
-    "globaltoc_maxdepth": 2,
     "stickysidebar": True,
     "bgcolor": "#def3ff",  # page background
     "sidebarbgcolor": "#bae7ff",  # sidebar background
