@@ -12,8 +12,17 @@ documentation for details.
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
+   :caption: Getting Started
 
-   getting_started
-   code_structure
+   Getting_Started/quick_start
+   Getting_Started/project_structure
+   Getting_Started/scripted_actions_walkthrough
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Data Model
+
+   Data_Model/data_model
+
+   
