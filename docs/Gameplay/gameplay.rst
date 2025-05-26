@@ -95,7 +95,7 @@ Click actions for the following
 
 - Plot Course: Travels in the direction of the course
 
-- View weapons: open the weapons menu
+- Attack: open the weapons menu
 
 - RTB: Returns to original base
 
