@@ -457,7 +457,7 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
       </ListItemButton>
       <ListItemButton onClick={toggleWeapons}>
         <RocketLaunchIcon sx={{ mr: 0.5 }} />
-        View Weapons
+        Attack
       </ListItemButton>
       <ListItemButton onClick={_handleAircraftRtb}>
         <HomeIcon sx={{ mr: 0.5 }} /> Return To Base
