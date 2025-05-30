@@ -50,3 +50,20 @@ Run a Demo
 
 - Run the provided demo in ``scripts/simple_demo/demo.py``.
 - The demo will output a scenario file that can be viewed using the frontend GUI.
+
+Setting up the client
+------------------
+
+
+
+
+- Click on "Clone or download", and then "Download Zip".
+- Unzip the repo anywhere.
+- Navigate to the ``client`` folder and install the client using::
+
+    npm install
+
+  To run the client without a server::
+
+    npm run standalone
+
