@@ -47,6 +47,7 @@ interface IMapView {
 }
 
 interface IAttackParams {
+  autoAttack: boolean;
   currentAttackerId: string;
   currentWeaponId: string;
   currentWeaponQuantity: number;
@@ -74,6 +75,7 @@ export default class Game {
   addingShip: boolean = false;
   selectingTarget: boolean = false;
   currentAttackParams: IAttackParams = {
+    autoAttack: false,
     currentAttackerId: "",
     currentWeaponId: "",
     currentWeaponQuantity: 0,
@@ -927,9 +929,10 @@ export default class Game {
     aircraftId: string,
     targetId: string,
     weaponId: string,
-    weaponQuantity: number
+    weaponQuantity: number,
+    autoAttack: boolean = false
   ) {
-    if (weaponQuantity <= 0) return;
+    if (!autoAttack && weaponQuantity <= 0) return;
     const target =
       this.currentScenario.getAircraft(targetId) ??
       this.currentScenario.getFacility(targetId) ??
@@ -937,6 +940,32 @@ export default class Game {
       this.currentScenario.getShip(targetId) ??
       this.currentScenario.getAirbase(targetId);
     const aircraft = this.currentScenario.getAircraft(aircraftId);
+    if (autoAttack) {
+      if (
+        target &&
+        aircraft &&
+        target?.sideId !== aircraft?.sideId &&
+        target?.id !== aircraft?.id
+      ) {
+        this.recordHistory();
+        const weapons = aircraft.weapons.filter(
+          (weapon) => weapon.currentQuantity > 0
+        );
+        if (weapons.length > 0) {
+          weapons.forEach((weapon) => {
+            launchWeapon(
+              this.currentScenario,
+              aircraft,
+              target,
+              weapon,
+              weapon.currentQuantity,
+              this.simulationLogs
+            );
+          });
+        }
+      }
+      return;
+    }
     const weapon = aircraft?.weapons.find((weapon) => weapon.id === weaponId);
     if (
       target &&
@@ -961,9 +990,10 @@ export default class Game {
     shipId: string,
     targetId: string,
     weaponId: string,
-    weaponQuantity: number
+    weaponQuantity: number,
+    autoAttack: boolean = false
   ) {
-    if (weaponQuantity <= 0) return;
+    if (!autoAttack && weaponQuantity <= 0) return;
     const target =
       this.currentScenario.getAircraft(targetId) ??
       this.currentScenario.getFacility(targetId) ??
@@ -971,6 +1001,32 @@ export default class Game {
       this.currentScenario.getShip(targetId) ??
       this.currentScenario.getAirbase(targetId);
     const ship = this.currentScenario.getShip(shipId);
+    if (autoAttack) {
+      if (
+        target &&
+        ship &&
+        target?.sideId !== ship?.sideId &&
+        target?.id !== ship?.id
+      ) {
+        this.recordHistory();
+        const weapons = ship.weapons.filter(
+          (weapon) => weapon.currentQuantity > 0
+        );
+        if (weapons.length > 0) {
+          weapons.forEach((weapon) => {
+            launchWeapon(
+              this.currentScenario,
+              ship,
+              target,
+              weapon,
+              weapon.currentQuantity,
+              this.simulationLogs
+            );
+          });
+        }
+      }
+      return;
+    }
     const weapon = ship?.weapons.find((weapon) => weapon.id === weaponId);
     if (
       target &&

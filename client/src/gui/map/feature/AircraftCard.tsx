@@ -34,6 +34,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { colorPalette } from "@/utils/constants";
 import Weapon from "@/game/units/Weapon";
 import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
+import { Radar } from "@mui/icons-material";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -48,6 +49,7 @@ interface AircraftCardProps {
     weaponId: string,
     weaponQuantity: number
   ) => void;
+  handleAircraftAutoAttack: (aircraftId: string) => void;
   handleAircraftRtb: (aircraftId: string) => void;
   handleDuplicateAircraft: (aircraftId: string) => void;
   handleTeleportUnit: (unitId: string) => void;
@@ -153,6 +155,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
     setCardContentContext(
       cardContentContext !== "weapons" ? "weapons" : "default"
     );
+  };
+
+  const _handleAutoAttack = () => {
+    props.handleCloseOnMap();
+    props.handleAircraftAutoAttack(props.aircraft.id);
   };
 
   const handleSaveEditedAircraft = () => {
@@ -455,8 +462,12 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
         />
         Plot Course
       </ListItemButton>
-      <ListItemButton onClick={toggleWeapons}>
+      <ListItemButton onClick={_handleAutoAttack}>
         <RocketLaunchIcon sx={{ mr: 0.5 }} />
+        Auto Attack
+      </ListItemButton>
+      <ListItemButton onClick={toggleWeapons}>
+        <Radar sx={{ mr: 0.5 }} />
         Manual Attack
       </ListItemButton>
       <ListItemButton onClick={_handleAircraftRtb}>
