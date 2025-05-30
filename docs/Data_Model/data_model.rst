@@ -50,6 +50,10 @@ Attributes
 
 - ``missions``: (list[PatrolMission | StrikeMission]) list of missions that are in the scenario.
 
+- ``relationships``: (Relationships) relationships between the sides in the scenario. Determines whether sides are allies or enemies.
+
+- ``doctrine``: (Doctrine) doctrine that defines the behavior of the sides in the scenario.
+
 Methods
 ^^^^^^^
 
@@ -462,7 +466,7 @@ Attributes
 
     - Example: ["7bc96d3b-ffe7-4469-b976-893e7fa5deca", "46e0ab0f-b49c-4961-b265-ce93dd163c21"]
 
-- ``assignedArea``: (list[list[str]]) geographical coordinates that define the patrol or mission area.
+- ``assignedArea``: (list[ReferencePoint]) geographical coordinates that define the patrol or mission area.
 
     - Example: [[21.800061432629548, 149.8482617352473], [14.753441339796368, 150.96692676017133]]
 
@@ -510,6 +514,38 @@ Methods
 ^^^^^^^
 
 - ``toJSON()``: (str) returns this object as a JSON.
+
+Relationships
+--------------
+This class describes relationships between sides in the scenario, determining whether sides are allies or enemies.
+
+Attributes
+^^^^^^^^^^
+- ``hostiles``: (Dict[str, List[str]]) a map containing each side's hostiles.
+
+    - Example: {"12345678-1234-5678-1234-567812345678": ["87654321-4321-4321-4321-123456789012"]}
+
+- ``allies``: (Dict[str, List[str]]) a map containing each side's allies.
+
+    - Example: {"12345678-1234-5678-1234-567812345678": ["87654321-4321-4321-4321-123456789012"]}
+
+Doctrine
+--------------
+This class describes the doctrine that defines the behavior of the sides in the scenario.
+
+Attributes
+^^^^^^^^^^
+- ``AIRCRAFT_ATTACK_HOSTILE``: (bool) whether aircraft will attack hostile units.
+
+- ``AIRCRAFT_CHASE_HOSTILE``: (bool) whether aircraft will chase hostile units.
+
+- ``AIRCRAFT_RTB_WHEN_OUT_OF_RANGE``: (bool) whether aircraft will return to base when out of range of their target.
+
+- ``AIRCRAFT_RTB_WHEN_STRIKE_MISSION_COMPLETE``: (bool) whether aircraft will return to base when a strike mission is complete.
+
+- ``SAM_ATTACK_HOSTILE``: (bool) whether surface-to-air missiles (SAMs) will attack hostile units.
+
+- ``SHIP_ATTACK_HOSTILE``: (bool) whether ships will attack hostile units.
 
 Actions Data Types
 ==================
