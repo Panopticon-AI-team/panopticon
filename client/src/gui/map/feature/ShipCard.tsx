@@ -35,6 +35,7 @@ import Weapon from "@/game/units/Weapon";
 import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
 import Aircraft from "@/game/units/Aircraft";
 import AircraftTable from "@/gui/map/feature/shared/AircraftTable";
+import { Radar } from "@mui/icons-material";
 
 interface ShipCardProps {
   ship: Ship;
@@ -58,6 +59,7 @@ interface ShipCardProps {
     weaponId: string,
     weaponQuantity: number
   ) => void;
+  handleShipAutoAttack: (aircraftId: string) => void;
   handleTeleportUnit: (unitId: string) => void;
   handleEditShip: (
     shipId: string,
@@ -160,6 +162,11 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
     setCardContentContext(
       cardContentContext !== "aircraft" ? "aircraft" : "default"
     );
+  };
+
+  const _handleShipAutoAttack = () => {
+    props.handleCloseOnMap();
+    props.handleShipAutoAttack(props.ship.id);
   };
 
   const handleSaveEditedShip = () => {
@@ -364,8 +371,11 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
       <ListItemButton onClick={toggleAircraft}>
         <FlightIcon sx={{ mr: 0.5 }} /> View Aircraft
       </ListItemButton>
+      <ListItemButton onClick={_handleShipAutoAttack}>
+        <RocketLaunchIcon sx={{ mr: 0.5 }} /> Auto Attack
+      </ListItemButton>
       <ListItemButton onClick={toggleWeapons}>
-        <RocketLaunchIcon sx={{ mr: 0.5 }} /> Attack
+        <Radar sx={{ mr: 0.5 }} /> Manual Attack
       </ListItemButton>
       <ListItemButton onClick={_handleTeleportShip}>
         <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location

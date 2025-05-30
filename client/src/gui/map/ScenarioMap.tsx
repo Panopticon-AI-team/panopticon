@@ -490,7 +490,8 @@ export default function ScenarioMap({
           game.currentAttackParams.currentAttackerId,
           targetId,
           game.currentAttackParams.currentWeaponId,
-          game.currentAttackParams.currentWeaponQuantity
+          game.currentAttackParams.currentWeaponQuantity,
+          game.currentAttackParams.autoAttack
         );
         resetAttack();
         setCurrentGameStatusToContext("Target acquired");
@@ -503,7 +504,8 @@ export default function ScenarioMap({
           game.currentAttackParams.currentAttackerId,
           targetId,
           game.currentAttackParams.currentWeaponId,
-          game.currentAttackParams.currentWeaponQuantity
+          game.currentAttackParams.currentWeaponQuantity,
+          game.currentAttackParams.autoAttack
         );
         resetAttack();
         setCurrentGameStatusToContext("Target acquired");
@@ -1455,6 +1457,7 @@ export default function ScenarioMap({
   function resetAttack() {
     game.selectingTarget = false;
     game.currentAttackParams = {
+      autoAttack: false,
       currentAttackerId: "",
       currentWeaponId: "",
       currentWeaponQuantity: 0,
@@ -1472,6 +1475,7 @@ export default function ScenarioMap({
   ) {
     game.selectingTarget = true;
     game.currentAttackParams = {
+      autoAttack: false,
       currentAttackerId: aircraftId,
       currentWeaponId: weaponId,
       currentWeaponQuantity: weaponQuantity,
@@ -1487,9 +1491,34 @@ export default function ScenarioMap({
   ) {
     game.selectingTarget = true;
     game.currentAttackParams = {
+      autoAttack: false,
       currentAttackerId: shipId,
       currentWeaponId: weaponId,
       currentWeaponQuantity: weaponQuantity,
+    };
+    setCurrentGameStatusToContext("Select an enemy target to attack");
+    changeCursorType("crosshair");
+  }
+
+  function handleAircraftAutoAttack(aircraftId: string) {
+    game.selectingTarget = true;
+    game.currentAttackParams = {
+      autoAttack: true,
+      currentAttackerId: aircraftId,
+      currentWeaponId: "",
+      currentWeaponQuantity: 0,
+    };
+    setCurrentGameStatusToContext("Select an enemy target to attack");
+    changeCursorType("crosshair");
+  }
+
+  function handleShipAutoAttack(shipId: string) {
+    game.selectingTarget = true;
+    game.currentAttackParams = {
+      autoAttack: true,
+      currentAttackerId: shipId,
+      currentWeaponId: "",
+      currentWeaponQuantity: 0,
     };
     setCurrentGameStatusToContext("Select an enemy target to attack");
     changeCursorType("crosshair");
@@ -2405,6 +2434,7 @@ export default function ScenarioMap({
             handleDeleteAircraft={removeAircraft}
             handleMoveAircraft={queueAircraftForMovement}
             handleAircraftAttack={handleAircraftAttack}
+            handleAircraftAutoAttack={handleAircraftAutoAttack}
             handleEditAircraft={updateAircraft}
             handleAircraftRtb={handleAircraftRtb}
             handleDuplicateAircraft={handleDuplicateAircraft}
@@ -2438,6 +2468,7 @@ export default function ScenarioMap({
             handleDeleteShip={removeShip}
             handleMoveShip={queueShipForMovement}
             handleShipAttack={handleShipAttack}
+            handleShipAutoAttack={handleShipAutoAttack}
             handleTeleportUnit={queueUnitForTeleport}
             handleEditShip={updateShip}
             handleAddWeapon={handleAddWeaponToShip}
