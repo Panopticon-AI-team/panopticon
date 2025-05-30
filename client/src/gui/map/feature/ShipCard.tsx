@@ -365,7 +365,7 @@ export default function ShipCard(props: Readonly<ShipCardProps>) {
         <FlightIcon sx={{ mr: 0.5 }} /> View Aircraft
       </ListItemButton>
       <ListItemButton onClick={toggleWeapons}>
-        <RocketLaunchIcon sx={{ mr: 0.5 }} /> Attack
+        <RocketLaunchIcon sx={{ mr: 0.5 }} /> Manual Attack
       </ListItemButton>
       <ListItemButton onClick={_handleTeleportShip}>
         <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location

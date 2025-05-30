@@ -258,7 +258,7 @@ export default function FacilityCard(props: Readonly<FacilityCardProps>) {
   const defaultCardActions = (
     <Stack spacing={0.5} direction="column" onMouseLeave={handleClose}>
       <ListItemButton onClick={toggleWeapons}>
-        <RocketLaunch sx={{ mr: 0.5 }} /> Attack
+        <RocketLaunch sx={{ mr: 0.5 }} /> Manual Attack
       </ListItemButton>
       <ListItemButton onClick={_handleTeleportFacility}>
         <TelegramIcon sx={{ mr: 0.5 }} /> Edit Location
