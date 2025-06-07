@@ -73,7 +73,25 @@
     "weapons": [],
     "referencePoints": [],
     "missions": [],
-    "relationships": { "hostiles": {}, "allies": {} }
+    "relationships": { "hostiles": {}, "allies": {} },
+    "doctrine": {
+      "b7346e11-0412-493c-a0d0-aacf69ceaad7": {
+        "Aircraft attack hostile aircraft": true,
+        "Aircraft chase hostile aircraft": true,
+        "Aircraft RTB when out of range of homebase": false,
+        "Aircraft RTB when strike mission complete": false,
+        "SAMs attack hostile aircraft": true,
+        "Ships attack hostile aircraft": true
+      },
+      "6bcbbd72-d64d-4720-b293-d8a814c8d205": {
+        "Aircraft attack hostile aircraft": true,
+        "Aircraft chase hostile aircraft": true,
+        "Aircraft RTB when out of range of homebase": false,
+        "Aircraft RTB when strike mission complete": false,
+        "SAMs attack hostile aircraft": true,
+        "Ships attack hostile aircraft": true
+      }
+    }
   },
   "currentSideId": "b7346e11-0412-493c-a0d0-aacf69ceaad7",
   "selectedUnitId": "",

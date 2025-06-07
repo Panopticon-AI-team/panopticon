@@ -63,7 +63,8 @@
         ],
         "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "e0d4547d-9921-4580-bef9-5026f371cb9e",
@@ -107,7 +108,8 @@
         ],
         "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       },
       {
         "id": "e54a8b88-852c-4fb3-b9f3-c2e645b044ec",
@@ -151,7 +153,8 @@
         ],
         "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
         "rtb": false,
-        "targetId": ""
+        "targetId": "",
+        "desiredRoute": []
       }
     ],
     "ships": [],
@@ -312,7 +315,8 @@
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "1063e7b1-32fa-43e5-be2b-6d54d3fa6b8c",
@@ -356,7 +360,8 @@
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "bdb9ef88-92d2-420a-8621-b4425cadd0c6",
@@ -400,7 +405,8 @@
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "a45cdcb6-89ca-4d16-8701-38ac0e227e68",
@@ -444,7 +450,8 @@
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "74a0ceea-1562-40e9-bfd1-a51b70a1dbc4",
@@ -488,7 +495,8 @@
             ],
             "homeBaseId": "05dbcb4c-dcf8-4125-ba2e-3a6fce8b33a3",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           }
         ]
       },
@@ -544,7 +552,8 @@
             ],
             "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "d9336419-6674-45a9-bf72-c8d1f71bf8ad",
@@ -588,7 +597,8 @@
             ],
             "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "60fc6f1a-bd30-48aa-8202-954a2cd58a17",
@@ -632,7 +642,8 @@
             ],
             "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           },
           {
             "id": "6cf976c1-9494-42d9-9e40-15aa278c894b",
@@ -676,7 +687,8 @@
             ],
             "homeBaseId": "1749e7f9-edbe-45f3-a584-0f44386d1718",
             "rtb": false,
-            "targetId": ""
+            "targetId": "",
+            "desiredRoute": []
           }
         ]
       }
@@ -694,6 +706,24 @@
         ]
       },
       "allies": {}
+    },
+    "doctrine": {
+      "b7346e11-0412-493c-a0d0-aacf69ceaad7": {
+        "Aircraft attack hostile aircraft": true,
+        "Aircraft chase hostile aircraft": true,
+        "Aircraft RTB when out of range of homebase": false,
+        "Aircraft RTB when strike mission complete": false,
+        "SAMs attack hostile aircraft": true,
+        "Ships attack hostile aircraft": true
+      },
+      "6bcbbd72-d64d-4720-b293-d8a814c8d205": {
+        "Aircraft attack hostile aircraft": true,
+        "Aircraft chase hostile aircraft": true,
+        "Aircraft RTB when out of range of homebase": false,
+        "Aircraft RTB when strike mission complete": false,
+        "SAMs attack hostile aircraft": true,
+        "Ships attack hostile aircraft": true
+      }
     }
   },
   "currentSideId": "b7346e11-0412-493c-a0d0-aacf69ceaad7",
