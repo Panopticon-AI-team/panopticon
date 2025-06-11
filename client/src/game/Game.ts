@@ -927,6 +927,13 @@ export default class Game {
             point.id === referencePoint.id ? referencePoint : point
           );
           mission.updatePatrolAreaGeometry();
+        } else if (
+          mission instanceof AerialRefuelingMission &&
+          mission.refuelingTrack.some((point) => point.id === referencePoint.id)
+        ) {
+          mission.refuelingTrack = mission.refuelingTrack.map((point) =>
+            point.id === referencePoint.id ? referencePoint : point
+          );
         }
       });
       return referencePoint;
