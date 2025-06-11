@@ -1763,6 +1763,31 @@ export default function ScenarioMap({
     );
   }
 
+  function handleCreateAerialRefuelingMission(
+    missionName: string,
+    assignedUnitIds: string[],
+    referencePoints: string[]
+  ) {
+    if (referencePoints.length < 2) return;
+    const assignedArea = [];
+    for (const referencePointId of referencePoints) {
+      const referencePoint =
+        game.currentScenario.getReferencePoint(referencePointId);
+      if (referencePoint) {
+        assignedArea.push(referencePoint);
+      }
+    }
+    game.createAerialRefuelingMission(
+      missionName,
+      assignedUnitIds,
+      assignedArea
+    );
+    toastContext?.addToast(
+      `Created aerial refueling mission [${missionName}] successfully!`,
+      "success"
+    );
+  }
+
   function handleDeleteMission(missionId: string) {
     game.deleteMission(missionId);
     toastContext?.addToast(`Deleted mission successfully!`, "success");
@@ -2312,6 +2337,7 @@ export default function ScenarioMap({
           }}
           createPatrolMission={handleCreatePatrolMission}
           createStrikeMission={handleCreateStrikeMission}
+          createAerialRefuelingMission={handleCreateAerialRefuelingMission}
         />
       )}
 

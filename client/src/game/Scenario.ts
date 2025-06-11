@@ -9,6 +9,7 @@ import ReferencePoint from "@/game/units/ReferencePoint";
 import PatrolMission from "@/game/mission/PatrolMission";
 import { Target } from "@/game/engine/weaponEngagement";
 import StrikeMission from "@/game/mission/StrikeMission";
+import AerialRefuelingMission from "@/game/mission/AerialRefuelingMission";
 import { Mission } from "@/game/Game";
 import { SIDE_COLOR } from "@/utils/colors";
 import Relationships from "@/game/Relationships";
@@ -194,6 +195,12 @@ export default class Scenario {
     return this.missions.filter(
       (mission) => mission instanceof StrikeMission
     ) as StrikeMission[];
+  }
+
+  getAllAerialRefuelingMissions(): AerialRefuelingMission[] {
+    return this.missions.filter(
+      (mission) => mission instanceof AerialRefuelingMission
+    ) as AerialRefuelingMission[];
   }
 
   getMissionByAssignedUnitId(unitId: string): Mission | undefined {

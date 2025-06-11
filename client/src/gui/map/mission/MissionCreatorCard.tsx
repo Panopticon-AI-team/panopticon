@@ -34,6 +34,11 @@ interface MissionCreatorCardProps {
     assignedUnits: string[],
     targetIds: string[]
   ) => void;
+  createAerialRefuelingMission: (
+    missionName: string,
+    assignedUnits: string[],
+    referencePoints: string[]
+  ) => void;
 }
 
 const cardContentStyle = {
@@ -61,14 +66,18 @@ const cardStyle = {
   borderRadius: "10px",
 };
 
-const createPlaceholderMissionName = (missionType: "Patrol" | "Strike") => {
-  return `${missionType} Mission #${Math.floor(Math.random() * 1000)}`;
+const createPlaceholderMissionName = (
+  missionType: "Patrol" | "Strike" | "AerialRefueling"
+) => {
+  const missionTypeString =
+    missionType === "AerialRefueling" ? "Aerial Refueling" : missionType;
+  return `${missionTypeString} Mission #${Math.floor(Math.random() * 1000)}`;
 };
 
 const MissionCreatorCard = (props: MissionCreatorCardProps) => {
   const nodeRef = useRef(null);
   const [selectedMissionType, setSelectedMissionType] = useState<
-    "Patrol" | "Strike" // TODO: Create enum for mission types
+    "Patrol" | "Strike" | "AerialRefueling" // TODO: Create enum for mission types
   >("Patrol");
   const [selectedAircraft, setSelectedAircraft] = useState<string[]>([]);
   const [selectedTargets, setSelectedTargets] = useState<string[]>([
@@ -107,6 +116,16 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
       toastContext?.addToast("Please select at least one target", "error");
       return false;
     }
+    if (
+      selectedMissionType === "AerialRefueling" &&
+      selectedReferencePoints.length !== 2
+    ) {
+      toastContext?.addToast(
+        "Please select two reference points to define a refueling track",
+        "error"
+      );
+      return false;
+    }
     return true;
   };
 
@@ -126,11 +145,23 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
     props.handleCloseOnMap();
   };
 
+  const handleCreateAerialRefuelingMission = () => {
+    if (!validateMissionPropertiesInput()) return;
+    props.createAerialRefuelingMission(
+      missionName,
+      selectedAircraft,
+      selectedReferencePoints
+    );
+    props.handleCloseOnMap();
+  };
+
   const handleCreateMission = () => {
     if (selectedMissionType === "Patrol") {
       handleCreatePatrolMission();
     } else if (selectedMissionType === "Strike") {
       handleCreateStrikeMission();
+    } else if (selectedMissionType === "AerialRefueling") {
+      handleCreateAerialRefuelingMission();
     }
   };
 
@@ -181,6 +212,31 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
     );
   };
 
+  const aerialRefuelingMissionCreatorContent = (
+    sortedReferencePoints: ReferencePoint[]
+  ) => {
+    return (
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <SelectField
+          id="mission-creator-area-selector"
+          labelId="mission-creator-area-selector-label"
+          label="Area"
+          value={selectedReferencePoints}
+          selectItems={sortedReferencePoints.map((item) => {
+            return {
+              name: item.name,
+              value: item.id,
+            };
+          })}
+          onChange={(value) => {
+            setSelectedReferencePoints(value as string[]);
+          }}
+          multiple
+        />
+      </FormControl>
+    );
+  };
+
   const cardContent = () => {
     const sortedAircraft = [...props.aircraft].sort((a, b) => {
       return a.name.localeCompare(b.name);
@@ -199,6 +255,10 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
       );
     } else if (selectedMissionType === "Strike") {
       missionSpecificComponent = StrikeMissionCreatorContent(sortedTargets);
+    } else if (selectedMissionType === "AerialRefueling") {
+      missionSpecificComponent = aerialRefuelingMissionCreatorContent(
+        sortedReferencePoints
+      );
     }
 
     return (
@@ -210,14 +270,19 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
             selectItems={[
               { name: "Patrol", value: "Patrol" },
               { name: "Strike", value: "Strike" },
+              { name: "Aerial Refueling", value: "AerialRefueling" },
             ]}
             labelId="mission-creator-type-selector-label"
             label="Mission Type"
             value={selectedMissionType}
             onChange={(value) => {
-              setSelectedMissionType(value as "Patrol" | "Strike");
+              setSelectedMissionType(
+                value as "Patrol" | "Strike" | "AerialRefueling"
+              );
               setMissionName(
-                createPlaceholderMissionName(value as "Patrol" | "Strike")
+                createPlaceholderMissionName(
+                  value as "Patrol" | "Strike" | "AerialRefueling"
+                )
               );
             }}
           />

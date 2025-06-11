@@ -8,6 +8,7 @@ import {
   getNextCoordinates,
   getDistanceBetweenTwoPoints,
   randomInt,
+  isPointOnLine,
 } from "@/utils/mapFunctions";
 import {
   aircraftPursuit,
@@ -29,6 +30,7 @@ import Ship from "@/game/units/Ship";
 import ReferencePoint from "@/game/units/ReferencePoint";
 import PatrolMission from "@/game/mission/PatrolMission";
 import StrikeMission from "@/game/mission/StrikeMission";
+import AerialRefuelingMission from "@/game/mission/AerialRefuelingMission";
 import PlaybackRecorder from "@/game/playback/PlaybackRecorder";
 import RecordingPlayer from "@/game/playback/RecordingPlayer";
 import { SIDE_COLOR } from "@/utils/colors";
@@ -53,7 +55,7 @@ interface IAttackParams {
   currentWeaponQuantity: number;
 }
 
-export type Mission = PatrolMission | StrikeMission;
+export type Mission = PatrolMission | StrikeMission | AerialRefuelingMission;
 
 export default class Game {
   mapView: IMapView = {
@@ -785,6 +787,24 @@ export default class Game {
     this.currentScenario.missions = this.currentScenario.missions.filter(
       (mission) => mission.id !== missionId
     );
+  }
+
+  createAerialRefuelingMission(
+    missionName: string,
+    assignedUnitIds: string[],
+    assignedArea: ReferencePoint[]
+  ) {
+    this.recordHistory();
+    const currentSideId = this.currentScenario.getSide(this.currentSideId)?.id;
+    const aerialRefuelingMission = new AerialRefuelingMission({
+      id: randomUUID(),
+      name: missionName,
+      sideId: currentSideId ?? this.currentSideId,
+      assignedArea: assignedArea,
+      assignedUnitIds: assignedUnitIds,
+      active: true,
+    });
+    this.currentScenario.missions.push(aerialRefuelingMission);
   }
 
   moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {
@@ -1894,6 +1914,74 @@ export default class Game {
     });
   }
 
+  updateRefuelersOnAerialRefuelingMission(mission: AerialRefuelingMission) {
+    mission.assignedUnitIds.forEach((refuelerId) => {
+      const refueler = this.currentScenario.getAircraft(refuelerId);
+      if (refueler && !refueler.rtb) {
+        if (refueler.route.length === 0) {
+          const waypoint = mission.assignedArea[0];
+          refueler.route.push([waypoint.latitude, waypoint.longitude]);
+        } else if (refueler.route.length > 0) {
+          const isRouteOnRefuelingPath = isPointOnLine(
+            refueler.route[0][0],
+            refueler.route[0][1],
+            mission.assignedArea[0].latitude,
+            mission.assignedArea[0].longitude,
+            mission.assignedArea[1].latitude,
+            mission.assignedArea[1].longitude
+          );
+          if (!isRouteOnRefuelingPath) {
+            refueler.route = [];
+            const waypoint = mission.assignedArea[0];
+            refueler.route.push([waypoint.latitude, waypoint.longitude]);
+          } else {
+            if (
+              getDistanceBetweenTwoPoints(
+                refueler.latitude,
+                refueler.longitude,
+                mission.assignedArea[0].latitude,
+                mission.assignedArea[0].longitude
+              ) < 0.5
+            ) {
+              const nextWaypoint = mission.assignedArea[1];
+              refueler.route = [];
+              refueler.route.push([
+                nextWaypoint.latitude,
+                nextWaypoint.longitude,
+              ]);
+            } else if (
+              getDistanceBetweenTwoPoints(
+                refueler.latitude,
+                refueler.longitude,
+                mission.assignedArea[1].latitude,
+                mission.assignedArea[1].longitude
+              ) < 0.5
+            ) {
+              const nextWaypoint = mission.assignedArea[0];
+              refueler.route = [];
+              refueler.route.push([
+                nextWaypoint.latitude,
+                nextWaypoint.longitude,
+              ]);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  updateUnitsOnAerialRefuelingMission() {
+    const activeAerialRefuelingMissions = this.currentScenario
+      .getAllAerialRefuelingMissions()
+      .filter((mission) => mission.active);
+    if (activeAerialRefuelingMissions.length < 1) return;
+
+    activeAerialRefuelingMissions.forEach((mission) => {
+      if (mission.assignedArea.length !== 2) return;
+      this.updateRefuelersOnAerialRefuelingMission(mission);
+    });
+  }
+
   updateOnBoardWeaponPositions() {
     this.currentScenario.aircraft.forEach((aircraft) => {
       aircraft.weapons.forEach((weapon) => {
@@ -2051,6 +2139,7 @@ export default class Game {
     this.updateUnitsOnPatrolMission();
     this.clearCompletedStrikeMissions();
     this.updateUnitsOnStrikeMission();
+    this.updateUnitsOnAerialRefuelingMission();
 
     this.currentScenario.weapons.forEach((weapon) => {
       weaponEngagement(this.currentScenario, weapon, this.simulationLogs);

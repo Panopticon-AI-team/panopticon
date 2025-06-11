@@ -135,3 +135,33 @@ export function getNextCoordinates(
     heading
   );
 }
+
+export function isPointOnLine(
+  pointLatitude: number,
+  pointLongitude: number,
+  lineStartLatitude: number,
+  lineStartLongitude: number,
+  lineEndLatitude: number,
+  lineEndLongitude: number
+): boolean {
+  const distanceToStart = getDistanceBetweenTwoPoints(
+    pointLatitude,
+    pointLongitude,
+    lineStartLatitude,
+    lineStartLongitude
+  );
+  const distanceToEnd = getDistanceBetweenTwoPoints(
+    pointLatitude,
+    pointLongitude,
+    lineEndLatitude,
+    lineEndLongitude
+  );
+  const totalDistance = getDistanceBetweenTwoPoints(
+    lineStartLatitude,
+    lineStartLongitude,
+    lineEndLatitude,
+    lineEndLongitude
+  );
+
+  return Math.abs(distanceToStart + distanceToEnd - totalDistance) < 0.01;
+}
