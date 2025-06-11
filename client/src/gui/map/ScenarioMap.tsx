@@ -1769,18 +1769,18 @@ export default function ScenarioMap({
     referencePoints: string[]
   ) {
     if (referencePoints.length < 2) return;
-    const assignedArea = [];
+    const refuelingTrack = [];
     for (const referencePointId of referencePoints) {
       const referencePoint =
         game.currentScenario.getReferencePoint(referencePointId);
       if (referencePoint) {
-        assignedArea.push(referencePoint);
+        refuelingTrack.push(referencePoint);
       }
     }
     game.createAerialRefuelingMission(
       missionName,
       assignedUnitIds,
-      assignedArea
+      refuelingTrack
     );
     toastContext?.addToast(
       `Created aerial refueling mission [${missionName}] successfully!`,

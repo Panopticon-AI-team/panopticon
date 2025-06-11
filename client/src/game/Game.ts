@@ -792,7 +792,7 @@ export default class Game {
   createAerialRefuelingMission(
     missionName: string,
     assignedUnitIds: string[],
-    assignedArea: ReferencePoint[]
+    refuelingTrack: ReferencePoint[]
   ) {
     this.recordHistory();
     const currentSideId = this.currentScenario.getSide(this.currentSideId)?.id;
@@ -800,7 +800,7 @@ export default class Game {
       id: randomUUID(),
       name: missionName,
       sideId: currentSideId ?? this.currentSideId,
-      assignedArea: assignedArea,
+      refuelingTrack: refuelingTrack,
       assignedUnitIds: assignedUnitIds,
       active: true,
     });
@@ -1534,6 +1534,26 @@ export default class Game {
             assignedArea: assignedArea,
           })
         );
+      } else if ("refuelingTrack" in mission) {
+        const refuelingTrack: ReferencePoint[] = [];
+        mission.refuelingTrack.forEach((point) => {
+          const referencePoint = new ReferencePoint({
+            id: point.id,
+            name: point.name,
+            sideId: point.sideId,
+            latitude: point.latitude,
+            longitude: point.longitude,
+            altitude: point.altitude,
+            sideColor: point.sideColor,
+          });
+          refuelingTrack.push(referencePoint);
+        });
+        loadedScenario.missions.push(
+          new AerialRefuelingMission({
+            ...baseProps,
+            refuelingTrack: refuelingTrack,
+          })
+        );
       } else {
         loadedScenario.missions.push(
           new StrikeMission({
@@ -1919,31 +1939,31 @@ export default class Game {
       const refueler = this.currentScenario.getAircraft(refuelerId);
       if (refueler && !refueler.rtb) {
         if (refueler.route.length === 0) {
-          const waypoint = mission.assignedArea[0];
+          const waypoint = mission.refuelingTrack[0];
           refueler.route.push([waypoint.latitude, waypoint.longitude]);
         } else if (refueler.route.length > 0) {
           const isRouteOnRefuelingPath = isPointOnLine(
             refueler.route[0][0],
             refueler.route[0][1],
-            mission.assignedArea[0].latitude,
-            mission.assignedArea[0].longitude,
-            mission.assignedArea[1].latitude,
-            mission.assignedArea[1].longitude
+            mission.refuelingTrack[0].latitude,
+            mission.refuelingTrack[0].longitude,
+            mission.refuelingTrack[1].latitude,
+            mission.refuelingTrack[1].longitude
           );
           if (!isRouteOnRefuelingPath) {
             refueler.route = [];
-            const waypoint = mission.assignedArea[0];
+            const waypoint = mission.refuelingTrack[0];
             refueler.route.push([waypoint.latitude, waypoint.longitude]);
           } else {
             if (
               getDistanceBetweenTwoPoints(
                 refueler.latitude,
                 refueler.longitude,
-                mission.assignedArea[0].latitude,
-                mission.assignedArea[0].longitude
+                mission.refuelingTrack[0].latitude,
+                mission.refuelingTrack[0].longitude
               ) < 0.5
             ) {
-              const nextWaypoint = mission.assignedArea[1];
+              const nextWaypoint = mission.refuelingTrack[1];
               refueler.route = [];
               refueler.route.push([
                 nextWaypoint.latitude,
@@ -1953,11 +1973,11 @@ export default class Game {
               getDistanceBetweenTwoPoints(
                 refueler.latitude,
                 refueler.longitude,
-                mission.assignedArea[1].latitude,
-                mission.assignedArea[1].longitude
+                mission.refuelingTrack[1].latitude,
+                mission.refuelingTrack[1].longitude
               ) < 0.5
             ) {
-              const nextWaypoint = mission.assignedArea[0];
+              const nextWaypoint = mission.refuelingTrack[0];
               refueler.route = [];
               refueler.route.push([
                 nextWaypoint.latitude,
@@ -1977,7 +1997,7 @@ export default class Game {
     if (activeAerialRefuelingMissions.length < 1) return;
 
     activeAerialRefuelingMissions.forEach((mission) => {
-      if (mission.assignedArea.length !== 2) return;
+      if (mission.refuelingTrack.length !== 2) return;
       this.updateRefuelersOnAerialRefuelingMission(mission);
     });
   }
