@@ -1130,6 +1130,24 @@ export default class Game {
     }
   }
 
+  aircraftPerformAerialRefueling(aircraftId: string, refuelerId?: string) {
+    const aircraft = this.currentScenario.getAircraft(aircraftId);
+    if (!aircraft) return;
+    this.recordHistory();
+    if (aircraft.refuelerId === "") {
+      if (refuelerId) {
+        aircraft.refuelerId = refuelerId;
+      } else {
+        const closestRefueler =
+          this.currentScenario.getClosestRefuelerToAircraft(aircraftId);
+        if (!closestRefueler) return;
+        aircraft.refuelerId = closestRefueler.id;
+      }
+    } else {
+      aircraft.refuelerId = "";
+    }
+  }
+
   getFuelNeededToReturnToBase(aircraft: Aircraft) {
     if (aircraft.speed === 0) return 0;
     const homeBase =
@@ -1293,6 +1311,7 @@ export default class Game {
         rtb: aircraft.rtb,
         targetId: aircraft.targetId ?? "",
         sideColor: aircraft.sideColor,
+        refuelerId: aircraft.refuelerId ?? "",
       });
       loadedScenario.aircraft.push(newAircraft);
     });
@@ -1345,6 +1364,7 @@ export default class Game {
           rtb: aircraft.rtb,
           targetId: aircraft.targetId ?? "",
           sideColor: aircraft.sideColor,
+          refuelerId: aircraft.refuelerId ?? "",
         });
         airbaseAircraft.push(newAircraft);
       });
@@ -1474,6 +1494,7 @@ export default class Game {
           rtb: aircraft.rtb,
           targetId: aircraft.targetId ?? "",
           sideColor: aircraft.sideColor,
+          refuelerId: aircraft.refuelerId ?? "",
         });
         shipAircraft.push(newAircraft);
       });
@@ -2017,6 +2038,34 @@ export default class Game {
     });
   }
 
+  updateRefuelingAircraft() {
+    this.currentScenario.aircraft.forEach((aircraft: Aircraft) => {
+      if (aircraft.refuelerId !== "") {
+        const refueler = this.currentScenario.getAircraft(aircraft.refuelerId);
+        if (refueler) {
+          if (
+            getDistanceBetweenTwoPoints(
+              aircraft.latitude,
+              aircraft.longitude,
+              refueler.latitude,
+              refueler.longitude
+            ) < 5
+          ) {
+            const fuelTransferRate = 25;
+            aircraft.currentFuel +=
+              (refueler.fuelRate * fuelTransferRate) / 3600;
+            refueler.currentFuel -=
+              (refueler.fuelRate * fuelTransferRate) / 3600;
+            // if (aircraft.currentFuel > aircraft.maxFuel * 0.9) {
+            //   aircraft.refuelerId = "";
+            // }
+          }
+          aircraftPursuit(this.currentScenario, aircraft, refueler.id);
+        }
+      }
+    });
+  }
+
   updateUnitsOnAerialRefuelingMission() {
     const activeAerialRefuelingMissions = this.currentScenario
       .getAllAerialRefuelingMissions()
@@ -2027,6 +2076,8 @@ export default class Game {
       if (mission.refuelingTrack.length !== 2) return;
       this.updateRefuelersOnAerialRefuelingMission(mission);
     });
+
+    this.updateRefuelingAircraft();
   }
 
   updateOnBoardWeaponPositions() {

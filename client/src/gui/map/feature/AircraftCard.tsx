@@ -34,7 +34,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { colorPalette } from "@/utils/constants";
 import Weapon from "@/game/units/Weapon";
 import WeaponTable from "@/gui/map/feature/shared/WeaponTable";
-import { Radar } from "@mui/icons-material";
+import { LocalGasStation, Radar } from "@mui/icons-material";
 
 interface AircraftCardProps {
   aircraft: Aircraft;
@@ -51,6 +51,7 @@ interface AircraftCardProps {
   ) => void;
   handleAircraftAutoAttack: (aircraftId: string) => void;
   handleAircraftRtb: (aircraftId: string) => void;
+  handleAircraftAerialRefueling: (aircraftId: string) => void;
   handleDuplicateAircraft: (aircraftId: string) => void;
   handleTeleportUnit: (unitId: string) => void;
   handleEditAircraft: (
@@ -133,6 +134,11 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
   const _handleAircraftRtb = () => {
     props.handleCloseOnMap();
     props.handleAircraftRtb(props.aircraft.id);
+  };
+
+  const _handleAircraftAerialRefueling = () => {
+    props.handleCloseOnMap();
+    props.handleAircraftAerialRefueling(props.aircraft.id);
   };
 
   const _handleDuplicateAircraft = () => {
@@ -472,6 +478,9 @@ export default function AircraftCard(props: Readonly<AircraftCardProps>) {
       </ListItemButton>
       <ListItemButton onClick={_handleAircraftRtb}>
         <HomeIcon sx={{ mr: 0.5 }} /> Return To Base
+      </ListItemButton>
+      <ListItemButton onClick={_handleAircraftAerialRefueling}>
+        <LocalGasStation sx={{ mr: 0.5 }} /> Aerial Refuel
       </ListItemButton>
       <ListItemButton onClick={_handleDuplicateAircraft}>
         <AddIcon sx={{ mr: 0.5 }} /> Duplicate

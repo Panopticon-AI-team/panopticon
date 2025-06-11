@@ -595,6 +595,34 @@ export default class Scenario {
     }
   }
 
+  getClosestRefuelerToAircraft(aircraftId: string): Aircraft | undefined {
+    const aircraft = this.getAircraft(aircraftId);
+    if (aircraft) {
+      let closestRefueler: Aircraft | undefined;
+      let closestDistance = Number.MAX_VALUE;
+      const aerialRefuelingMissions = this.getAllAerialRefuelingMissions();
+      aerialRefuelingMissions.forEach((mission) => {
+        if (!mission.active) return;
+        mission.assignedUnitIds.forEach((refuelerId) => {
+          const potentialRefueler = this.getAircraft(refuelerId);
+          if (potentialRefueler) {
+            const distance = getDistanceBetweenTwoPoints(
+              aircraft.latitude,
+              aircraft.longitude,
+              potentialRefueler.latitude,
+              potentialRefueler.longitude
+            );
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestRefueler = potentialRefueler;
+            }
+          }
+        });
+      });
+      return closestRefueler;
+    }
+  }
+
   getAllTargetsFromEnemySides(sideId: string): Target[] {
     const targets: Target[] = [];
     this.aircraft.forEach((aircraft) => {

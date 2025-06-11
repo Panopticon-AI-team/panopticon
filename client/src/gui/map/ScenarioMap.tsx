@@ -1577,6 +1577,10 @@ export default function ScenarioMap({
     }
   }
 
+  function handleAircraftAerialRefueling(aircraftId: string) {
+    game.aircraftPerformAerialRefueling(aircraftId);
+  }
+
   function handleDuplicateAircraft(aircraftId: string) {
     const duplicatedAircraft = game.duplicateUnit(aircraftId, "aircraft");
     if (duplicatedAircraft) {
@@ -2493,6 +2497,7 @@ export default function ScenarioMap({
             handleAircraftAutoAttack={handleAircraftAutoAttack}
             handleEditAircraft={updateAircraft}
             handleAircraftRtb={handleAircraftRtb}
+            handleAircraftAerialRefueling={handleAircraftAerialRefueling}
             handleDuplicateAircraft={handleDuplicateAircraft}
             handleTeleportUnit={queueUnitForTeleport}
             handleAddWeapon={handleAddWeaponToAircraft}

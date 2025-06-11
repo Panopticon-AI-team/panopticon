@@ -23,6 +23,7 @@ interface IAircraft {
   rtb?: boolean;
   targetId?: string;
   desiredRoute?: number[][];
+  refuelerId?: string;
 }
 
 export default class Aircraft {
@@ -47,6 +48,7 @@ export default class Aircraft {
   rtb: boolean;
   targetId: string;
   desiredRoute: number[][] = [];
+  refuelerId: string;
 
   constructor(parameters: IAircraft) {
     this.id = parameters.id;
@@ -70,6 +72,7 @@ export default class Aircraft {
     this.rtb = parameters.rtb ?? false;
     this.targetId = parameters.targetId ?? "";
     this.desiredRoute = parameters.desiredRoute ?? [];
+    this.refuelerId = parameters.refuelerId ?? "";
   }
 
   getTotalWeaponQuantity(): number {

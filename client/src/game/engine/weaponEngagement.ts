@@ -253,13 +253,17 @@ export function weaponEngagement(
   }
 }
 
-export function aircraftPursuit(currentScenario: Scenario, aircraft: Aircraft) {
-  const target = currentScenario.getAircraft(aircraft.targetId);
+export function aircraftPursuit(
+  currentScenario: Scenario,
+  aircraft: Aircraft,
+  targetId?: string
+) {
+  const target = currentScenario.getAircraft(targetId ?? aircraft.targetId);
   if (!target) {
     aircraft.targetId = "";
     return;
   }
-  if (aircraft.weapons.length < 1) return;
+  if (aircraft.targetId !== "" && aircraft.weapons.length < 1) return;
 
   const TRAIL_DISTANCE_NM = 5;
   const trailKm = (TRAIL_DISTANCE_NM * NAUTICAL_MILES_TO_METERS) / 1000;
