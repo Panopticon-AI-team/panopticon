@@ -197,6 +197,15 @@ export default class Scenario {
     ) as StrikeMission[];
   }
 
+  getAerialRefuelingMission(
+    missionId: string | null
+  ): AerialRefuelingMission | undefined {
+    return this.missions.find(
+      (mission) =>
+        mission.id === missionId && mission instanceof AerialRefuelingMission
+    ) as AerialRefuelingMission;
+  }
+
   getAllAerialRefuelingMissions(): AerialRefuelingMission[] {
     return this.missions.filter(
       (mission) => mission instanceof AerialRefuelingMission

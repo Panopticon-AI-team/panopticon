@@ -21,6 +21,7 @@ import SelectField from "@/gui/shared/ui/SelectField";
 import TextField from "@/gui/shared/ui/TextField";
 import { Mission } from "@/game/Game";
 import { ToastContext } from "@/gui/contextProviders/contexts/ToastContext";
+import AerialRefuelingMission from "@/game/mission/AerialRefuelingMission";
 
 interface MissionEditorCardProps {
   missions: Mission[];
@@ -40,11 +41,17 @@ interface MissionEditorCardProps {
     assignedUnits: string[],
     targetIds: string[]
   ) => void;
+  updateAerialRefuelingMission: (
+    missionId: string,
+    missionName: string,
+    assignedUnitIds: string[],
+    referencePoints: string[]
+  ) => void;
   deleteMission: (missionId: string) => void;
   handleCloseOnMap: () => void;
 }
 
-const missionTypes = ["Patrol", "Strike"];
+const missionTypes = ["Patrol", "Strike", "AerialRefueling"];
 
 const cardContentStyle = {
   display: "flex",
@@ -81,7 +88,13 @@ const editorButtonStyle = {
 };
 
 const parseSelectedMissionType = (selectedMission: Mission): string => {
-  return selectedMission instanceof PatrolMission ? "Patrol" : "Strike";
+  if (selectedMission instanceof PatrolMission) {
+    return "Patrol";
+  } else if (selectedMission instanceof StrikeMission) {
+    return "Strike";
+  } else {
+    return "AerialRefueling";
+  }
 };
 
 const MissionEditorCard = (props: MissionEditorCardProps) => {
@@ -101,7 +114,9 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
   >(
     selectedMission instanceof PatrolMission
       ? selectedMission.assignedArea.map((point) => point.id)
-      : []
+      : selectedMission instanceof AerialRefuelingMission
+        ? selectedMission.refuelingTrack.map((point) => point.id)
+        : []
   );
   const [selectedTargets, setSelectedTargets] = useState<string[]>(
     selectedMission instanceof StrikeMission
@@ -130,6 +145,11 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
       } else if (newSelectedMission instanceof StrikeMission) {
         setSelectedTargets(newSelectedMission.assignedTargetIds);
         setSelectedReferencePoints([]);
+      } else if (newSelectedMission instanceof AerialRefuelingMission) {
+        setSelectedReferencePoints(
+          newSelectedMission.refuelingTrack.map((point) => point.id)
+        );
+        setSelectedTargets([]);
       }
 
       setSelectedMissionType(parseSelectedMissionType(newSelectedMission));
@@ -162,6 +182,16 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
       toastContext?.addToast("Please select at least one target", "error");
       return false;
     }
+    if (
+      selectedMission instanceof AerialRefuelingMission &&
+      selectedReferencePoints.length !== 2
+    ) {
+      toastContext?.addToast(
+        "Please select two reference points to define a refueling track",
+        "error"
+      );
+      return false;
+    }
     return true;
   };
 
@@ -185,6 +215,13 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
         missionName,
         selectedAircraft,
         selectedTargets
+      );
+    } else if (selectedMissionType === "AerialRefueling") {
+      props.updateAerialRefuelingMission(
+        selectedMission.id,
+        missionName,
+        selectedAircraft,
+        selectedReferencePoints
       );
     }
     props.handleCloseOnMap();
@@ -211,6 +248,10 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
       );
     } else if (searchedSelectedMission instanceof StrikeMission) {
       setSelectedTargets(searchedSelectedMission.assignedTargetIds);
+    } else if (searchedSelectedMission instanceof AerialRefuelingMission) {
+      setSelectedReferencePoints(
+        searchedSelectedMission.refuelingTrack.map((point) => point.id)
+      );
     }
 
     setSelectedMissionType(parseSelectedMissionType(searchedSelectedMission));
@@ -225,6 +266,31 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
           id="mission-editor-area-selector"
           labelId="mission-editor-area-selector-label"
           label="Area"
+          selectItems={sortedReferencePoints.map((item) => {
+            return {
+              name: item.name,
+              value: item.id,
+            };
+          })}
+          value={selectedReferencePoints}
+          onChange={(value) => {
+            setSelectedReferencePoints(value as string[]);
+          }}
+          multiple
+        />
+      </FormControl>
+    );
+  };
+
+  const aerialRefuelingMissionEditorContent = (
+    sortedReferencePoints: ReferencePoint[]
+  ) => {
+    return (
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <SelectField
+          id="mission-editor-area-selector"
+          labelId="mission-editor-area-selector-label"
+          label="Refueling Track"
           selectItems={sortedReferencePoints.map((item) => {
             return {
               name: item.name,
@@ -283,6 +349,10 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
       );
     } else if (selectedMissionType === "Strike") {
       missionSpecificComponent = StrikeMissionEditorContent(sortedTargets);
+    } else if (selectedMissionType === "AerialRefueling") {
+      missionSpecificComponent = aerialRefuelingMissionEditorContent(
+        sortedReferencePoints
+      );
     }
 
     return (
@@ -313,7 +383,7 @@ const MissionEditorCard = (props: MissionEditorCardProps) => {
             labelId="mission-editor-type-selector-label"
             selectItems={missionTypes.map((item) => {
               return {
-                name: item,
+                name: item === "AerialRefueling" ? "Aerial Refueling" : item,
                 value: item,
               };
             })}

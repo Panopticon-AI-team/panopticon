@@ -807,6 +807,26 @@ export default class Game {
     this.currentScenario.missions.push(aerialRefuelingMission);
   }
 
+  updateAerialRefuelingMission(
+    missionId: string,
+    missionName?: string,
+    assignedUnitIds?: string[],
+    refuelingTrack?: ReferencePoint[]
+  ) {
+    const aerialRefuelingMission =
+      this.currentScenario.getAerialRefuelingMission(missionId);
+    if (aerialRefuelingMission) {
+      this.recordHistory();
+      if (missionName && missionName !== "")
+        aerialRefuelingMission.name = missionName;
+      if (assignedUnitIds && assignedUnitIds.length > 0)
+        aerialRefuelingMission.assignedUnitIds = assignedUnitIds;
+      if (refuelingTrack && refuelingTrack.length === 2) {
+        aerialRefuelingMission.refuelingTrack = refuelingTrack;
+      }
+    }
+  }
+
   moveAircraft(aircraftId: string, newLatitude: number, newLongitude: number) {
     const aircraft = this.currentScenario.getAircraft(aircraftId);
     if (aircraft) {

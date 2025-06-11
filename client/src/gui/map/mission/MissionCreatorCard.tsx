@@ -220,7 +220,7 @@ const MissionCreatorCard = (props: MissionCreatorCardProps) => {
         <SelectField
           id="mission-creator-area-selector"
           labelId="mission-creator-area-selector-label"
-          label="Area"
+          label="Refueling Track"
           value={selectedReferencePoints}
           selectItems={sortedReferencePoints.map((item) => {
             return {
